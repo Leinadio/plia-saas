@@ -285,6 +285,10 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
                   {groupByMonth(group.items).map((m) => {
                     const key = `${accountId}:${m.month}`;
                     const isCollapsed = collapsed.has(key);
+                    // Les non comptabilisées comptent dans le total du mois mais dans
+                    // aucun calcul. Replié, le mois n'en disait rien : on lisait un
+                    // nombre d'opérations dont une partie ne pesait sur rien.
+                    const nonComptees = m.items.filter((t) => t.ignored).length;
                     return (
                     <Fragment key={m.month}>
                       <TableRow className="cursor-pointer hover:bg-muted/50" onClick={() => toggleMonth(key)}>
@@ -293,6 +297,11 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
                             {isCollapsed ? <ChevronRight className="size-4" /> : <ChevronDown className="size-4" />}
                             {m.label}
                             <span className="text-xs font-normal">({m.items.length})</span>
+                            {nonComptees > 0 && (
+                              <span className="text-xs font-normal text-amber-700 dark:text-amber-500">
+                                {nonComptees} non comptabilisée{nonComptees > 1 ? "s" : ""}
+                              </span>
+                            )}
                           </span>
                         </TableCell>
                       </TableRow>
