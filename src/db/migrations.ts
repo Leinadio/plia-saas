@@ -150,6 +150,128 @@ export function migrateDropIncomeKind(db: Database.Database): void {
   }
 }
 
+// --- À qui appartient un compte bancaire -------------------------------------
+// Tout le budget pend au compte : une transaction a son account_id, un groupe aussi,
+// un sous-poste appartient à son groupe. Poser le propriétaire ici suffit donc à en
+// donner un à tout le reste.
+//
+// L'attribution de l'existant ne se fait que dans le seul cas où il n'y a rien à
+// deviner : un utilisateur inscrit et un seul. À plusieurs on ne choisit pas — un
+// compte donné au mauvais propriétaire est une fuite qui ne fait aucun bruit, et un
+// rattrapage à la main vaut mieux qu'un mauvais choix automatique.
+//
+// La table `user` vient de Better Auth et non de schema.sql. Les bases de test ne
+// l'ont pas : sans la garde ci-dessous, getDb lèverait partout.
+export function migrateAccountOwner(db: Database.Database): void {
+  const cols = db.prepare("PRAGMA table_info(accounts)").all() as { name: string }[];
+  if (!cols.some((c) => c.name === "user_id")) {
+    db.exec(`ALTER TABLE accounts ADD COLUMN user_id TEXT`);
+  }
+  const aUser = db
+    .prepare(`SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'user'`)
+    .get();
+  if (!aUser) return;
+  const orphelins = (db.prepare(`SELECT COUNT(*) AS n FROM accounts WHERE user_id IS NULL`).get() as { n: number }).n;
+  if (orphelins === 0) return;
+  const users = db.prepare(`SELECT id FROM user`).all() as { id: string }[];
+  if (users.length !== 1) return;
+  db.prepare(`UPDATE accounts SET user_id = ? WHERE user_id IS NULL`).run(users[0].id);
+}
+
+// --- La provision des non catégorisés, par compte ------------------------------
+// Le groupe 0 ne désigne pas un groupe mais les non catégorisés, dont la provision se
+// règle comme un budget. Elle était écrite sans compte alors que l'historique affiche
+// un onglet par compte : deux comptes d'une même personne partageaient la même, et
+// corriger l'un corrigeait l'autre.
+//
+// L'unicité gagne donc le compte. TEXT NOT NULL DEFAULT '' et jamais NULL : SQLite
+// tient deux NULL pour distincts dans une contrainte d'unicité, si bien qu'un budget de
+// groupe (qui n'a pas de compte à lui, il le tient du groupe) pourrait être inséré deux
+// fois au même mois au lieu d'être remplacé.
+//
+// Les provisions déjà en base n'ont pas de compte auquel les rendre. On ne devine pas :
+// elles restent avec un compte vide, donc invisibles, et un avertissement le dit.
+export function migrateProvisionPerAccount(db: Database.Database): void {
+  const cols = db.prepare("PRAGMA table_info(budget_amounts)").all() as { name: string }[];
+  if (cols.some((c) => c.name === "account_id")) return;
+  db.transaction(() => {
+    db.exec(`
+      CREATE TABLE budget_amounts_owned (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        group_id INTEGER NOT NULL,
+        account_id TEXT NOT NULL DEFAULT '',
+        effective_month TEXT NOT NULL,
+        amount REAL NOT NULL,
+        scope TEXT NOT NULL DEFAULT 'ongoing',
+        UNIQUE(group_id, account_id, effective_month, scope)
+      );
+      INSERT INTO budget_amounts_owned (id, group_id, account_id, effective_month, amount, scope)
+        SELECT id, group_id, '', effective_month, amount, scope FROM budget_amounts;
+      DROP TABLE budget_amounts;
+      ALTER TABLE budget_amounts_owned RENAME TO budget_amounts;
+    `);
+  })();
+  const perdues = (db
+    .prepare(`SELECT COUNT(*) AS n FROM budget_amounts WHERE group_id = 0 AND amount > 0`)
+    .get() as { n: number }).n;
+  if (perdues > 0) {
+    console.warn(
+      `[budgets] ${perdues} provision(s) de non catégorisés n'ont pas de compte auquel se rattacher : ` +
+        `elles ne s'affichent plus. À reposer à la main sur le compte concerné.`,
+    );
+  }
+}
+
+// --- Le trousseau de connexions bancaires --------------------------------------
+// Reprend la connexion qui vivait dans trois réglages uniques (session_id,
+// account_uids, consent_valid_until) vers une table qui en tient plusieurs.
+//
+// Comme pour les comptes, la reprise ne devine que s'il n'y a rien à deviner : un seul
+// inscrit. À plusieurs elle se tait — donner l'accès à la vraie banque de quelqu'un au
+// mauvais utilisateur ne se rattrape pas.
+//
+// Les anciens réglages ne sont PAS supprimés. Ils ne sont plus lus, mais les effacer
+// rendrait la reprise irréversible si elle s'était trompée.
+export function migrateBankConnections(db: Database.Database): void {
+  db.exec(`CREATE TABLE IF NOT EXISTS bank_connections (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
+    aspsp_name TEXT NOT NULL,
+    aspsp_country TEXT NOT NULL,
+    session_id TEXT,
+    valid_until TEXT,
+    account_uids TEXT
+  )`);
+  const ccols = db.prepare("PRAGMA table_info(bank_connections)").all() as { name: string }[];
+  if (!ccols.some((c) => c.name === "account_uids")) {
+    db.exec(`ALTER TABLE bank_connections ADD COLUMN account_uids TEXT`);
+  }
+  const cols = db.prepare("PRAGMA table_info(accounts)").all() as { name: string }[];
+  if (!cols.some((c) => c.name === "connection_id")) {
+    db.exec(`ALTER TABLE accounts ADD COLUMN connection_id INTEGER REFERENCES bank_connections(id) ON DELETE SET NULL`);
+  }
+
+  const deja = (db.prepare(`SELECT COUNT(*) AS n FROM bank_connections`).get() as { n: number }).n;
+  if (deja > 0) return;
+  const reglage = (cle: string): string | null => {
+    const row = db.prepare(`SELECT value FROM settings WHERE key = ?`).get(cle) as { value: string } | undefined;
+    return row?.value ?? null;
+  };
+  const sessionId = reglage("session_id");
+  if (!sessionId) return;
+  const aUser = db.prepare(`SELECT 1 FROM sqlite_master WHERE type='table' AND name='user'`).get();
+  if (!aUser) return;
+  const users = db.prepare(`SELECT id FROM user`).all() as { id: string }[];
+  if (users.length !== 1) return;
+
+  const info = db
+    .prepare(`INSERT INTO bank_connections (user_id, aspsp_name, aspsp_country, session_id, valid_until, account_uids) VALUES (?, ?, ?, ?, ?, ?)`)
+    .run(users[0].id, process.env.ENABLEBANKING_ASPSP_NAME ?? "CIC", process.env.ENABLEBANKING_ASPSP_COUNTRY ?? "FR", sessionId, reglage("consent_valid_until"), reglage("account_uids"));
+  const cid = Number(info.lastInsertRowid);
+  // Tous les comptes de cet utilisateur viennent de cette connexion : c'était la seule.
+  db.prepare(`UPDATE accounts SET connection_id = ? WHERE user_id = ? AND connection_id IS NULL`).run(cid, users[0].id);
+}
+
 // Durée de vie des groupes : mois de départ / de fin. Les groupes existants
 // deviennent permanents et visibles partout (start_month très ancien).
 export function migrateGroupLifespan(db: Database.Database) {

@@ -1,3 +1,4 @@
+import { TEST_USER } from "../helpers/test-user";
 import { expect, test } from "vitest";
 import { getDb } from "../../src/db/index";
 import { syncAll } from "../../src/enablebanking/sync";
@@ -32,11 +33,11 @@ test("sync imports balance + transactions", async () => {
   const result = await syncAll(db, {
     ebGet: fakeEbGet,
     accountUids: ["acc1"],
-    accountName: "CIC",
+    accountName: "CIC", userId: TEST_USER,
   });
   expect(result.imported).toBe(1);
-  expect(totalBalance(db)).toBe(500);
-  const txns = listTransactions(db);
+  expect(totalBalance(db, TEST_USER)).toBe(500);
+  const txns = listTransactions(db, TEST_USER);
   expect(txns[0].amount).toBe(-30);
 });
 
@@ -63,15 +64,15 @@ test("keeps two accounts separate with their own balance, label and transactions
   };
 
   const db = getDb(":memory:");
-  await syncAll(db, { ebGet: perAccount, accountUids: ["accA", "accB"], accountName: "CIC" });
+  await syncAll(db, { ebGet: perAccount, accountUids: ["accA", "accB"], accountName: "CIC", userId: TEST_USER });
 
-  const accounts = listAccounts(db);
+  const accounts = listAccounts(db, TEST_USER);
   expect(accounts).toHaveLength(2);
   expect(accounts.find((a) => a.id === "accA")?.balance).toBe(90.13);
   expect(accounts.find((a) => a.id === "accB")?.balance).toBe(471.12);
-  expect(totalBalance(db)).toBeCloseTo(561.25);
+  expect(totalBalance(db, TEST_USER)).toBeCloseTo(561.25);
 
-  const txns = listTransactions(db);
+  const txns = listTransactions(db, TEST_USER);
   const a1 = txns.find((t) => t.id === "a1")!;
   const b1 = txns.find((t) => t.id === "b1")!;
   expect(a1.accountId).toBe("accA");
@@ -82,8 +83,8 @@ test("keeps two accounts separate with their own balance, label and transactions
 
 test("sync deduplicates on re-run (imported === 0 on second call)", async () => {
   const db = getDb(":memory:");
-  await syncAll(db, { ebGet: fakeEbGet, accountUids: ["acc1"], accountName: "CIC" });
-  const second = await syncAll(db, { ebGet: fakeEbGet, accountUids: ["acc1"], accountName: "CIC" });
+  await syncAll(db, { ebGet: fakeEbGet, accountUids: ["acc1"], accountName: "CIC", userId: TEST_USER });
+  const second = await syncAll(db, { ebGet: fakeEbGet, accountUids: ["acc1"], accountName: "CIC", userId: TEST_USER });
   expect(second.imported).toBe(0);
-  expect(listTransactions(db)).toHaveLength(1);
+  expect(listTransactions(db, TEST_USER)).toHaveLength(1);
 });

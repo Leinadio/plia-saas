@@ -1,3 +1,4 @@
+import { TEST_USER } from "../helpers/test-user";
 // Raccourcir la durée d'un groupe rend ses transactions des mois retirés aux « non
 // catégorisés » — vraiment, en base, et pas seulement à l'affichage. C'est ce qui fait
 // qu'elles y RESTENT si on rallonge ensuite : le rattachement a été défait, il se
@@ -12,7 +13,7 @@ import { insertManualTransaction, detachTransactionsInMonths } from "../../src/d
 let db: Database.Database;
 beforeEach(() => {
   db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null });
+  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
 });
 
 const depense = (mois: string, groupId: number | null, lineId: number | null = null) =>

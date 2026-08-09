@@ -1,3 +1,4 @@
+import { TEST_USER } from "../helpers/test-user";
 import { expect, test } from "vitest";
 import { getDb } from "../../src/db/index";
 import { upsertAccount } from "../../src/db/repositories/accounts";
@@ -6,7 +7,7 @@ import { listLineAmounts, setLineAmount, deleteLineAmount } from "../../src/db/r
 
 function seed() {
   const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null });
+  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
   const gid = insertGroup(db, "a1", "Abonnements", "out", 0, "2026-01", null);
   const lid = insertLine(db, gid, "Spotify", 12.14);
   return { db, gid, lid };

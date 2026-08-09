@@ -1,3 +1,4 @@
+import { TEST_USER } from "../helpers/test-user";
 // La classe de revenu (« principale » / « supplémentaire ») disparaît de la base. Elle
 // ne décide plus rien : ce qui distingue un revenu qui se reproduit d'un revenu
 // exceptionnel, c'est sa durée, comme pour une dépense.
@@ -33,7 +34,7 @@ afterEach(() => {
 // transaction rattachée.
 function baseGarnie(path: string) {
   const db = getDb(path);
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null });
+  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
   insertGroup(db, "a1", "Rémunération dirigeant", "in", 650, "2026-01", null);
   const gid = insertGroup(db, "a1", "Courses", "out", 400, "2026-01", null);
   insertLine(db, gid, "Boulangerie", 50);
@@ -75,8 +76,8 @@ test("garde les groupes, leurs sous-postes et les transactions en rouvrant la ba
   baseGarnie(path);
 
   const db = getDb(path);
-  const groupes = listGroups(db);
-  const txns = listTransactions(db);
+  const groupes = listGroups(db, TEST_USER);
+  const txns = listTransactions(db, TEST_USER);
   db.close();
 
   expect(groupes.map((g) => g.name).sort()).toEqual(["Courses", "Rémunération dirigeant"]);
@@ -91,7 +92,7 @@ test("supporte d'être rouverte encore et encore", () => {
   getDb(path).close();
   getDb(path).close();
   const db = getDb(path);
-  const groupes = listGroups(db);
+  const groupes = listGroups(db, TEST_USER);
   db.close();
 
   expect(groupes).toHaveLength(2);

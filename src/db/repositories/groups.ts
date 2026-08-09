@@ -67,14 +67,20 @@ export function getLineGroupId(db: Database.Database, lineId: number): number | 
   return row ? row.groupId : null;
 }
 
-export function listGroups(db: Database.Database): GroupRow[] {
+// Les groupes de l'utilisateur, c'est-à-dire ceux de ses comptes. La jointure fait le
+// filtre : un groupe posé sur un compte qui n'est pas le sien ne sort pas, et un
+// groupe dont le compte n'a pas de propriétaire ne sort chez personne.
+export function listGroups(db: Database.Database, userId: string): GroupRow[] {
   const groups = db
     .prepare(
-      `SELECT id, account_id AS accountId, name, direction, monthly_amount AS monthlyAmount,
-              start_month AS startMonth, end_month AS endMonth
-       FROM groups ORDER BY name`,
+      `SELECT g.id, g.account_id AS accountId, g.name, g.direction, g.monthly_amount AS monthlyAmount,
+              g.start_month AS startMonth, g.end_month AS endMonth
+       FROM groups g
+       JOIN accounts a ON a.id = g.account_id
+       WHERE a.user_id = ?
+       ORDER BY g.name`,
     )
-    .all() as Omit<GroupRow, "lines">[];
+    .all(userId) as Omit<GroupRow, "lines">[];
   const lineStmt = db.prepare(
     `SELECT id, name, amount, start_month AS startMonth, end_month AS endMonth
      FROM group_lines WHERE group_id = ? ORDER BY id`,

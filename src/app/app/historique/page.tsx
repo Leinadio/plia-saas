@@ -22,6 +22,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HistoryWithDetail } from "@/components/history-with-detail";
 import { MonthRangePicker } from "@/components/month-range-picker";
 
+import { requireUserId } from "@/lib/current-user";
+
 export const dynamic = "force-dynamic";
 
 const MAX_MONTHS = 24; // garde-fou : nombre de colonnes affichées au maximum
@@ -31,10 +33,11 @@ export default async function HistoriquePage({
 }: {
   searchParams: Promise<{ from?: string | string[]; to?: string | string[] }>;
 }) {
+  const userId = await requireUserId();
   const database = db();
   const currentMonth = currentMonthKey(new Date());
-  const accounts = listAccounts(database);
-  const allGroups = listGroups(database);
+  const accounts = listAccounts(database, userId);
+  const allGroups = listGroups(database, userId);
   const datedBudgets = toDatedBudgets(listBudgetAmounts(database));
   const datedLines = toDatedLineAmounts(listLineAmounts(database));
   const dismissed = listDismissedNotifications(database);
@@ -50,10 +53,10 @@ export default async function HistoriquePage({
     comment: t.comment,
   });
   // Les transactions des calculs : listTransactions écarte les non comptabilisées.
-  const allTxns: Txn[] = listTransactions(database).map(toTxn);
+  const allTxns: Txn[] = listTransactions(database, userId).map(toTxn);
   // Les non comptabilisées, à part : elles ne servent qu'à la section d'affichage
   // en bas du tableau et n'entrent dans aucun calcul.
-  const allIgnored: Txn[] = listTransactions(database, { includeIgnored: true })
+  const allIgnored: Txn[] = listTransactions(database, userId, { includeIgnored: true })
     .filter((t) => t.ignored)
     .map(toTxn);
   // À retrancher du solde bancaire avant tout calcul : sans ça, la chaîne de soldes

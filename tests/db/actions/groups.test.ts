@@ -1,3 +1,4 @@
+import { TEST_USER } from "../../helpers/test-user";
 // Teste createGroup (src/app/app/historique/actions.ts) réellement appelée, base en
 // mémoire (voir ./setup).
 import { beforeEach, expect, test, vi } from "vitest";
@@ -27,7 +28,7 @@ const budgetVu = (g: Group, month: string, dated: ReturnType<typeof toDatedBudge
 // Le Group tel que le calcul le lit, reconstruit depuis la ligne réellement écrite :
 // les bornes viennent de la base, c'est ce qu'on veut vérifier.
 const groupOf = (name: string): Group => {
-  const row = listGroups(db).find((g) => g.name === name)!;
+  const row = listGroups(db, TEST_USER).find((g) => g.name === name)!;
   expect(row).toBeDefined();
   return {
     id: row.id, accountId: "a1", name: row.name, direction: "out",
@@ -74,7 +75,7 @@ test("une enveloppe d'un seul mois commence et finit au même mois", async () =>
 test("refuse une fin antérieure au départ", async () => {
   await createGroup({ accountId: "a1", name: "Impossible", amount: 50, startMonth: "2026-08", endMonth: "2026-05", period: "range" });
 
-  expect(listGroups(db).find((g) => g.name === "Impossible")).toBeUndefined();
+  expect(listGroups(db, TEST_USER).find((g) => g.name === "Impossible")).toBeUndefined();
 });
 
 // Une dépense naît plate, donc avec un montant à elle — zéro si on n'en donne pas.
@@ -83,10 +84,10 @@ test("refuse une fin antérieure au départ", async () => {
 test("une dépense créée sans montant part de zéro", async () => {
   await createGroup({ accountId: "a1", name: "Abonnements", amount: null, startMonth: "2026-03", period: "from" });
 
-  const row = listGroups(db).find((g) => g.name === "Abonnements")!;
+  const row = listGroups(db, TEST_USER).find((g) => g.name === "Abonnements")!;
   expect(row).toBeDefined();
   expect(listBudgetAmounts(db).filter((b) => b.groupId === row.id)).toEqual([
-    { groupId: row.id, effectiveMonth: "2026-03", amount: 0, scope: "ongoing" },
+    { groupId: row.id, accountId: "", effectiveMonth: "2026-03", amount: 0, scope: "ongoing" },
   ]);
 });
 
@@ -101,12 +102,12 @@ test("une dépense créée sans montant part de zéro", async () => {
 test("un revenu se crée avec son nom, son montant et sa durée", async () => {
   await createGroup({ accountId: "a1", name: "Rémunération principale", amount: 2500, startMonth: ORIGIN_MONTH, period: "from", direction: "in" });
 
-  const row = listGroups(db).find((g) => g.name === "Rémunération principale")!;
+  const row = listGroups(db, TEST_USER).find((g) => g.name === "Rémunération principale")!;
   expect(row).toBeDefined();
   expect(row.direction).toBe("in");
   expect([row.startMonth, row.endMonth]).toEqual([ORIGIN_MONTH, null]);
   expect(listBudgetAmounts(db).filter((b) => b.groupId === row.id)).toEqual([
-    { groupId: row.id, effectiveMonth: ORIGIN_MONTH, amount: 2500, scope: "ongoing" },
+    { groupId: row.id, accountId: "", effectiveMonth: ORIGIN_MONTH, amount: 2500, scope: "ongoing" },
   ]);
 });
 
@@ -116,7 +117,7 @@ test("plusieurs revenus cohabitent sur un même compte", async () => {
   await createGroup({ accountId: "a1", name: "Rémunération dirigeant", amount: 650, startMonth: "2026-01", period: "from", direction: "in" });
   await createGroup({ accountId: "a1", name: "Rémunération extra", amount: 500, startMonth: "2026-01", period: "from", direction: "in" });
 
-  expect(listGroups(db).filter((g) => g.direction === "in").map((g) => g.name).sort()).toEqual([
+  expect(listGroups(db, TEST_USER).filter((g) => g.direction === "in").map((g) => g.name).sort()).toEqual([
     "Rémunération dirigeant", "Rémunération extra",
   ]);
 });
@@ -126,7 +127,7 @@ test("plusieurs revenus cohabitent sur un même compte", async () => {
 test("un revenu d'un seul mois ne vaut que ce mois", async () => {
   await createGroup({ accountId: "a1", name: "Don d'ami", amount: 300, startMonth: "2026-08", period: "single", direction: "in" });
 
-  const row = listGroups(db).find((g) => g.name === "Don d'ami")!;
+  const row = listGroups(db, TEST_USER).find((g) => g.name === "Don d'ami")!;
   const g: Group = {
     id: row.id, accountId: "a1", name: row.name, direction: "in",
     monthlyAmount: null, lines: [], startMonth: row.startMonth, endMonth: row.endMonth,
@@ -141,5 +142,5 @@ test("un revenu d'un seul mois ne vaut que ce mois", async () => {
 test("sans direction, le groupe créé est une dépense", async () => {
   await createGroup({ accountId: "a1", name: "Courses", amount: 400, startMonth: "2026-01", period: "from" });
 
-  expect(listGroups(db).find((g) => g.name === "Courses")!.direction).toBe("out");
+  expect(listGroups(db, TEST_USER).find((g) => g.name === "Courses")!.direction).toBe("out");
 });

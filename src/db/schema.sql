@@ -5,7 +5,15 @@ CREATE TABLE IF NOT EXISTS accounts (
   balance REAL NOT NULL DEFAULT 0,
   currency TEXT NOT NULL DEFAULT 'EUR',
   last_synced TEXT,                -- ISO datetime
-  custom_name TEXT                 -- alias utilisateur ; NULL = utiliser name
+  custom_name TEXT,                -- alias utilisateur ; NULL = utiliser name
+  -- Propriétaire du compte (user.id de Better Auth). NULL = compte hérité d'avant les
+  -- comptes utilisateurs, ou base où l'attribution n'a pas pu se décider. Pas de FK :
+  -- la table `user` n'est pas créée par ce schéma mais par le CLI de Better Auth, et
+  -- les bases de test n'en ont pas.
+  user_id TEXT,
+  -- Connexion bancaire qui a rapporté ce compte. Dit quelle session présenter pour le
+  -- rafraîchir, et quelle banque redemander quand l'autorisation expire.
+  connection_id INTEGER REFERENCES bank_connections(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS categories (
@@ -103,6 +111,10 @@ CREATE TABLE IF NOT EXISTS reconcile_ignored (
 CREATE TABLE IF NOT EXISTS budget_amounts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   group_id INTEGER NOT NULL,
+  -- Compte de la provision des non catégorisés (group_id = 0), qui n'a pas de groupe
+  -- pour lui en donner un. Chaîne vide pour un budget de groupe, jamais NULL : SQLite
+  -- tient deux NULL pour distincts dans une contrainte d'unicité.
+  account_id TEXT NOT NULL DEFAULT '',
   effective_month TEXT NOT NULL,   -- YYYY-MM
   amount REAL NOT NULL,
   -- Portée : 'ongoing' = vaut à partir de ce mois et pour les suivants ; 'once' = ne
@@ -110,7 +122,7 @@ CREATE TABLE IF NOT EXISTS budget_amounts (
   -- à partir de juillet ET faire une exception pour juillet), d'où la portée dans la
   -- clé d'unicité — sinon écrire l'une effacerait l'autre.
   scope TEXT NOT NULL DEFAULT 'ongoing',
-  UNIQUE(group_id, effective_month, scope)
+  UNIQUE(group_id, account_id, effective_month, scope)
 );
 
 -- VESTIGE : plus lue ni écrite par l'application. Un dépassement ne se tranche plus,
@@ -160,4 +172,20 @@ CREATE TABLE IF NOT EXISTS line_amounts (
 CREATE TABLE IF NOT EXISTS dismissed_notifications (
   id TEXT PRIMARY KEY,
   dismissed_at TEXT NOT NULL   -- ISO datetime
+);
+
+-- Une autorisation bancaire : une banque, une session, une expiration à 90 jours. Une
+-- ligne par banque ET par utilisateur — c'est ce qui permet d'en avoir plusieurs, là
+-- où trois réglages uniques n'en tenaient qu'une. session_id et valid_until sont nuls
+-- entre la demande et le retour de la banque.
+CREATE TABLE IF NOT EXISTS bank_connections (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id TEXT NOT NULL,
+  aspsp_name TEXT NOT NULL,
+  aspsp_country TEXT NOT NULL,
+  session_id TEXT,
+  valid_until TEXT,
+  -- Les uid de comptes rapportés par la banque, en JSON. Nécessaires à la toute
+  -- première synchronisation, quand aucun compte n'est encore en base.
+  account_uids TEXT
 );

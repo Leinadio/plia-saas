@@ -6,6 +6,24 @@ import {
   restoreNotifications as restore,
 } from "../../db/repositories/dismissed-notifications";
 import { revalidatePath } from "next/cache";
+import { requireUserId } from "../../lib/current-user";
+import { ownsAccount } from "../../db/repositories/ownership";
+
+// L'identité d'une notification commence par le compte qu'elle concerne
+// (« compte::cible::mois », cf. overspendNotifications). On ne garde donc que celles
+// dont le compte est à l'appelant : sans ce tri, acquitter chez un autre suffirait à
+// lui faire disparaître ses alertes de dépassement.
+async function siennes(ids: string[]): Promise<string[]> {
+  const userId = await requireUserId();
+  const database = db();
+  const vus = new Map<string, boolean>();
+  return ids.filter((id) => {
+    const compte = id.split("::")[0];
+    if (!compte) return false;
+    if (!vus.has(compte)) vus.set(compte, ownsAccount(database, userId, compte));
+    return vus.get(compte)!;
+  });
+}
 
 // Ferme une notification : elle ne reviendra pas. L'identité vient de
 // overspendNotifications (« compte::cible::mois ») et n'est jamais fabriquée ici : la
@@ -15,7 +33,7 @@ import { revalidatePath } from "next/cache";
 // Toutes les pages sont revalidées : le bouton vit dans l'en-tête, il est donc présent
 // partout, et son compteur doit tomber juste où qu'on soit.
 export async function dismissNotification(id: string): Promise<void> {
-  if (!id) return;
+  if (!id || (await siennes([id])).length === 0) return;
   dismiss(db(), id);
   revalidatePath("/app", "layout");
 }
@@ -25,8 +43,9 @@ export async function dismissNotification(id: string): Promise<void> {
 // ci-dessus : recomposer une identité, c'est risquer d'en acquitter une autre que celle
 // qu'on a sous les yeux.
 export async function dismissAllNotifications(ids: string[]): Promise<void> {
-  if (ids.length === 0) return;
-  dismissAll(db(), ids);
+  const miennes = await siennes(ids);
+  if (miennes.length === 0) return;
+  dismissAll(db(), miennes);
   revalidatePath("/app", "layout");
 }
 
@@ -34,7 +53,8 @@ export async function dismissAllNotifications(ids: string[]): Promise<void> {
 // coup. Acquitter n'est pas une décision définitive : rien n'a été détruit, seulement
 // marqué, et la marque se retire.
 export async function restoreNotifications(ids: string[]): Promise<void> {
-  if (ids.length === 0) return;
-  restore(db(), ids);
+  const miennes = await siennes(ids);
+  if (miennes.length === 0) return;
+  restore(db(), miennes);
   revalidatePath("/app", "layout");
 }

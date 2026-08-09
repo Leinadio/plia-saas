@@ -9,12 +9,15 @@ import { accountLabel, effectiveBalance } from "../../lib/account";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
+import { requireUserId } from "@/lib/current-user";
+
 export const dynamic = "force-dynamic";
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  const userId = await requireUserId();
   const database = db();
   const month = currentMonthKey(new Date());
-  const accounts = listAccounts(database);
+  const accounts = listAccounts(database, userId);
   // Une transaction non comptabilisée doit se comporter comme si elle n'existait
   // pas, y compris dans le solde affiché : le solde de la banque la contient, on la
   // retranche donc partout, carte du compte comme total.
@@ -23,8 +26,8 @@ export default function Dashboard() {
     (s, a) => s + effectiveBalance(a.balance, ignoredByAccount[a.id]),
     0,
   );
-  const allTxns = listTransactions(database);
-  const groups = listGroups(database);
+  const allTxns = listTransactions(database, userId);
+  const groups = listGroups(database, userId);
   const ownable = groups.map((g) => ({
     id: g.id, accountId: g.accountId, direction: g.direction,
   }));

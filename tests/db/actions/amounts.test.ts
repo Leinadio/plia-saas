@@ -42,8 +42,8 @@ test("setGroupAmount « ce mois seulement » ne vaut que pour son mois, sans rie
 
   // Une seule écriture ajoutée, à son mois, marquée ponctuelle. Rien en 2026-07.
   expect(listBudgetAmounts(db).filter((b) => b.groupId === gid)).toEqual([
-    { groupId: gid, effectiveMonth: "2026-01", amount: 300, scope: "ongoing" },
-    { groupId: gid, effectiveMonth: "2026-06", amount: 350, scope: "once" },
+    { groupId: gid, accountId: "", effectiveMonth: "2026-01", amount: 300, scope: "ongoing" },
+    { groupId: gid, accountId: "", effectiveMonth: "2026-06", amount: 350, scope: "once" },
   ]);
   const g: Group = { id: gid, accountId: "a1", name: "Courses", direction: "out", monthlyAmount: null, lines: [], startMonth: "2026-01", endMonth: null };
   const dated = toDatedBudgets(listBudgetAmounts(db));
@@ -69,7 +69,7 @@ test("setGroupAmount garde le permanent et l'exception du même mois côte à c�
 test("setUncatProvision « à partir de ce mois » vaut pour les mois suivants (groupe 0, virtuel)", async () => {
   setBudgetAmount(db, 0, "2026-01", 100);
 
-  await setUncatProvision("2026-06", 150, "ongoing");
+  await setUncatProvision("a1", "2026-06", 150, "ongoing");
 
   const dated = toDatedBudgets(listBudgetAmounts(db));
   expect((dated[0] ?? []).find((e) => e.effectiveMonth === "2026-06")?.amount).toBe(150);
@@ -79,7 +79,7 @@ test("setUncatProvision « à partir de ce mois » vaut pour les mois suivants (
 test("setUncatProvision « ce mois seulement » ne vaut que pour son mois", async () => {
   setBudgetAmount(db, 0, "2026-01", 100);
 
-  await setUncatProvision("2026-06", 150, "once");
+  await setUncatProvision("a1", "2026-06", 150, "once");
 
   const dated = toDatedBudgets(listBudgetAmounts(db));
   expect(provisionInForce(dated, "2026-06")).toBe(150);
@@ -93,7 +93,7 @@ test("removeGroupAmount refuse de supprimer le montant de départ", async () => 
 
   await removeGroupAmount(gid, "2026-01");
 
-  expect(listBudgetAmounts(db).filter((b) => b.groupId === gid)).toEqual([{ groupId: gid, effectiveMonth: "2026-01", amount: 300, scope: "ongoing" }]);
+  expect(listBudgetAmounts(db).filter((b) => b.groupId === gid)).toEqual([{ groupId: gid, accountId: "", effectiveMonth: "2026-01", amount: 300, scope: "ongoing" }]);
 });
 
 test("removeGroupAmount accepte de supprimer un changement postérieur au montant de départ", async () => {
@@ -103,7 +103,7 @@ test("removeGroupAmount accepte de supprimer un changement postérieur au montan
 
   await removeGroupAmount(gid, "2026-06");
 
-  expect(listBudgetAmounts(db).filter((b) => b.groupId === gid)).toEqual([{ groupId: gid, effectiveMonth: "2026-01", amount: 300, scope: "ongoing" }]);
+  expect(listBudgetAmounts(db).filter((b) => b.groupId === gid)).toEqual([{ groupId: gid, accountId: "", effectiveMonth: "2026-01", amount: 300, scope: "ongoing" }]);
 });
 
 test("removeLineAmount refuse de supprimer le montant de départ d'une ligne", async () => {
@@ -179,8 +179,8 @@ test("removeGroupAmount ne retire que la portée visée", async () => {
   await removeGroupAmount(gid, "2026-06", "once");
 
   expect(listBudgetAmounts(db).filter((b) => b.groupId === gid)).toEqual([
-    { groupId: gid, effectiveMonth: "2026-01", amount: 300, scope: "ongoing" },
-    { groupId: gid, effectiveMonth: "2026-06", amount: 320, scope: "ongoing" },
+    { groupId: gid, accountId: "", effectiveMonth: "2026-01", amount: 300, scope: "ongoing" },
+    { groupId: gid, accountId: "", effectiveMonth: "2026-06", amount: 320, scope: "ongoing" },
   ]);
 });
 
@@ -212,8 +212,8 @@ describe("propager un montant aux mois suivants", () => {
     await spreadGroupAmount(gid, "2026-06", 350);
 
     expect(listBudgetAmounts(db).filter((b) => b.groupId === gid)).toEqual([
-      { groupId: gid, effectiveMonth: "2026-01", amount: 300, scope: "ongoing" },
-      { groupId: gid, effectiveMonth: "2026-06", amount: 350, scope: "ongoing" },
+      { groupId: gid, accountId: "", effectiveMonth: "2026-01", amount: 300, scope: "ongoing" },
+      { groupId: gid, accountId: "", effectiveMonth: "2026-06", amount: 350, scope: "ongoing" },
     ]);
     const g: Group = { id: gid, accountId: "a1", name: "Courses", direction: "out", monthlyAmount: null, lines: [], startMonth: "2026-01", endMonth: null };
     const dated = toDatedBudgets(listBudgetAmounts(db));
@@ -234,8 +234,8 @@ describe("propager un montant aux mois suivants", () => {
     expect(budgetInForce(g, "2026-09", dated, {})).toBe(350);
     expect(budgetInForce(g, "2026-10", dated, {})).toBe(350);
     expect(listBudgetAmounts(db).filter((b) => b.groupId === gid)).toEqual([
-      { groupId: gid, effectiveMonth: "2026-01", amount: 300, scope: "ongoing" },
-      { groupId: gid, effectiveMonth: "2026-06", amount: 350, scope: "ongoing" },
+      { groupId: gid, accountId: "", effectiveMonth: "2026-01", amount: 300, scope: "ongoing" },
+      { groupId: gid, accountId: "", effectiveMonth: "2026-06", amount: 350, scope: "ongoing" },
     ]);
   });
 
@@ -265,8 +265,8 @@ describe("propager un montant aux mois suivants", () => {
     await spreadGroupAmount(gid, "2026-03", 350);
 
     expect(listBudgetAmounts(db).filter((b) => b.groupId === gid)).toEqual([
-      { groupId: gid, effectiveMonth: "2026-01", amount: 300, scope: "ongoing" },
-      { groupId: gid, effectiveMonth: "2026-03", amount: 350, scope: "ongoing" },
+      { groupId: gid, accountId: "", effectiveMonth: "2026-01", amount: 300, scope: "ongoing" },
+      { groupId: gid, accountId: "", effectiveMonth: "2026-03", amount: 350, scope: "ongoing" },
     ]);
   });
 
@@ -285,11 +285,13 @@ describe("propager un montant aux mois suivants", () => {
   });
 
   test("propage aussi la provision des non catégorisés, en écrasant ce qui suit", async () => {
-    setBudgetAmount(db, 0, "2026-01", 100);
-    setBudgetAmount(db, 0, "2026-09", 200);
-    await setUncatProvision("2026-06", 150, "once");
+    // Sur le compte "a1" : la provision appartient à un compte depuis qu'elle ne se
+    // partage plus entre tous.
+    setBudgetAmount(db, 0, "2026-01", 100, "ongoing", "a1");
+    setBudgetAmount(db, 0, "2026-09", 200, "ongoing", "a1");
+    await setUncatProvision("a1", "2026-06", 150, "once");
 
-    await spreadUncatProvision("2026-06", 150);
+    await spreadUncatProvision("a1", "2026-06", 150);
 
     const dated = toDatedBudgets(listBudgetAmounts(db));
     expect(provisionInForce(dated, "2026-06")).toBe(150);

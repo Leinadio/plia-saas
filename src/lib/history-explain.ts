@@ -130,6 +130,10 @@ export type BudgetEditInfo = {
 // « Budget dép. » de la section non catégorisés) : le mois de la case cliquée et la
 // provision en vigueur ce mois-là (pré-remplissage).
 export type UncatProvisionInfo = {
+  // Compte de la case cliquée : la provision appartient à un compte, comme la ligne
+  // « Non catégorisés » qui la porte. Sans lui, la régler sur un compte la réglerait
+  // sur tous.
+  accountId: string;
   month: string;          // mois de la case cliquée (pour le montant daté)
   currentAmount: number;  // provision en vigueur ce mois (pré-remplissage)
 };

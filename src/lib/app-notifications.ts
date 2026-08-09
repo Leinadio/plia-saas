@@ -17,18 +17,18 @@ import type { Group, Txn } from "./forecast";
 //
 // Lit la base à chaque rendu, comme le reste de l'app (pas de cache) : elle est locale
 // et tient dans quelques centaines de lignes.
-export function appNotifications(): Notification[] {
+export function appNotifications(userId: string): Notification[] {
   const database = db();
   const currentMonth = currentMonthKey(new Date());
-  const groups = listGroups(database) as Group[];
+  const groups = listGroups(database, userId) as Group[];
   const dated = toDatedBudgets(listBudgetAmounts(database));
   const datedLines = toDatedLineAmounts(listLineAmounts(database));
-  const txns: Txn[] = listTransactions(database).map((t) => ({
+  const txns: Txn[] = listTransactions(database, userId).map((t) => ({
     id: t.id, date: t.date, amount: t.amount, label: t.label, accountId: t.accountId,
     groupId: t.groupId, lineId: t.lineId, excluded: t.excluded,
   }));
   return overspendNotifications(
-    listAccounts(database).map((a) => ({
+    listAccounts(database, userId).map((a) => ({
       accountId: a.id,
       accountName: accountLabel(a),
       byMonth: computeOverspends(

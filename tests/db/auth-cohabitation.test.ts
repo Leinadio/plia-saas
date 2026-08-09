@@ -1,3 +1,4 @@
+import { TEST_USER } from "../helpers/test-user";
 // Better Auth range ses comptes dans LA MÊME base que le budget. Nos migrations
 // tournent à chaque ouverture et certaines détruisent des tables quand un marqueur de
 // version leur manque (migrateGroupsV2 efface groups, group_lines et group_keywords).
@@ -63,7 +64,7 @@ function baseGarnie(path: string) {
     `INSERT INTO account (id, accountId, providerId, userId, password, createdAt, updatedAt)
      VALUES ('a1', 'daniel@example.com', 'credential', 'u1', 'hash', '2026-08-08', '2026-08-08')`,
   ).run();
-  upsertAccount(db, { id: "b1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null });
+  upsertAccount(db, { id: "b1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
   insertGroup(db, "b1", "Courses", "out", 400, "2026-01", null);
   db.close();
 }

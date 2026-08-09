@@ -20,6 +20,8 @@ import { canRemoveBudgetChange, budgetChanges, type BudgetChange } from "../../.
 import { groupPeriod, type PeriodMode } from "../../../lib/group-period";
 import { droppedMonths, txnsPerMonth, type MonthTxnCount } from "../../../lib/period-change";
 import { currentMonthKey } from "../../../lib/current-month";
+import { requireUserId } from "../../../lib/current-user";
+import { ownsGroup, ownsLine, ownsAccount } from "../../../db/repositories/ownership";
 import { revalidatePath } from "next/cache";
 
 // --- Ce que ces actions vérifient avant d'écrire ---------------------------
@@ -53,6 +55,7 @@ export async function createGroup(input: {
   direction?: "in" | "out";
 }): Promise<void> {
   const { accountId, name, amount, period, direction = "out" } = input;
+  if (!ownsAccount(db(), await requireUserId(), accountId)) return;
   const bornes = groupPeriod(period, input.startMonth, input.endMonth);
   if (!bornes) return;
   const { startMonth, endMonth } = bornes;
@@ -141,8 +144,8 @@ function moisPerdus(
 // Les mois des transactions : celles rattachées à la cible (un élément par
 // transaction — c'est un décompte, pas un ensemble), et le premier mois de toutes,
 // qui borne le passé regardé.
-function moisDesTxns(cible: { groupId: number } | { lineId: number }): { mine: string[]; horizon: string | undefined } {
-  const toutes = listTransactions(db());
+async function moisDesTxns(cible: { groupId: number } | { lineId: number }): Promise<{ mine: string[]; horizon: string | undefined }> {
+  const toutes = listTransactions(db(), await requireUserId());
   const mois = (t: (typeof toutes)[number]) => t.date.slice(0, 7);
   return {
     mine: toutes.filter((t) => ("lineId" in cible ? t.lineId === cible.lineId : t.groupId === cible.groupId)).map(mois),
@@ -153,18 +156,20 @@ function moisDesTxns(cible: { groupId: number } | { lineId: number }): { mine: s
 export async function groupPeriodImpact(
   groupId: number, startMonth: string, endMonth: string | null,
 ): Promise<PeriodImpact> {
+  if (!ownsGroup(db(), await requireUserId(), groupId)) return { months: [] };
   const before = getGroupLifespan(db(), groupId);
   if (!before || !bornesValides(startMonth, endMonth)) return { months: [] };
-  const { mine, horizon } = moisDesTxns({ groupId });
+  const { mine, horizon } = await moisDesTxns({ groupId });
   return impact(before, { startMonth, endMonth }, mine, horizon);
 }
 
 export async function linePeriodImpact(
   lineId: number, startMonth: string, endMonth: string | null,
 ): Promise<PeriodImpact> {
+  if (!ownsLine(db(), await requireUserId(), lineId)) return { months: [] };
   const before = getLineLifespan(db(), lineId);
   if (!before || !bornesValides(startMonth, endMonth)) return { months: [] };
-  const { mine, horizon } = moisDesTxns({ lineId });
+  const { mine, horizon } = await moisDesTxns({ lineId });
   return impact(before, { startMonth, endMonth }, mine, horizon);
 }
 
@@ -186,11 +191,12 @@ export async function linePeriodImpact(
 export async function setGroupPeriod(
   groupId: number, startMonth: string, endMonth: string | null, amountForAdded?: number,
 ): Promise<void> {
+  if (!ownsGroup(db(), await requireUserId(), groupId)) return;
   if (!bornesValides(startMonth, endMonth)) return;
   const database = db();
   const before = getGroupLifespan(database, groupId);
   if (!before) return;
-  const { mine, horizon } = moisDesTxns({ groupId });
+  const { mine, horizon } = await moisDesTxns({ groupId });
   const perdus = moisPerdus(before, { startMonth, endMonth }, mine, horizon);
   setGroupLifespan(database, groupId, startMonth, endMonth);
   detachTransactionsInMonths(database, { groupId }, perdus);
@@ -203,11 +209,12 @@ export async function setGroupPeriod(
 export async function setLinePeriod(
   lineId: number, startMonth: string, endMonth: string | null, amountForAdded?: number,
 ): Promise<void> {
+  if (!ownsLine(db(), await requireUserId(), lineId)) return;
   if (!bornesValides(startMonth, endMonth)) return;
   const database = db();
   const before = getLineLifespan(database, lineId);
   if (!before) return;
-  const { mine, horizon } = moisDesTxns({ lineId });
+  const { mine, horizon } = await moisDesTxns({ lineId });
   const perdus = moisPerdus(before, { startMonth, endMonth }, mine, horizon);
   setLineLifespan(database, lineId, startMonth, endMonth);
   detachTransactionsInMonths(database, { lineId }, perdus);
@@ -227,6 +234,7 @@ async function revalidate() {
 }
 
 export async function renameGroupAction(groupId: number, name: string): Promise<void> {
+  if (!ownsGroup(db(), await requireUserId(), groupId)) return;
   const trimmed = name.trim();
   if (!trimmed) return;
   renameGroup(db(), groupId, trimmed);
@@ -234,6 +242,7 @@ export async function renameGroupAction(groupId: number, name: string): Promise<
 }
 
 export async function deleteGroupAction(groupId: number): Promise<void> {
+  if (!ownsGroup(db(), await requireUserId(), groupId)) return;
   // La FK transactions.group_id ON DELETE SET NULL renvoie les transactions en Non catégorisés.
   deleteGroup(db(), groupId);
   await revalidate();
@@ -253,6 +262,7 @@ export async function setGroupAmount(
   amount: number,
   scope: "once" | "ongoing",
 ): Promise<BudgetChange[]> {
+  if (!ownsGroup(db(), await requireUserId(), groupId)) return [];
   const database = db();
   if (isMonthKey(month) && Number.isFinite(amount) && amount >= 0) {
     setBudgetAmount(database, groupId, month, amount, scope);
@@ -275,6 +285,7 @@ export async function setGroupAmount(
 // doivent tomber ensemble. Entre elles, le budget du mois serait porté deux fois, et un
 // rendu qui s'intercalerait montrerait un état que personne n'a demandé.
 export async function spreadGroupAmount(groupId: number, month: string, amount: number): Promise<BudgetChange[]> {
+  if (!ownsGroup(db(), await requireUserId(), groupId)) return [];
   const database = db();
   if (isMonthKey(month) && Number.isFinite(amount) && amount >= 0) {
     deleteBudgetAmountsAfter(database, groupId, month);
@@ -287,18 +298,20 @@ export async function spreadGroupAmount(groupId: number, month: string, amount: 
 
 // Même chose pour la provision des non catégorisés (groupe 0), gardée à part comme
 // setUncatProvision l'est de setGroupAmount.
-export async function spreadUncatProvision(month: string, amount: number): Promise<void> {
+export async function spreadUncatProvision(accountId: string, month: string, amount: number): Promise<void> {
   if (!isMonthKey(month) || !Number.isFinite(amount) || amount < 0) return;
+  if (!ownsAccount(db(), await requireUserId(), accountId)) return;
   const database = db();
-  deleteBudgetAmountsAfter(database, 0, month);
-  deleteBudgetAmount(database, 0, month, "once");
-  setBudgetAmount(database, 0, month, amount, "ongoing");
+  deleteBudgetAmountsAfter(database, 0, month, accountId);
+  deleteBudgetAmount(database, 0, month, "once", accountId);
+  setBudgetAmount(database, 0, month, amount, "ongoing", accountId);
   revalidatePath("/app/historique");
   revalidatePath("/app");
 }
 
 // Même chose pour le montant d'une ligne de récurrent.
 export async function spreadGroupLineAmount(lineId: number, month: string, amount: number): Promise<BudgetChange[]> {
+  if (!ownsLine(db(), await requireUserId(), lineId)) return [];
   const database = db();
   if (isMonthKey(month) && Number.isFinite(amount) && amount >= 0) {
     deleteLineAmountsAfter(database, lineId, month);
@@ -319,6 +332,7 @@ export async function spreadGroupLineAmount(lineId: number, month: string, amoun
 export async function removeGroupAmount(
   groupId: number, month: string, scope: BudgetScope = "ongoing",
 ): Promise<BudgetChange[]> {
+  if (!ownsGroup(db(), await requireUserId(), groupId)) return [];
   const database = db();
   const entries = toDatedBudgets(listBudgetAmounts(database))[groupId] ?? [];
   if (isMonthKey(month) && canRemoveBudgetChange(entries, month, scope)) {
@@ -333,13 +347,15 @@ export async function removeGroupAmount(
 // virtuelle sans ligne dans `groups`) pour un mois, avec la même sémantique
 // once/ongoing que setGroupAmount, gardée comme une action à part pour ce motif.
 export async function setUncatProvision(
+  accountId: string,
   month: string,
   amount: number,
   scope: "once" | "ongoing",
 ): Promise<void> {
   if (!isMonthKey(month) || !Number.isFinite(amount) || amount < 0) return;
+  if (!ownsAccount(db(), await requireUserId(), accountId)) return;
   const database = db();
-  setBudgetAmount(database, 0, month, amount, scope);
+  setBudgetAmount(database, 0, month, amount, scope, accountId);
   revalidatePath("/app/historique");
   revalidatePath("/app");
 }
@@ -357,6 +373,7 @@ export async function addGroupLine(
   groupId: number, name: string, amount: number, month: string,
   period: PeriodMode = "from", endMonth?: string,
 ): Promise<number> {
+  if (!ownsGroup(db(), await requireUserId(), groupId)) return -1;
   const trimmed = name.trim();
   if (!trimmed || !isMonthKey(month)) return -1;
   const bornes = groupPeriod(period, month, endMonth);
@@ -373,6 +390,7 @@ export async function addGroupLine(
 // « Budget dép. » de la ligne (setGroupLineAmount), au mois de sa colonne. Aucun mois
 // n'entre ici, donc rien à valider côté calendrier.
 export async function editGroupLine(lineId: number, name: string): Promise<void> {
+  if (!ownsLine(db(), await requireUserId(), lineId)) return;
   const trimmed = name.trim();
   if (!trimmed) return;
   renameLine(db(), lineId, trimmed);
@@ -388,6 +406,7 @@ export async function editGroupLine(lineId: number, name: string): Promise<void>
 export async function setGroupLineAmount(
   lineId: number, month: string, amount: number, scope: "once" | "ongoing",
 ): Promise<BudgetChange[]> {
+  if (!ownsLine(db(), await requireUserId(), lineId)) return [];
   const database = db();
   if (isMonthKey(month) && Number.isFinite(amount) && amount >= 0) {
     setLineAmount(database, lineId, month, amount, scope);
@@ -397,6 +416,7 @@ export async function setGroupLineAmount(
 }
 
 export async function removeGroupLine(lineId: number): Promise<void> {
+  if (!ownsLine(db(), await requireUserId(), lineId)) return;
   deleteLine(db(), lineId);
   await revalidate();
 }
@@ -410,6 +430,7 @@ export async function removeGroupLine(lineId: number): Promise<void> {
 export async function removeLineAmount(
   lineId: number, month: string, scope: BudgetScope = "ongoing",
 ): Promise<BudgetChange[]> {
+  if (!ownsLine(db(), await requireUserId(), lineId)) return [];
   const database = db();
   const entries = toDatedLineAmounts(listLineAmounts(database))[lineId] ?? [];
   if (isMonthKey(month) && canRemoveBudgetChange(entries, month, scope)) {

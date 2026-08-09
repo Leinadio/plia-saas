@@ -5,7 +5,7 @@
 // juillet ET faire une exception pour juillet.
 import { expect, test } from "vitest";
 import Database from "better-sqlite3";
-import { migrateBudgetAmountScope } from "../../src/db/migrations";
+import { migrateBudgetAmountScope, migrateProvisionPerAccount } from "../../src/db/migrations";
 import { listBudgetAmounts, setBudgetAmount } from "../../src/db/repositories/budget-amounts";
 import { listLineAmounts, setLineAmount } from "../../src/db/repositories/line-amounts";
 
@@ -32,13 +32,18 @@ function dbAvant(): Database.Database {
   return db;
 }
 
+function migrer(db: Database.Database) {
+  migrateBudgetAmountScope(db);
+  migrateProvisionPerAccount(db);
+}
+
 const colonnes = (db: Database.Database, table: string) =>
   (db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).map((c) => c.name);
 
 test("ajoute la colonne de portée aux deux tables", () => {
   const db = dbAvant();
 
-  migrateBudgetAmountScope(db);
+  migrer(db);
 
   expect(colonnes(db, "budget_amounts")).toContain("scope");
   expect(colonnes(db, "line_amounts")).toContain("scope");
@@ -52,39 +57,39 @@ test("les montants déjà en base deviennent des montants permanents", () => {
   db.prepare(`INSERT INTO group_lines (id, name) VALUES (11, 'Netflix')`).run();
   db.prepare(`INSERT INTO line_amounts (line_id, effective_month, amount) VALUES (11, '2026-03', 13.99)`).run();
 
-  migrateBudgetAmountScope(db);
+  migrer(db);
 
-  expect(listBudgetAmounts(db)).toEqual([{ groupId: 1, effectiveMonth: "2026-03", amount: 250, scope: "ongoing" }]);
+  expect(listBudgetAmounts(db)).toEqual([{ groupId: 1, accountId: "", effectiveMonth: "2026-03", amount: 250, scope: "ongoing" }]);
   expect(listLineAmounts(db)).toEqual([{ lineId: 11, effectiveMonth: "2026-03", amount: 13.99, scope: "ongoing" }]);
 });
 
 test("laisse coexister les deux portées au même mois, sans que l'une écrase l'autre", () => {
   const db = dbAvant();
-  migrateBudgetAmountScope(db);
+  migrer(db);
 
   setBudgetAmount(db, 1, "2026-07", 300, "ongoing");
   setBudgetAmount(db, 1, "2026-07", 500, "once");
 
   expect(listBudgetAmounts(db)).toEqual([
-    { groupId: 1, effectiveMonth: "2026-07", amount: 300, scope: "ongoing" },
-    { groupId: 1, effectiveMonth: "2026-07", amount: 500, scope: "once" },
+    { groupId: 1, accountId: "", effectiveMonth: "2026-07", amount: 300, scope: "ongoing" },
+    { groupId: 1, accountId: "", effectiveMonth: "2026-07", amount: 500, scope: "once" },
   ]);
 });
 
 test("réécrire la même portée au même mois remplace le montant, sans doubler la ligne", () => {
   const db = dbAvant();
-  migrateBudgetAmountScope(db);
+  migrer(db);
 
   setBudgetAmount(db, 1, "2026-07", 300, "ongoing");
   setBudgetAmount(db, 1, "2026-07", 320, "ongoing");
 
-  expect(listBudgetAmounts(db)).toEqual([{ groupId: 1, effectiveMonth: "2026-07", amount: 320, scope: "ongoing" }]);
+  expect(listBudgetAmounts(db)).toEqual([{ groupId: 1, accountId: "", effectiveMonth: "2026-07", amount: 320, scope: "ongoing" }]);
 });
 
 test("même règle pour les montants de lignes", () => {
   const db = dbAvant();
   db.prepare(`INSERT INTO group_lines (id, name) VALUES (11, 'Netflix')`).run();
-  migrateBudgetAmountScope(db);
+  migrer(db);
 
   setLineAmount(db, 11, "2026-07", 10, "ongoing");
   setLineAmount(db, 11, "2026-07", 25, "once");
@@ -102,13 +107,13 @@ test("rejouer la migration ne change rien", () => {
   const db = dbAvant();
   db.prepare(`INSERT INTO budget_amounts (group_id, effective_month, amount) VALUES (1, '2026-03', 250)`).run();
 
-  migrateBudgetAmountScope(db);
+  migrer(db);
   setBudgetAmount(db, 1, "2026-07", 500, "once");
-  migrateBudgetAmountScope(db);
+  migrer(db);
 
   expect(listBudgetAmounts(db)).toEqual([
-    { groupId: 1, effectiveMonth: "2026-03", amount: 250, scope: "ongoing" },
-    { groupId: 1, effectiveMonth: "2026-07", amount: 500, scope: "once" },
+    { groupId: 1, accountId: "", effectiveMonth: "2026-03", amount: 250, scope: "ongoing" },
+    { groupId: 1, accountId: "", effectiveMonth: "2026-07", amount: 500, scope: "once" },
   ]);
 });
 
@@ -116,11 +121,11 @@ test("rejouer la migration ne change rien", () => {
 // emporter le montant permanent qui commence le même mois.
 test("supprimer une portée laisse l'autre en place", () => {
   const db = dbAvant();
-  migrateBudgetAmountScope(db);
+  migrer(db);
   setBudgetAmount(db, 1, "2026-07", 300, "ongoing");
   setBudgetAmount(db, 1, "2026-07", 500, "once");
 
   db.prepare(`DELETE FROM budget_amounts WHERE group_id = 1 AND effective_month = '2026-07' AND scope = 'once'`).run();
 
-  expect(listBudgetAmounts(db)).toEqual([{ groupId: 1, effectiveMonth: "2026-07", amount: 300, scope: "ongoing" }]);
+  expect(listBudgetAmounts(db)).toEqual([{ groupId: 1, accountId: "", effectiveMonth: "2026-07", amount: 300, scope: "ongoing" }]);
 });

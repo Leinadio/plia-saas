@@ -1,3 +1,4 @@
+import { TEST_USER } from "../helpers/test-user";
 // La nature d'un groupe (« enveloppe » / « récurrent ») disparaît de la base. Elle ne
 // décidait plus rien : c'est le fait d'avoir des sous-postes qui commande le budget, le
 // dépassement, la prévision et le rattachement.
@@ -30,7 +31,7 @@ afterEach(() => {
 // Une base garnie comme la vraie : un compte, une dépense, un sous-poste.
 function baseGarnie(path: string) {
   const db = getDb(path);
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null });
+  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
   const gid = insertGroup(db, "a1", "Courses", "out", 400, "2026-01", null);
   insertLine(db, gid, "Boulangerie", 50);
   db.close();
@@ -54,7 +55,7 @@ test("garde les groupes et leurs sous-postes en rouvrant la base", () => {
   baseGarnie(path);
 
   const db = getDb(path); // deuxième passage complet des migrations
-  const groupes = listGroups(db);
+  const groupes = listGroups(db, TEST_USER);
   db.close();
 
   expect(groupes.map((g) => g.name)).toEqual(["Courses"]);
@@ -69,7 +70,7 @@ test("supporte d'être rouverte encore et encore", () => {
   getDb(path).close();
   getDb(path).close();
   const db = getDb(path);
-  const groupes = listGroups(db);
+  const groupes = listGroups(db, TEST_USER);
   db.close();
 
   expect(groupes).toHaveLength(1);

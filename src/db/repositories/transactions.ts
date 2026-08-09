@@ -56,8 +56,11 @@ export function sumIgnoredByAccount(db: Database.Database): Record<string, numbe
 // de calcul (tableau de bord, prévisionnel, historique) les ignorent ainsi sans
 // rien avoir à filtrer. Seul l'écran Transactions passe includeIgnored pour
 // pouvoir les afficher et les réactiver.
+// Les transactions de l'utilisateur, c'est-à-dire celles de ses comptes. Le filtre
+// passe par la jointure sur accounts, déjà présente pour l'étiquette du compte.
 export function listTransactions(
   db: Database.Database,
+  userId: string,
   filter?: { month?: string; includeIgnored?: boolean },
 ): TxnView[] {
   let sql =
@@ -67,9 +70,10 @@ export function listTransactions(
             t.account_id AS accountId,
             COALESCE(COALESCE(a.custom_name, a.name) || ' ' || a.iban_masked, COALESCE(a.custom_name, a.name)) AS accountLabel
      FROM transactions t
-     LEFT JOIN accounts a ON a.id = t.account_id`;
-  const clauses: string[] = [];
-  const params: Record<string, string | number> = {};
+     JOIN accounts a ON a.id = t.account_id`;
+  // Le propriétaire d'abord : c'est la seule clause qui n'est jamais optionnelle.
+  const clauses: string[] = ["a.user_id = @userId"];
+  const params: Record<string, string | number> = { userId };
   if (filter?.month) {
     clauses.push("substr(t.date,1,7) = @month");
     params.month = filter.month;
@@ -216,8 +220,8 @@ function dayDiff(a: string, b: string): number {
 
 // Paires (manuelle, synchronisée) probablement identiques : même compte, même
 // montant, dates à windowDays près, non déjà écartées.
-export function findReconcileSuggestions(db: Database.Database, windowDays = 5): ReconcileSuggestion[] {
-  const all = listTransactions(db);
+export function findReconcileSuggestions(db: Database.Database, userId: string, windowDays = 5): ReconcileSuggestion[] {
+  const all = listTransactions(db, userId);
   const manuals = all.filter((t) => t.manual);
   const synced = all.filter((t) => !t.manual);
   const ignored = new Set(

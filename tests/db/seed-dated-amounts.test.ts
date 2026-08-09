@@ -1,3 +1,4 @@
+import { TEST_USER } from "../helpers/test-user";
 import { expect, test } from "vitest";
 import Database from "better-sqlite3";
 import { getDb } from "../../src/db/index";
@@ -11,7 +12,7 @@ import { listLineAmounts, setLineAmount } from "../../src/db/repositories/line-a
 // et on rappelle la migration pour vérifier l'idempotence.
 function seed() {
   const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null });
+  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
   return db;
 }
 
@@ -19,7 +20,7 @@ test("une enveloppe créée reçoit son montant comme première entrée datée",
   const db = seed();
   const gid = insertGroup(db, "a1", "Activités", "out", 250, "2026-03", null);
   migrateSeedDatedAmounts(db);
-  expect(listBudgetAmounts(db)).toEqual([{ groupId: gid, effectiveMonth: "2026-03", amount: 250, scope: "ongoing" }]);
+  expect(listBudgetAmounts(db)).toEqual([{ groupId: gid, accountId: "", effectiveMonth: "2026-03", amount: 250, scope: "ongoing" }]);
 });
 
 test("une ligne de récurrent reçoit son montant au mois de départ de son groupe", () => {
@@ -39,7 +40,7 @@ test("un groupe sans mois de départ retombe sur 2000-01", () => {
   ).run();
   const gid = db.prepare(`SELECT id FROM groups WHERE name = 'Vieux'`).get() as { id: number };
   migrateSeedDatedAmounts(db);
-  expect(listBudgetAmounts(db)).toContainEqual({ groupId: gid.id, effectiveMonth: "2000-01", amount: 42, scope: "ongoing" });
+  expect(listBudgetAmounts(db)).toContainEqual({ groupId: gid.id, accountId: "", effectiveMonth: "2000-01", amount: 42, scope: "ongoing" });
 });
 
 test("une enveloppe sans montant reçoit 0", () => {
@@ -49,7 +50,7 @@ test("une enveloppe sans montant reçoit 0", () => {
   ).run();
   const gid = db.prepare(`SELECT id FROM groups WHERE name = 'Vide'`).get() as { id: number };
   migrateSeedDatedAmounts(db);
-  expect(listBudgetAmounts(db)).toContainEqual({ groupId: gid.id, effectiveMonth: "2026-01", amount: 0, scope: "ongoing" });
+  expect(listBudgetAmounts(db)).toContainEqual({ groupId: gid.id, accountId: "", effectiveMonth: "2026-01", amount: 0, scope: "ongoing" });
 });
 
 test("la migration n'écrase pas une entrée déjà posée au mois de départ", () => {
@@ -57,7 +58,7 @@ test("la migration n'écrase pas une entrée déjà posée au mois de départ", 
   const gid = insertGroup(db, "a1", "Activités", "out", 250, "2026-03", null);
   setBudgetAmount(db, gid, "2026-03", 999);
   migrateSeedDatedAmounts(db);
-  expect(listBudgetAmounts(db)).toEqual([{ groupId: gid, effectiveMonth: "2026-03", amount: 999, scope: "ongoing" }]);
+  expect(listBudgetAmounts(db)).toEqual([{ groupId: gid, accountId: "", effectiveMonth: "2026-03", amount: 999, scope: "ongoing" }]);
 });
 
 test("la migration est idempotente", () => {
@@ -74,7 +75,7 @@ test("la provision des non catégorisés (groupe 0) n'est pas touchée", () => {
   const db = seed();
   setBudgetAmount(db, 0, "2026-07", 30);
   migrateSeedDatedAmounts(db);
-  expect(listBudgetAmounts(db)).toEqual([{ groupId: 0, effectiveMonth: "2026-07", amount: 30, scope: "ongoing" }]);
+  expect(listBudgetAmounts(db)).toEqual([{ groupId: 0, accountId: "", effectiveMonth: "2026-07", amount: 30, scope: "ongoing" }]);
 });
 
 // Task 7, relecture : la migration ne doit plus rejouer sur une ligne (ou un

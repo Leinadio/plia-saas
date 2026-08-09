@@ -629,8 +629,10 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
 // donc leur somme aussi) : toujours cliquable. Pour les non catégorisés, budget et
 // balance sont toujours à 0 : l'invariant ne tient que si dépensé == 0, donc en
 // pratique non cliquable (comme documenté au Task 3 pour ce cas).
-function SectionTotalsCells({ sec, months, currentMonth, onSelect, solde, planPrevu, planDepass, uncatInSec, selCellKey, prevDisp, noticeOf, only }: OnlyMonth & {
+function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, solde, planPrevu, planDepass, uncatInSec, selCellKey, prevDisp, noticeOf, only }: OnlyMonth & {
   sec: HistorySection;
+  // Le compte de la colonne : la provision des non catégorisés lui appartient.
+  accountId: string;
   months: string[];
   currentMonth: string;
   onSelect?: (d: CellDetail) => void;
@@ -677,7 +679,7 @@ function SectionTotalsCells({ sec, months, currentMonth, onSelect, solde, planPr
           title: "Non catégorisés",
           nodes: [],
           result: 0,
-          uncatProvision: { month, currentAmount: c.budgeted },
+          uncatProvision: { accountId, month, currentAmount: c.budgeted },
         };
 
         const depNodes = isUncat
@@ -1750,8 +1752,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
           <NameCell indent={0} expandable={hasTxns} expanded={uOpen} onToggle={hasTxns ? () => toggleIn(uKey, uMonth) : undefined}>
             <span className="min-w-0 truncate">Non catégorisés</span>
           </NameCell>
-          <SectionTotalsCells
-            sec={sec}
+          <SectionTotalsCells accountId={accountId}             sec={sec}
             months={months}
             currentMonth={currentMonth}
             onSelect={onSelect}
@@ -2176,7 +2177,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 <TableCell className="h-px p-0">
                   <FirstColBox>Total Dépenses</FirstColBox>
                 </TableCell>
-                <SectionTotalsCells sec={sec} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} only={mi} />
+                <SectionTotalsCells accountId={accountId} sec={sec} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} only={mi} />
               </TableRow>
               {renderSectionResteRow("expense", "Balance dépenses", secs, mi)}
             </Fragment>

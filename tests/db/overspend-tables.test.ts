@@ -17,15 +17,15 @@ test("budget_amounts : upsert et lecture triée", () => {
   setBudgetAmount(db, 1, "2026-10", 450);
   setBudgetAmount(db, 1, "2026-08", 410); // upsert : remplace le montant d'août
   expect(listBudgetAmounts(db)).toEqual([
-    { groupId: 1, effectiveMonth: "2026-08", amount: 410, scope: "ongoing" },
-    { groupId: 1, effectiveMonth: "2026-10", amount: 450, scope: "ongoing" },
+    { groupId: 1, accountId: "", effectiveMonth: "2026-08", amount: 410, scope: "ongoing" },
+    { groupId: 1, accountId: "", effectiveMonth: "2026-10", amount: 450, scope: "ongoing" },
   ]);
 });
 
 test("budget_amounts : provision groupe 0 (non catégorisés) sans FK", () => {
   const db = freshDb();
   setBudgetAmount(db, 0, "2026-08", 400);
-  expect(listBudgetAmounts(db)).toEqual([{ groupId: 0, effectiveMonth: "2026-08", amount: 400, scope: "ongoing" }]);
+  expect(listBudgetAmounts(db)).toEqual([{ groupId: 0, accountId: "", effectiveMonth: "2026-08", amount: 400, scope: "ongoing" }]);
 });
 
 // La colonne `writes` est une colonne libre (TEXT), pas contrainte par le schéma :

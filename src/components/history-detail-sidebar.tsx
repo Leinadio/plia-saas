@@ -611,7 +611,7 @@ function UncatProvisionBlock({ info, onClose }: { info: UncatProvisionInfo; onCl
               variant="secondary"
               disabled={busy || !(saisi >= 0)}
               onClick={async () => {
-                await run(() => setUncatProvision(info.month, saisi, "once"));
+                await run(() => setUncatProvision(info.accountId, info.month, saisi, "once"));
                 setApplique(saisi);
               }}
             >
@@ -630,7 +630,7 @@ function UncatProvisionBlock({ info, onClose }: { info: UncatProvisionInfo; onCl
                   size="sm"
                   disabled={busy}
                   onClick={async () => {
-                    await run(() => spreadUncatProvision(info.month, applique));
+                    await run(() => spreadUncatProvision(info.accountId, info.month, applique));
                     setApplique(null);
                     toastSucces("Montant appliqué aux mois suivants");
                   }}

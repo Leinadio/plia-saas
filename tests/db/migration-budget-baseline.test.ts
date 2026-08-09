@@ -1,3 +1,4 @@
+import { TEST_USER } from "../helpers/test-user";
 // Ferme la boucle entre le SQL de production et les chiffres affichés. La
 // conception (docs/superpowers/specs/2026-07-29-budgets-dates-design.md, section
 // Tests, point 1) exige : « sur une base peuplée comme la vraie, les budgets
@@ -55,7 +56,7 @@ const ATTENDU_LIGNES: Record<string, number[]> = {
 
 test("les budgets calculés par computeHistory sont égaux au centime avant/après la vraie migration, sur une base peuplée comme la vraie", () => {
   const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null });
+  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
 
   // Semé dans les ANCIENNES colonnes seulement (monthly_amount / group_lines.amount),
   // comme une vraie base avant reprise : ces fonctions n'écrivent jamais
@@ -94,10 +95,10 @@ test("les budgets calculés par computeHistory sont égaux au centime avant/apr�
   // La vraie migration, réellement appelée (pas seedDated, sa réécriture TypeScript).
   migrateSeedDatedAmounts(db);
 
-  const groups = listGroups(db).filter((g) => g.accountId === "a1") as unknown as Group[];
+  const groups = listGroups(db, TEST_USER).filter((g) => g.accountId === "a1") as unknown as Group[];
   const dated = toDatedBudgets(listBudgetAmounts(db));
   const datedLines = toDatedLineAmounts(listLineAmounts(db));
-  const txns: Txn[] = listTransactions(db).map((t) => ({
+  const txns: Txn[] = listTransactions(db, TEST_USER).map((t) => ({
     id: t.id,
     date: t.date,
     amount: t.amount,

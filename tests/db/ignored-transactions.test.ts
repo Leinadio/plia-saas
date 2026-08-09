@@ -1,3 +1,4 @@
+import { TEST_USER } from "../helpers/test-user";
 import { expect, test } from "vitest";
 import Database from "better-sqlite3";
 import { getDb } from "../../src/db/index";
@@ -8,7 +9,7 @@ import { insertGroup } from "../../src/db/repositories/groups";
 
 function seed() {
   const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null });
+  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
   upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-07-01", amount: -30, label: "COURSES", category_id: null });
   upsertTransaction(db, { id: "t2", account_id: "a1", date: "2026-07-02", amount: -70, label: "REMBOURSEMENT PRET AMI", category_id: null });
   return db;
@@ -30,13 +31,13 @@ test("migrateTransactionIgnored ajoute la colonne à une base existante, sans to
 test("listTransactions masque les transactions non comptabilisées par défaut", () => {
   const db = seed();
   setTransactionIgnored(db, "t2", true);
-  expect(listTransactions(db).map((t) => t.id)).toEqual(["t1"]);
+  expect(listTransactions(db, TEST_USER).map((t) => t.id)).toEqual(["t1"]);
 });
 
 test("listTransactions les rend avec includeIgnored, marquées ignored", () => {
   const db = seed();
   setTransactionIgnored(db, "t2", true);
-  const rows = listTransactions(db, { includeIgnored: true });
+  const rows = listTransactions(db, TEST_USER, { includeIgnored: true });
   expect(rows).toHaveLength(2);
   expect(rows.find((t) => t.id === "t2")!.ignored).toBe(true);
   expect(rows.find((t) => t.id === "t1")!.ignored).toBe(false);
@@ -46,12 +47,12 @@ test("setTransactionIgnored est réversible", () => {
   const db = seed();
   setTransactionIgnored(db, "t2", true);
   setTransactionIgnored(db, "t2", false);
-  expect(listTransactions(db).map((t) => t.id)).toEqual(["t2", "t1"]);
+  expect(listTransactions(db, TEST_USER).map((t) => t.id)).toEqual(["t2", "t1"]);
 });
 
 test("une transaction non comptabilisée ne pèse plus sur le total du mois", () => {
   const db = seed();
-  const total = () => listTransactions(db, { month: "2026-07" }).reduce((s, t) => s + t.amount, 0);
+  const total = () => listTransactions(db, TEST_USER, { month: "2026-07" }).reduce((s, t) => s + t.amount, 0);
   expect(total()).toBe(-100);
   setTransactionIgnored(db, "t2", true);
   expect(total()).toBe(-30);
@@ -63,12 +64,12 @@ test("une transaction non comptabilisée garde son rattachement de groupe", () =
   setTransactionGroup(db, "t2", gid);
   setTransactionIgnored(db, "t2", true);
   setTransactionIgnored(db, "t2", false);
-  expect(listTransactions(db).find((t) => t.id === "t2")!.groupId).toBe(gid);
+  expect(listTransactions(db, TEST_USER).find((t) => t.id === "t2")!.groupId).toBe(gid);
 });
 
 test("sumIgnoredByAccount totalise les montants hors calcul par compte, et rien d'autre", () => {
   const db = seed();
-  upsertAccount(db, { id: "a2", name: "CIC 2", iban_masked: null, balance: 0, currency: "EUR", last_synced: null });
+  upsertAccount(db, { id: "a2", name: "CIC 2", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
   upsertTransaction(db, { id: "t3", account_id: "a2", date: "2026-07-03", amount: 3800, label: "VIR DGFIP", category_id: null });
   upsertTransaction(db, { id: "t4", account_id: "a2", date: "2026-07-04", amount: -25, label: "PEAGE", category_id: null });
 

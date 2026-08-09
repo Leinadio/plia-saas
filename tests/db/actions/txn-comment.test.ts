@@ -1,3 +1,4 @@
+import { TEST_USER } from "../../helpers/test-user";
 // Poser un commentaire sur une transaction, via l'action serveur réellement
 // appelée, base en mémoire (voir ./setup).
 import { beforeEach, expect, test } from "vitest";
@@ -15,7 +16,7 @@ beforeEach(() => {
   });
 });
 
-const t1 = () => listTransactions(db).find((t) => t.id === "t1")!;
+const t1 = () => listTransactions(db, TEST_USER).find((t) => t.id === "t1")!;
 
 test("le commentaire s'enregistre sans toucher au libellé de la banque", async () => {
   await setComment("t1", "Courses du week-end, remboursé par Marie");

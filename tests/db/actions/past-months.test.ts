@@ -98,7 +98,7 @@ describe("setUncatProvision", () => {
   test("écrit dans un mois passé", async () => {
     setBudgetAmount(db, 0, "2026-01", 100);
 
-    await setUncatProvision("2026-03", 150, "ongoing");
+    await setUncatProvision("a1", "2026-03", 150, "ongoing");
 
     expect(amountsOf(0)).toEqual([["2026-01", 100], ["2026-03", 150]]);
   });
@@ -106,7 +106,7 @@ describe("setUncatProvision", () => {
   test("accepte le mois courant", async () => {
     setBudgetAmount(db, 0, "2026-01", 100);
 
-    await setUncatProvision("2026-07", 150, "ongoing");
+    await setUncatProvision("a1", "2026-07", 150, "ongoing");
 
     expect(amountsOf(0)).toEqual([["2026-01", 100], ["2026-07", 150]]);
   });
@@ -114,7 +114,7 @@ describe("setUncatProvision", () => {
   test("refuse un mois mal formé", async () => {
     setBudgetAmount(db, 0, "2026-01", 100);
 
-    await setUncatProvision("2026", 150, "ongoing");
+    await setUncatProvision("a1", "2026", 150, "ongoing");
 
     expect(amountsOf(0)).toEqual([["2026-01", 100]]);
   });

@@ -1,3 +1,4 @@
+import { TEST_USER } from "../../helpers/test-user";
 import { vi } from "vitest";
 import type Database from "better-sqlite3";
 import { getDb } from "../../../src/db/index";
@@ -15,7 +16,14 @@ import { upsertAccount } from "../../../src/db/repositories/accounts";
 // seule fois, au chargement du module ; c'est pourquoi la base courante est un champ
 // réassigné (ctx.db = ...) à chaque test, jamais une variable module-level qu'on
 // réassignerait directement (la factory garderait alors sa valeur `null` d'origine).
-export const ctx: { db: Database.Database | null } = { db: null };
+export const ctx: { db: Database.Database | null; userId: string } = { db: null, userId: TEST_USER };
+
+// Change l'utilisateur que les actions croient voir. Sert aux tests qui vérifient
+// qu'un intrus ne peut pas écrire chez quelqu'un d'autre : c'est exactement ce que
+// ferait un appelant connecté qui poste un numéro qui n'est pas le sien.
+export function asUser(id: string): void {
+  ctx.userId = id;
+}
 
 // Mois « courant » de tous les tests d'actions. Plusieurs suites raisonnent sur la
 // position d'un mois par rapport à aujourd'hui : sans horloge figée, ces tests
@@ -26,6 +34,12 @@ export const ctx: { db: Database.Database | null } = { db: null };
 export const NOW_MONTH = "2025-01";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+// L'utilisateur de la requête. En production il vient de la session, donc des en-têtes
+// HTTP, que Vitest n'a pas : sans ce mock, toute action qui lit les transactions
+// tomberait sur `headers()` hors du contexte d'une requête Next. Il rend le même
+// propriétaire que celui posé sur le compte "a1" par freshDb, sinon les actions
+// travailleraient sur une base qu'elles ne voient pas.
+vi.mock("../../../src/lib/current-user", () => ({ requireUserId: async () => ctx.userId }));
 vi.mock("../../../src/db/index", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../../../src/db/index")>();
   return { ...actual, db: () => ctx.db! };
@@ -59,7 +73,8 @@ export function freshDb(): Database.Database {
   vi.useFakeTimers({ toFake: ["Date"] });
   vi.setSystemTime(new Date(`${NOW_MONTH}-05T12:00:00Z`));
   const database = getDb(":memory:");
-  upsertAccount(database, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null });
+  upsertAccount(database, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
   ctx.db = database;
+  ctx.userId = TEST_USER;
   return database;
 }

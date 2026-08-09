@@ -1,74 +1,76 @@
 import { db } from "../../../db/index";
-import { getSetting } from "../../../db/repositories/settings";
 import { listAccounts } from "../../../db/repositories/accounts";
 import { accountDisplayName } from "../../../lib/account";
-import { saveThreshold, renameAccount } from "./actions";
-import { ConnectButtons } from "./ConnectButtons";
+import { renameAccount } from "./actions";
+import { BankPicker } from "@/components/bank-picker";
+import { SyncNowButton } from "@/components/sync-now-button";
+import { listConnections } from "../../../db/repositories/bank-connections";
+import { etatConnexion } from "@/lib/connexion-etat";
 import { DeleteAccountButton } from "./DeleteAccountButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+import { requireUserId } from "@/lib/current-user";
+
 export const dynamic = "force-dynamic";
 
-function daysUntil(iso: string | null): number | null {
-  if (!iso) return null;
-  return Math.ceil((new Date(iso).getTime() - Date.now()) / (24 * 3600 * 1000));
-}
-
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const userId = await requireUserId();
   const database = db();
-  const validUntil = getSetting(database, "consent_valid_until");
-  const days = daysUntil(validUntil);
-  const threshold = getSetting(database, "balance_threshold") ?? "";
-  const accounts = listAccounts(database);
+  const accounts = listAccounts(database, userId);
+  const connexions = listConnections(database, userId);
 
   return (
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>Connexion bancaire</CardTitle>
+          <CardTitle>Banques connectées</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col gap-3">
-          <ConnectButtons />
-          {days !== null && (
-            <Badge variant={days < 7 ? "destructive" : "secondary"}>
-              Reconnexion à CIC nécessaire dans {days} jour(s).
-            </Badge>
+        <CardContent className="flex flex-col gap-4">
+          {/* Une carte par banque, avec son compte à rebours. Une autorisation vaut
+              90 jours et la banque referme l'accès sans prévenir : sans cette mention,
+              la synchronisation cesserait un matin sans qu'on sache pourquoi, ni
+              laquelle des banques est en cause. */}
+          {connexions.length === 0 && (
+            <p className="text-muted-foreground text-sm">Aucune banque connectée pour l&apos;instant.</p>
           )}
-          {accounts.length > 0 && (
-            <ul className="text-muted-foreground list-inside list-disc text-sm">
-              {accounts.map((a) => (
-                <li key={a.id}>
-                  {accountDisplayName(a)} — dernière synchro : {a.last_synced ?? "jamais"}
-                </li>
-              ))}
-            </ul>
-          )}
+          {connexions.map((cx) => {
+            const etat = etatConnexion(cx.validUntil, new Date());
+            const comptes = accounts.filter((a) => a.connection_id === cx.id);
+            return (
+              <div key={cx.id} className="flex flex-col gap-2 rounded-md border p-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium">{cx.aspspName}</span>
+                  {etat.etat === "valide" && (
+                    <Badge variant="secondary">Valide encore {etat.jours} jour(s)</Badge>
+                  )}
+                  {etat.etat === "bientot" && (
+                    <Badge variant="destructive">À reconnecter dans {etat.jours} jour(s)</Badge>
+                  )}
+                  {etat.etat === "expiree" && <Badge variant="destructive">Autorisation expirée</Badge>}
+                  {etat.etat === "inconnue" && <Badge variant="outline">Jamais autorisée</Badge>}
+                </div>
+                {comptes.length > 0 && (
+                  <ul className="text-muted-foreground list-inside list-disc text-sm">
+                    {comptes.map((a) => (
+                      <li key={a.id}>
+                        {accountDisplayName(a)} — dernière synchro : {a.last_synced ?? "jamais"}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
+          <div className="flex flex-wrap items-center gap-2">
+            <BankPicker />
+            <SyncNowButton />
+          </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Seuil d'alerte de solde</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form action={saveThreshold} className="flex items-center gap-2">
-            <Input
-              type="number"
-              name="threshold"
-              step="0.01"
-              defaultValue={threshold}
-              placeholder="ex. 200"
-              className="max-w-40"
-            />
-            <Button type="submit" size="sm">
-              Enregistrer
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
 
       {accounts.length > 0 && (
         <Card>

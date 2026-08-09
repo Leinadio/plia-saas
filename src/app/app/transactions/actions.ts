@@ -1,5 +1,7 @@
 "use server";
 import { db } from "../../../db/index";
+import { requireUserId } from "../../../lib/current-user";
+import { ownsGroup, ownsLine, ownsTransaction, ownsAccount } from "../../../db/repositories/ownership";
 import {
   setTransactionGroup,
   setTransactionIgnored,
@@ -38,10 +40,16 @@ export async function setGroup(
   groupId: number | null,
   lineId: number | null = null,
 ) {
+  // Deux choses à vérifier, pas une : la transaction qu'on déplace, et la destination.
+  // Rattacher SA transaction à la dépense d'un autre la ferait compter chez lui.
+  const userId = await requireUserId();
+  if (!ownsTransaction(db(), userId, txnId)) return;
   const gid = groupId !== null && Number.isFinite(groupId) ? groupId : null;
   const lid = lineId !== null && Number.isFinite(lineId) ? lineId : null;
   const database = db();
   if (gid !== null) {
+    if (!ownsGroup(database, userId, gid)) return;
+    if (lid !== null && !ownsLine(database, userId, lid)) return;
     const lignes = countGroupLines(database, gid);
     if (lignes === null || !canAttachToGroup(lignes > 0, lid)) return;
     // Une ligne d'un AUTRE groupe écrirait un couple (groupe, ligne) incohérent, que
@@ -64,12 +72,14 @@ export async function setGroup(
 // retiré : normalizeComment en fait un null, pour que la base dise « aucun
 // commentaire » plutôt qu'un commentaire vide.
 export async function setComment(txnId: string, comment: string) {
+  if (!ownsTransaction(db(), await requireUserId(), txnId)) return;
   setTransactionComment(db(), txnId, normalizeComment(comment));
   revalidateAll();
 }
 
 // Retire (ou remet) une transaction de tous les calculs.
 export async function setIgnored(txnId: string, ignored: boolean) {
+  if (!ownsTransaction(db(), await requireUserId(), txnId)) return;
   setTransactionIgnored(db(), txnId, ignored);
   revalidateAll();
 }
@@ -85,11 +95,15 @@ function groupeTenable(form: ManualFormInput): number | null {
 
 export async function addTransaction(form: ManualFormInput) {
   if (!isValidManualForm(form)) return;
+  const userId = await requireUserId();
+  if (!ownsAccount(db(), userId, form.accountId)) return;
+  if (form.groupId !== null && !ownsGroup(db(), userId, form.groupId)) return;
   insertManualTransaction(db(), { ...toManualInput(form), groupId: groupeTenable(form) });
   revalidateAll();
 }
 
 export async function editTransaction(id: string, form: ManualFormInput) {
+  if (!ownsTransaction(db(), await requireUserId(), id)) return;
   if (!isValidManualForm(form)) return;
   const { accountId: _accountId, ...rest } = toManualInput(form);
   updateManualTransaction(db(), id, { ...rest, groupId: groupeTenable(form) });
@@ -97,16 +111,21 @@ export async function editTransaction(id: string, form: ManualFormInput) {
 }
 
 export async function removeTransaction(id: string) {
+  if (!ownsTransaction(db(), await requireUserId(), id)) return;
   deleteManualTransaction(db(), id);
   revalidateAll();
 }
 
 export async function mergeTransaction(syncedId: string, manualId: string) {
+  const userId = await requireUserId();
+  if (!ownsTransaction(db(), userId, syncedId) || !ownsTransaction(db(), userId, manualId)) return;
   mergeTransactions(db(), { syncedId, manualId });
   revalidateAll();
 }
 
 export async function ignoreMatch(manualId: string, syncedId: string) {
+  const userId = await requireUserId();
+  if (!ownsTransaction(db(), userId, manualId) || !ownsTransaction(db(), userId, syncedId)) return;
   ignoreMatchRepo(db(), manualId, syncedId);
   revalidateAll();
 }
