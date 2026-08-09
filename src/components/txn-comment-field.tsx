@@ -2,7 +2,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { MessageSquarePlus } from "lucide-react";
-import { setComment } from "@/app/transactions/actions";
+import { setComment } from "@/app/app/transactions/actions";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { hasComment } from "@/lib/txn-comment";

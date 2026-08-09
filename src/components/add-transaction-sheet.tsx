@@ -2,7 +2,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Pencil } from "lucide-react";
-import { addTransaction, editTransaction } from "@/app/transactions/actions";
+import { addTransaction, editTransaction } from "@/app/app/transactions/actions";
 import type { ManualFormInput } from "@/lib/manual-txn";
 import { groupsForMonth } from "@/lib/group-options";
 import { Button } from "@/components/ui/button";

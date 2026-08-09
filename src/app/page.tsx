@@ -1,94 +1,34 @@
-import { db } from "../db/index";
-import { listAccounts } from "../db/repositories/accounts";
-import { listTransactions, sumIgnoredByAccount } from "../db/repositories/transactions";
-import { listGroups } from "../db/repositories/groups";
-import { resolveOwnership } from "../lib/ownership";
-import { formatEur, monthKey } from "../lib/money";
-import { currentMonthKey } from "../lib/current-month";
-import { accountLabel, effectiveBalance } from "../lib/account";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import Link from "next/link";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
 
+// La page publique. Elle occupe la racine depuis que l'application est passée sous
+// /app, et c'est ici que viendra la présentation du produit. Pour l'instant elle ne
+// fait qu'une chose utile : envoyer chacun là où il doit aller.
+//
+// Volontairement nue. Une landing se conçoit, elle ne s'improvise pas au détour d'un
+// déménagement de routes.
 export const dynamic = "force-dynamic";
 
-export default function Dashboard() {
-  const database = db();
-  const month = currentMonthKey(new Date());
-  const accounts = listAccounts(database);
-  // Une transaction non comptabilisée doit se comporter comme si elle n'existait
-  // pas, y compris dans le solde affiché : le solde de la banque la contient, on la
-  // retranche donc partout, carte du compte comme total.
-  const ignoredByAccount = sumIgnoredByAccount(database);
-  const balance = accounts.reduce(
-    (s, a) => s + effectiveBalance(a.balance, ignoredByAccount[a.id]),
-    0,
-  );
-  const allTxns = listTransactions(database);
-  const groups = listGroups(database);
-  const ownable = groups.map((g) => ({
-    id: g.id, accountId: g.accountId, direction: g.direction,
-  }));
-  const groupCell = (t: (typeof allTxns)[number]) => {
-    const res = resolveOwnership(
-      { id: t.id, date: t.date, amount: t.amount, label: t.label, accountId: t.accountId, groupId: t.groupId, excluded: t.excluded },
-      ownable,
-    );
-    if (res.status === "manual") return groups.find((g) => g.id === res.groupId)?.name ?? "";
-    return "";
-  };
-
-  const monthSpend = allTxns
-    .filter((t) => monthKey(t.date) === month && t.amount < 0)
-    .reduce((s, t) => s + Math.abs(t.amount), 0);
+export default async function LandingPage() {
+  // Déjà connecté : la page d'accueil n'a rien à lui apprendre.
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (session) redirect("/app");
 
   return (
-    <div className="flex flex-col gap-4">
-      <Card>
-        <CardContent className="flex flex-col gap-1">
-          <div className="text-3xl font-bold">{formatEur(balance)}</div>
-          <div className="text-muted-foreground text-sm">
-            Solde total ({accounts.length} compte{accounts.length > 1 ? "s" : ""})
-          </div>
-          <div className="text-muted-foreground text-sm">
-            Dépensé ce mois-ci : {formatEur(monthSpend)}
-          </div>
-        </CardContent>
-      </Card>
-
-      {accounts.map((a) => {
-        const accountTxns = allTxns.filter((t) => t.accountId === a.id).slice(0, 8);
-        return (
-          <Card key={a.id}>
-            <CardHeader className="flex-row items-baseline justify-between">
-              <CardTitle>{accountLabel(a)}</CardTitle>
-              <span className="text-xl font-bold">
-                {formatEur(effectiveBalance(a.balance, ignoredByAccount[a.id]))}
-              </span>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableBody>
-                  {accountTxns.length === 0 && (
-                    <TableRow>
-                      <TableCell className="text-muted-foreground">Aucune transaction.</TableCell>
-                    </TableRow>
-                  )}
-                  {accountTxns.map((t) => (
-                    <TableRow key={t.id}>
-                      <TableCell className="text-muted-foreground">{t.date}</TableCell>
-                      <TableCell>{t.label}</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {groupCell(t)}
-                      </TableCell>
-                      <TableCell className="text-right font-medium">{formatEur(t.amount)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </div>
+    <main className="mx-auto flex min-h-svh max-w-2xl flex-col justify-center gap-6 px-6">
+      <h1 className="font-display text-4xl">Budget</h1>
+      <p className="text-muted-foreground text-lg">
+        Vos comptes bancaires réunis au même endroit. Des enveloppes mensuelles, des
+        dépenses suivies au jour le jour, et ce qu&apos;il vous restera à la fin du mois.
+      </p>
+      <div className="flex gap-3">
+        <Button asChild className="cursor-pointer">
+          <Link href="/connexion">Commencer</Link>
+        </Button>
+      </div>
+    </main>
   );
 }

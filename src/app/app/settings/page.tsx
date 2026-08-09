@@ -1,7 +1,7 @@
-import { db } from "../../db/index";
-import { getSetting } from "../../db/repositories/settings";
-import { listAccounts } from "../../db/repositories/accounts";
-import { accountDisplayName } from "../../lib/account";
+import { db } from "../../../db/index";
+import { getSetting } from "../../../db/repositories/settings";
+import { listAccounts } from "../../../db/repositories/accounts";
+import { accountDisplayName } from "../../../lib/account";
 import { saveThreshold, renameAccount } from "./actions";
 import { ConnectButtons } from "./ConnectButtons";
 import { DeleteAccountButton } from "./DeleteAccountButton";

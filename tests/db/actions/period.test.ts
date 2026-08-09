@@ -1,10 +1,10 @@
 // Modifier la durée de vie d'un groupe (ou d'une ligne) APRÈS coup, et savoir ce que
 // ça coûte avant d'écrire. Teste setGroupPeriod / setLinePeriod / periodImpact
-// (src/app/historique/actions.ts) réellement appelées, base en mémoire (voir ./setup).
+// (src/app/app/historique/actions.ts) réellement appelées, base en mémoire (voir ./setup).
 import { beforeEach, expect, test, vi } from "vitest";
 import type Database from "better-sqlite3";
 import { freshDb, at } from "./setup";
-import { setGroupPeriod, setLinePeriod, groupPeriodImpact, linePeriodImpact, addGroupLine } from "../../../src/app/historique/actions";
+import { setGroupPeriod, setLinePeriod, groupPeriodImpact, linePeriodImpact, addGroupLine } from "../../../src/app/app/historique/actions";
 import { revalidatePath } from "next/cache";
 import { insertGroup } from "../../../src/db/repositories/groups";
 import { insertManualTransaction } from "../../../src/db/repositories/transactions";

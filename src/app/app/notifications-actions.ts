@@ -1,10 +1,10 @@
 "use server";
-import { db } from "../db/index";
+import { db } from "../../db/index";
 import {
   dismissNotification as dismiss,
   dismissNotifications as dismissAll,
   restoreNotifications as restore,
-} from "../db/repositories/dismissed-notifications";
+} from "../../db/repositories/dismissed-notifications";
 import { revalidatePath } from "next/cache";
 
 // Ferme une notification : elle ne reviendra pas. L'identité vient de
@@ -17,7 +17,7 @@ import { revalidatePath } from "next/cache";
 export async function dismissNotification(id: string): Promise<void> {
   if (!id) return;
   dismiss(db(), id);
-  revalidatePath("/", "layout");
+  revalidatePath("/app", "layout");
 }
 
 // « Tout marquer comme vu ». Les identités viennent du panneau (celles qui restaient à
@@ -27,7 +27,7 @@ export async function dismissNotification(id: string): Promise<void> {
 export async function dismissAllNotifications(ids: string[]): Promise<void> {
   if (ids.length === 0) return;
   dismissAll(db(), ids);
-  revalidatePath("/", "layout");
+  revalidatePath("/app", "layout");
 }
 
 // Le geste inverse, pour un dépassement ou pour le lot qu'on vient d'acquitter d'un
@@ -36,5 +36,5 @@ export async function dismissAllNotifications(ids: string[]): Promise<void> {
 export async function restoreNotifications(ids: string[]): Promise<void> {
   if (ids.length === 0) return;
   restore(db(), ids);
-  revalidatePath("/", "layout");
+  revalidatePath("/app", "layout");
 }

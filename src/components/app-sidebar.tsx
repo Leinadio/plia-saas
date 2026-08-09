@@ -16,9 +16,9 @@ import {
 } from "@/components/ui/sidebar";
 
 const NAV = [
-  { href: "/", label: "Tableau de bord", icon: LayoutDashboard },
-  { href: "/transactions", label: "Transactions", icon: ArrowLeftRight },
-  { href: "/historique", label: "Historique", icon: History },
+  { href: "/app", label: "Tableau de bord", icon: LayoutDashboard },
+  { href: "/app/transactions", label: "Transactions", icon: ArrowLeftRight },
+  { href: "/app/historique", label: "Historique", icon: History },
 ];
 
 export function AppSidebar() {
@@ -53,7 +53,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={pathname === "/settings"} tooltip="Réglages">
-              <Link href="/settings">
+              <Link href="/app/settings">
                 <Settings />
                 <span>Réglages</span>
               </Link>

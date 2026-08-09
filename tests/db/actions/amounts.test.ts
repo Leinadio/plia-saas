@@ -1,9 +1,9 @@
 // Teste setGroupAmount, setUncatProvision, removeGroupAmount et removeLineAmount
-// (src/app/historique/actions.ts) réellement appelées, base en mémoire (voir ./setup).
+// (src/app/app/historique/actions.ts) réellement appelées, base en mémoire (voir ./setup).
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import type Database from "better-sqlite3";
 import { freshDb, at } from "./setup";
-import { setGroupAmount, setUncatProvision, removeGroupAmount, removeLineAmount, addGroupLine, setGroupLineAmount, spreadGroupAmount, spreadUncatProvision, spreadGroupLineAmount } from "../../../src/app/historique/actions";
+import { setGroupAmount, setUncatProvision, removeGroupAmount, removeLineAmount, addGroupLine, setGroupLineAmount, spreadGroupAmount, spreadUncatProvision, spreadGroupLineAmount } from "../../../src/app/app/historique/actions";
 import { revalidatePath } from "next/cache";
 import { insertGroup } from "../../../src/db/repositories/groups";
 import { listBudgetAmounts, setBudgetAmount } from "../../../src/db/repositories/budget-amounts";

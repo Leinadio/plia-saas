@@ -1,23 +1,23 @@
-import { db } from "../../db/index";
-import { listAccounts } from "../../db/repositories/accounts";
-import { listTransactions, sumIgnoredByAccount, type TxnView } from "../../db/repositories/transactions";
-import { listGroups } from "../../db/repositories/groups";
-import { listBudgetAmounts } from "../../db/repositories/budget-amounts";
-import { listLineAmounts } from "../../db/repositories/line-amounts";
+import { db } from "../../../db/index";
+import { listAccounts } from "../../../db/repositories/accounts";
+import { listTransactions, sumIgnoredByAccount, type TxnView } from "../../../db/repositories/transactions";
+import { listGroups } from "../../../db/repositories/groups";
+import { listBudgetAmounts } from "../../../db/repositories/budget-amounts";
+import { listLineAmounts } from "../../../db/repositories/line-amounts";
 import {
   computeHistory, grandTotals, monthlyOverspend, monthsWithData, computeSolde,
   computePlannedSoldes, addMonthsKey, monthRange, isMonthKey, clampMonth,
   sliceHistorySections, sliceSoldeColumn, slicePlannedSoldes, computeTableEstimate,
   toDatedBudgets, toDatedLineAmounts, computeOverspends, computeIgnoredBlocks,
-} from "../../lib/history";
-import { calcWindow } from "../../lib/calc-window";
-import { budgetChanges } from "../../lib/budget-history";
-import { withoutDismissed } from "../../lib/notifications";
-import { listDismissedNotifications } from "../../db/repositories/dismissed-notifications";
-import { computeForecast, type Group, type Txn } from "../../lib/forecast";
+} from "../../../lib/history";
+import { calcWindow } from "../../../lib/calc-window";
+import { budgetChanges } from "../../../lib/budget-history";
+import { withoutDismissed } from "../../../lib/notifications";
+import { listDismissedNotifications } from "../../../db/repositories/dismissed-notifications";
+import { computeForecast, type Group, type Txn } from "../../../lib/forecast";
 import { ForecastDetailSheet } from "@/components/forecast-detail-sheet";
-import { currentMonthKey } from "../../lib/current-month";
-import { accountLabel, effectiveBalance } from "../../lib/account";
+import { currentMonthKey } from "../../../lib/current-month";
+import { accountLabel, effectiveBalance } from "../../../lib/account";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HistoryWithDetail } from "@/components/history-with-detail";
 import { MonthRangePicker } from "@/components/month-range-picker";

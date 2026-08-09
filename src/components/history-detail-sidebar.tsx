@@ -26,7 +26,7 @@ import {
   groupPeriodImpact,
   linePeriodImpact,
   type PeriodImpact,
-} from "@/app/historique/actions";
+} from "@/app/app/historique/actions";
 import { toast } from "sonner";
 import { groupPeriodLabel } from "@/lib/group-period-label";
 import { draftOfPeriod, draftStart, type PeriodDraft } from "@/lib/group-period";

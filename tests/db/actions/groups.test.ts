@@ -1,9 +1,9 @@
-// Teste createGroup (src/app/historique/actions.ts) réellement appelée, base en
+// Teste createGroup (src/app/app/historique/actions.ts) réellement appelée, base en
 // mémoire (voir ./setup).
 import { beforeEach, expect, test, vi } from "vitest";
 import type Database from "better-sqlite3";
 import { freshDb } from "./setup";
-import { createGroup } from "../../../src/app/historique/actions";
+import { createGroup } from "../../../src/app/app/historique/actions";
 import { ORIGIN_MONTH } from "../../../src/lib/group-period";
 import { revalidatePath } from "next/cache";
 import { listGroups } from "../../../src/db/repositories/groups";

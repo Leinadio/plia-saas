@@ -1,7 +1,7 @@
 "use server";
-import { db } from "../../db/index";
-import { setBudgetAmount, deleteBudgetAmount, deleteBudgetAmountsAfter, listBudgetAmounts } from "../../db/repositories/budget-amounts";
-import { listLineAmounts, setLineAmount, deleteLineAmount, deleteLineAmountsAfter } from "../../db/repositories/line-amounts";
+import { db } from "../../../db/index";
+import { setBudgetAmount, deleteBudgetAmount, deleteBudgetAmountsAfter, listBudgetAmounts } from "../../../db/repositories/budget-amounts";
+import { listLineAmounts, setLineAmount, deleteLineAmount, deleteLineAmountsAfter } from "../../../db/repositories/line-amounts";
 import {
   insertGroup,
   renameGroup,
@@ -13,13 +13,13 @@ import {
   getLineLifespan,
   setGroupLifespan,
   setLineLifespan,
-} from "../../db/repositories/groups";
-import { listTransactions, detachTransactionsInMonths } from "../../db/repositories/transactions";
-import { toDatedBudgets, toDatedLineAmounts, isMonthKey, monthRange, type BudgetScope } from "../../lib/history";
-import { canRemoveBudgetChange, budgetChanges, type BudgetChange } from "../../lib/budget-history";
-import { groupPeriod, type PeriodMode } from "../../lib/group-period";
-import { droppedMonths, txnsPerMonth, type MonthTxnCount } from "../../lib/period-change";
-import { currentMonthKey } from "../../lib/current-month";
+} from "../../../db/repositories/groups";
+import { listTransactions, detachTransactionsInMonths } from "../../../db/repositories/transactions";
+import { toDatedBudgets, toDatedLineAmounts, isMonthKey, monthRange, type BudgetScope } from "../../../lib/history";
+import { canRemoveBudgetChange, budgetChanges, type BudgetChange } from "../../../lib/budget-history";
+import { groupPeriod, type PeriodMode } from "../../../lib/group-period";
+import { droppedMonths, txnsPerMonth, type MonthTxnCount } from "../../../lib/period-change";
+import { currentMonthKey } from "../../../lib/current-month";
 import { revalidatePath } from "next/cache";
 
 // --- Ce que ces actions vérifient avant d'écrire ---------------------------
@@ -63,8 +63,8 @@ export async function createGroup(input: {
   // sous-postes, c'est leur somme qui fera son budget et ce montant-ci cessera d'être lu.
   const gid = insertGroup(database, accountId, trimmed, direction, amount ?? 0, startMonth, endMonth);
   setBudgetAmount(database, gid, startMonth, amount ?? 0);
-  revalidatePath("/historique");
-  revalidatePath("/");
+  revalidatePath("/app/historique");
+  revalidatePath("/app");
 }
 
 // --- Changer la durée de vie après coup -------------------------------------
@@ -221,9 +221,9 @@ export async function setLinePeriod(
 // l'Historique, le Prévisionnel, les Transactions (réassignation possible) et le
 // Tableau de bord.
 async function revalidate() {
-  revalidatePath("/historique");
-  revalidatePath("/transactions");
-  revalidatePath("/");
+  revalidatePath("/app/historique");
+  revalidatePath("/app/transactions");
+  revalidatePath("/app");
 }
 
 export async function renameGroupAction(groupId: number, name: string): Promise<void> {
@@ -293,8 +293,8 @@ export async function spreadUncatProvision(month: string, amount: number): Promi
   deleteBudgetAmountsAfter(database, 0, month);
   deleteBudgetAmount(database, 0, month, "once");
   setBudgetAmount(database, 0, month, amount, "ongoing");
-  revalidatePath("/historique");
-  revalidatePath("/");
+  revalidatePath("/app/historique");
+  revalidatePath("/app");
 }
 
 // Même chose pour le montant d'une ligne de récurrent.
@@ -340,8 +340,8 @@ export async function setUncatProvision(
   if (!isMonthKey(month) || !Number.isFinite(amount) || amount < 0) return;
   const database = db();
   setBudgetAmount(database, 0, month, amount, scope);
-  revalidatePath("/historique");
-  revalidatePath("/");
+  revalidatePath("/app/historique");
+  revalidatePath("/app");
 }
 
 // `month` est le mois affiché au moment de l'ajout : la ligne compte à partir de

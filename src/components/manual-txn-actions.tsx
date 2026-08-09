@@ -3,7 +3,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import type { TxnView } from "@/db/repositories/transactions";
-import { removeTransaction } from "@/app/transactions/actions";
+import { removeTransaction } from "@/app/app/transactions/actions";
 import { AddTransactionSheet } from "@/components/add-transaction-sheet";
 import { Button } from "@/components/ui/button";
 

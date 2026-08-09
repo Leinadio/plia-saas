@@ -1,5 +1,5 @@
 "use server";
-import { db } from "../../db/index";
+import { db } from "../../../db/index";
 import {
   setTransactionGroup,
   setTransactionIgnored,
@@ -10,18 +10,18 @@ import {
   deleteManualTransaction,
   mergeTransactions,
   ignoreMatch as ignoreMatchRepo,
-} from "../../db/repositories/transactions";
+} from "../../../db/repositories/transactions";
 import { isValidManualForm, toManualInput, type ManualFormInput } from "@/lib/manual-txn";
 import { normalizeComment } from "@/lib/txn-comment";
 import { canAttachToGroup } from "@/lib/ownership";
 import { isGroupAlive } from "@/lib/forecast";
-import { countGroupLines, getLineGroupId, getGroupLifespan } from "../../db/repositories/groups";
+import { countGroupLines, getLineGroupId, getGroupLifespan } from "../../../db/repositories/groups";
 import { revalidatePath } from "next/cache";
 
 function revalidateAll() {
-  revalidatePath("/transactions");
-  revalidatePath("/historique");
-  revalidatePath("/");
+  revalidatePath("/app/transactions");
+  revalidatePath("/app/historique");
+  revalidatePath("/app");
 }
 
 // Rattache une transaction (groupId null = non catégorisée). Une dépense découpée en

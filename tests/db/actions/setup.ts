@@ -3,7 +3,7 @@ import type Database from "better-sqlite3";
 import { getDb } from "../../../src/db/index";
 import { upsertAccount } from "../../../src/db/repositories/accounts";
 
-// Montage commun à tous les tests d'actions serveur (src/app/historique/actions.ts) :
+// Montage commun à tous les tests d'actions serveur (src/app/app/historique/actions.ts) :
 // substitue une base en mémoire au singleton `db()`, et neutralise `revalidatePath`
 // (sans objet requête, hors du sens de Next.js en dehors d'une vraie navigation).
 // Ce fichier ne matche pas `tests/**/*.test.ts` : Vitest ne l'exécute jamais comme
@@ -38,7 +38,7 @@ vi.mock("../../../src/db/index", async (importOriginal) => {
 // aucun état ne fuit d'un test à l'autre.
 //
 // IMPORTANT pour tout fichier qui importe ce module : il doit être importé AVANT
-// `src/app/historique/actions.ts` (ou tout module import ant `src/db/index`), pour
+// `src/app/app/historique/actions.ts` (ou tout module import ant `src/db/index`), pour
 // que `vi.mock` soit enregistré avant que ces modules soient chargés. Node/Vitest
 // évalue les imports d'un fichier dans l'ordre où ils apparaissent : mettre cet
 // import en premier suffit, sans avoir besoin d'un vi.mock recopié dans chaque

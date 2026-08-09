@@ -1,4 +1,4 @@
-// Teste setGroup (src/app/transactions/actions.ts) réellement appelée, base en
+// Teste setGroup (src/app/app/transactions/actions.ts) réellement appelée, base en
 // mémoire (voir ./setup).
 //
 // Un récurrent n'est pas une destination : ses dépenses appartiennent à une de ses
@@ -7,7 +7,7 @@
 import { beforeEach, expect, test, vi } from "vitest";
 import type Database from "better-sqlite3";
 import { freshDb } from "./setup";
-import { setGroup, addTransaction } from "../../../src/app/transactions/actions";
+import { setGroup, addTransaction } from "../../../src/app/app/transactions/actions";
 import { revalidatePath } from "next/cache";
 import { insertGroup, insertLine } from "../../../src/db/repositories/groups";
 import { insertManualTransaction } from "../../../src/db/repositories/transactions";

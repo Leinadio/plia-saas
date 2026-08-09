@@ -1,8 +1,8 @@
-import { db } from "../../db/index";
-import { listTransactions, findReconcileSuggestions } from "../../db/repositories/transactions";
-import { listGroups } from "../../db/repositories/groups";
-import { listAccounts } from "../../db/repositories/accounts";
-import { accountLabel } from "../../lib/account";
+import { db } from "../../../db/index";
+import { listTransactions, findReconcileSuggestions } from "../../../db/repositories/transactions";
+import { listGroups } from "../../../db/repositories/groups";
+import { listAccounts } from "../../../db/repositories/accounts";
+import { accountLabel } from "../../../lib/account";
 import { TransactionsBrowser } from "@/components/transactions-browser";
 import { ReconcileBanner } from "@/components/reconcile-banner";
 

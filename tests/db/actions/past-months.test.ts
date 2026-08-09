@@ -1,4 +1,4 @@
-// L'édition des mois passés, vue depuis les actions serveur (src/app/historique/
+// L'édition des mois passés, vue depuis les actions serveur (src/app/app/historique/
 // actions.ts) réellement appelées, base en mémoire (voir ./setup).
 //
 // Un mois écoulé n'est pas figé : on y corrige un budget après coup, exactement
@@ -10,7 +10,7 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import type Database from "better-sqlite3";
 import { freshDb, at } from "./setup";
-import { setGroupAmount, setUncatProvision, removeGroupAmount, removeLineAmount, addGroupLine, editGroupLine, setGroupLineAmount } from "../../../src/app/historique/actions";
+import { setGroupAmount, setUncatProvision, removeGroupAmount, removeLineAmount, addGroupLine, editGroupLine, setGroupLineAmount } from "../../../src/app/app/historique/actions";
 import { revalidatePath } from "next/cache";
 import { insertGroup } from "../../../src/db/repositories/groups";
 import { listBudgetAmounts, setBudgetAmount } from "../../../src/db/repositories/budget-amounts";

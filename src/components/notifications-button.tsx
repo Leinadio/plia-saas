@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Bell, CheckCheck, Undo2 } from "lucide-react";
 import { notificationsByMonth, unseenIds, type Notification } from "@/lib/notifications";
 import { monthLabel } from "@/lib/transactions-view";
-import { dismissAllNotifications, restoreNotifications } from "@/app/notifications-actions";
+import { dismissAllNotifications, restoreNotifications } from "@/app/app/notifications-actions";
 import { OverspendNotice } from "@/components/overspend-notice";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";

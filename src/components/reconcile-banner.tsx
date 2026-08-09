@@ -2,7 +2,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { formatEur } from "@/lib/money";
-import { mergeTransaction, ignoreMatch } from "@/app/transactions/actions";
+import { mergeTransaction, ignoreMatch } from "@/app/app/transactions/actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 

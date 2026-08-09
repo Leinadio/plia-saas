@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { TriangleAlert, Undo2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { monthLabel } from "@/lib/transactions-view";
-import { dismissNotification, restoreNotifications } from "@/app/notifications-actions";
+import { dismissNotification, restoreNotifications } from "@/app/app/notifications-actions";
 import { Button } from "@/components/ui/button";
 
 const NUM = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });

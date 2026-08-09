@@ -3,7 +3,7 @@
 import { beforeEach, expect, test } from "vitest";
 import type Database from "better-sqlite3";
 import { freshDb } from "./setup";
-import { setComment } from "../../../src/app/transactions/actions";
+import { setComment } from "../../../src/app/app/transactions/actions";
 import { upsertTransaction, listTransactions } from "../../../src/db/repositories/transactions";
 
 let db: Database.Database;

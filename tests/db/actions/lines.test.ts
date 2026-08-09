@@ -1,9 +1,9 @@
-// Teste addGroupLine et editGroupLine (src/app/historique/actions.ts) réellement
+// Teste addGroupLine et editGroupLine (src/app/app/historique/actions.ts) réellement
 // appelées, base en mémoire (voir ./setup).
 import { beforeEach, expect, test, vi } from "vitest";
 import type Database from "better-sqlite3";
 import { freshDb, at } from "./setup";
-import { addGroupLine, editGroupLine, setGroupLineAmount } from "../../../src/app/historique/actions";
+import { addGroupLine, editGroupLine, setGroupLineAmount } from "../../../src/app/app/historique/actions";
 import { revalidatePath } from "next/cache";
 import { insertGroup } from "../../../src/db/repositories/groups";
 import { listLineAmounts } from "../../../src/db/repositories/line-amounts";
