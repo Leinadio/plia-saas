@@ -142,6 +142,12 @@ const COL1_W = 320;
 const DATA_TINT = "bg-[color-mix(in_oklab,var(--muted)_30%,var(--background))]";
 const BALANCE_TINT = "bg-[color-mix(in_oklab,oklch(0.75_0.16_80)_16%,var(--background))]";
 const SOLDE_TINT = "bg-[color-mix(in_oklab,oklch(0.75_0.10_210)_15%,var(--background))]";
+// Fond des lignes de totaux (« Total revenus », « Total Dépenses », « Solde actuel »).
+// Posé sur les CELLULES et non sur la ligne : chaque cellule de données porte déjà le
+// fond de sa colonne, qui recouvrirait celui de la ligne et ne laisserait la teinte
+// visible que dans les trous. Plus soutenu que DATA_TINT, pour que l'œil trouve les
+// totaux sans avoir à lire les libellés.
+const TOTAL_TINT = "bg-[color-mix(in_oklab,var(--muted-foreground)_22%,var(--background))]";
 const COL_TINT: Record<ColKey, string> = {
   budgetRem: DATA_TINT,
   budgetDep: DATA_TINT,
@@ -170,12 +176,14 @@ type ColCell = React.ReactElement<{ className?: string }>;
 export type ColSlots = Record<ColKey, (border: boolean) => ColCell>;
 
 // Rend les cellules d'un mois (une par colonne), chacune sur le fond de sa famille.
-function renderCols(cols: ColKey[], slots: ColSlots): React.ReactNode[] {
+// `tint` remplace ce fond pour toute la ligne : c'est ainsi qu'une ligne de totaux
+// prend une couleur d'un bout à l'autre au lieu de garder les familles de colonnes.
+function renderCols(cols: ColKey[], slots: ColSlots, tint?: string): React.ReactNode[] {
   return cols.map((col, idx) => {
     const cell = slots[col](idx === 0);
     // Le fond est posé AVANT la className propre de la cellule, pour que l'anneau de
     // sélection et les bordures restent au-dessus.
-    return cloneElement(cell, { className: cn(COL_TINT[col], cell.props.className) });
+    return cloneElement(cell, { className: cn(tint ?? COL_TINT[col], cell.props.className) });
   });
 }
 
@@ -629,8 +637,11 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
 // donc leur somme aussi) : toujours cliquable. Pour les non catégorisés, budget et
 // balance sont toujours à 0 : l'invariant ne tient que si dépensé == 0, donc en
 // pratique non cliquable (comme documenté au Task 3 pour ce cas).
-function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, solde, planPrevu, planDepass, uncatInSec, selCellKey, prevDisp, noticeOf, only }: OnlyMonth & {
+function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, solde, planPrevu, planDepass, uncatInSec, selCellKey, prevDisp, noticeOf, only, total }: OnlyMonth & {
   sec: HistorySection;
+  // Vraie ligne de totaux (« Total Dépenses ») et non la ligne « Non catégorisés »,
+  // qui passe par le même rendu sans en être une.
+  total?: boolean;
   // Le compte de la colonne : la provision des non catégorisés lui appartient.
   accountId: string;
   months: string[];
@@ -869,7 +880,7 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
               : plannedSoldeCol("soldeDepass", null, b),
         };
 
-        return <Fragment key={i}>{renderCols(cols, slots)}</Fragment>;
+        return <Fragment key={i}>{renderCols(cols, slots, total ? TOTAL_TINT : undefined)}</Fragment>;
       })}
     </>
   );
@@ -930,7 +941,7 @@ function IncomeTotalCells({ sec, months, currentMonth, onSelect, selCellKey, onl
           soldeDepass: (b) => blankCol("soldeDepass", b),
         };
 
-        return <Fragment key={i}>{renderCols(cols, slots)}</Fragment>;
+        return <Fragment key={i}>{renderCols(cols, slots, TOTAL_TINT)}</Fragment>;
       })}
     </>
   );
@@ -1119,7 +1130,7 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
           soldeDepass: (b) => plannedSoldeCell("soldeDepass", planned.depassClosings[i], b, soldeDepassDetail, onSelect, ck("soldeDepass"), selCellKey),
         };
 
-        return <Fragment key={i}>{renderCols(cols, slots)}</Fragment>;
+        return <Fragment key={i}>{renderCols(cols, slots, TOTAL_TINT)}</Fragment>;
       })}
     </>
   );
@@ -1750,7 +1761,14 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       <>
         <TableRow className="font-medium">
           <NameCell indent={0} expandable={hasTxns} expanded={uOpen} onToggle={hasTxns ? () => toggleIn(uKey, uMonth) : undefined}>
-            <span className="min-w-0 truncate">Non catégorisés</span>
+            {/* Le sens dans le nom. Les deux lignes s'appelaient « Non catégorisés »
+                et rien ne les distinguait : celle des encaissements se lit tout en
+                haut, celle des décaissements plus bas, mais quand aucun revenu n'est
+                encore créé la première se retrouve seule, sans en-tête pour dire ce
+                qu'elle est. On croit alors voir deux fois la même chose. */}
+            <span className="min-w-0 truncate">
+              {dir === "in" ? "Reçus non catégorisés" : "Dépenses non catégorisées"}
+            </span>
           </NameCell>
           <SectionTotalsCells accountId={accountId}             sec={sec}
             months={months}
@@ -2147,7 +2165,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 {sec.rows.map((r) => renderGroup(r, mi, true))}
                 {uncatIn && renderUncatRows(uncatIn, secs, mi)}
                 <TableRow className="font-medium">
-                  <TableCell className="h-px p-0">
+                  <TableCell className={cn(TOTAL_TINT, "h-px p-0")}>
                     <FirstColBox>Total revenus</FirstColBox>
                   </TableCell>
                   <IncomeTotalCells sec={sec} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} only={mi} />
@@ -2159,9 +2177,11 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             // Les reçus non catégorisés sont rendus dans la section Rémunérations
             // (ci-dessus) quand elle existe ; sinon ils s'affichent ici, à leur place.
             if (sec.uncatDirection === "in" && secs.some((s) => s.kind === "income")) return null;
+            // Sans espace au-dessus : les non catégorisés appartiennent à la section
+            // qui les précède (l'ordre le garantit, cf. RANGS dans history-month-view).
+            // L'espace les en détachait et les faisait passer pour une section à part.
             return (
               <Fragment key={`uncat-${sec.uncatDirection ?? "out"}`}>
-                {spacer}
                 {renderUncatRows(sec, secs, mi)}
               </Fragment>
             );
@@ -2174,17 +2194,17 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               {enTeteDepense()}
               {sec.rows.map((r) => renderGroup(r, mi))}
               <TableRow className="font-medium">
-                <TableCell className="h-px p-0">
+                <TableCell className={cn(TOTAL_TINT, "h-px p-0")}>
                   <FirstColBox>Total Dépenses</FirstColBox>
                 </TableCell>
-                <SectionTotalsCells accountId={accountId} sec={sec} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} only={mi} />
+                <SectionTotalsCells total accountId={accountId} sec={sec} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} only={mi} />
               </TableRow>
               {renderSectionResteRow("expense", "Balance dépenses", secs, mi)}
             </Fragment>
           );
         })}
         <TableRow className="font-semibold">
-          <TableCell className="h-px p-0">
+          <TableCell className={cn(TOTAL_TINT, "h-px p-0")}>
             <FirstColBox>Solde actuel</FirstColBox>
           </TableCell>
           <GrandTotalsCells sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} only={mi} />
