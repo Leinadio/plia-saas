@@ -27,7 +27,13 @@ import { upsertTransaction, listTransactions } from "../../src/db/repositories/t
 import { setBudgetAmount } from "../../src/db/repositories/budget-amounts";
 import { TEST_USER } from "../helpers/test-user";
 
-const MORTES = ["categories", "rules", "budgets", "recurring_payments", "group_keywords", "overspend_decisions"];
+// group_line_amounts est l'ancêtre de line_amounts, d'avant que la portée d'un
+// montant existe (« vaut à partir de ce mois » contre « vaut pour ce mois seul »).
+// Remplacée mais jamais supprimée.
+const MORTES = [
+  "categories", "rules", "budgets", "recurring_payments", "group_keywords",
+  "overspend_decisions", "group_line_amounts",
+];
 
 const chemins: string[] = [];
 function chemin(): string {
@@ -79,8 +85,14 @@ function baseGarnie(path: string) {
       group_id INTEGER NOT NULL, line_id INTEGER NOT NULL DEFAULT 0,
       month TEXT NOT NULL, decision TEXT NOT NULL, decided_at TEXT NOT NULL, writes TEXT,
       UNIQUE(account_id, group_id, line_id, month));
+    CREATE TABLE group_line_amounts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      line_id INTEGER NOT NULL REFERENCES group_lines(id) ON DELETE CASCADE,
+      effective_month TEXT NOT NULL, amount REAL NOT NULL,
+      UNIQUE(line_id, effective_month));
     ALTER TABLE transactions ADD COLUMN category_id INTEGER REFERENCES categories(id);
   `);
+  db.prepare(`INSERT INTO group_line_amounts (line_id, effective_month, amount) VALUES (?, '2026-08', 150)`).run(lid);
   db.prepare(`INSERT INTO categories (id, name) VALUES (1, 'Alimentation')`).run();
   db.prepare(`INSERT INTO rules (keyword, category_id) VALUES ('carrefour', 1)`).run();
   db.prepare(`INSERT INTO budgets (category_id, monthly_limit) VALUES (1, 300)`).run();

@@ -508,7 +508,7 @@ export function migrateTransactionIdPerAccount(db: Database.Database): void {
 
 // --- Le ménage des tables de la première version ------------------------------
 //
-// Six tables ne sont plus lues ni écrites par une seule ligne de code. categories et
+// Sept tables ne sont plus lues ni écrites par une seule ligne de code. categories et
 // rules et budgets viennent du temps où les dépenses se classaient par catégorie avec
 // des règles de mots-clés ; group_keywords et recurring_payments du temps où un poste
 // attrapait ses opérations par mot-clé ; overspend_decisions rangeait les décisions de
@@ -524,7 +524,12 @@ export function migrateTransactionIdPerAccount(db: Database.Database): void {
 export function migrateDropDeadTables(db: Database.Database): void {
   // categories en dernier : rules et budgets la référencent, et transactions aussi
   // tant que sa colonne est là.
-  const mortes = ["budgets", "rules", "recurring_payments", "group_keywords", "overspend_decisions", "categories"];
+  // group_line_amounts est l'ancêtre de line_amounts, d'avant que la portée d'un
+  // montant existe. Remplacée mais jamais supprimée.
+  const mortes = [
+    "budgets", "rules", "recurring_payments", "group_keywords", "overspend_decisions",
+    "group_line_amounts", "categories",
+  ];
   const presentes = new Set(
     (db.prepare(`SELECT name FROM sqlite_master WHERE type = 'table'`).all() as { name: string }[]).map((t) => t.name),
   );
