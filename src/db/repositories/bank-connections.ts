@@ -22,9 +22,17 @@ export type BankConnection = {
   accountUids: string | null;
 };
 
+// Une demande d'autorisation. Elle efface d'abord celle qui serait restée en attente
+// sur la MÊME banque : la connexion se crée avant la redirection, donc refermer
+// l'onglet de sa banque en laisse une derrière soi, et réessayer trois fois en
+// laisserait trois. Une connexion déjà autorisée n'est pas touchée — reconnecter une
+// banque tous les 90 jours est le geste normal, pas une reprise d'essai.
 export function createConnection(
   db: Database.Database, userId: string, aspspName: string, aspspCountry: string,
 ): number {
+  db.prepare(
+    `DELETE FROM bank_connections WHERE user_id = ? AND aspsp_name = ? AND session_id IS NULL`,
+  ).run(userId, aspspName);
   const info = db
     .prepare(
       `INSERT INTO bank_connections (user_id, aspsp_name, aspsp_country) VALUES (?, ?, ?)`,
@@ -41,6 +49,14 @@ export function listConnections(db: Database.Database, userId: string): BankConn
        FROM bank_connections WHERE user_id = ? ORDER BY id`,
     )
     .all(userId) as BankConnection[];
+}
+
+// Les connexions qui ont abouti, c'est-à-dire celles dont la banque a rendu une
+// session. Une demande abandonnée en route n'apprend rien à personne : l'afficher
+// reviendrait à annoncer une banque « jamais autorisée » que l'utilisateur a lui-même
+// renoncé à connecter.
+export function listActiveConnections(db: Database.Database, userId: string): BankConnection[] {
+  return listConnections(db, userId).filter((c) => c.sessionId !== null);
 }
 
 // Écrit ce que la banque a rendu au retour de l'autorisation.

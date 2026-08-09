@@ -19,8 +19,8 @@ import { getDb } from "../../src/db/index";
 import { setSetting } from "../../src/db/repositories/settings";
 import { upsertAccount } from "../../src/db/repositories/accounts";
 import {
-  createConnection, attachAccountToConnection, listConnections, setConnectionSession,
-  connectionOfAccount,
+  createConnection, attachAccountToConnection, listConnections, listActiveConnections,
+  setConnectionSession, connectionOfAccount,
 } from "../../src/db/repositories/bank-connections";
 import { TEST_USER } from "../helpers/test-user";
 
@@ -75,6 +75,40 @@ test("un compte sait de quelle connexion il vient", () => {
 test("les connexions d'un autre restent invisibles", () => {
   createConnection(db, AUTRE, "BNP Paribas", "FR");
   expect(listConnections(db, TEST_USER)).toEqual([]);
+});
+
+// --- Les demandes abandonnées -------------------------------------------------
+// La connexion est créée AVANT la redirection vers la banque, pour que le retour sache
+// à quoi se rattacher. Si l'utilisateur referme l'onglet de sa banque, elle reste là
+// sans session : une banque « jamais autorisée » dans les réglages, qui n'apprend rien
+// à personne et qui s'accumule à chaque essai.
+test("une demande sans autorisation ne compte pas parmi les connexions actives", () => {
+  const cic = createConnection(db, TEST_USER, "CIC", "FR");
+  setConnectionSession(db, cic, "sess", "2026-11-01T00:00:00Z");
+  createConnection(db, TEST_USER, "Boursorama Banque", "FR"); // abandonnée en route
+
+  expect(listActiveConnections(db, TEST_USER).map((c) => c.aspspName)).toEqual(["CIC"]);
+  // Elle existe toujours : c'est l'affichage qui l'ignore, pas la base qui l'oublie.
+  expect(listConnections(db, TEST_USER)).toHaveLength(2);
+});
+
+// Sans quoi réessayer trois fois laisserait trois lignes mortes derrière soi.
+test("une nouvelle demande efface la précédente restée en attente sur la même banque", () => {
+  createConnection(db, TEST_USER, "Boursorama Banque", "FR");
+  createConnection(db, TEST_USER, "Boursorama Banque", "FR");
+
+  const restantes = listConnections(db, TEST_USER).filter((c) => c.aspspName === "Boursorama Banque");
+  expect(restantes).toHaveLength(1);
+});
+
+// Mais une connexion qui a bel et bien abouti ne se fait pas balayer par un nouvel
+// essai : reconnecter une banque déjà connectée est le geste normal tous les 90 jours.
+test("une nouvelle demande ne touche pas à une connexion déjà autorisée", () => {
+  const cic = createConnection(db, TEST_USER, "CIC", "FR");
+  setConnectionSession(db, cic, "sess", "2026-11-01T00:00:00Z");
+  createConnection(db, TEST_USER, "CIC", "FR");
+
+  expect(listConnections(db, TEST_USER)).toHaveLength(2);
 });
 
 // --- La reprise d'une base d'avant le trousseau -------------------------------

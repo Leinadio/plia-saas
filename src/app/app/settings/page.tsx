@@ -4,7 +4,7 @@ import { accountDisplayName } from "../../../lib/account";
 import { renameAccount } from "./actions";
 import { BankPicker } from "@/components/bank-picker";
 import { SyncNowButton } from "@/components/sync-now-button";
-import { listConnections } from "../../../db/repositories/bank-connections";
+import { listActiveConnections } from "../../../db/repositories/bank-connections";
 import { etatConnexion } from "@/lib/connexion-etat";
 import { DeleteAccountButton } from "./DeleteAccountButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +20,9 @@ export default async function SettingsPage() {
   const userId = await requireUserId();
   const database = db();
   const accounts = listAccounts(database, userId);
-  const connexions = listConnections(database, userId);
+  // Seulement celles qui ont abouti : une demande abandonnée en route n'apprend
+  // rien à personne et n'a rien à faire dans cette liste.
+  const connexions = listActiveConnections(database, userId);
 
   return (
     <div className="flex flex-col gap-4">
@@ -50,7 +52,6 @@ export default async function SettingsPage() {
                     <Badge variant="destructive">À reconnecter dans {etat.jours} jour(s)</Badge>
                   )}
                   {etat.etat === "expiree" && <Badge variant="destructive">Autorisation expirée</Badge>}
-                  {etat.etat === "inconnue" && <Badge variant="outline">Jamais autorisée</Badge>}
                 </div>
                 {comptes.length > 0 && (
                   <ul className="text-muted-foreground list-inside list-disc text-sm">
