@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { finishAuth } from "../../../enablebanking/connection";
+import { syncConnections } from "../../../enablebanking/sync-connections";
+import { ebGet } from "../../../enablebanking/client";
+import { db } from "../../../db/index";
 import { requireUserId } from "../../../lib/current-user";
 
 // Le retour de la banque. `state` rapporte la connexion créée avant la redirection ;
@@ -17,9 +20,27 @@ export async function GET(req: NextRequest) {
   const userId = await requireUserId();
 
   try {
-    await finishAuth(code, state, userId);
+    const connectionId = await finishAuth(code, state, userId);
+
+    // La première synchronisation se lance ici, sans attendre un clic : autoriser sa
+    // banque et se retrouver devant un écran vide n'a aucun sens, et le bouton
+    // « Synchroniser » qu'on affichait à la place ne le disait pas.
+    //
+    // Son propre try : l'autorisation, elle, a bel et bien réussi. La faire passer
+    // pour un échec parce que l'import a buté ferait recommencer tout le parcours
+    // chez la banque pour rien.
+    let imported: number | null = null;
+    try {
+      const res = await syncConnections(db(), { ebGet, userId, connectionId });
+      imported = res.imported;
+    } catch (e) {
+      console.error("[callback] première synchronisation échouée :", e);
+    }
+
     revalidatePath("/app", "layout");
-    return NextResponse.redirect(new URL("/app/settings?connected=1", req.url));
+    const url = new URL("/app/settings?connected=1", req.url);
+    if (imported !== null) url.searchParams.set("imported", String(imported));
+    return NextResponse.redirect(url);
   } catch (e) {
     // Journalisé côté serveur : sans ça, l'écran annonce un échec et la raison se perd.
     // La banque est seule à savoir pourquoi elle a refusé, autant garder ce qu'elle dit.

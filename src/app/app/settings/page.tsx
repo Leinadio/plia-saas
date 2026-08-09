@@ -6,7 +6,7 @@ import { BankPicker } from "@/components/bank-picker";
 import { SyncNowButton } from "@/components/sync-now-button";
 import { listActiveConnections } from "../../../db/repositories/bank-connections";
 import { etatConnexion } from "@/lib/connexion-etat";
-import { DeleteAccountButton } from "./DeleteAccountButton";
+import { DeleteAccountButton, DeleteConnectionButton } from "./DeleteAccountButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,7 @@ export const dynamic = "force-dynamic";
 export default async function SettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; connected?: string }>;
+  searchParams: Promise<{ error?: string; connected?: string; imported?: string }>;
 }) {
   // Ce que le retour de la banque a rapporté. Sans cet affichage, une autorisation qui
   // échoue laisse l'écran exactement dans l'état d'avant : on croit avoir mal cliqué.
@@ -40,7 +40,14 @@ export default async function SettingsPage({
       )}
       {params.connected && (
         <div className="rounded-md border border-green-300 bg-green-50 p-3 text-sm text-green-800 dark:bg-green-950/40">
-          Banque connectée. Lancez une synchronisation pour importer vos opérations.
+          {/* L'import se lance tout seul au retour de la banque. Trois issues, et
+              chacune se dit : sans le nombre, un écran vide laisse croire à une panne
+              alors que la banque n'avait peut-être rien à donner. */}
+          {params.imported === undefined
+            ? "Banque connectée. L'import n'a pas abouti, lancez une synchronisation."
+            : params.imported === "0"
+              ? "Banque connectée. Aucune opération à importer pour l'instant."
+              : `Banque connectée. ${params.imported} opération(s) importée(s).`}
         </div>
       )}
       <Card>
@@ -69,6 +76,15 @@ export default async function SettingsPage({
                     <Badge variant="destructive">À reconnecter dans {etat.jours} jour(s)</Badge>
                   )}
                   {etat.etat === "expiree" && <Badge variant="destructive">Autorisation expirée</Badge>}
+                  {/* Débrancher la banque emporte ses comptes : le geste appartient donc
+                      à la carte de la banque, pas à la liste des comptes plus bas. */}
+                  <div className="ml-auto">
+                    <DeleteConnectionButton
+                      connectionId={cx.id}
+                      banque={cx.aspspName}
+                      nbComptes={comptes.length}
+                    />
+                  </div>
                 </div>
                 {/* Autorisée mais sans aucun compte : la banque a bien donné son accord
                     et n'a rien partagé. Cela arrive quand aucun compte n'est coché
@@ -103,9 +119,12 @@ export default async function SettingsPage({
       {accounts.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Noms des comptes</CardTitle>
+            <CardTitle>Comptes bancaires</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
+            {/* Tous les comptes, y compris ceux qu'aucune banque connectée ne
+                revendique : sans cette liste ils n'auraient nulle part où se
+                supprimer. */}
             {accounts.map((a) => (
               <div key={a.id} className="flex items-center gap-2">
                 <form action={renameAccount} className="flex items-center gap-2">
@@ -116,11 +135,11 @@ export default async function SettingsPage({
                     placeholder={a.name}
                     className="max-w-60"
                   />
-                  <Button type="submit" size="sm">
+                  <Button type="submit" size="sm" className="cursor-pointer">
                     Enregistrer
                   </Button>
                 </form>
-                <DeleteAccountButton accountId={a.id} />
+                <DeleteAccountButton accountId={a.id} nom={accountDisplayName(a)} />
               </div>
             ))}
             <p className="text-muted-foreground text-xs">

@@ -10,8 +10,8 @@ import { insertGroup } from "../../src/db/repositories/groups";
 function seed() {
   const db = getDb(":memory:");
   upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
-  upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-07-01", amount: -30, label: "COURSES", category_id: null });
-  upsertTransaction(db, { id: "t2", account_id: "a1", date: "2026-07-02", amount: -70, label: "REMBOURSEMENT PRET AMI", category_id: null });
+  upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-07-01", amount: -30, label: "COURSES" });
+  upsertTransaction(db, { id: "t2", account_id: "a1", date: "2026-07-02", amount: -70, label: "REMBOURSEMENT PRET AMI" });
   return db;
 }
 
@@ -70,8 +70,8 @@ test("une transaction non comptabilisée garde son rattachement de groupe", () =
 test("sumIgnoredByAccount totalise les montants hors calcul par compte, et rien d'autre", () => {
   const db = seed();
   upsertAccount(db, { id: "a2", name: "CIC 2", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
-  upsertTransaction(db, { id: "t3", account_id: "a2", date: "2026-07-03", amount: 3800, label: "VIR DGFIP", category_id: null });
-  upsertTransaction(db, { id: "t4", account_id: "a2", date: "2026-07-04", amount: -25, label: "PEAGE", category_id: null });
+  upsertTransaction(db, { id: "t3", account_id: "a2", date: "2026-07-03", amount: 3800, label: "VIR DGFIP" });
+  upsertTransaction(db, { id: "t4", account_id: "a2", date: "2026-07-04", amount: -25, label: "PEAGE" });
 
   // Aucune transaction hors calcul : aucun compte n'apparaît.
   expect(sumIgnoredByAccount(db)).toEqual({});

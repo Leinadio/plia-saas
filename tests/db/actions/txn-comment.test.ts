@@ -12,7 +12,7 @@ beforeEach(() => {
   db = freshDb();
   upsertTransaction(db, {
     id: "t1", account_id: "a1", date: "2025-01-10", amount: -42,
-    label: "CB 0241 CARREFOUR MARKET 12/07", category_id: null,
+    label: "CB 0241 CARREFOUR MARKET 12/07" ,
   });
 });
 

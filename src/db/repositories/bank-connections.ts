@@ -1,4 +1,5 @@
 import type Database from "better-sqlite3";
+import { deleteAccount } from "./accounts";
 
 // --- Le trousseau ------------------------------------------------------------
 // Une connexion, c'est l'autorisation qu'une banque accorde de lire ses comptes : sa
@@ -78,6 +79,22 @@ export function connectionOfAccount(db: Database.Database, accountId: string): n
     .prepare(`SELECT connection_id AS c FROM accounts WHERE id = ?`)
     .get(accountId) as { c: number | null } | undefined;
   return row?.c ?? null;
+}
+
+// Débrancher une banque. Ses comptes partent avec elle, et tout ce qui y pend :
+// garder des comptes sans autorisation les figerait pour toujours, sans jamais
+// pouvoir se resynchroniser ni s'expliquer à l'écran.
+//
+// Sans retour, comme deleteAccount. Le tout dans une seule transaction : à moitié
+// faite, elle laisserait une banque disparue avec ses comptes encore là.
+export function deleteConnection(db: Database.Database, id: number): void {
+  db.transaction(() => {
+    const comptes = db
+      .prepare(`SELECT id FROM accounts WHERE connection_id = ?`)
+      .all(id) as { id: string }[];
+    for (const c of comptes) deleteAccount(db, c.id);
+    db.prepare(`DELETE FROM bank_connections WHERE id = ?`).run(id);
+  })();
 }
 
 // Une connexion par son identifiant, à condition qu'elle soit à l'appelant. Le

@@ -13,7 +13,7 @@ import { migrateGroupLifespan } from "../../src/db/migrations";
 test("transaction upsert dedupes by id and lists back", () => {
   const db = getDb(":memory:");
   upsertAccount(db, { id: "acc1", name: "CIC", iban_masked: "***1234", balance: 500, currency: "EUR", last_synced: null }, TEST_USER);
-  const t = { id: "tx1", account_id: "acc1", date: "2026-07-01", amount: -30, label: "CARREFOUR", category_id: null };
+  const t = { id: "tx1", account_id: "acc1", date: "2026-07-01", amount: -30, label: "CARREFOUR" };
   upsertTransaction(db, t);
   upsertTransaction(db, t); // duplicate ignored
   expect(listTransactions(db, TEST_USER)).toHaveLength(1);
@@ -112,8 +112,8 @@ test("deleteAccount removes the account, its transactions and its groups+lines",
   const db = getDb(":memory:");
   upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 100, currency: "EUR", last_synced: null }, TEST_USER);
   upsertAccount(db, { id: "a2", name: "CIC", iban_masked: null, balance: 50, currency: "EUR", last_synced: null }, TEST_USER);
-  upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-07-01", amount: -10, label: "X", category_id: null });
-  upsertTransaction(db, { id: "t2", account_id: "a2", date: "2026-07-01", amount: -20, label: "Y", category_id: null });
+  upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-07-01", amount: -10, label: "X" });
+  upsertTransaction(db, { id: "t2", account_id: "a2", date: "2026-07-01", amount: -20, label: "Y" });
   const g1 = insertGroup(db, "a1", "Abonnements", "out", 0, "2000-01", null);
   insertLine(db, g1, "Spotify", 10);
   const g2 = insertGroup(db, "a2", "Courses", "out", 0, "2000-01", null);
@@ -133,7 +133,7 @@ test("setTransactionGroup attaches and detaches", () => {
   const db = getDb(":memory:");
   upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
   const gid = insertGroup(db, "a1", "Courses", "out", 300, "2000-01", null);
-  upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-07-01", amount: -30, label: "X", category_id: null });
+  upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-07-01", amount: -30, label: "X" });
   setTransactionGroup(db, "t1", gid);
   expect(listTransactions(db, TEST_USER)[0].groupId).toBe(gid);
   setTransactionGroup(db, "t1", null);

@@ -38,7 +38,7 @@ function baseGarnie(path: string) {
   insertGroup(db, "a1", "Rémunération dirigeant", "in", 650, "2026-01", null);
   const gid = insertGroup(db, "a1", "Courses", "out", 400, "2026-01", null);
   insertLine(db, gid, "Boulangerie", 50);
-  upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-01-05", amount: -20, label: "BOULANGERIE", category_id: null });
+  upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-01-05", amount: -20, label: "BOULANGERIE" });
   db.close();
 }
 
@@ -82,7 +82,9 @@ test("garde les groupes, leurs sous-postes et les transactions en rouvrant la ba
 
   expect(groupes.map((g) => g.name).sort()).toEqual(["Courses", "Rémunération dirigeant"]);
   expect(groupes.find((g) => g.name === "Courses")!.lines.map((l) => l.name)).toEqual(["Boulangerie"]);
-  expect(txns.map((t) => t.id)).toEqual(["t1"]);
+  // Préfixé par son compte à la réouverture : voir migrateTransactionIdPerAccount.
+  // Ce qui compte ici est que la transaction ait survécu à la suppression de colonne.
+  expect(txns.map((t) => t.id)).toEqual(["a1::t1"]);
 });
 
 test("supporte d'être rouverte encore et encore", () => {

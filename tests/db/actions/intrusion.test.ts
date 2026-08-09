@@ -34,7 +34,7 @@ beforeEach(() => {
   db = freshDb();
   gid = insertGroup(db, "a1", "Courses", "out", 400, NOW_MONTH, null);
   lid = insertLine(db, gid, "Boulangerie", 50);
-  upsertTransaction(db, { id: "t1", account_id: "a1", date: `${NOW_MONTH}-05`, amount: -20, label: "CARREFOUR", category_id: null });
+  upsertTransaction(db, { id: "t1", account_id: "a1", date: `${NOW_MONTH}-05`, amount: -20, label: "CARREFOUR" });
   upsertAccount(db, { id: "a-intrus", name: "SG", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, INTRUS);
   at(NOW_MONTH);
   asUser(INTRUS);

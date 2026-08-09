@@ -7,7 +7,6 @@ export type TxnRow = {
   date: string;
   amount: number;
   label: string;
-  category_id: number | null;
 };
 
 export type TxnView = {
@@ -31,8 +30,8 @@ export type ReconcileSuggestion = { manual: TxnView; synced: TxnView };
 
 export function upsertTransaction(db: Database.Database, t: TxnRow): number {
   const result = db.prepare(
-    `INSERT OR IGNORE INTO transactions (id, account_id, date, amount, label, category_id)
-     VALUES (@id, @account_id, @date, @amount, @label, @category_id)`,
+    `INSERT OR IGNORE INTO transactions (id, account_id, date, amount, label)
+     VALUES (@id, @account_id, @date, @amount, @label)`,
   ).run(t);
   return result.changes;
 }
@@ -173,8 +172,8 @@ export type ManualTxnInput = {
 export function insertManualTransaction(db: Database.Database, input: ManualTxnInput): string {
   const id = `manual:${randomUUID()}`;
   db.prepare(
-    `INSERT INTO transactions (id, account_id, date, amount, label, category_id, group_id, line_id, excluded, manual, note)
-     VALUES (@id, @account_id, @date, @amount, @label, NULL, @group_id, @line_id, 0, 1, NULL)`,
+    `INSERT INTO transactions (id, account_id, date, amount, label, group_id, line_id, excluded, manual, note)
+     VALUES (@id, @account_id, @date, @amount, @label, @group_id, @line_id, 0, 1, NULL)`,
   ).run({
     id,
     account_id: input.accountId,

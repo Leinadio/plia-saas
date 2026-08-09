@@ -36,7 +36,7 @@ test("updateManualTransaction edits a manual row, ignores synced rows", () => {
   expect(t).toMatchObject({ date: "2026-07-02", amount: 200, label: "corrigé" });
 
   // une ligne synchronisée n'est pas modifiée
-  upsertTransaction(db, { id: "bank1", account_id: "a1", date: "2026-07-01", amount: -50, label: "BANK", category_id: null });
+  upsertTransaction(db, { id: "bank1", account_id: "a1", date: "2026-07-01", amount: -50, label: "BANK" });
   updateManualTransaction(db, "bank1", { date: "2000-01-01", amount: 999, label: "hack", groupId: null, lineId: null });
   expect(listTransactions(db, TEST_USER).find((x) => x.id === "bank1")).toMatchObject({ date: "2026-07-01", amount: -50, label: "BANK" });
 });
@@ -45,7 +45,7 @@ test("deleteManualTransaction removes only manual rows", () => {
   const db = seed();
   const id = insertManualTransaction(db, {
     accountId: "a1", date: "2026-07-01", amount: 10, label: "x", groupId: null, lineId: null, });
-  upsertTransaction(db, { id: "bank1", account_id: "a1", date: "2026-07-01", amount: -50, label: "BANK", category_id: null });
+  upsertTransaction(db, { id: "bank1", account_id: "a1", date: "2026-07-01", amount: -50, label: "BANK" });
   deleteManualTransaction(db, "bank1"); // refusé (non manuel)
   expect(listTransactions(db, TEST_USER)).toHaveLength(2);
   deleteManualTransaction(db, id);
@@ -58,13 +58,13 @@ test("findReconcileSuggestions matches by account, amount and date window", () =
   const m = insertManualTransaction(db, {
     accountId: "a1", date: "2026-07-01", amount: 652.09, label: "Rémunération", groupId: null, lineId: null, });
   // candidat valide : même compte, même montant, 3 jours plus tard
-  upsertTransaction(db, { id: "bank_ok", account_id: "a1", date: "2026-07-04", amount: 652.09, label: "VIR SEPA", category_id: null });
+  upsertTransaction(db, { id: "bank_ok", account_id: "a1", date: "2026-07-04", amount: 652.09, label: "VIR SEPA" });
   // hors fenêtre (10 jours)
-  upsertTransaction(db, { id: "bank_far", account_id: "a1", date: "2026-07-11", amount: 652.09, label: "VIR", category_id: null });
+  upsertTransaction(db, { id: "bank_far", account_id: "a1", date: "2026-07-11", amount: 652.09, label: "VIR" });
   // autre montant
-  upsertTransaction(db, { id: "bank_amt", account_id: "a1", date: "2026-07-02", amount: 100, label: "VIR", category_id: null });
+  upsertTransaction(db, { id: "bank_amt", account_id: "a1", date: "2026-07-02", amount: 100, label: "VIR" });
   // autre compte
-  upsertTransaction(db, { id: "bank_acc", account_id: "a2", date: "2026-07-02", amount: 652.09, label: "VIR", category_id: null });
+  upsertTransaction(db, { id: "bank_acc", account_id: "a2", date: "2026-07-02", amount: 652.09, label: "VIR" });
 
   const sugg = findReconcileSuggestions(db, TEST_USER);
   expect(sugg).toHaveLength(1);
@@ -76,7 +76,7 @@ test("findReconcileSuggestions skips ignored pairs", () => {
   const db = seed();
   const m = insertManualTransaction(db, {
     accountId: "a1", date: "2026-07-01", amount: 50, label: "top-up", groupId: null, lineId: null, });
-  upsertTransaction(db, { id: "bank_ok", account_id: "a1", date: "2026-07-02", amount: 50, label: "VIR", category_id: null });
+  upsertTransaction(db, { id: "bank_ok", account_id: "a1", date: "2026-07-02", amount: 50, label: "VIR" });
   expect(findReconcileSuggestions(db, TEST_USER)).toHaveLength(1);
   db.prepare("INSERT INTO reconcile_ignored (manual_id, synced_id) VALUES (?, ?)").run(m, "bank_ok");
   expect(findReconcileSuggestions(db, TEST_USER)).toHaveLength(0);
@@ -87,9 +87,9 @@ test("findReconcileSuggestions enforces boundary at exactly 5-day window", () =>
   const m = insertManualTransaction(db, {
     accountId: "a1", date: "2026-07-01", amount: 100, label: "test boundary", groupId: null, lineId: null, });
   // +5 days: should be included
-  upsertTransaction(db, { id: "bank_5days", account_id: "a1", date: "2026-07-06", amount: 100, label: "VIR", category_id: null });
+  upsertTransaction(db, { id: "bank_5days", account_id: "a1", date: "2026-07-06", amount: 100, label: "VIR" });
   // +6 days: should be excluded
-  upsertTransaction(db, { id: "bank_6days", account_id: "a1", date: "2026-07-07", amount: 100, label: "VIR", category_id: null });
+  upsertTransaction(db, { id: "bank_6days", account_id: "a1", date: "2026-07-07", amount: 100, label: "VIR" });
 
   const sugg = findReconcileSuggestions(db, TEST_USER);
   const syncedIds = sugg.map((s) => s.synced.id);
@@ -103,7 +103,7 @@ test("mergeTransactions keeps the bank row, carries tagging, notes the manual la
   const m = insertManualTransaction(db, {
     accountId: "a1", date: "2026-07-01", amount: 652.09, label: "Rémunération juillet",
     groupId: gid, lineId: null, });
-  upsertTransaction(db, { id: "bank1", account_id: "a1", date: "2026-07-03", amount: 652.09, label: "VIR SEPA RECU", category_id: null });
+  upsertTransaction(db, { id: "bank1", account_id: "a1", date: "2026-07-03", amount: 652.09, label: "VIR SEPA RECU" });
 
   mergeTransactions(db, { syncedId: "bank1", manualId: m });
 
@@ -136,7 +136,7 @@ test("ignoreMatch records a dismissed pair so it is no longer suggested", () => 
   const db = seed();
   const m = insertManualTransaction(db, {
     accountId: "a1", date: "2026-07-01", amount: 50, label: "top-up", groupId: null, lineId: null, });
-  upsertTransaction(db, { id: "bank1", account_id: "a1", date: "2026-07-02", amount: 50, label: "VIR", category_id: null });
+  upsertTransaction(db, { id: "bank1", account_id: "a1", date: "2026-07-02", amount: 50, label: "VIR" });
   ignoreMatch(db, m, "bank1");
   expect(findReconcileSuggestions(db, TEST_USER)).toHaveLength(0);
   // idempotent : deuxième écartement sans erreur

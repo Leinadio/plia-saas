@@ -6,13 +6,13 @@ import { listTransactions } from "../../src/db/repositories/transactions";
 import { totalBalance, listAccounts } from "../../src/db/repositories/accounts";
 
 const fakeEbGet = async (path: string): Promise<any> => {
-  if (path.endsWith("/balances")) {
+  if (path.includes("/balances")) {
     return { balances: [{ balance_amount: { amount: "500.00", currency: "EUR" } }] };
   }
-  if (path.endsWith("/details")) {
+  if (path.includes("/details")) {
     return { account_id: { iban: "FR7630001007941234567890185" }, name: "Compte Courant" };
   }
-  if (path.endsWith("/transactions")) {
+  if (path.includes("/transactions")) {
     return {
       transactions: [
         {
@@ -44,11 +44,11 @@ test("sync imports balance + transactions", async () => {
 test("keeps two accounts separate with their own balance, label and transactions", async () => {
   const perAccount = async (path: string): Promise<any> => {
     const isB = path.includes("accB");
-    if (path.endsWith("/balances"))
+    if (path.includes("/balances"))
       return { balances: [{ balance_amount: { amount: isB ? "471.12" : "90.13", currency: "EUR" } }] };
-    if (path.endsWith("/details"))
+    if (path.includes("/details"))
       return { account_id: { iban: isB ? "FR76....0140" : "FR76....4730" }, name: "CIC" };
-    if (path.endsWith("/transactions"))
+    if (path.includes("/transactions"))
       return {
         transactions: [
           {
@@ -73,8 +73,11 @@ test("keeps two accounts separate with their own balance, label and transactions
   expect(totalBalance(db, TEST_USER)).toBeCloseTo(561.25);
 
   const txns = listTransactions(db, TEST_USER);
-  const a1 = txns.find((t) => t.id === "a1")!;
-  const b1 = txns.find((t) => t.id === "b1")!;
+  // L'identifiant porte son compte : la banque rend la même référence à qui la lui
+  // demande, et deux personnes branchées sur le même compte réel se disputeraient
+  // sinon les mêmes clés (voir tests/db/id-transaction-par-compte.test.ts).
+  const a1 = txns.find((t) => t.id === "accA::a1")!;
+  const b1 = txns.find((t) => t.id === "accB::b1")!;
   expect(a1.accountId).toBe("accA");
   expect(b1.accountId).toBe("accB");
   expect(a1.accountLabel).toBe("CIC …4730");

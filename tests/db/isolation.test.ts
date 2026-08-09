@@ -40,8 +40,8 @@ function deuxMondes(): Database.Database {
   insertLine(db, gd, "Boulangerie", 50);
   insertGroup(db, "sg", "Loyer", "out", 900, "2026-01", null);
 
-  upsertTransaction(db, { id: "t-daniel", account_id: "cic", date: "2026-08-01", amount: -20, label: "CARREFOUR", category_id: null });
-  upsertTransaction(db, { id: "t-maeva", account_id: "sg", date: "2026-08-02", amount: -30, label: "MONOPRIX", category_id: null });
+  upsertTransaction(db, { id: "t-daniel", account_id: "cic", date: "2026-08-01", amount: -20, label: "CARREFOUR" });
+  upsertTransaction(db, { id: "t-maeva", account_id: "sg", date: "2026-08-02", amount: -30, label: "MONOPRIX" });
   return db;
 }
 
@@ -81,7 +81,7 @@ test("un compte orphelin n'apparaît chez personne", () => {
     `INSERT INTO accounts (id, name, iban_masked, balance, currency, last_synced)
      VALUES ('perdu', 'Vieux', NULL, 99, 'EUR', NULL)`,
   ).run();
-  upsertTransaction(db, { id: "t-perdue", account_id: "perdu", date: "2026-08-03", amount: -5, label: "X", category_id: null });
+  upsertTransaction(db, { id: "t-perdue", account_id: "perdu", date: "2026-08-03", amount: -5, label: "X" });
 
   expect(listAccounts(db, "u-daniel").map((a) => a.id)).toEqual(["cic"]);
   expect(listTransactions(db, "u-daniel").map((t) => t.id)).toEqual(["t-daniel"]);

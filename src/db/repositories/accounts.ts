@@ -56,9 +56,44 @@ export function setAccountAlias(db: Database.Database, id: string, alias: string
   db.prepare("UPDATE accounts SET custom_name = ? WHERE id = ?").run(alias, id);
 }
 
+// Supprime un compte et TOUT ce qui pend à lui. Le geste est sans retour et c'est
+// voulu : un compte qu'on retire est un compte dont on ne veut plus les données.
+//
+// L'ordre compte. Les clés étrangères sont actives (foreign_keys = ON), donc les
+// enfants partent avant leurs parents, et une table qui pointe vers `accounts` sans
+// ON DELETE ferait échouer la suppression au lieu de la laisser passer.
+//
+// Les tables sans clé étrangère (budget_amounts, dismissed_notifications,
+// reconcile_ignored) ne préviennent de rien : oubliées ici, elles laissent des lignes
+// que plus aucun écran ne montre et que plus rien ne peut retirer.
 export function deleteAccount(db: Database.Database, id: string): void {
   db.transaction(() => {
+    // Les paires de rapprochement écartées désignent des transactions par leur
+    // identifiant ; elles doivent partir avant que celles-ci disparaissent.
+    db.prepare(
+      `DELETE FROM reconcile_ignored
+       WHERE manual_id IN (SELECT id FROM transactions WHERE account_id = ?)
+          OR synced_id IN (SELECT id FROM transactions WHERE account_id = ?)`,
+    ).run(id, id);
     db.prepare("DELETE FROM transactions WHERE account_id = ?").run(id);
+    // Les dépassements acquittés. L'identité vaut « compte::cible::mois » : on compare
+    // le préfixe caractère par caractère plutôt qu'avec LIKE, dont les jokers % et _
+    // prendraient un sens dans un identifiant de compte qui en contiendrait.
+    db.prepare(
+      `DELETE FROM dismissed_notifications WHERE substr(id, 1, length(?) + 2) = ? || '::'`,
+    ).run(id, id);
+    // Les montants datés : ceux des dépenses du compte, et la provision des non
+    // catégorisés, qui n'a pas de groupe et se range sous le compte lui-même.
+    db.prepare(
+      `DELETE FROM line_amounts WHERE line_id IN (
+         SELECT l.id FROM group_lines l JOIN groups g ON g.id = l.group_id WHERE g.account_id = ?)`,
+    ).run(id);
+    db.prepare(
+      `DELETE FROM budget_amounts
+       WHERE account_id = ?
+          OR group_id IN (SELECT id FROM groups WHERE account_id = ?)`,
+    ).run(id, id);
+    // group_lines et group_keywords partent en cascade avec leurs groupes.
     db.prepare("DELETE FROM groups WHERE account_id = ?").run(id);
     db.prepare("DELETE FROM accounts WHERE id = ?").run(id);
     // Rien à retirer ailleurs : la liste des comptes à synchroniser se lit désormais

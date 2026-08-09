@@ -30,8 +30,8 @@ function base(): { db: Database.Database; gMoi: number; gAutre: number; lMoi: nu
   const lMoi = insertLine(db, gMoi, "Boulangerie", 50);
   insertGroup(db, "orphelin", "Perdu", "out", 10, "2026-01", null);
 
-  upsertTransaction(db, { id: "t-moi", account_id: "moi", date: "2026-08-01", amount: -20, label: "X", category_id: null });
-  upsertTransaction(db, { id: "t-autre", account_id: "autre", date: "2026-08-01", amount: -20, label: "Y", category_id: null });
+  upsertTransaction(db, { id: "t-moi", account_id: "moi", date: "2026-08-01", amount: -20, label: "X" });
+  upsertTransaction(db, { id: "t-autre", account_id: "autre", date: "2026-08-01", amount: -20, label: "Y" });
   return { db, gMoi, gAutre, lMoi };
 }
 

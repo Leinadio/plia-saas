@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import { mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { migrateBudgets, migrateAccountCustomName, migrateGroupsV2, migrateTransactionExcluded, migrateTransactionIgnored, migrateTransactionLineId, migrateTransactionManualFields, migrateTransactionComment, migrateReconcileIgnored, migrateGroupLifespan, migrateLineLifespan, migrateDropLineDay, migrateBudgetAmountsDropGroupFk, migrateOverspendWrites, migrateOverspendDecisionLine, migrateBudgetAmountScope, migrateDismissedNotifications, migrateSeedDatedAmounts, migrateDropGroupKind, migrateDropIncomeKind, migrateAccountOwner, migrateProvisionPerAccount, migrateBankConnections } from "./migrations";
+import { migrateAccountCustomName, migrateGroupsV2, migrateTransactionExcluded, migrateTransactionIgnored, migrateTransactionLineId, migrateTransactionManualFields, migrateTransactionComment, migrateReconcileIgnored, migrateGroupLifespan, migrateLineLifespan, migrateDropLineDay, migrateBudgetAmountsDropGroupFk, migrateBudgetAmountScope, migrateDismissedNotifications, migrateSeedDatedAmounts, migrateDropGroupKind, migrateDropIncomeKind, migrateAccountOwner, migrateProvisionPerAccount, migrateBankConnections, migrateTransactionIdPerAccount, migrateDropDeadTables } from "./migrations";
 
 const SCHEMA = readFileSync(join(process.cwd(), "src/db/schema.sql"), "utf8");
 
@@ -13,7 +13,6 @@ export function getDb(path = join(process.cwd(), "data/budget.db")): Database.Da
   db.pragma("journal_mode = WAL");
   db.pragma("foreign_keys = ON");
   db.exec(SCHEMA);
-  migrateBudgets(db);
   migrateAccountCustomName(db);
   migrateGroupsV2(db);
   migrateTransactionExcluded(db);
@@ -26,8 +25,6 @@ export function getDb(path = join(process.cwd(), "data/budget.db")): Database.Da
   migrateLineLifespan(db);
   migrateDropLineDay(db);
   migrateBudgetAmountsDropGroupFk(db);
-  migrateOverspendWrites(db);
-  migrateOverspendDecisionLine(db);
   migrateBudgetAmountScope(db);
   migrateDismissedNotifications(db);
   migrateSeedDatedAmounts(db);
@@ -42,6 +39,12 @@ export function getDb(path = join(process.cwd(), "data/budget.db")): Database.Da
   // Après migrateAccountOwner : elle rattache les comptes à leur connexion par leur
   // propriétaire, qui doit donc déjà être posé.
   migrateBankConnections(db);
+  // En dernier : elle réécrit les identifiants d'opérations, que les migrations
+  // précédentes lisent encore telles qu'elles les ont écrites.
+  migrateTransactionIdPerAccount(db);
+  // Tout à la fin : migrateBudgets et migrateGroupsV2 recréent budgets et
+  // group_keywords sur les bases les plus anciennes. Le ménage passe derrière elles.
+  migrateDropDeadTables(db);
   return db;
 }
 

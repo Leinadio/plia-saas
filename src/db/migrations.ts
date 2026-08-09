@@ -1,30 +1,5 @@
 import type Database from "better-sqlite3";
 
-// Convertit l'ancienne table budgets (category_id, month, limit_amount) vers le
-// modèle récurrent (category_id UNIQUE, monthly_limit), en gardant le montant du
-// mois le plus récent par catégorie. Idempotent : no-op si déjà au nouveau schéma.
-export function migrateBudgets(db: Database.Database): void {
-  const cols = db.prepare("PRAGMA table_info(budgets)").all() as { name: string }[];
-  if (!cols.some((c) => c.name === "month")) return;
-  // Transaction : la reconstruction (create/insert/drop/rename) doit être atomique.
-  // Un crash entre DROP et RENAME laisserait la base sans table budgets.
-  db.transaction(() => {
-    db.exec(`
-      CREATE TABLE budgets_new (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        category_id INTEGER NOT NULL REFERENCES categories(id),
-        monthly_limit REAL NOT NULL,
-        UNIQUE(category_id)
-      );
-      INSERT INTO budgets_new (category_id, monthly_limit)
-        SELECT category_id, limit_amount FROM budgets b
-        WHERE b.month = (SELECT MAX(month) FROM budgets b2 WHERE b2.category_id = b.category_id);
-      DROP TABLE budgets;
-      ALTER TABLE budgets_new RENAME TO budgets;
-    `);
-  })();
-}
-
 // Ajoute la colonne custom_name (alias utilisateur) aux bases antérieures.
 // Idempotent : no-op si la colonne existe déjà. Ne touche à aucune donnée.
 export function migrateAccountCustomName(db: Database.Database): void {
@@ -354,42 +329,6 @@ export function migrateDismissedNotifications(db: Database.Database): void {
   )`);
 }
 
-// Ajoute la LIGNE à la clé d'une décision de dépassement. Un récurrent n'a pas de
-// budget à lui : ce sont ses lignes qui en portent un, donc c'est chaque ligne qui
-// déborde, et c'est sur elle que la décision se prend. Sans line_id dans la clé,
-// trancher Sosh Internet ferait taire Sosh Mobile.
-//
-// line_id = 0 signifie « le groupe lui-même » (une enveloppe, ou les non catégorisés) —
-// même convention que group_id = 0 ailleurs dans ce schéma, et surtout PAS NULL : SQLite
-// tient deux NULL pour distincts dans une contrainte d'unicité, ce qui laisserait
-// s'empiler des doublons sur une même enveloppe au lieu de remplacer sa décision.
-//
-// Les décisions déjà prises restent au niveau du groupe (line_id = 0) : celles des
-// enveloppes et des non catégorisés gardent tout leur sens. Idempotent.
-export function migrateOverspendDecisionLine(db: Database.Database): void {
-  const cols = db.prepare(`PRAGMA table_info(overspend_decisions)`).all() as { name: string }[];
-  if (cols.some((c) => c.name === "line_id")) return;
-  db.transaction(() => {
-    db.exec(`
-      CREATE TABLE overspend_decisions_lined (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        account_id TEXT NOT NULL REFERENCES accounts(id),
-        group_id INTEGER NOT NULL,
-        line_id INTEGER NOT NULL DEFAULT 0,
-        month TEXT NOT NULL,
-        decision TEXT NOT NULL CHECK (decision IN ('exceptional', 'permanent')),
-        decided_at TEXT NOT NULL,
-        writes TEXT,
-        UNIQUE(account_id, group_id, line_id, month)
-      );
-      INSERT INTO overspend_decisions_lined (id, account_id, group_id, line_id, month, decision, decided_at, writes)
-        SELECT id, account_id, group_id, 0, month, decision, decided_at, writes FROM overspend_decisions;
-      DROP TABLE overspend_decisions;
-      ALTER TABLE overspend_decisions_lined RENAME TO overspend_decisions;
-    `);
-  })();
-}
-
 // Ajoute la PORTÉE aux montants datés : un montant vaut soit à partir de son mois
 // (« ongoing »), soit pour son seul mois (« once »). Avant, la seconde sémantique
 // était bricolée à l'écriture — appliquer un montant « ce mois seulement » posait EN
@@ -504,14 +443,6 @@ export function migrateSeedDatedAmounts(db: Database.Database): void {
   }
 }
 
-// Ajoute la colonne writes (trace des montants posés par une décision
-// « permanent »), pour pouvoir annuler exactement. Idempotent.
-export function migrateOverspendWrites(db: Database.Database): void {
-  const cols = db.prepare("PRAGMA table_info(overspend_decisions)").all() as { name: string }[];
-  if (cols.some((c) => c.name === "writes")) return;
-  db.exec(`ALTER TABLE overspend_decisions ADD COLUMN writes TEXT`);
-}
-
 // Ajoute la colonne comment : la note libre que l'utilisateur pose sous le libellé
 // d'une transaction. Une colonne à elle, et non la réutilisation de note : note
 // reçoit le libellé de la saisie manuelle lors d'une fusion (mergeTransactions),
@@ -529,4 +460,83 @@ export function migrateTransactionComment(db: Database.Database): void {
     return;
   }
   db.exec(`ALTER TABLE transactions ADD COLUMN comment TEXT`);
+}
+
+// --- L'identité d'une opération synchronisée ----------------------------------
+//
+// L'identifiant venait tel quel de la banque et servait de clé primaire pour toute la
+// base. Or la banque rend le même identifiant pour la même opération à qui la lui
+// demande : deux comptes de l'application branchés sur le même compte bancaire réel se
+// disputaient les mêmes clés. L'insertion se faisant en OR IGNORE, le premier arrivé
+// gardait tout et le second voyait son solde s'afficher sans une seule opération.
+//
+// Les opérations déjà en base prennent donc le préfixe de leur compte. Les laisser
+// telles quelles ferait pire : la synchronisation suivante les réimporterait sous leur
+// nouvelle forme, et tout l'historique se retrouverait en double.
+//
+// Les saisies manuelles gardent leur identifiant. Elles ne viennent d'aucune banque,
+// aucune autre ne peut les revendiquer, et leur préfixe « manual: » les distingue déjà.
+//
+// Idempotent : une opération déjà préfixée par son compte est laissée en place.
+export function migrateTransactionIdPerAccount(db: Database.Database): void {
+  // substr plutôt que LIKE : les jokers % et _ prendraient un sens dans un identifiant
+  // de compte qui en contiendrait.
+  const dejaFait = `substr(t.id, 1, length(t.account_id) + 2) = t.account_id || '::'`;
+  const aReprendre = db
+    .prepare(`SELECT COUNT(*) AS n FROM transactions t WHERE t.manual = 0 AND NOT (${dejaFait})`)
+    .get() as { n: number };
+  if (aReprendre.n === 0) return;
+
+  db.transaction(() => {
+    // Les paires de rapprochement écartées d'abord : elles désignent les opérations par
+    // leur identifiant, et la jointure ne les retrouverait plus une fois ceux-ci changés.
+    db.prepare(
+      `UPDATE reconcile_ignored SET synced_id = (
+         SELECT t.account_id || '::' || t.id FROM transactions t
+         WHERE t.id = reconcile_ignored.synced_id AND t.manual = 0 AND NOT (${dejaFait}))
+       WHERE EXISTS (
+         SELECT 1 FROM transactions t
+         WHERE t.id = reconcile_ignored.synced_id AND t.manual = 0 AND NOT (${dejaFait}))`,
+    ).run();
+    db.prepare(
+      `UPDATE transactions SET id = account_id || '::' || id
+       WHERE manual = 0 AND NOT (substr(id, 1, length(account_id) + 2) = account_id || '::')`,
+    ).run();
+  })();
+  console.warn(`[transactions] ${aReprendre.n} opération(s) rattachée(s) à leur compte.`);
+}
+
+// --- Le ménage des tables de la première version ------------------------------
+//
+// Six tables ne sont plus lues ni écrites par une seule ligne de code. categories et
+// rules et budgets viennent du temps où les dépenses se classaient par catégorie avec
+// des règles de mots-clés ; group_keywords et recurring_payments du temps où un poste
+// attrapait ses opérations par mot-clé ; overspend_decisions rangeait les décisions de
+// dépassement avant qu'elles ne deviennent des notifications acquittables.
+//
+// Une table morte n'est pas inoffensive. overspend_decisions portait une clé étrangère
+// vers accounts qui faisait échouer la suppression d'un compte, et categories en tenait
+// une depuis transactions qui obligeait à traîner une colonne que rien ne remplit.
+//
+// Appelée EN DERNIER, après migrateBudgets et migrateGroupsV2 : celles-ci recréent
+// budgets et group_keywords sur les bases les plus anciennes, et le ménage doit passer
+// derrière elles, pas devant. Idempotent.
+export function migrateDropDeadTables(db: Database.Database): void {
+  // categories en dernier : rules et budgets la référencent, et transactions aussi
+  // tant que sa colonne est là.
+  const mortes = ["budgets", "rules", "recurring_payments", "group_keywords", "overspend_decisions", "categories"];
+  const presentes = new Set(
+    (db.prepare(`SELECT name FROM sqlite_master WHERE type = 'table'`).all() as { name: string }[]).map((t) => t.name),
+  );
+  const cols = db.prepare("PRAGMA table_info(transactions)").all() as { name: string }[];
+  const aCategorie = cols.some((c) => c.name === "category_id");
+  const aFaire = mortes.filter((t) => presentes.has(t));
+  if (aFaire.length === 0 && !aCategorie) return;
+
+  db.transaction(() => {
+    // La colonne avant sa table : sans quoi la clé étrangère pointerait dans le vide.
+    if (aCategorie) db.exec(`ALTER TABLE transactions DROP COLUMN category_id`);
+    for (const t of aFaire) db.exec(`DROP TABLE IF EXISTS ${t}`);
+  })();
+  console.warn(`[ménage] ${aFaire.length} table(s) de la première version supprimée(s).`);
 }
