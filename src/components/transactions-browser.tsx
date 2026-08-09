@@ -95,15 +95,24 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
     return "non catégorisée";
   };
 
+  // Un onglet par compte, et non par compte AYANT des opérations : les onglets se
+  // construisent sur la liste des comptes, pas sur celle des transactions. Un compte
+  // tout neuf ou dormant a bien un onglet, simplement vide. Sans ça il disparaissait de
+  // cette page et on le croyait mal synchronisé, alors que les banques ne fournissent
+  // qu'environ trois mois d'historique.
   const accountTxnGroups = useMemo(() => {
-    const byAccount = new Map<string, { label: string; items: TxnView[] }>();
+    const byAccount = new Map<string, { label: string; items: TxnView[] }>(
+      accounts.map((a) => [a.id, { label: a.label, items: [] as TxnView[] }]),
+    );
     for (const t of transactions) {
+      // Un compte inconnu de la liste (supprimé entre-temps) garde sa place plutôt que
+      // de faire disparaître ses opérations.
       const g = byAccount.get(t.accountId) ?? { label: t.accountLabel ?? "Compte", items: [] };
       g.items.push(t);
       byAccount.set(t.accountId, g);
     }
     return [...byAccount.entries()];
-  }, [transactions]);
+  }, [transactions, accounts]);
 
   const results = useMemo(() => {
     const filtered = filterTransactions(transactions, filters, ownable);
@@ -252,6 +261,15 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
           </TabsList>
           {accountTxnGroups.map(([accountId, group]) => (
             <TabsContent key={accountId} value={accountId}>
+              {/* Un tableau à en-têtes sans une seule ligne se lit comme un chargement
+                  qui n'a pas abouti. Une phrase dit mieux ce qui se passe. Les trois mois
+                  sont dans le texte parce que c'est la fenêtre que les banques
+                  fournissent : sans cette précision on croit à une synchro incomplète. */}
+              {group.items.length === 0 ? (
+                <p className="text-muted-foreground py-6 text-sm">
+                  Aucune opération sur ce compte sur les trois derniers mois.
+                </p>
+              ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -300,6 +318,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
                   })}
                 </TableBody>
               </Table>
+              )}
             </TabsContent>
           ))}
         </Tabs>

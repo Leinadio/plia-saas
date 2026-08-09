@@ -29,7 +29,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       {/* flex-1 min-w-0 : le shell de gauche est une colonne de la rangee
           exterieure ; sans lui il ne se retrecit pas quand le detail s'ouvre. */}
       <SidebarProvider className="h-svh min-w-0 flex-1 overflow-hidden">
-        <AppSidebar />
+        <AppSidebar user={{ name: session.user.name || session.user.email, email: session.user.email }} />
         {/* min-w-0 : sans lui, un contenu large (grand tableau) empeche l'inset
             de retrecir sous sa taille min-content et deborde sous la sidebar.
             mr-0 quand le detail est ouvert : son p-2 fait deja l'ecart.

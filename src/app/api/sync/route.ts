@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "../../../db/index";
 import { ebGet } from "../../../enablebanking/client";
 import { syncAll } from "../../../enablebanking/sync";
@@ -31,6 +32,10 @@ export async function POST() {
       });
       imported += res.imported;
     }
+    // Sans ça, les pages déjà rendues gardent leur ancienne liste de comptes : le
+    // nouveau compte n'apparaît que là où l'on a rechargé à la main, ce qui donne
+    // l'impression qu'il manque dans certains onglets.
+    revalidatePath("/app", "layout");
     return NextResponse.json({ imported });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 502 });

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
@@ -16,10 +16,16 @@ import { syncMessage } from "@/lib/sync-message";
 // courante — sans quoi le tableau montrerait encore l'avant.
 export function SyncButton() {
   const router = useRouter();
-  const [enCours, setEnCours] = useState(false);
+  const [appel, setAppel] = useState(false);
+  // router.refresh rend la main tout de suite : le nouveau rendu arrive après. Sans
+  // cette transition le bouton redevenait actif alors que le tableau montrait encore
+  // l'avant, et on croyait la synchronisation sans effet. isPending ne retombe qu'une
+  // fois le rendu reçu et affiché.
+  const [rendu, startTransition] = useTransition();
+  const enCours = appel || rendu;
 
   const rafraichir = async () => {
-    setEnCours(true);
+    setAppel(true);
     try {
       const res = await fetch("/api/sync", { method: "POST" });
       const data = (await res.json()) as { imported?: number; error?: string };
@@ -34,11 +40,11 @@ export function SyncButton() {
         return;
       }
       toast.success(syncMessage(Number(data.imported)));
-      router.refresh();
+      startTransition(() => router.refresh());
     } catch {
       toast.error("Serveur injoignable : la synchronisation n'a pas eu lieu.");
     } finally {
-      setEnCours(false);
+      setAppel(false);
     }
   };
 

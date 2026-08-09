@@ -163,26 +163,28 @@ export default async function HistoriquePage({
                 <ForecastDetailSheet label={accountLabel(a)} forecast={forecast} />
               </div>
               <MonthRangePicker min={stripMin} max={stripMax} from={from} to={to} current={currentMonth} />
-              {sections.length === 0 ? (
-                <p className="text-muted-foreground text-sm">Aucune donnée pour ce compte.</p>
-              ) : (
-                <HistoryWithDetail
-                  months={months}
-                  currentMonth={currentMonth}
-                  stripMin={stripMin}
-                  stripMax={stripMax}
-                  forecast={forecast}
-                  sections={sections}
-                  ignoredBlocks={ignoredBlocks}
-                  overspend={overspend}
-                  grand={grand}
-                  groups={selectGroups}
-                  solde={solde}
-                  planned={planned}
-                  accountId={a.id}
-                  overspendsByMonth={overspendsByMonth}
-                />
-              )}
+              {/* Le tableau s'affiche même sans une seule ligne. Un compte tout neuf
+                  n'a ni transaction ni dépense, et c'est précisément là qu'on veut ses
+                  colonnes de mois et ses boutons de création : le message qui les
+                  remplaçait laissait sans aucun moyen de commencer. Les en-têtes de
+                  section sont rendus même quand la section n'existe pas encore
+                  (cf. sectionSlots). */}
+              <HistoryWithDetail
+                months={months}
+                currentMonth={currentMonth}
+                stripMin={stripMin}
+                stripMax={stripMax}
+                forecast={forecast}
+                sections={sections}
+                ignoredBlocks={ignoredBlocks}
+                overspend={overspend}
+                grand={grand}
+                groups={selectGroups}
+                solde={solde}
+                planned={planned}
+                accountId={a.id}
+                overspendsByMonth={overspendsByMonth}
+              />
             </TabsContent>
           );
         })}

@@ -16,7 +16,14 @@ import { requireUserId } from "@/lib/current-user";
 
 export const dynamic = "force-dynamic";
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; connected?: string }>;
+}) {
+  // Ce que le retour de la banque a rapporté. Sans cet affichage, une autorisation qui
+  // échoue laisse l'écran exactement dans l'état d'avant : on croit avoir mal cliqué.
+  const params = await searchParams;
   const userId = await requireUserId();
   const database = db();
   const accounts = listAccounts(database, userId);
@@ -26,6 +33,16 @@ export default async function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-4">
+      {params.error && (
+        <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800 dark:bg-red-950/40">
+          L&apos;autorisation n&apos;a pas abouti : {params.error}
+        </div>
+      )}
+      {params.connected && (
+        <div className="rounded-md border border-green-300 bg-green-50 p-3 text-sm text-green-800 dark:bg-green-950/40">
+          Banque connectée. Lancez une synchronisation pour importer vos opérations.
+        </div>
+      )}
       <Card>
         <CardHeader>
           <CardTitle>Banques connectées</CardTitle>
@@ -53,6 +70,16 @@ export default async function SettingsPage() {
                   )}
                   {etat.etat === "expiree" && <Badge variant="destructive">Autorisation expirée</Badge>}
                 </div>
+                {/* Autorisée mais sans aucun compte : la banque a bien donné son accord
+                    et n'a rien partagé. Cela arrive quand aucun compte n'est coché
+                    pendant le parcours chez elle. Sans ce mot, la carte annonce une
+                    banque connectée dont on ne verra jamais la moindre opération. */}
+                {comptes.length === 0 && (cx.accountUids === null || cx.accountUids === "[]") && (
+                  <p className="text-sm text-amber-700 dark:text-amber-500">
+                    Aucun compte partagé par cette banque. Refaites la connexion en
+                    veillant à cocher les comptes à autoriser.
+                  </p>
+                )}
                 {comptes.length > 0 && (
                   <ul className="text-muted-foreground list-inside list-disc text-sm">
                     {comptes.map((a) => (
