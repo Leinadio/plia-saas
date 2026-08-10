@@ -54,6 +54,11 @@ export type HistoryRow = {
   aliveMonths: boolean[]; // aligné sur months : le groupe est-il vivant ce mois-là
   subRows: HistorySubRow[]; // sous-postes de la dépense (vide si elle est plate)
   txns: HistoryTxn[]; // transactions posées directement sur le groupe (dépense plate)
+  // Bloc d'affichage de la dépense : prévue ou non prévue (cf. Group.planned).
+  // computeHistory le remplit toujours ; il reste facultatif pour les lignes
+  // fabriquées ailleurs (un sous-poste promu en ligne, les fixtures), où l'absence
+  // vaut « prévue ».
+  planned?: boolean;
 };
 export type HistorySection = {
   // Une seule section pour toutes les dépenses : « récurrent » et « enveloppe »
@@ -63,6 +68,10 @@ export type HistorySection = {
   rows: HistoryRow[];
   totals: MonthCell[];
   txns?: HistoryTxn[]; // uniquement pour « uncategorized » : liste plate
+  // Uniquement pour les deux blocs rendus par splitExpenseSection : lequel des deux.
+  // Absent sur la section des dépenses entière, celle que porte le moteur et qui
+  // totalise « Total Dépenses ».
+  expenseBlock?: "planned" | "unplanned";
   // Uniquement pour « uncategorized » : sens des transactions de la section.
   // Les non catégorisés sont scindés en deux : les reçus (« in », affichés sous les
   // rémunérations) et les dépenses (« out », affichées après les enveloppes).
@@ -215,7 +224,13 @@ export function computeHistory(
     // récurrent dont la transaction ne matche aucune ligne.
     const groupTxns = mine.filter((t) => lineOf(g, t) === null && inRange(t)).map(toHistoryTxn);
 
-    return { id: g.id, name: g.name, direction: g.direction, cells, aliveMonths, subRows, txns: groupTxns };
+    return {
+      id: g.id, name: g.name, direction: g.direction, cells, aliveMonths, subRows,
+      txns: groupTxns,
+      // Absent en base comme dans les fixtures = prévue : le découpage est arrivé
+      // après les enveloppes, il ne devait en déplacer aucune.
+      planned: g.planned !== false,
+    };
   };
 
   const sumRows = (rows: HistoryRow[]): MonthCell[] =>
@@ -257,7 +272,12 @@ export function computeHistory(
       .filter((g) => months.some((m) => isGroupAlive(g, m)))
       .map(rowFor);
     if (rows.length === 0) return null;
-    return { kind: "expense", rows, totals: sumRows(rows) };
+    // Prévues d'abord, non prévues ensuite, chaque camp gardant l'ordre du nom. Ce
+    // n'est pas une coquetterie d'affichage : le solde réel est un compteur qui
+    // descend le tableau et s'accumule dans CET ordre (cf. computeSolde). Rangé
+    // autrement ici que dans la grille, chaque ligne afficherait le solde d'une autre.
+    const ordonnees = [...rows.filter((r) => r.planned !== false), ...rows.filter((r) => r.planned === false)];
+    return { kind: "expense", rows: ordonnees, totals: sumRows(ordonnees) };
   };
 
   // Reçus non catégorisés d'un mois (section « in »), indépendamment de la
@@ -350,6 +370,54 @@ export function monthlyOverspend(sections: HistorySection[], monthCount: number)
   );
 }
 
+// Les deux blocs de dépenses, prévues et non prévues, tels que la grille les affiche.
+//
+// C'est un découpage d'AFFICHAGE, pas une refonte du modèle : le moteur garde une
+// seule section de dépenses, et tout ce qui la cherche par son `kind` (la Balance
+// dépenses, le budget du solde, les dépassements, le plan) continue de la trouver
+// entière. Les deux blocs rendus ici ne doivent donc jamais rejoindre la liste des
+// sections : ils y compteraient l'argent deux fois.
+//
+// Les sous-totaux se calculent avec la même somme que `totals`, colonne par colonne :
+// prévues + non prévues redonne « Total Dépenses » par construction, sans arrondi
+// intermédiaire à faire mentir.
+//
+// Un bloc vide garde une case par mois, à zéro, plutôt qu'un tableau vide : la grille
+// affiche les deux en-têtes en toutes circonstances, sans quoi on ne pourrait jamais
+// créer sa première dépense non prévue.
+export function splitExpenseSection(
+  sec: HistorySection, monthCount: number,
+): { prevues: HistorySection; nonPrevues: HistorySection } {
+  const bloc = (expenseBlock: "planned" | "unplanned", rows: HistoryRow[]): HistorySection => ({
+    ...sec, expenseBlock, rows, totals: sumRowCells(rows, monthCount),
+  });
+  return {
+    // L'ordre reçu est conservé de part et d'autre : c'est celui du nom, déjà posé
+    // par listGroups, et le découpage n'a pas à le rebattre.
+    prevues: bloc("planned", sec.rows.filter((r) => r.planned !== false)),
+    nonPrevues: bloc("unplanned", sec.rows.filter((r) => r.planned === false)),
+  };
+}
+
+// Somme de lignes, colonne par colonne. Même calcul que les sous-totaux de section
+// posés par computeHistory, mais utilisable sur n'importe quel sous-ensemble de lignes.
+export function sumRowCells(rows: HistoryRow[], monthCount: number): MonthCell[] {
+  return Array.from({ length: monthCount }, (_, i) =>
+    rows.reduce(
+      (acc, r) => {
+        const c = r.cells[i];
+        return {
+          budgeted: acc.budgeted + c.budgeted,
+          depense: acc.depense + c.depense,
+          recu: acc.recu + c.recu,
+          balance: acc.balance + c.balance,
+        };
+      },
+      emptyCell(),
+    ),
+  );
+}
+
 // Totaux tous groupes confondus, par mois (somme des sous-totaux de section).
 export function grandTotals(sections: HistorySection[], monthCount: number): MonthCell[] {
   return Array.from({ length: monthCount }, (_, i) =>
@@ -379,6 +447,10 @@ export type SoldeColumn = {
   rowRunning: Record<number, number[]>;
   // Solde couru des deux étapes « non catégorisés » (reçus / dépenses), par sens.
   uncategorizedRunning: { in?: number[]; out?: number[] } | null;
+  // Solde couru au pied de chacun des deux blocs de dépenses, pour leur sous-total.
+  // Un bloc vide ne fait pas trou : sa valeur est celle du solde qui le traverse,
+  // sinon la colonne se couperait en deux. Null s'il n'y a pas de dépenses du tout.
+  expenseBlockRunning: { planned: number[]; unplanned: number[] } | null;
 };
 
 const cellNet = (c: MonthCell) => c.recu - c.depense;
@@ -435,6 +507,7 @@ export function computeSolde(
   // Accumulation ligne par ligne, dans l'ordre d'affichage des sections.
   const rowRunning: Record<number, number[]> = {};
   let uncategorizedRunning: { in?: number[]; out?: number[] } | null = null;
+  let expenseBlockRunning: { planned: number[]; unplanned: number[] } | null = null;
   for (let i = 0; i < n; i++) {
     let run = openings[i];
     for (const sec of sections) {
@@ -443,6 +516,19 @@ export function computeSolde(
         const key = sec.uncatDirection ?? "out";
         uncategorizedRunning ??= {};
         (uncategorizedRunning[key] ??= new Array<number>(n).fill(0))[i] = run;
+      } else if (sec.kind === "expense") {
+        // Les dépenses se lisent en deux blocs. On les parcourt bloc par bloc plutôt
+        // que dans l'ordre de la section : l'ordre du solde reste ainsi celui de
+        // l'écran même si la section venait à être rangée autrement.
+        const eb = (expenseBlockRunning ??= { planned: new Array<number>(n).fill(0), unplanned: new Array<number>(n).fill(0) });
+        for (const bloc of ["planned", "unplanned"] as const) {
+          for (const r of sec.rows.filter((r) => (r.planned === false) === (bloc === "unplanned"))) {
+            run += cellNet(r.cells[i]);
+            (rowRunning[r.id] ??= new Array<number>(n).fill(0))[i] = run;
+          }
+          // Écrit même quand le bloc est vide : le solde le traverse sans bouger.
+          eb[bloc][i] = run;
+        }
       } else {
         for (const r of sec.rows) {
           run += cellNet(r.cells[i]);
@@ -452,7 +538,7 @@ export function computeSolde(
     }
   }
 
-  return { openings, closings, rowRunning, uncategorizedRunning };
+  return { openings, closings, rowRunning, uncategorizedRunning, expenseBlockRunning };
 }
 
 // Revenu projeté d'une ligne pour un mois : son budget de ce mois-là, 0 pour une
@@ -493,6 +579,11 @@ export type PlannedSoldes = {
   // (dépensé au-delà des reçus non catégorisés), maintenu sur les mois futurs.
   uncatPrevuRunning: { in?: (number | null)[]; out?: (number | null)[] };
   uncatDepassRunning: { in?: (number | null)[]; out?: (number | null)[] };
+  // Valeurs des deux chaînes au pied de chacun des deux blocs de dépenses, pour leur
+  // sous-total. Même règle que le solde réel : un bloc vide reprend la valeur qui le
+  // traverse plutôt que de laisser un trou dans la colonne.
+  prevuBlockRunning: { planned: (number | null)[]; unplanned: (number | null)[] };
+  depassBlockRunning: { planned: (number | null)[]; unplanned: (number | null)[] };
 };
 
 // --- Découpe d'affichage ----------------------------------------------------
@@ -540,6 +631,9 @@ export function sliceSoldeColumn(s: SoldeColumn, k: number, j = 0): SoldeColumn 
     uncategorizedRunning: s.uncategorizedRunning
       ? { in: s.uncategorizedRunning.in && coupe(s.uncategorizedRunning.in), out: s.uncategorizedRunning.out && coupe(s.uncategorizedRunning.out) }
       : null,
+    expenseBlockRunning: s.expenseBlockRunning
+      ? { planned: coupe(s.expenseBlockRunning.planned), unplanned: coupe(s.expenseBlockRunning.unplanned) }
+      : null,
   };
 }
 
@@ -555,6 +649,8 @@ export function slicePlannedSoldes(p: PlannedSoldes, k: number, j = 0): PlannedS
     depassRowRunning: rec(p.depassRowRunning),
     uncatPrevuRunning: { in: p.uncatPrevuRunning.in && coupeN(p.uncatPrevuRunning.in), out: p.uncatPrevuRunning.out && coupeN(p.uncatPrevuRunning.out) },
     uncatDepassRunning: { in: p.uncatDepassRunning.in && coupeN(p.uncatDepassRunning.in), out: p.uncatDepassRunning.out && coupeN(p.uncatDepassRunning.out) },
+    prevuBlockRunning: { planned: coupeN(p.prevuBlockRunning.planned), unplanned: coupeN(p.prevuBlockRunning.unplanned) },
+    depassBlockRunning: { planned: coupeN(p.depassBlockRunning.planned), unplanned: coupeN(p.depassBlockRunning.unplanned) },
   };
 }
 
@@ -726,12 +822,15 @@ export function computePlannedSoldes(
   const depassRowRunning: Record<number, (number | null)[]> = {};
   const uncatPrevuRunning: { in?: (number | null)[]; out?: (number | null)[] } = {};
   const uncatDepassRunning: { in?: (number | null)[]; out?: (number | null)[] } = {};
+  const vide = () => ({ planned: new Array<number | null>(n).fill(null), unplanned: new Array<number | null>(n).fill(null) });
+  const prevuBlockRunning = vide();
+  const depassBlockRunning = vide();
   for (const sec of sections) for (const r of sec.rows) {
     prevuRowRunning[r.id] = new Array<number | null>(n).fill(null);
     depassRowRunning[r.id] = new Array<number | null>(n).fill(null);
   }
   if (n === 0 || ci >= n)
-    return { prevuClosings, depassClosings, prevuRowRunning, depassRowRunning, uncatPrevuRunning, uncatDepassRunning };
+    return { prevuClosings, depassClosings, prevuRowRunning, depassRowRunning, uncatPrevuRunning, uncatDepassRunning, prevuBlockRunning, depassBlockRunning };
 
   for (let i = 0; i < n; i++) {
     // Passé / courant : ancre sur l'ouverture réelle du mois, dépassement du mois.
@@ -764,19 +863,34 @@ export function computePlannedSoldes(
         (uncatPrevuRunning[dir] ??= new Array<number | null>(n).fill(null))[i] = runP;
         (uncatDepassRunning[dir] ??= new Array<number | null>(n).fill(null))[i] = runD;
       } else {
-        for (const r of sec.rows) {
-          const net = rowRevenus(r, i) - rowBudget(r, i);
-          runP += net;
-          // Ancré (passé / courant) : dépassement réel du mois. Futur : aucun report.
-          const os = anchored ? rowOverspend(r, osMonth) : 0;
-          runD += net - os;
-          prevuRowRunning[r.id][i] = runP;
-          depassRowRunning[r.id][i] = runD;
+        // Les dépenses se parcourent bloc par bloc, dans l'ordre où l'écran les
+        // montre, et chaque bloc note où les deux chaînes en sont à son pied.
+        const blocs = sec.kind === "expense" ? (["planned", "unplanned"] as const) : null;
+        const avance = (rows: HistoryRow[]) => {
+          for (const r of rows) {
+            const net = rowRevenus(r, i) - rowBudget(r, i);
+            runP += net;
+            // Ancré (passé / courant) : dépassement réel du mois. Futur : aucun report.
+            const os = anchored ? rowOverspend(r, osMonth) : 0;
+            runD += net - os;
+            prevuRowRunning[r.id][i] = runP;
+            depassRowRunning[r.id][i] = runD;
+          }
+        };
+        if (blocs) {
+          for (const bloc of blocs) {
+            avance(sec.rows.filter((r) => (r.planned === false) === (bloc === "unplanned")));
+            // Écrit même quand le bloc est vide : les chaînes le traversent.
+            prevuBlockRunning[bloc][i] = runP;
+            depassBlockRunning[bloc][i] = runD;
+          }
+        } else {
+          avance(sec.rows);
         }
       }
     }
     prevuClosings[i] = runP;
     depassClosings[i] = runD;
   }
-  return { prevuClosings, depassClosings, prevuRowRunning, depassRowRunning, uncatPrevuRunning, uncatDepassRunning };
+  return { prevuClosings, depassClosings, prevuRowRunning, depassRowRunning, uncatPrevuRunning, uncatDepassRunning, prevuBlockRunning, depassBlockRunning };
 }

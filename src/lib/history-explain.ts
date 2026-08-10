@@ -81,6 +81,10 @@ export type GroupManageInfo = {
   // montant propre).
   changes: BudgetChange[];
   lines: { id: number; name: string }[];
+  // Bloc où la dépense est rangée : prévues (true) ou non prévues (false). Absent pour
+  // un revenu, qui n'appartient à aucun des deux — c'est cette absence, et non un test
+  // sur le sens, qui décide si le panneau propose de la déplacer.
+  planned?: boolean;
 };
 
 // Info nécessaire à la vue de gestion d'une ligne de récurrent, ouverte par le crayon

@@ -317,7 +317,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
                           </TableCell>
                           <TableCell className={amountClass(t)}>{formatEur(t.amount)}</TableCell>
                           <TableCell className="text-right whitespace-nowrap">
-                            <IgnoreTxnToggle txnId={t.id} ignored={t.ignored} />
+                                  <IgnoreTxnToggle txnId={t.id} ignored={t.ignored} />
                             {t.manual && <ManualTxnActions txn={t} accounts={accounts} groups={formGroups} />}
                           </TableCell>
                         </TableRow>

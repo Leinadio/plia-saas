@@ -5,6 +5,7 @@ import { listLineAmounts, setLineAmount, deleteLineAmount, deleteLineAmountsAfte
 import {
   insertGroup,
   renameGroup,
+  setGroupPlanned,
   deleteGroup,
   insertLine,
   renameLine,
@@ -53,8 +54,11 @@ export async function createGroup(input: {
   endMonth?: string;
   period: PeriodMode;
   direction?: "in" | "out";
+  // Le bloc du tableau où la dépense est rangée : le bouton « + » sur lequel on a
+  // cliqué le dit, pas un champ du formulaire. Prévue par défaut.
+  planned?: boolean;
 }): Promise<void> {
-  const { accountId, name, amount, period, direction = "out" } = input;
+  const { accountId, name, amount, period, direction = "out", planned = true } = input;
   if (!ownsAccount(db(), await requireUserId(), accountId)) return;
   const bornes = groupPeriod(period, input.startMonth, input.endMonth);
   if (!bornes) return;
@@ -64,7 +68,7 @@ export async function createGroup(input: {
   const database = db();
   // Une dépense naît plate, avec son montant à elle. Si on la découpe ensuite en
   // sous-postes, c'est leur somme qui fera son budget et ce montant-ci cessera d'être lu.
-  const gid = insertGroup(database, accountId, trimmed, direction, amount ?? 0, startMonth, endMonth);
+  const gid = insertGroup(database, accountId, trimmed, direction, amount ?? 0, startMonth, endMonth, planned);
   setBudgetAmount(database, gid, startMonth, amount ?? 0);
   revalidatePath("/app/historique");
   revalidatePath("/app");
@@ -238,6 +242,16 @@ export async function renameGroupAction(groupId: number, name: string): Promise<
   const trimmed = name.trim();
   if (!trimmed) return;
   renameGroup(db(), groupId, trimmed);
+  await revalidate();
+}
+
+// Déplace une dépense entre « prévues » et « non prévues ». Le classement se pose à la
+// création, mais il se regrette : une dépense qu'on croyait exceptionnelle se met à
+// revenir tous les mois. Rien d'autre n'est touché, donc le geste se défait en le
+// refaisant dans l'autre sens.
+export async function setGroupPlannedAction(groupId: number, planned: boolean): Promise<void> {
+  if (!ownsGroup(db(), await requireUserId(), groupId)) return;
+  setGroupPlanned(db(), groupId, planned);
   await revalidate();
 }
 

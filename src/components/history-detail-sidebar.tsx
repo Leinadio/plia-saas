@@ -12,6 +12,7 @@ import { flattenNodes, cellsForNode, cellsForTotal, TOTAL_ROW, type PanelRow } f
 import { amountAtMonth, type BudgetChange } from "@/lib/budget-history";
 import {
   renameGroupAction,
+  setGroupPlannedAction,
   deleteGroupAction,
   setGroupAmount,
   setUncatProvision,
@@ -452,6 +453,9 @@ function GroupManageBlock({ info, onClose }: { info: GroupManageInfo; onClose: (
   // panneau que router.refresh() ne remplace pas. Sans ça, l'étiquette du titre
   // continuerait d'annoncer « depuis toujours » juste après qu'on l'a arrêté.
   const [periode, setPeriode] = useState({ startMonth: info.startMonth, endMonth: info.endMonth });
+  // Bloc de la dépense, en état local pour la même raison que la période : le panneau
+  // doit dire tout de suite où la dépense vient d'atterrir. Absent pour un revenu.
+  const [prevue, setPrevue] = useState(info.planned);
   const run = async <T,>(fn: () => Promise<T>): Promise<T> => {
     setBusy(true);
     const result = await fn();
@@ -495,6 +499,31 @@ function GroupManageBlock({ info, onClose }: { info: GroupManageInfo; onClose: (
             </Button>
           </div>
         </div>
+
+        {/* Son bloc dans le tableau. Le classement se pose à la création, mais il se
+            regrette : une dépense qu'on croyait exceptionnelle se met à revenir tous
+            les mois. Le geste ne touche à rien d'autre, donc il se défait en le
+            refaisant dans l'autre sens. Un revenu n'a pas de bloc : rien ne s'affiche. */}
+        {prevue !== undefined && (
+          <div className="flex flex-col gap-2">
+            <Label className="font-normal">Bloc du tableau</Label>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm">{prevue ? "Dépenses prévues" : "Dépenses non prévues"}</span>
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                disabled={busy}
+                onClick={async () => {
+                  await run(() => setGroupPlannedAction(info.groupId, !prevue));
+                  setPrevue(!prevue);
+                }}
+              >
+                {prevue ? "Déplacer vers les non prévues" : "Déplacer vers les prévues"}
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Sa durée de vie. C'est ici qu'on arrête un groupe permanent — le seul autre
             moyen était de le supprimer, ce qui emportait aussi tout son passé. */}

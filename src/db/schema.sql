@@ -47,7 +47,11 @@ CREATE TABLE IF NOT EXISTS groups (
   -- Conservé parce que les INSERT existants le remplissent encore ; ne pas s'en servir.
   monthly_amount REAL,
   start_month TEXT,                -- 'YYYY-MM' : mois de départ (invisible avant)
-  end_month TEXT                   -- 'YYYY-MM' ou NULL : dernier mois (NULL = permanent)
+  end_month TEXT,                  -- 'YYYY-MM' ou NULL : dernier mois (NULL = permanent)
+  -- 1 = dépense prévue, 0 = non prévue : les deux blocs du tableau. Se fixe à la
+  -- création et ne bouge plus. Le défaut range d'office les enveloppes d'avant le
+  -- découpage. Porté aussi par les revenus, où rien ne le lit.
+  planned INTEGER NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS group_lines (

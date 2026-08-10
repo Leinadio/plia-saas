@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import { mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { migrateAccountCustomName, migrateGroupsV2, migrateTransactionExcluded, migrateTransactionIgnored, migrateTransactionLineId, migrateTransactionManualFields, migrateTransactionComment, migrateReconcileIgnored, migrateGroupLifespan, migrateLineLifespan, migrateDropLineDay, migrateBudgetAmountsDropGroupFk, migrateBudgetAmountScope, migrateDismissedNotifications, migrateSeedDatedAmounts, migrateDropGroupKind, migrateDropIncomeKind, migrateAccountOwner, migrateProvisionPerAccount, migrateBankConnections, migrateTransactionIdPerAccount, migrateDropDeadTables } from "./migrations";
+import { migrateAccountCustomName, migrateGroupsV2, migrateTransactionExcluded, migrateTransactionIgnored, migrateTransactionLineId, migrateTransactionManualFields, migrateTransactionComment, migrateReconcileIgnored, migrateGroupLifespan, migrateLineLifespan, migrateDropLineDay, migrateBudgetAmountsDropGroupFk, migrateBudgetAmountScope, migrateDismissedNotifications, migrateSeedDatedAmounts, migrateDropGroupKind, migrateDropIncomeKind, migrateGroupPlanned, migrateAccountOwner, migrateProvisionPerAccount, migrateBankConnections, migrateTransactionIdPerAccount, migrateDropDeadTables } from "./migrations";
 
 const SCHEMA = readFileSync(join(process.cwd(), "src/db/schema.sql"), "utf8");
 
@@ -33,6 +33,9 @@ export function getDb(path = join(process.cwd(), "data/budget.db")): Database.Da
   // coup la ferait revenir à chaque démarrage.
   migrateDropGroupKind(db);
   migrateDropIncomeKind(db);
+  // Après les suppressions de colonnes de groups : elle en ajoute une, et doit passer
+  // derrière celles qui en retirent pour ne pas se la faire emporter.
+  migrateGroupPlanned(db);
   // Après les suppressions de colonnes : elle lit accounts telle qu'elle est à la fin.
   migrateAccountOwner(db);
   migrateProvisionPerAccount(db);

@@ -125,6 +125,16 @@ export function migrateDropIncomeKind(db: Database.Database): void {
   }
 }
 
+// Ajoute la colonne planned : une dépense est prévue (1) ou non prévue (0), les deux
+// blocs du tableau. Le défaut à 1 est tout l'enjeu de cette migration — le découpage
+// arrive après les enveloppes, et aucune ne doit changer de bloc en rouvrant la base.
+// Un revenu porte la colonne comme les autres, sans que rien ne la lise. Idempotent.
+export function migrateGroupPlanned(db: Database.Database): void {
+  const cols = db.prepare("PRAGMA table_info(groups)").all() as { name: string }[];
+  if (cols.some((c) => c.name === "planned")) return;
+  db.exec(`ALTER TABLE groups ADD COLUMN planned INTEGER NOT NULL DEFAULT 1`);
+}
+
 // --- À qui appartient un compte bancaire -------------------------------------
 // Tout le budget pend au compte : une transaction a son account_id, un groupe aussi,
 // un sous-poste appartient à son groupe. Poser le propriétaire ici suffit donc à en

@@ -84,9 +84,23 @@ export function negateNode(n: DetailNode): DetailNode {
 }
 
 // Clé de ligne d'une section pour les data-cellkey. Les deux sections « non
-// catégorisés » (reçus / dépenses) ont chacune la leur.
+// catégorisés » (reçus / dépenses) ont chacune la leur, et les deux blocs de
+// dépenses (prévues / non prévues) aussi : ils partagent le kind « expense » avec la
+// section entière, et sans clé propre, cliquer le sous-total de l'un surlignerait
+// l'autre et le « Total Dépenses » avec lui.
 export function sectionRowKey(sec: HistorySection): string {
-  return sec.kind === "uncategorized" && sec.uncatDirection === "in" ? "section:uncat-in" : sectionRow(sec.kind);
+  if (sec.kind === "uncategorized" && sec.uncatDirection === "in") return "section:uncat-in";
+  if (sec.kind === "expense" && sec.expenseBlock) return `section:expense-${sec.expenseBlock}`;
+  return sectionRow(sec.kind);
+}
+
+// Nom affiché d'une section, blocs de dépenses compris. labelOfSection ne voit que le
+// kind et ne peut pas les distinguer : passer par ici dès qu'on a la section sous la main.
+export function sectionLabel(sec: HistorySection): string {
+  if (sec.kind === "expense" && sec.expenseBlock) {
+    return sec.expenseBlock === "planned" ? "Dépenses prévues" : "Dépenses non prévues";
+  }
+  return labelOfSection(sec.kind);
 }
 
 export function labelOfSection(kind: HistorySection["kind"]): string {

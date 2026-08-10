@@ -19,6 +19,8 @@ export type GroupRow = {
   monthlyAmount: number | null;
   startMonth: string | null;
   endMonth: string | null;
+  // Dépense prévue ou non prévue : le bloc du tableau où l'enveloppe est rangée.
+  planned: boolean;
   lines: GroupLineRow[];
 };
 
@@ -74,19 +76,21 @@ export function listGroups(db: Database.Database, userId: string): GroupRow[] {
   const groups = db
     .prepare(
       `SELECT g.id, g.account_id AS accountId, g.name, g.direction, g.monthly_amount AS monthlyAmount,
-              g.start_month AS startMonth, g.end_month AS endMonth
+              g.start_month AS startMonth, g.end_month AS endMonth, g.planned
        FROM groups g
        JOIN accounts a ON a.id = g.account_id
        WHERE a.user_id = ?
        ORDER BY g.name`,
     )
-    .all(userId) as Omit<GroupRow, "lines">[];
+    .all(userId) as (Omit<GroupRow, "lines" | "planned"> & { planned: number })[];
   const lineStmt = db.prepare(
     `SELECT id, name, amount, start_month AS startMonth, end_month AS endMonth
      FROM group_lines WHERE group_id = ? ORDER BY id`,
   );
   return groups.map((g) => ({
     ...g,
+    // SQLite ne connaît pas les booléens : la colonne vaut 0 ou 1.
+    planned: g.planned !== 0,
     lines: lineStmt.all(g.id) as GroupLineRow[],
   }));
 }
@@ -103,13 +107,16 @@ export function insertGroup(
   monthlyAmount: number,
   startMonth: string,
   endMonth: string | null,
+  // Le bloc où la dépense est rangée, décidé par le bouton « + » sur lequel on a
+  // cliqué. Prévue par défaut : c'est le cas courant, et le seul qu'un revenu connaisse.
+  planned = true,
 ): number {
   const info = db
     .prepare(
-      `INSERT INTO groups (account_id, name, direction, monthly_amount, start_month, end_month)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO groups (account_id, name, direction, monthly_amount, start_month, end_month, planned)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
     )
-    .run(accountId, name, direction, monthlyAmount, startMonth, endMonth);
+    .run(accountId, name, direction, monthlyAmount, startMonth, endMonth, planned ? 1 : 0);
   return Number(info.lastInsertRowid);
 }
 
@@ -119,6 +126,12 @@ export function deleteGroup(db: Database.Database, id: number): void {
   // donc à la main les budgets datés du groupe supprimé.
   db.prepare(`DELETE FROM budget_amounts WHERE group_id = ?`).run(id);
   db.prepare(`DELETE FROM groups WHERE id = ?`).run(id);
+}
+
+// Déplace une dépense d'un bloc à l'autre. Rien d'autre ne bouge : ni son nom, ni ses
+// montants datés, ni ses bornes — le geste est donc parfaitement réversible.
+export function setGroupPlanned(db: Database.Database, id: number, planned: boolean): void {
+  db.prepare(`UPDATE groups SET planned = ? WHERE id = ?`).run(planned ? 1 : 0, id);
 }
 
 export function renameGroup(db: Database.Database, id: number, name: string): void {

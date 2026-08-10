@@ -20,6 +20,7 @@ import { draftMode, draftStart, type PeriodDraft } from "@/lib/group-period";
 export function NewGroupInline({
   accountId,
   direction = "out",
+  planned = true,
   stripMin,
   stripMax,
   defaultMonth,
@@ -27,6 +28,9 @@ export function NewGroupInline({
 }: {
   accountId: string;
   direction?: "in" | "out";
+  // Le bloc de dépenses d'où le formulaire a été ouvert : prévues ou non prévues.
+  // Rien ne le demande à l'écran — le bouton « + » sur lequel on a cliqué le dit déjà.
+  planned?: boolean;
   stripMin: string;
   stripMax: string;
   defaultMonth: string;
@@ -54,6 +58,7 @@ export function NewGroupInline({
       endMonth: draft.end ?? draft.start,
       period: draftMode(draft),
       direction,
+      planned,
     });
     setPending(false);
     onDone();

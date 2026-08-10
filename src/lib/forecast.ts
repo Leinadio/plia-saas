@@ -26,6 +26,11 @@ export type Group = {
   lines: GroupLine[];
   startMonth?: string | null;
   endMonth?: string | null;
+  // Dépense prévue (le courant, l'implicite) ou dépense non prévue : les deux blocs
+  // du tableau. Se fixe à la création et ne bouge plus, comme le sens. Absent = prévue,
+  // ce qui range d'office toutes les enveloppes nées avant ce découpage. N'a de sens
+  // que pour une sortie : un revenu le porte sans que personne ne le lise.
+  planned?: boolean;
 };
 
 export type Txn = {

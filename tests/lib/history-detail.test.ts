@@ -220,7 +220,7 @@ describe("Le détail du Solde actuel", () => {
     openings: [1000, 1500],
     closings: [1500, 1420],
     rowRunning: {},
-    uncategorizedRunning: null,
+    uncategorizedRunning: null, expenseBlockRunning: null,
   };
 
   it("devrait partir de l'argent de départ, puis enchaîner chaque section", () => {
