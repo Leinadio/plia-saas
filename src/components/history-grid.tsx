@@ -142,16 +142,12 @@ const COL1_W = 320;
 const DATA_TINT = "bg-[color-mix(in_oklab,var(--muted)_30%,var(--background))]";
 const BALANCE_TINT = "bg-[color-mix(in_oklab,oklch(0.75_0.16_80)_16%,var(--background))]";
 const SOLDE_TINT = "bg-[color-mix(in_oklab,oklch(0.75_0.10_210)_15%,var(--background))]";
-// Fond des lignes de totaux (« Total revenus », « Total Dépenses », « Solde actuel »).
+// Fond des lignes de totaux (« Total revenus », « Total Dépenses », « Total »).
 // Posé sur les CELLULES et non sur la ligne : chaque cellule de données porte déjà le
 // fond de sa colonne, qui recouvrirait celui de la ligne et ne laisserait la teinte
 // visible que dans les trous. Plus soutenu que DATA_TINT, pour que l'œil trouve les
 // totaux sans avoir à lire les libellés.
 const TOTAL_TINT = "bg-[color-mix(in_oklab,var(--muted-foreground)_22%,var(--background))]";
-// Fond des sous-totaux des deux blocs de dépenses : la même famille que TOTAL_TINT,
-// en deux fois plus discret. Ce sont des sommes, l'œil doit les voir ; ce ne sont pas
-// LE total, il ne doit pas les confondre avec lui.
-const SUBTOTAL_TINT = "bg-[color-mix(in_oklab,var(--muted-foreground)_11%,var(--background))]";
 
 // Les deux blocs de la section des dépenses.
 type ExpenseBloc = "planned" | "unplanned";
@@ -160,6 +156,26 @@ const TITRE_BLOC: Record<ExpenseBloc, string> = {
   planned: "Dépenses prévues",
   unplanned: "Dépenses non prévues",
 };
+// Fond des deux grandes sections. Il ne remplace QUE DATA_TINT — les colonnes de
+// données et celle du nom : Balance et Solde gardent leur ambre et leur bleu, qui
+// disent autre chose et doivent rester lisibles d'une section à l'autre.
+// Plus pâles que les teintes de colonne, exprès : elles situent, elles ne signalent
+// rien. Le mélange se fait avec --background, donc elles suivent le thème.
+const INCOME_TINT = "bg-[color-mix(in_oklab,oklch(0.72_0.13_155)_16%,var(--background))]";
+const EXPENSE_TINT = "bg-[color-mix(in_oklab,oklch(0.62_0.16_25)_12%,var(--background))]";
+// Trois crans par couleur, du plus clair au plus foncé : les lignes de données, le
+// sous-total d'un bloc de dépenses, le total de la section. La hiérarchie se lit à la
+// densité, pas à la teinte — c'est la même couleur qui s'assombrit, donc l'œil relie
+// chaque total à la section qu'il ferme.
+const EXPENSE_SUBTOTAL_TINT = "bg-[color-mix(in_oklab,oklch(0.62_0.16_25)_20%,var(--background))]";
+const EXPENSE_TOTAL_TINT = "bg-[color-mix(in_oklab,oklch(0.62_0.16_25)_30%,var(--background))]";
+const INCOME_TOTAL_TINT = "bg-[color-mix(in_oklab,oklch(0.72_0.13_155)_30%,var(--background))]";
+
+// La teinte de la section où l'on se trouve, portée par le contexte plutôt que passée
+// de main en main : les lignes s'imbriquent (groupe, sous-poste, transaction) et
+// chacune aurait dû la relayer.
+const TeinteSection = createContext<string | undefined>(undefined);
+
 const COL_TINT: Record<ColKey, string> = {
   budgetRem: DATA_TINT,
   budgetDep: DATA_TINT,
@@ -190,12 +206,16 @@ export type ColSlots = Record<ColKey, (border: boolean) => ColCell>;
 // Rend les cellules d'un mois (une par colonne), chacune sur le fond de sa famille.
 // `tint` remplace ce fond pour toute la ligne : c'est ainsi qu'une ligne de totaux
 // prend une couleur d'un bout à l'autre au lieu de garder les familles de colonnes.
-function renderCols(cols: ColKey[], slots: ColSlots, tint?: string): React.ReactNode[] {
+// tint : une teinte qui couvre TOUTES les colonnes (les lignes de totaux).
+// sectionTint : la teinte de la section, qui ne remplace que le fond des colonnes de
+// données — Balance et Solde gardent le leur.
+function renderCols(cols: ColKey[], slots: ColSlots, tint?: string, sectionTint?: string): React.ReactNode[] {
   return cols.map((col, idx) => {
     const cell = slots[col](idx === 0);
+    const fond = tint ?? (sectionTint && COL_TINT[col] === DATA_TINT ? sectionTint : COL_TINT[col]);
     // Le fond est posé AVANT la className propre de la cellule, pour que l'anneau de
     // sélection et les bordures restent au-dessus.
-    return cloneElement(cell, { className: cn(tint ?? COL_TINT[col], cell.props.className) });
+    return cloneElement(cell, { className: cn(fond, cell.props.className) });
   });
 }
 
@@ -418,6 +438,7 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
   // lignes — et à disposer du montant dépassé.
   noticeOf?: (month: string) => OverspendNoticeInfo | null;
 }) {
+  const teinteSection = useContext(TeinteSection);
   return (
     <>
       {cells.map((c, i) => {
@@ -634,7 +655,7 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
           soldeDepass: (b) => plannedSoldeCell("soldeDepass", soldeDepass?.[i] ?? null, b, soldeDepassDetail, onSelect, ck("soldeDepass"), selCellKey, mouvementPrevu - ownOs),
         };
 
-        return <Fragment key={i}>{renderCols(cols, slots)}</Fragment>;
+        return <Fragment key={i}>{renderCols(cols, slots, undefined, teinteSection)}</Fragment>;
       })}
     </>
   );
@@ -684,6 +705,7 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
   // seul : sa Balance et ses trois soldes disent où en est le compte une fois ce
   // bloc passé. La section entière, elle, garde ses lignes dédiées en bas.
   const isBloc = sec.kind === "expense" && !!sec.expenseBlock;
+  const teinteSection = useContext(TeinteSection);
   // Section « non catégorisés » côté reçus (affichée sous les rémunérations).
   const uncatIn = isUncat && sec.uncatDirection === "in";
   const rowKey = sectionRowKey(sec);
@@ -915,7 +937,7 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
               : plannedSoldeCol("soldeDepass", null, b),
         };
 
-        return <Fragment key={i}>{renderCols(cols, slots, tint ?? (total ? TOTAL_TINT : undefined))}</Fragment>;
+        return <Fragment key={i}>{renderCols(cols, slots, tint ?? (total ? TOTAL_TINT : undefined), teinteSection)}</Fragment>;
       })}
     </>
   );
@@ -931,6 +953,7 @@ function IncomeTotalCells({ sec, months, currentMonth, onSelect, selCellKey, onl
   onSelect?: (d: CellDetail) => void;
   selCellKey?: ReadonlySet<string>;
 }) {
+  const teinteSection = useContext(TeinteSection);
   return (
     <>
       {sec.totals.map((c, i) => {
@@ -976,13 +999,15 @@ function IncomeTotalCells({ sec, months, currentMonth, onSelect, selCellKey, onl
           soldeDepass: (b) => blankCol("soldeDepass", b),
         };
 
-        return <Fragment key={i}>{renderCols(cols, slots, TOTAL_TINT)}</Fragment>;
+        // Dans une section teintée, le fond ne couvre que les colonnes de données :
+        // Balance et Solde gardent leur ambre et leur bleu jusque sur les totaux.
+        return <Fragment key={i}>{renderCols(cols, slots, teinteSection ? undefined : TOTAL_TINT, teinteSection)}</Fragment>;
       })}
     </>
   );
 }
 
-// Ligne « Solde actuel » (grand total) : rendu dédié, pas via AmountCells. Budg./
+// Ligne « Total » (grand total du tableau) : rendu dédié, pas via AmountCells. Budg./
 // Dép./Reçu se déplient sur la liste des sections (elles-mêmes dépliables sur leurs
 // groupes, puis leurs transactions) ; Solde = Argent de départ + chaque section.
 // Reste : cliquable seulement si l'invariant budget − dépensé == balance tient
@@ -1030,9 +1055,9 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
           sections.map((sec) => sectionNode(sec, i, month, "recu")).filter((n) => n.amount !== 0),
           { subtitle, result: c.recu },
         );
-        // Reste : non affiché sur la ligne « Solde actuel » (grand total) — un reste
+        // Reste : non affiché sur la ligne « Total » (grand total) — un reste
         // agrégé toutes catégories confondues n'est pas parlant.
-        const soldeDetail: CellDetail = soldeActuelDetail(sections, solde, i, month, { title: "Solde actuel", result: solde.closings[i] });
+        const soldeDetail: CellDetail = soldeActuelDetail(sections, solde, i, month, { title: "Total", result: solde.closings[i] });
 
         // --- Détails des colonnes de projection du grand total ------------------
         // Budget de projection : seules les sections de dépense (cohérent avec la
@@ -1165,7 +1190,9 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
           soldeDepass: (b) => plannedSoldeCell("soldeDepass", planned.depassClosings[i], b, soldeDepassDetail, onSelect, ck("soldeDepass"), selCellKey),
         };
 
-        return <Fragment key={i}>{renderCols(cols, slots, TOTAL_TINT)}</Fragment>;
+        // Le gris du grand total ne couvre que les colonnes de données : Balance et
+        // Solde gardent leur ambre et leur bleu jusqu'en bas du tableau.
+        return <Fragment key={i}>{renderCols(cols, slots, undefined, TOTAL_TINT)}</Fragment>;
       })}
     </>
   );
@@ -1175,6 +1202,7 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
 // ou Reçu (entrée), selon son signe, du mois où elle a lieu ; le reste est vide.
 function TxnCells({ txn, months, currentMonth, onSelect, selCellKey, only }: OnlyMonth & { txn: HistoryTxn; months: string[]; currentMonth: string; onSelect?: (d: CellDetail) => void; selCellKey?: ReadonlySet<string> }) {
   const isOut = txn.amount < 0;
+  const teinteSection = useContext(TeinteSection);
   return (
     <>
       {months.map((m, i) => {
@@ -1218,7 +1246,7 @@ function TxnCells({ txn, months, currentMonth, onSelect, selCellKey, only }: Onl
           soldePrevu: (b) => blankCol("soldePrevu", b),
           soldeDepass: (b) => blankCol("soldeDepass", b),
         };
-        return <Fragment key={i}>{renderCols(cols, slots)}</Fragment>;
+        return <Fragment key={i}>{renderCols(cols, slots, undefined, teinteSection)}</Fragment>;
       })}
     </>
   );
@@ -1234,9 +1262,12 @@ function NameCell({ children, indent, expandable, expanded, onToggle }: {
   expanded?: boolean;
   onToggle?: () => void;
 }) {
+  // La colonne du nom prend la teinte de sa section, sans quoi la couleur
+  // commencerait au premier chiffre et la ligne paraîtrait coupée en deux.
+  const teinteSection = useContext(TeinteSection);
   return (
     <TableCell
-      className={cn("bg-background h-px p-0", expandable && "cursor-pointer")}
+      className={cn(teinteSection ?? "bg-background", "h-px p-0", expandable && "cursor-pointer")}
       onClick={onToggle}
     >
       <FirstColBox indent={indent}>
@@ -1476,7 +1507,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     [sections, months, currentMonth, solde, planned],
   );
 
-  // Estimé de fin du mois courant, aligné sur le tableau : Solde actuel + les
+  // Estimé de fin du mois courant, aligné sur le tableau : le Total + les
   // rémunérations restant à recevoir − les Balances vertes non nulles (le budget
   // restant, qu'on suppose dépensé d'ici la fin du mois).
   const tableEstimate = useMemo(
@@ -2249,13 +2280,21 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               <Fragment key={sec.kind}>
                 {spacer}
                 {enTeteRevenu()}
-                {sec.rows.map((r) => renderGroup(r, mi, true))}
-                {uncatIn && renderUncatRows(uncatIn, secs, mi)}
+                <TeinteSection.Provider value={INCOME_TINT}>
+                  {sec.rows.map((r) => renderGroup(r, mi, true))}
+                </TeinteSection.Provider>
+                {uncatIn && (
+                  <TeinteSection.Provider value={INCOME_TINT}>
+                    {renderUncatRows(uncatIn, secs, mi)}
+                  </TeinteSection.Provider>
+                )}
                 <TableRow className="font-medium">
-                  <TableCell className={cn(TOTAL_TINT, "h-px p-0")}>
+                  <TableCell className={cn(INCOME_TOTAL_TINT, "h-px p-0")}>
                     <FirstColBox>Total revenus</FirstColBox>
                   </TableCell>
-                  <IncomeTotalCells sec={sec} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} only={mi} />
+                  <TeinteSection.Provider value={INCOME_TOTAL_TINT}>
+                    <IncomeTotalCells sec={sec} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} only={mi} />
+                  </TeinteSection.Provider>
                 </TableRow>
               </Fragment>
             );
@@ -2271,7 +2310,11 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             return (
               <Fragment key={`uncat-${sec.uncatDirection ?? "out"}`}>
                 {(sec.uncatDirection ?? "out") === "out" && <SpacerRow cols={totalCols} />}
-                {renderUncatRows(sec, secs, mi)}
+                {/* Les non catégorisés portent la couleur de leur sens : ce qui entre
+                    avec les revenus, ce qui sort avec les dépenses. */}
+                <TeinteSection.Provider value={(sec.uncatDirection ?? "out") === "in" ? INCOME_TINT : EXPENSE_TINT}>
+                  {renderUncatRows(sec, secs, mi)}
+                </TeinteSection.Provider>
               </Fragment>
             );
           }
@@ -2292,15 +2335,19 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                     {enTeteDepense(b)}
                     {/* Replié, les enveloppes disparaissent, jamais le sous-total :
                         sinon replier ferait disparaître de l'argent du tableau. */}
-                    {!blocReplie(b, m) && bloc.rows.map((r) => renderGroup(r, mi))}
+                    {!blocReplie(b, m) && (
+                      <TeinteSection.Provider value={EXPENSE_TINT}>
+                        {bloc.rows.map((r) => renderGroup(r, mi))}
+                      </TeinteSection.Provider>
+                    )}
                     <TableRow className="text-sm">
-                      <TableCell className={cn(SUBTOTAL_TINT, "h-px p-0")}>
+                      <TableCell className={cn(EXPENSE_SUBTOTAL_TINT, "h-px p-0")}>
                         <FirstColBox>
                           <span className="text-muted-foreground">{TITRE_BLOC[b]}</span>
                         </FirstColBox>
                       </TableCell>
+                      <TeinteSection.Provider value={EXPENSE_SUBTOTAL_TINT}>
                       <SectionTotalsCells
-                        tint={SUBTOTAL_TINT}
                         accountId={accountId}
                         sec={bloc}
                         // Les trois soldes au pied du bloc : le compte une fois toutes
@@ -2312,15 +2359,18 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                         // connue de history-nav, et les sous-totaux de bloc n'y sont pas.
                         // Le détail se lit, seul le lien vers la case du dessus manque.
                         months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} only={mi} />
+                      </TeinteSection.Provider>
                     </TableRow>
                   </Fragment>
                 );
               })}
               <TableRow className="font-medium">
-                <TableCell className={cn(TOTAL_TINT, "h-px p-0")}>
+                <TableCell className={cn(EXPENSE_TOTAL_TINT, "h-px p-0")}>
                   <FirstColBox>Total Dépenses</FirstColBox>
                 </TableCell>
-                <SectionTotalsCells total accountId={accountId} sec={sec} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} only={mi} />
+                <TeinteSection.Provider value={EXPENSE_TOTAL_TINT}>
+                  <SectionTotalsCells accountId={accountId} sec={sec} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} only={mi} />
+                </TeinteSection.Provider>
               </TableRow>
               {renderSectionResteRow("expense", "Balance dépenses", secs, mi)}
             </Fragment>
@@ -2328,14 +2378,14 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         })}
         <TableRow className="font-semibold">
           <TableCell className={cn(TOTAL_TINT, "h-px p-0")}>
-            <FirstColBox>Solde actuel</FirstColBox>
+            <FirstColBox>Total</FirstColBox>
           </TableCell>
           <GrandTotalsCells sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} only={mi} />
         </TableRow>
-        {/* Estimé fin de mois : mois courant = Solde actuel + rémunérations restant
+        {/* Estimé fin de mois : mois courant = Total + rémunérations restant
             à recevoir − Balances vertes (le budget restant, supposé dépensé d'ici la
             fin du mois) ; autres mois = leur solde de clôture (même détail que la
-            ligne « Solde actuel » pour ce mois — cf. soldeActuelDetail). */}
+            ligne « Total » pour ce mois — cf. soldeActuelDetail). */}
         <TableRow className="text-sm">
           <TableCell className="bg-background h-px p-0">
             <FirstColBox><span className="text-muted-foreground">Estimé fin de mois</span></FirstColBox>
@@ -2348,7 +2398,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               ? makeDetail(
                   "Estimé fin de mois",
                   [
-                    { label: "Solde actuel", amount: forecast.balance, ref: cellKey("grand", "solde", i) },
+                    { label: "Total", amount: forecast.balance, ref: cellKey("grand", "solde", i) },
                     ...(tableEstimate?.incomeSteps ?? []).map((s): DetailNode => ({
                       label: `${s.name} — reste à recevoir`,
                       amount: s.amount,
@@ -2372,7 +2422,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             );
             const slots = blankSlots();
             // Sur les mois de projection, l'« Estimé fin de mois » répéterait le
-            // « Solde réel » (Solde actuel) déjà affiché plus haut : on laisse vide.
+            // « Solde réel » (la ligne « Total ») déjà affiché plus haut : on laisse vide.
             if (m <= currentMonth) slots.soldeReel = estCell;
             return <Fragment key={i}>{renderCols(cols, slots)}</Fragment>;
           })}
