@@ -1426,14 +1426,19 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     adding?.kind === "expense" && adding.month === month ? adding.bloc : null;
 
   // Blocs de dépenses repliés. Replier cache les enveloppes du bloc, jamais son
-  // sous-total : sinon replier ferait disparaître de l'argent du tableau. Le repli
-  // vaut pour tous les mois affichés — c'est un choix de lecture, pas une donnée du
-  // mois — et ne survit pas au rechargement, comme le dépliage des groupes.
-  const [blocsReplies, setBlocsReplies] = useState<Set<ExpenseBloc>>(new Set());
-  const toggleBloc = (bloc: ExpenseBloc) =>
+  // sous-total : sinon replier ferait disparaître de l'argent du tableau.
+  //
+  // La clé porte son mois (openKeyIn), comme le dépliage des groupes et pour la même
+  // raison : le tableau affiche un tableau par mois, et les mêmes blocs s'y répètent.
+  // Sans le mois, replier les non prévues en août les repliait aussi en juillet, jusque
+  // dans des mois qu'on ne regardait pas. Ne survit pas au rechargement.
+  const [blocsReplies, setBlocsReplies] = useState<Set<string>>(new Set());
+  const blocReplie = (bloc: ExpenseBloc, month: string) => blocsReplies.has(openKeyIn(bloc, month));
+  const toggleBloc = (bloc: ExpenseBloc, month: string) =>
     setBlocsReplies((prev) => {
       const next = new Set(prev);
-      if (!next.delete(bloc)) next.add(bloc);
+      const k = openKeyIn(bloc, month);
+      if (!next.delete(k)) next.add(k);
       return next;
     });
   // Idem pour un sous-poste, mais la question porte sur une dépense précise.
@@ -1934,7 +1939,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     // Le bloc où l'on clique décide du bloc où la dépense naît : le formulaire ne pose
     // pas la question, il n'a pas à la poser.
     const enTeteDepense = (bloc: ExpenseBloc) => {
-      const replie = blocsReplies.has(bloc);
+      const replie = blocReplie(bloc, m);
       return (
         <>
           <TableRow className="hover:bg-transparent">
@@ -1942,7 +1947,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               <div className="font-sans bg-background flex w-fit items-center gap-2 py-1 pr-3 pl-1">
                 <button
                   type="button"
-                  onClick={() => toggleBloc(bloc)}
+                  onClick={() => toggleBloc(bloc, m)}
                   aria-expanded={!replie}
                   className="flex cursor-pointer items-center gap-1 text-sm font-medium"
                 >
@@ -2259,11 +2264,13 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             // Les reçus non catégorisés sont rendus dans la section Rémunérations
             // (ci-dessus) quand elle existe ; sinon ils s'affichent ici, à leur place.
             if (sec.uncatDirection === "in" && secs.some((s) => s.kind === "income")) return null;
-            // Sans espace au-dessus : les non catégorisés appartiennent à la section
-            // qui les précède (l'ordre le garantit, cf. RANGS dans history-month-view).
-            // L'espace les en détachait et les faisait passer pour une section à part.
+            // Un espace au-dessus des dépenses non catégorisées : elles suivent le
+            // « Total Dépenses » et sa Balance, qui closent les enveloppes, et se
+            // lisent mal collées à eux. Les reçus non catégorisés, eux, restent
+            // attachés à ce qui les précède.
             return (
               <Fragment key={`uncat-${sec.uncatDirection ?? "out"}`}>
+                {(sec.uncatDirection ?? "out") === "out" && <SpacerRow cols={totalCols} />}
                 {renderUncatRows(sec, secs, mi)}
               </Fragment>
             );
@@ -2280,10 +2287,12 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 const bloc = b === "planned" ? blocs.prevues : blocs.nonPrevues;
                 return (
                   <Fragment key={b}>
+                    {/* Les deux blocs respirent l'un l'autre, comme deux sections. */}
+                    {b !== BLOCS[0] && <SpacerRow cols={totalCols} />}
                     {enTeteDepense(b)}
                     {/* Replié, les enveloppes disparaissent, jamais le sous-total :
                         sinon replier ferait disparaître de l'argent du tableau. */}
-                    {!blocsReplies.has(b) && bloc.rows.map((r) => renderGroup(r, mi))}
+                    {!blocReplie(b, m) && bloc.rows.map((r) => renderGroup(r, mi))}
                     <TableRow className="text-sm">
                       <TableCell className={cn(SUBTOTAL_TINT, "h-px p-0")}>
                         <FirstColBox>
@@ -2373,7 +2382,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             « Balance dépenses » qui agrège déjà ces montants. */}
         <TableRow className="text-sm">
           <TableCell className="bg-background h-px p-0">
-            <FirstColBox><span className="text-muted-foreground">Dépassement hors budget</span></FirstColBox>
+            <FirstColBox><span className="text-muted-foreground">Total dépassement hors budget</span></FirstColBox>
           </TableCell>
           {months.map((m, i) => {
             if (skipMonth(mi, i)) return null;
@@ -2391,7 +2400,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 : []),
             ];
             const detail: CellDetail | null =
-              val > 0.005 ? makeDetail("Dépassement hors budget", nodes, { subtitle: monthLabel(m), result: val }) : null;
+              val > 0.005 ? makeDetail("Total dépassement hors budget", nodes, { subtitle: monthLabel(m), result: val }) : null;
             const type = monthType(m, currentMonth);
             const cols = monthColumns(type);
             const depCell = (b: boolean) => (
