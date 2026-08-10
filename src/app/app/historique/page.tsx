@@ -87,13 +87,18 @@ export default async function HistoriquePage({
   return (
     <div className="flex flex-col gap-4">
       <Tabs defaultValue={accounts[0].id}>
-        <TabsList>
-          {accounts.map((a) => (
-            <TabsTrigger key={a.id} value={a.id}>
-              {accountLabel(a)}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        {/* Les onglets de comptes défilent plutôt que de se tasser : sur un écran
+            étroit, quatre noms de comptes ne tiennent pas côte à côte, et aucun ne
+            doit disparaître. */}
+        <div className="max-w-full overflow-x-auto">
+          <TabsList>
+            {accounts.map((a) => (
+              <TabsTrigger key={a.id} value={a.id}>
+                {accountLabel(a)}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
         {accounts.map((a) => {
           const groups = allGroups.filter((g) => g.accountId === a.id) as Group[];
           const txns = allTxns.filter((t) => t.accountId === a.id);

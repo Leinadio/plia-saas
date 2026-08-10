@@ -121,10 +121,14 @@ function OverspendTag() {
   );
 }
 
-// Largeur fixe de la première colonne. Un conteneur interne à largeur px fixe
-// (et non un max-width sur la cellule, ignoré en table-auto) garantit que la
-// colonne ne bouge pas quand on déroule des transactions à long libellé.
-const COL1_W = 320;
+// Largeur fixe de la première colonne. Un conteneur interne à largeur fixe (et non
+// un max-width sur la cellule, ignoré en table-auto) garantit que la colonne ne
+// bouge pas quand on déroule des transactions à long libellé.
+// Deux largeurs : 320 px partout, 176 px sur téléphone. À 320 px, la colonne des
+// noms mangeait un écran de 375 px entier et il ne restait rien pour les chiffres,
+// qui sont ce qu'on vient lire. Les noms trop longs se coupent, et un tap les
+// déplie (cf. TruncatedText).
+const COL1_W = "w-44 sm:w-80";
 
 // Le modèle de colonnes (quelles colonnes sous quel mois, leur libellé et leur
 // explication) vit dans src/lib/history-columns.ts : c'est une règle, pas du rendu.
@@ -266,8 +270,8 @@ function blankSlots(): ColSlots {
 function FirstColBox({ children, indent = 0 }: { children: React.ReactNode; indent?: number }) {
   return (
     <div
-      className="border-border/60 flex h-full items-center gap-1.5 overflow-hidden border-r py-2 pr-2 font-sans"
-      style={{ width: COL1_W, paddingLeft: `${0.5 + indent * 1.25}rem` }}
+      className={cn("border-border/60 flex h-full items-center gap-1.5 overflow-hidden border-r py-2 pr-2 font-sans", COL1_W)}
+      style={{ paddingLeft: `${0.5 + indent * 1.25}rem` }}
     >
       {children}
     </div>
@@ -1285,8 +1289,8 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
     <TableRow className="align-top text-sm text-muted-foreground">
       <TableCell className="bg-background h-px p-0">
         <div
-          className="border-border/60 flex h-full flex-col gap-1 border-r py-2 pr-2 font-sans"
-          style={{ width: COL1_W, paddingLeft: `${0.5 + indent * 1.25}rem` }}
+          className={cn("border-border/60 flex h-full flex-col gap-1 border-r py-2 pr-2 font-sans", COL1_W)}
+          style={{ paddingLeft: `${0.5 + indent * 1.25}rem` }}
         >
           {/* La date au-dessus, le libellé en dessous : côte à côte, la date mangeait
               un tiers de la colonne et coupait presque tous les libellés. Empilés, le
@@ -1601,7 +1605,12 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             ) : (
               <ArrowDownRight className="size-4 shrink-0 text-muted-foreground" />
             )}
-            <span className="min-w-0 truncate font-medium">{r.name}</span>
+            {/* Le nom et la durée côte à côte quand la colonne est large, empilés
+                quand elle ne fait plus que 176 px : à cette largeur, deux textes sur
+                la même ligne se coupent tous les deux. Empilés, ils se lisent en
+                entier, et rien ne disparaît. */}
+            <span className="flex min-w-0 flex-col sm:flex-row sm:items-center sm:gap-1.5">
+            <span className="min-w-0 font-medium break-words whitespace-normal sm:truncate">{r.name}</span>
             {/* Durée de vie du groupe, dite en clair : « depuis toujours »,
                 « depuis juillet 2026 », « ce mois uniquement », ou la plage.
                 Sans elle, une dépense de vacances
@@ -1611,9 +1620,10 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 mois : une étiquette, pas un contenu. */}
             <span
               title={groupPeriodLabel(sg?.startMonth, sg?.endMonth)}
-              className="text-muted-foreground/60 min-w-0 truncate text-[9px] font-normal tracking-[0.12em] uppercase"
+              className="text-muted-foreground/60 min-w-0 text-[9px] font-normal tracking-[0.12em] break-words whitespace-normal uppercase sm:truncate"
             >
               {groupPeriodLabel(sg?.startMonth, sg?.endMonth)}
+            </span>
             </span>
             {/* Gérer le groupe : icône discrète révélée au survol de la ligne. */}
             <button
@@ -1623,7 +1633,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 e.stopPropagation();
                 onSelect(manageDetail);
               }}
-              className="text-muted-foreground hover:text-foreground ml-1 shrink-0 cursor-pointer opacity-0 group-hover:opacity-100"
+              className="text-muted-foreground hover:text-foreground ml-1 shrink-0 cursor-pointer opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
             >
               <Pencil className="size-3.5" />
             </button>
@@ -1638,7 +1648,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 e.stopPropagation();
                 toggleAddingLine(r.id, gMonth);
               }}
-              className="text-muted-foreground hover:text-foreground shrink-0 cursor-pointer opacity-0 group-hover:opacity-100"
+              className="text-muted-foreground hover:text-foreground shrink-0 cursor-pointer opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
             >
               <Plus className="size-3.5" />
             </button>
@@ -1708,16 +1718,19 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 <Fragment key={sub.id}>
                   <TableRow className={cn("group text-sm", subHasTxns && "hover:bg-muted/50")}>
                     <NameCell indent={1} expandable={subHasTxns} expanded={lOpen} onToggle={subHasTxns ? () => toggleIn(lKey, gMonth) : undefined}>
-                      <span className="min-w-0 truncate">{sub.name}</span>
+                      {/* Même empilement que sur la ligne du groupe au-dessus. */}
+                      <span className="flex min-w-0 flex-col sm:flex-row sm:items-center sm:gap-1.5">
+                      <span className="min-w-0 break-words whitespace-normal sm:truncate">{sub.name}</span>
                       {/* Durée de vie du poste, dite comme celle du groupe juste
                           au-dessus : un abonnement résilié en mai et un abonnement
                           permanent se ressemblent sinon trait pour trait, et rien
                           n'explique pourquoi l'un disparaît le mois suivant. */}
                       <span
                         title={groupPeriodLabel(sgLine?.startMonth, sgLine?.endMonth)}
-                        className="text-muted-foreground/60 min-w-0 truncate text-[9px] font-normal tracking-[0.12em] uppercase"
+                        className="text-muted-foreground/60 min-w-0 text-[9px] font-normal tracking-[0.12em] break-words whitespace-normal uppercase sm:truncate"
                       >
                         {groupPeriodLabel(sgLine?.startMonth, sgLine?.endMonth)}
+                      </span>
                       </span>
                       {/* Gérer la ligne : même crayon discret que sur la ligne de
                           groupe, révélé au survol. Une ligne est un poste à part
@@ -1747,7 +1760,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                             },
                           });
                         }}
-                        className="text-muted-foreground hover:text-foreground ml-1 shrink-0 cursor-pointer opacity-0 group-hover:opacity-100"
+                        className="text-muted-foreground hover:text-foreground ml-1 shrink-0 cursor-pointer opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
                       >
                         <Pencil className="size-3.5" />
                       </button>
@@ -1850,7 +1863,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 haut, celle des décaissements plus bas, mais quand aucun revenu n'est
                 encore créé la première se retrouve seule, sans en-tête pour dire ce
                 qu'elle est. On croit alors voir deux fois la même chose. */}
-            <span className="min-w-0 truncate">
+            <span className="min-w-0 break-words whitespace-normal sm:truncate">
               {dir === "in" ? "Reçus non catégorisés" : "Dépenses non catégorisées"}
             </span>
           </NameCell>
@@ -1890,7 +1903,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       <Fragment key={key}>
         <TableRow className="font-medium">
           <NameCell indent={0} expandable expanded={opened} onToggle={() => toggleIn(key, bMonth)}>
-            <span className="min-w-0 truncate">{title}</span>
+            <span className="min-w-0 break-words whitespace-normal sm:truncate">{title}</span>
           </NameCell>
           {months.map((m, i) => {
             if (skipMonth(mi, i)) return null;

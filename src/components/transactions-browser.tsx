@@ -50,13 +50,13 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
   const renderLabel = (t: TxnView) => (
     <span className="group/txn flex flex-col gap-0.5">
       <span className="flex items-center gap-1.5">
-        <TruncatedText text={t.label} className="max-w-[380px]" />
+        <TruncatedText text={t.label} className="max-w-[190px] sm:max-w-[380px]" />
         {t.manual && <Badge variant="outline">manuel · en attente</Badge>}
         {t.ignored && <Badge variant="outline">non comptabilisée</Badge>}
       </span>
       {t.note && <span className="text-muted-foreground text-xs">{t.note}</span>}
       {/* Le commentaire vient juste sous le libellé. */}
-      <TxnCommentField txnId={t.id} comment={t.comment} className="max-w-[380px]" />
+      <TxnCommentField txnId={t.id} comment={t.comment} className="max-w-[190px] sm:max-w-[380px]" />
     </span>
   );
 
@@ -150,7 +150,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
           placeholder="Rechercher un libellé…"
           value={filters.text}
           onChange={(e) => set({ text: e.target.value })}
-          className="w-56"
+          className="w-full sm:w-56"
         />
         <select
           value={filters.group === "all" ? "all" : filters.group === "none" ? "none" : String(filters.group)}
@@ -158,7 +158,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
             const v = e.target.value;
             set({ group: v === "all" || v === "none" ? v : Number(v) });
           }}
-          className="border-input bg-background h-9 rounded-md border px-3 text-sm"
+          className="border-input bg-background h-9 max-w-full rounded-md border px-3 text-sm"
         >
           <option value="all">Tous les groupes</option>
           <option value="none">Non catégorisées</option>
@@ -237,7 +237,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
                       <GroupSelectField txnId={t.id} groups={groupsOfTxn(t)} defaultGroupId={t.groupId} defaultLineId={t.lineId} disabled={t.ignored} />
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      <TruncatedText text={statusLabel(t)} className="max-w-[200px]" />
+                      <TruncatedText text={statusLabel(t)} className="max-w-[130px] sm:max-w-[200px]" />
                     </TableCell>
                     <TableCell className={amountClass(t)}>{formatEur(t.amount)}</TableCell>
                     <TableCell className="text-right whitespace-nowrap">
@@ -252,13 +252,17 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
         </div>
       ) : (
         <Tabs defaultValue={accountTxnGroups[0]?.[0]}>
-          <TabsList>
-            {accountTxnGroups.map(([accountId, group]) => (
-              <TabsTrigger key={accountId} value={accountId}>
-                {group.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          {/* Les onglets défilent plutôt que de se tasser : aucun compte ne disparaît
+              sur un écran étroit. */}
+          <div className="max-w-full overflow-x-auto">
+            <TabsList>
+              {accountTxnGroups.map(([accountId, group]) => (
+                <TabsTrigger key={accountId} value={accountId}>
+                  {group.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
           {accountTxnGroups.map(([accountId, group]) => (
             <TabsContent key={accountId} value={accountId}>
               {/* Un tableau à en-têtes sans une seule ligne se lit comme un chargement
@@ -313,7 +317,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
                             <GroupSelectField txnId={t.id} groups={groupsOfTxn(t)} defaultGroupId={t.groupId} defaultLineId={t.lineId} disabled={t.ignored} />
                           </TableCell>
                           <TableCell className="text-muted-foreground">
-                            <TruncatedText text={statusLabel(t)} className="max-w-[200px]" />
+                            <TruncatedText text={statusLabel(t)} className="max-w-[130px] sm:max-w-[200px]" />
                           </TableCell>
                           <TableCell className={amountClass(t)}>{formatEur(t.amount)}</TableCell>
                           <TableCell className="text-right whitespace-nowrap">

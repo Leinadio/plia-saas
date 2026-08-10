@@ -67,6 +67,19 @@ export function DetailSidebarProvider({ children }: { children: React.ReactNode 
         onOpenChange={(open) => {
           if (!open) setDetail(null);
         }}
+        // Le même état commande le tiroir : sous le seuil, le panneau ne tient plus en
+        // colonne et s'ouvre par-dessus le tableau. Sans ça, cliquer un montant sur une
+        // tablette ou un téléphone n'ouvrait rien du tout.
+        openMobile={detail !== null}
+        onOpenMobileChange={(open) => {
+          if (!open) setDetail(null);
+        }}
+        // 1024 et non 768 : le panneau fait 26rem, et en colonne à côté de la navigation
+        // il ne laisserait qu'une centaine de pixels au tableau sur une tablette.
+        mobileBreakpoint={1024}
+        // Presque tout l'écran, sans jamais coller aux bords : le détail d'un calcul est
+        // une pile de montants alignés, illisible dans un tiroir étroit.
+        mobileWidth="min(26rem, calc(100vw - 2rem))"
         // group/detail + data-detail : le contenu (SidebarInset) doit coller a la
         // sidebar de detail quand elle est ouverte (son p-2 fait deja l'ecart).
         // shadcn ne gere ce reglage que pour une sidebar de gauche, via un

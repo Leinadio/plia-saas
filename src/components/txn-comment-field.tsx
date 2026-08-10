@@ -70,7 +70,7 @@ export function TxnCommentField({ txnId, comment, className }: {
         onClick={ouvrir}
         className={cn(
           "text-muted-foreground hover:text-foreground flex w-fit items-center gap-1 text-[11px]",
-          "opacity-0 group-hover/txn:opacity-100 focus-visible:opacity-100",
+          "opacity-0 group-hover/txn:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100",
           className,
         )}
       >

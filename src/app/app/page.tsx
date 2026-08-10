@@ -62,7 +62,7 @@ export default async function Dashboard() {
         const accountTxns = allTxns.filter((t) => t.accountId === a.id).slice(0, 8);
         return (
           <Card key={a.id}>
-            <CardHeader className="flex-row items-baseline justify-between">
+            <CardHeader className="flex-row flex-wrap items-baseline justify-between gap-2">
               <CardTitle>{accountLabel(a)}</CardTitle>
               <span className="text-xl font-bold">
                 {formatEur(effectiveBalance(a.balance, ignoredByAccount[a.id]))}

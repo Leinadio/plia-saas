@@ -126,8 +126,8 @@ export default async function SettingsPage({
                 revendique : sans cette liste ils n'auraient nulle part où se
                 supprimer. */}
             {accounts.map((a) => (
-              <div key={a.id} className="flex items-center gap-2">
-                <form action={renameAccount} className="flex items-center gap-2">
+              <div key={a.id} className="flex flex-wrap items-center gap-2">
+                <form action={renameAccount} className="flex flex-wrap items-center gap-2">
                   <input type="hidden" name="id" value={a.id} />
                   <Input
                     name="alias"

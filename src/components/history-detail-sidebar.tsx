@@ -812,9 +812,10 @@ function DetailBody({ detail, onClose, selectedPanel, onSelectRow }: {
   );
 }
 
-// Sidebar shadcn côté droit : elle pousse le contenu (comme la navigation de
-// gauche) au lieu de le recouvrir. Le contenu affiché vient de `detail` ; le
-// glissement (offcanvas) est piloté par le SidebarProvider qui l'englobe. La clé
+// Sidebar shadcn côté droit : au-dessus de 1024 px elle pousse le contenu (comme la
+// navigation de gauche) au lieu de le recouvrir ; en dessous elle s'ouvre par-dessus,
+// faute de place pour deux colonnes et un tableau. Le contenu affiché vient de
+// `detail` ; le glissement est piloté par le SidebarProvider qui l'englobe. La clé
 // sur DetailBody réinitialise son état de dépliage à chaque nouveau détail.
 export function HistoryDetailSidebar({ detail, onClose, selectedPanel, onSelectRow }: {
   detail: CellDetail | null;

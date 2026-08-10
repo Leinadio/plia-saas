@@ -39,6 +39,8 @@ type SidebarContextProps = {
   openMobile: boolean
   setOpenMobile: (open: boolean) => void
   isMobile: boolean
+  // Largeur du tiroir, quand la barre s'ouvre par-dessus le contenu.
+  mobileWidth?: string
   toggleSidebar: () => void
 }
 
@@ -57,6 +59,10 @@ function SidebarProvider({
   defaultOpen = true,
   open: openProp,
   onOpenChange: setOpenProp,
+  openMobile: openMobileProp,
+  onOpenMobileChange: setOpenMobileProp,
+  mobileBreakpoint,
+  mobileWidth,
   className,
   style,
   children,
@@ -65,9 +71,26 @@ function SidebarProvider({
   defaultOpen?: boolean
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  // Sur petit écran, la barre ne vit plus en colonne : elle s'ouvre par-dessus le
+  // contenu, et c'est cet état-là qui la commande. Sans ces deux entrées, une barre
+  // pilotée de l'extérieur (le panneau de détail, ouvert par un clic sur un montant)
+  // restait fermée dès qu'on passait sous le seuil : le contenu était injoignable.
+  openMobile?: boolean
+  onOpenMobileChange?: (open: boolean) => void
+  mobileBreakpoint?: number
+  mobileWidth?: string
 }) {
-  const isMobile = useIsMobile()
-  const [openMobile, setOpenMobile] = React.useState(false)
+  const isMobile = useIsMobile(mobileBreakpoint)
+  const [_openMobile, _setOpenMobile] = React.useState(false)
+  const openMobile = openMobileProp ?? _openMobile
+  const setOpenMobile = React.useCallback(
+    (value: boolean | ((value: boolean) => boolean)) => {
+      const next = typeof value === "function" ? value(openMobile) : value
+      if (setOpenMobileProp) setOpenMobileProp(next)
+      else _setOpenMobile(next)
+    },
+    [setOpenMobileProp, openMobile]
+  )
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
@@ -121,9 +144,10 @@ function SidebarProvider({
       isMobile,
       openMobile,
       setOpenMobile,
+      mobileWidth,
       toggleSidebar,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+    [state, open, setOpen, isMobile, openMobile, setOpenMobile, mobileWidth, toggleSidebar]
   )
 
   return (
@@ -163,7 +187,7 @@ function Sidebar({
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
 }) {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const { isMobile, state, openMobile, setOpenMobile, mobileWidth } = useSidebar()
 
   if (collapsible === "none") {
     return (
@@ -188,9 +212,13 @@ function Sidebar({
           data-slot="sidebar"
           data-mobile="true"
           className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+          // Le tiroir prend la largeur que le provider lui donne, sinon la largeur
+          // par défaut. Un panneau dense — le détail d'un calcul — a besoin de presque
+          // tout l'écran. La largeur passe par le contexte et non par une variable CSS
+          // héritée : le tiroir est monté à la racine du document, hors du provider.
           style={
             {
-              "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+              "--sidebar-width": mobileWidth ?? SIDEBAR_WIDTH_MOBILE,
             } as React.CSSProperties
           }
           side={side}

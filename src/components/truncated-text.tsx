@@ -13,13 +13,17 @@ import { cn } from "@/lib/utils";
 export function TruncatedText({ text, className, lines = 1 }: { text: string; className?: string; lines?: 1 | 2 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const [truncated, setTruncated] = useState(false);
+  // Déplié par un clic. Le survol ne veut rien dire sur un écran tactile : sans ce
+  // repli, un libellé coupé sur téléphone était définitivement illisible.
+  const [deplie, setDeplie] = useState(false);
 
   // Les deux sens sont testés : sur une ligne le texte déborde en largeur, sur deux
-  // il déborde en hauteur (line-clamp coupe verticalement).
+  // il déborde en hauteur (line-clamp coupe verticalement). Mesuré replié seulement :
+  // déplié, il ne déborde plus, et la mesure effacerait le moyen de le replier.
   useEffect(() => {
     const el = ref.current;
-    if (el) setTruncated(el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight);
-  }, [text, lines]);
+    if (el && !deplie) setTruncated(el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight);
+  }, [text, lines, deplie]);
 
   // `whitespace-normal` est indispensable sur deux lignes : les cellules du tableau
   // portent whitespace-nowrap (ui/table.tsx), hérité jusqu'ici. Sans lui le texte
@@ -29,13 +33,32 @@ export function TruncatedText({ text, className, lines = 1 }: { text: string; cl
   const span = (
     <span
       ref={ref}
-      className={cn(lines === 2 ? "line-clamp-2 break-words whitespace-normal" : "block truncate", className)}
+      // stopPropagation : ces libellés vivent dans des lignes de tableau cliquables
+      // (replier un mois, ouvrir le détail d'une case). Lire un texte coupé ne doit
+      // pas déclencher ce qui l'entoure.
+      onClick={
+        truncated || deplie
+          ? (e) => {
+              e.stopPropagation();
+              setDeplie((v) => !v);
+            }
+          : undefined
+      }
+      className={cn(
+        deplie
+          ? "block break-words whitespace-normal"
+          : lines === 2
+            ? "line-clamp-2 break-words whitespace-normal"
+            : "block truncate",
+        (truncated || deplie) && "cursor-pointer",
+        className,
+      )}
     >
       {text}
     </span>
   );
 
-  if (!truncated) return span;
+  if (!truncated || deplie) return span;
 
   return (
     <Tooltip delayDuration={700}>
