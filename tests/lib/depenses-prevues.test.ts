@@ -1,5 +1,5 @@
 import { expect, describe, it } from "vitest";
-import { computeHistory, computeSolde, computePlannedSoldes, sliceSoldeColumn, slicePlannedSoldes, splitExpenseSection, type HistorySection } from "../../src/lib/history";
+import { computeHistory, computeSolde, splitExpenseSection, type HistorySection } from "../../src/lib/history";
 import { sectionRowKey, sectionLabel } from "../../src/lib/history-detail";
 import { type Group, type Txn } from "../../src/lib/forecast";
 import { seedDated, mergeDated } from "./dated-fixtures";
@@ -121,62 +121,6 @@ describe("Dépenses prévues et non prévues", () => {
     expect(rowRunning[4][0]).toBeCloseTo(openings[0] - 100 - 700, 6);
     // Dentiste ferme la marche : son solde porte les trois dépenses.
     expect(rowRunning[2][0]).toBeCloseTo(openings[0] - 100 - 700 - 50, 6);
-  });
-
-  // Chaque bloc se ferme comme une section : son sous-total dit où en est le compte
-  // une fois toutes ses dépenses passées. Sans ça, les trois colonnes de solde
-  // restaient vides sur les deux lignes de sous-total.
-  describe("Soldes au pied de chaque bloc", () => {
-    const loyer: Group = {
-      id: 4, accountId: "a1", name: "Loyer", direction: "out", monthlyAmount: 700, lines: [],
-    };
-    const txns = [
-      tx({ id: "a", date: "2026-07-03", amount: -100, groupId: 1 }), // Courses, prévue
-      tx({ id: "b", date: "2026-07-10", amount: -50, groupId: 2 }), // Dentiste, non prévue
-      tx({ id: "c", date: "2026-07-15", amount: -700, groupId: 4 }), // Loyer, prévue
-    ];
-
-    it("devrait clore le bloc des prévues sur le solde de sa dernière dépense", () => {
-      const secs = hist([courses, dentiste, loyer, salaire], txns);
-      const { openings, rowRunning, expenseBlockRunning } = computeSolde(secs, MOIS, "2026-07", 0);
-      expect(expenseBlockRunning!.planned[0]).toBeCloseTo(rowRunning[4][0], 6);
-      expect(expenseBlockRunning!.unplanned[0]).toBeCloseTo(rowRunning[2][0], 6);
-      expect(expenseBlockRunning!.unplanned[0]).toBeCloseTo(openings[0] - 850, 6);
-    });
-
-    // Un bloc vide n'a aucune dépense à retirer : le solde le traverse sans bouger.
-    // Sa case ne doit pas rester vide pour autant, sinon la colonne se coupe en deux.
-    it("devrait faire traverser le solde par un bloc vide, sans le laisser sans valeur", () => {
-      const secs = hist([courses, loyer, salaire], txns);
-      const { rowRunning, expenseBlockRunning } = computeSolde(secs, MOIS, "2026-07", 0);
-      expect(expenseBlockRunning!.planned[0]).toBeCloseTo(rowRunning[4][0], 6);
-      expect(expenseBlockRunning!.unplanned[0]).toBeCloseTo(expenseBlockRunning!.planned[0], 6);
-    });
-
-    // Le tableau se lit par fenêtre de quelques mois : tout ce qui est aligné sur les
-    // mois doit être coupé avec eux, sinon le sous-total d'un bloc afficherait le solde
-    // d'un autre mois.
-    it("devrait couper les soldes de bloc avec la fenêtre de mois", () => {
-      const secs = hist([courses, dentiste, loyer, salaire], txns);
-      const s = computeSolde(secs, MOIS, "2026-07", 0);
-      const p = computePlannedSoldes(secs, MOIS, "2026-07", s.openings);
-      const s2 = sliceSoldeColumn(s, 1);
-      const p2 = slicePlannedSoldes(p, 1);
-      expect(s2.expenseBlockRunning!.planned).toEqual(s.expenseBlockRunning!.planned.slice(1));
-      expect(s2.expenseBlockRunning!.unplanned).toHaveLength(MOIS.length - 1);
-      expect(p2.prevuBlockRunning.planned).toEqual(p.prevuBlockRunning.planned.slice(1));
-      expect(p2.depassBlockRunning.unplanned).toEqual(p.depassBlockRunning.unplanned.slice(1));
-    });
-
-    it("devrait clore chaque bloc sur ses soldes prévu et si dépassement", () => {
-      const secs = hist([courses, dentiste, loyer, salaire], txns);
-      const { openings } = computeSolde(secs, MOIS, "2026-07", 0);
-      const p = computePlannedSoldes(secs, MOIS, "2026-07", openings);
-      expect(p.prevuBlockRunning.planned[0]).toBeCloseTo(p.prevuRowRunning[4][0]!, 6);
-      expect(p.prevuBlockRunning.unplanned[0]).toBeCloseTo(p.prevuRowRunning[2][0]!, 6);
-      expect(p.depassBlockRunning.planned[0]).toBeCloseTo(p.depassRowRunning[4][0]!, 6);
-      expect(p.depassBlockRunning.unplanned[0]).toBeCloseTo(p.depassRowRunning[2][0]!, 6);
-    });
   });
 
   it("devrait laisser les sous-postes attachés à leur enveloppe quand elle change de bloc", () => {

@@ -66,14 +66,13 @@ describe("À quelle case renvoie le « Solde précédent » d'une ligne", () => 
     openings: [100],
     closings: [70],
     rowRunning: { 1: [90], 2: [90], 3: [70] },
-    uncategorizedRunning: null, expenseBlockRunning: null,
+    uncategorizedRunning: null,
   };
   const planned: PlannedSoldes = {
     prevuClosings: [70],
     depassClosings: [70],
     prevuRowRunning: { 1: [90], 2: [90], 3: [70] },
     depassRowRunning: { 1: [90], 2: [90], 3: [70] },
-    prevuBlockRunning: { planned: [], unplanned: [] }, depassBlockRunning: { planned: [], unplanned: [] },
     uncatPrevuRunning: {},
     uncatDepassRunning: {},
   };
@@ -107,12 +106,12 @@ describe("À quelle case renvoie le « Solde précédent » d'une ligne", () => 
       sections,
       ["2026-06", "2026-07"],
       "2026-07",
-      { openings: [100, 100], closings: [70, 70], rowRunning: { 1: [90, 100], 2: [90, 90], 3: [70, 70] }, uncategorizedRunning: null, expenseBlockRunning: null },
+      { openings: [100, 100], closings: [70, 70], rowRunning: { 1: [90, 100], 2: [90, 90], 3: [70, 70] }, uncategorizedRunning: null },
       {
         prevuClosings: [70, 70], depassClosings: [70, 70],
         prevuRowRunning: { 1: [90, 100], 2: [90, 90], 3: [70, 70] },
         depassRowRunning: { 1: [90, 100], 2: [90, 90], 3: [70, 70] },
-        uncatPrevuRunning: {}, uncatDepassRunning: {}, prevuBlockRunning: { planned: [], unplanned: [] }, depassBlockRunning: { planned: [], unplanned: [] },
+        uncatPrevuRunning: {}, uncatDepassRunning: {},
       },
     );
     // Juin : le groupe 1 a bougé (100 → 90), il est affiché. Juillet : il n'a rien
@@ -129,13 +128,12 @@ describe("À quelle case renvoie le « Solde précédent » d'une ligne", () => 
       withUncat,
       ["2026-07"],
       "2026-07",
-      { openings: [100], closings: [50], rowRunning: { 1: [90] }, uncategorizedRunning: { out: [50] }, expenseBlockRunning: null },
+      { openings: [100], closings: [50], rowRunning: { 1: [90] }, uncategorizedRunning: { out: [50] } },
       {
         prevuClosings: [50], depassClosings: [50],
         prevuRowRunning: { 1: [90] }, depassRowRunning: { 1: [90] },
         uncatPrevuRunning: { out: [50] }, uncatDepassRunning: { out: [50] },
-        prevuBlockRunning: { planned: [], unplanned: [] }, depassBlockRunning: { planned: [], unplanned: [] },
-      },
+          },
     );
     expect(p.solde.get("section:uncategorized")).toEqual(["group:1"]);
   });

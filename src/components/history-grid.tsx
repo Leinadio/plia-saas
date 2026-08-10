@@ -814,10 +814,6 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
         const srcI = isFuture && ciIdx !== -1 ? ciIdx : i;
         const depassVal =
           isUncat && !uncatIn ? uncatOverspendOf(sec.totals[srcI], uncatInSec?.totals[srcI]) : 0;
-        // Dépassement d'un bloc = la somme de ceux de ses dépenses, au mois affiché.
-        // Rien sur un mois futur : la chaîne « si dépassement » n'y reporte plus rien
-        // (cf. computePlannedSoldes), et en afficher un ici mentirait sur le calcul.
-        const depassBloc = isBloc && !isFuture ? sec.rows.reduce((acc, r) => acc + rowOverspend(r, i), 0) : 0;
 
         // Non catégorisés comme étape du plan : planPrevu/planDepass fournissent les
         // valeurs courues à cette ligne (le débordement net est déjà retiré de la
@@ -826,7 +822,7 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
         const soldePrevuVal = planPrevu?.[i] ?? null;
         const soldeDepassVal = planDepass?.[i] ?? null;
         const soldePrevuDetail: CellDetail | null =
-          (isUncat || isBloc) && soldePrevuVal != null
+          isUncat && soldePrevuVal != null
             ? makeDetail(
                 "Solde prévu",
                 [
@@ -837,19 +833,7 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
               )
             : null;
         const soldeDepassDetail: CellDetail | null =
-          isBloc && soldeDepassVal != null
-            ? makeDetail(
-                "Solde si dépassement",
-                [
-                  { label: "Solde précédent", amount: soldeDepassVal + c.budgeted + depassBloc, ref: prevDisp?.soldeDepass?.[i] ? cellKey(prevDisp.soldeDepass[i]!, "soldeDepass", i) : undefined },
-                  { label: "Budget dépense", amount: -c.budgeted, ref: ck("budget") },
-                  ...(depassBloc > 0.005
-                    ? [{ label: "Dépassement", amount: -depassBloc, ref: ck("reste") }]
-                    : []),
-                ],
-                { subtitle, result: soldeDepassVal },
-              )
-            : isUncat && soldeDepassVal != null
+          isUncat && soldeDepassVal != null
             ? makeDetail(
                 "Solde si dépassement",
                 [
@@ -928,12 +912,12 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
           // de la ligne : −budget (provision) pour le prévu, −débordement pour le si
           // dépassement (cf. les nœuds « précédent » des détails ci-dessus).
           soldePrevu: (b) =>
-            isUncat || isBloc
+            isUncat
               ? plannedSoldeCell("soldePrevu", soldePrevuVal, b, soldePrevuDetail, onSelect, ck("soldePrevu"), selCellKey, -c.budgeted)
               : plannedSoldeCol("soldePrevu", null, b),
           soldeDepass: (b) =>
-            isUncat || isBloc
-              ? plannedSoldeCell("soldeDepass", soldeDepassVal, b, soldeDepassDetail, onSelect, ck("soldeDepass"), selCellKey, -(isBloc ? c.budgeted + depassBloc : depassVal))
+            isUncat
+              ? plannedSoldeCell("soldeDepass", soldeDepassVal, b, soldeDepassDetail, onSelect, ck("soldeDepass"), selCellKey, -depassVal)
               : plannedSoldeCol("soldeDepass", null, b),
         };
 
@@ -2347,17 +2331,12 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                         </FirstColBox>
                       </TableCell>
                       <TeinteSection.Provider value={EXPENSE_SUBTOTAL_TINT}>
+                      {/* Pas de soldes ici : celui du pied d'un bloc répète celui de sa
+                          dernière ligne, et le Total Dépenses juste dessous le redit une
+                          troisième fois. Le sous-total garde ses montants et sa Balance. */}
                       <SectionTotalsCells
                         accountId={accountId}
                         sec={bloc}
-                        // Les trois soldes au pied du bloc : le compte une fois toutes
-                        // ses dépenses passées, réel et selon les deux chaînes du plan.
-                        solde={solde.expenseBlockRunning?.[b]}
-                        planPrevu={planned.prevuBlockRunning[b]}
-                        planDepass={planned.depassBlockRunning[b]}
-                        // Pas de prevDisp : le renvoi « Solde précédent » vise une ligne
-                        // connue de history-nav, et les sous-totaux de bloc n'y sont pas.
-                        // Le détail se lit, seul le lien vers la case du dessus manque.
                         months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} only={mi} />
                       </TeinteSection.Provider>
                     </TableRow>
