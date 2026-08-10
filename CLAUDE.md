@@ -4,6 +4,13 @@ Toujours : des phrases courtes, un langage humain, pas de jargon inutile. Aller
 droit au but. Si une explication tient en trois phrases, elle ne doit pas en
 faire dix.
 
+Deux paragraphes courts maximum, sauf demande explicite. Parler du produit tel
+qu'il apparaît à l'écran — « le bloc du haut », « le bouton + », « le total » —
+et pas des rouages : pas de noms de fichiers, de fonctions, de colonnes de base
+ni de types, à moins qu'on les demande. Décrire ce que l'utilisateur verra et ce
+qui ne bougera pas. Pas de titres en gras pour découper trois phrases, pas de
+listes, pas d'emoji.
+
 # Le projet : Budget CIC
 
 App web locale et personnelle de suivi de budget. Elle se connecte au compte CIC
