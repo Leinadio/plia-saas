@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { monthLabel } from "@/lib/transactions-view";
 import type { AccountForecast } from "@/lib/forecast";
 import { type MonthCell, type HistorySection, type HistoryRow, type HistorySubRow, type HistoryTxn, type SoldeColumn, type PlannedSoldes, type Overspend, type IgnoredBlock, uncatOverspend, uncatOverspendOf, splitExpenseSection, computeTableEstimate, rowRevenus, rowOverspend, groupsWithPending } from "@/lib/history";
-import { sectionsAtMonth, sectionSlots } from "@/lib/history-month-view";
+import { sectionsAtMonth, sectionSlots, ignoredBlocksAtMonth, countIgnoredAtMonth } from "@/lib/history-month-view";
 import { groupsForMonth } from "@/lib/group-options";
 import { groupPeriodLabel } from "@/lib/group-period-label";
 import { soldeCell } from "@/lib/solde-cell";
@@ -2067,6 +2067,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
           </TableHead>
           {[m].map((m) => {
             const cols = monthColumns(monthType(m, currentMonth));
+            const nonComptees = countIgnoredAtMonth(ignoredBlocks, m);
             return (
               <TableHead
                 key={m}
@@ -2104,6 +2105,14 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 {m > currentMonth && (
                   <div className="text-muted-foreground/60 mt-1 font-sans text-[9px] font-normal tracking-[0.16em] uppercase">
                     projection
+                  </div>
+                )}
+                {/* Ce que ce mois laisse hors des calculs. Même formulation et même
+                    ambre que sur la page Transactions : c'est la même chose qu'on
+                    annonce, elle doit se reconnaître d'un écran à l'autre. */}
+                {nonComptees > 0 && (
+                  <div className="mt-1 font-sans text-[10px] font-normal text-amber-700 dark:text-amber-500">
+                    {nonComptees} non comptabilisée{nonComptees > 1 ? "s" : ""}
                   </div>
                 )}
               </TableHead>
@@ -2448,7 +2457,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         {(ignoredBlocks?.length ?? 0) > 0 && (
           <>
             <SpacerRow cols={totalCols} />
-            {ignoredBlocks!.map((b) => renderIgnoredBlock(b, mi))}
+            {/* Ramenés au mois de CE tableau : leurs transactions couvrent toute la
+                frise, et dépliées ici elles montraient aussi celles des autres mois. */}
+            {ignoredBlocksAtMonth(ignoredBlocks!, m).map((b) => renderIgnoredBlock(b, mi))}
           </>
         )}
       </TableBody>

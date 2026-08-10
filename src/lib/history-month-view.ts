@@ -8,7 +8,7 @@
 // transactions des autres mois. Elle ne raccourcit PAS les tableaux de cellules :
 // tout l'affichage est indexé par mois, une ligne rognée ferait lire la mauvaise
 // colonne. Seule la liste des lignes change.
-import type { HistorySection } from "./history";
+import type { HistorySection, IgnoredBlock } from "./history";
 
 // Une ligne dont on ne sait rien (aliveMonths trop court) reste affichée : mieux
 // vaut une ligne de trop qu'un budget qui disparaît sans qu'on sache pourquoi.
@@ -50,6 +50,21 @@ export function sectionSlots(sections: HistorySection[]): SectionSlot[] {
     if (!RANGS.some((r) => r === rangDe(sec))) slots.push({ kind: "section", section: sec });
   }
   return slots;
+}
+
+// Les blocs « Non comptabilisées » ramenés à un mois, comme sectionsAtMonth le fait
+// pour les sections. Leurs transactions couvrent toute la frise : dépliées dans le
+// tableau de juillet, elles y montraient aussi celles de juin. Les totaux, eux, restent
+// alignés sur tous les mois — ce sont eux que lisent les cases, colonne par colonne.
+export function ignoredBlocksAtMonth(blocks: IgnoredBlock[], month: string): IgnoredBlock[] {
+  return blocks.map((b) => ({ ...b, txns: b.txns.filter((t) => t.month === month) }));
+}
+
+// Combien d'opérations ce mois-là restent hors des calculs, les deux sens confondus.
+// L'en-tête du mois l'annonce : sans ce chiffre, un total qui paraît faux n'a aucun
+// indice à donner, et il faut ouvrir le bas du tableau pour comprendre.
+export function countIgnoredAtMonth(blocks: IgnoredBlock[] | undefined, month: string): number {
+  return ignoredBlocksAtMonth(blocks ?? [], month).reduce((n, b) => n + b.txns.length, 0);
 }
 
 export function sectionsAtMonth(sections: HistorySection[], i: number, month: string): HistorySection[] {

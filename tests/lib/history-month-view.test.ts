@@ -2,8 +2,8 @@
 // vivent CE mois-là, et rien d'autre. Un tableau par mois, donc une liste de
 // lignes par mois — c'est ce que cette découpe fabrique.
 import { describe, expect, it } from "vitest";
-import type { HistoryRow, HistorySection, HistoryTxn, MonthCell } from "../../src/lib/history";
-import { sectionsAtMonth, sectionSlots } from "../../src/lib/history-month-view";
+import type { HistoryRow, HistorySection, HistoryTxn, IgnoredBlock, MonthCell } from "../../src/lib/history";
+import { sectionsAtMonth, sectionSlots, ignoredBlocksAtMonth, countIgnoredAtMonth } from "../../src/lib/history-month-view";
 
 const MOIS = ["2026-06", "2026-07"];
 
@@ -121,5 +121,47 @@ describe("sectionSlots", () => {
   it("ne perd aucune section, même vide de lignes", () => {
     const slots = sectionSlots([depenses]);
     expect(slots.find((s) => s.kind === "section" && s.section.kind === "expense")).toBeDefined();
+  });
+});
+
+// Les blocs « Non comptabilisées » sont rendus dans chaque tableau de mois, mais ils
+// portent les transactions de TOUS les mois affichés : dépliés en juillet, on y lisait
+// aussi celles de juin. Comme les autres sections, ils doivent être ramenés à leur mois.
+describe("Les non comptabilisées d'un mois", () => {
+  const bloc: IgnoredBlock = {
+    direction: "out",
+    totals: [{ depense: 80, recu: 0 }, { depense: 90, recu: 0 }],
+    txns: [txn("i2", "2026-07-12", -90), txn("i1", "2026-06-10", -80)],
+  };
+
+  it("ne devrait garder que les transactions du mois déplié", () => {
+    expect(ignoredBlocksAtMonth([bloc], "2026-07")[0].txns.map((t) => t.id)).toEqual(["i2"]);
+    expect(ignoredBlocksAtMonth([bloc], "2026-06")[0].txns.map((t) => t.id)).toEqual(["i1"]);
+  });
+
+  // Les totaux restent alignés sur tous les mois : ce sont eux que lisent les cases,
+  // colonne par colonne. Seule la liste dépliable est ramenée au mois.
+  it("devrait laisser les totaux intacts", () => {
+    expect(ignoredBlocksAtMonth([bloc], "2026-07")[0].totals).toEqual(bloc.totals);
+  });
+
+  // Un bloc dont aucune transaction n'est de ce mois-là garde sa place : sa ligne
+  // affiche 0 pour ce mois, et la faire disparaître décalerait les autres.
+  it("devrait garder un bloc vide pour ce mois-là", () => {
+    expect(ignoredBlocksAtMonth([bloc], "2026-05")[0].txns).toEqual([]);
+  });
+
+  // L'en-tête du mois annonce combien d'opérations il laisse hors des calculs : sans
+  // ce chiffre, un mois dont le total paraît faux n'a aucun indice à donner.
+  it("devrait compter les non comptabilisées du mois, les deux sens confondus", () => {
+    const recus: IgnoredBlock = {
+      direction: "in",
+      totals: [{ depense: 0, recu: 0 }, { depense: 0, recu: 500 }],
+      txns: [txn("r1", "2026-07-02", 500)],
+    };
+    expect(countIgnoredAtMonth([bloc, recus], "2026-07")).toBe(2);
+    expect(countIgnoredAtMonth([bloc, recus], "2026-06")).toBe(1);
+    expect(countIgnoredAtMonth([bloc, recus], "2026-05")).toBe(0);
+    expect(countIgnoredAtMonth(undefined, "2026-07")).toBe(0);
   });
 });
