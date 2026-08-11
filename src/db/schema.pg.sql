@@ -194,8 +194,15 @@ $$;
 -- rabaisser, et travaillerait en administrateur sans que rien ne le signale.
 GRANT budget_app TO CURRENT_USER;
 
+-- Les droits sont donnés table par table, et pas « sur tout ce qui existe ». Les
+-- tables de connexion (user, session, account, verification) vivent dans la même base
+-- et n'ont rien à faire ici : elles sont l'affaire de Better Auth, qui s'y branche
+-- autrement. Un droit donné en bloc les emporterait au premier ajout.
 GRANT USAGE ON SCHEMA public TO budget_app;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO budget_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON
+  accounts, bank_connections, groups, group_lines, transactions,
+  budget_amounts, line_amounts, reconcile_ignored, dismissed_notifications
+  TO budget_app;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO budget_app;
 
 -- Qui parle. Le second argument à `true` veut dire « ne te fâche pas si personne ne
@@ -214,20 +221,28 @@ ALTER TABLE line_amounts           ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reconcile_ignored      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE dismissed_notifications ENABLE ROW LEVEL SECURITY;
 
--- Les deux tables qui portent le propriétaire en clair.
+-- Le retrait avant la pose rend le fichier rejouable : on doit pouvoir le repasser sur
+-- une base déjà installée sans que rien ne casse.
+-- Les tables qui portent le propriétaire en clair.
+DROP POLICY IF EXISTS a_soi ON accounts;
 CREATE POLICY a_soi ON accounts               USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id());
+DROP POLICY IF EXISTS a_soi ON bank_connections;
 CREATE POLICY a_soi ON bank_connections       USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id());
+DROP POLICY IF EXISTS a_soi ON reconcile_ignored;
 CREATE POLICY a_soi ON reconcile_ignored      USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id());
+DROP POLICY IF EXISTS a_soi ON dismissed_notifications;
 CREATE POLICY a_soi ON dismissed_notifications USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id());
 
 -- Tout le reste du budget pend à un compte bancaire : c'est par lui qu'on remonte au
 -- propriétaire. Chaque règle refait le chemin en entier plutôt que de s'appuyer sur
 -- celle de la table au-dessus — une règle qui en suppose une autre est une règle qu'on
 -- casse sans s'en apercevoir.
+DROP POLICY IF EXISTS a_soi ON groups;
 CREATE POLICY a_soi ON groups
   USING (EXISTS (SELECT 1 FROM accounts a WHERE a.id = groups.account_id AND a.user_id = app_user_id()))
   WITH CHECK (EXISTS (SELECT 1 FROM accounts a WHERE a.id = groups.account_id AND a.user_id = app_user_id()));
 
+DROP POLICY IF EXISTS a_soi ON group_lines;
 CREATE POLICY a_soi ON group_lines
   USING (EXISTS (
     SELECT 1 FROM groups g JOIN accounts a ON a.id = g.account_id
@@ -236,10 +251,12 @@ CREATE POLICY a_soi ON group_lines
     SELECT 1 FROM groups g JOIN accounts a ON a.id = g.account_id
     WHERE g.id = group_lines.group_id AND a.user_id = app_user_id()));
 
+DROP POLICY IF EXISTS a_soi ON transactions;
 CREATE POLICY a_soi ON transactions
   USING (EXISTS (SELECT 1 FROM accounts a WHERE a.id = transactions.account_id AND a.user_id = app_user_id()))
   WITH CHECK (EXISTS (SELECT 1 FROM accounts a WHERE a.id = transactions.account_id AND a.user_id = app_user_id()));
 
+DROP POLICY IF EXISTS a_soi ON line_amounts;
 CREATE POLICY a_soi ON line_amounts
   USING (EXISTS (
     SELECT 1 FROM group_lines l JOIN groups g ON g.id = l.group_id JOIN accounts a ON a.id = g.account_id
@@ -251,6 +268,7 @@ CREATE POLICY a_soi ON line_amounts
 -- Les budgets datés ont deux formes. Celui d'une dépense se rattache à son groupe ;
 -- celui des non catégorisés (groupe 0) n'a pas de groupe et se range sous le compte
 -- lui-même. Les deux chemins doivent être ouverts, et aucun autre.
+DROP POLICY IF EXISTS a_soi ON budget_amounts;
 CREATE POLICY a_soi ON budget_amounts
   USING (
     CASE WHEN group_id = 0

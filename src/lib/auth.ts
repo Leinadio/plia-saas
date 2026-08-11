@@ -15,13 +15,18 @@ import { poolPostgres } from "../db/index";
 // simple fait d'importer un fichier qui touche à la session — de près ou de loin —
 // exigerait une base joignable : les tests d'affichage, qui n'en ont aucun besoin,
 // tomberaient sur une erreur de connexion avant même de commencer.
+// Tout ce qui définit l'authentification, sauf la base. À part, parce que l'outil qui
+// fabrique les tables de connexion en a besoin lui aussi (scripts/auth-config.ts) et
+// qu'une option qui divergerait entre les deux donnerait des tables à côté de ce que
+// l'application attend.
+export const OPTIONS_AUTH = {
+  // Email et mot de passe pour commencer. Un fournisseur externe s'ajoute ici plus
+  // tard sans rien défaire de ce qui suit.
+  emailAndPassword: { enabled: true },
+} as const;
+
 function construire() {
-  return betterAuth({
-    database: poolPostgres(),
-    // Email et mot de passe pour commencer. Un fournisseur externe s'ajoute ici plus
-    // tard sans rien défaire de ce qui suit.
-    emailAndPassword: { enabled: true },
-  });
+  return betterAuth({ database: poolPostgres(), ...OPTIONS_AUTH });
 }
 
 let instance: ReturnType<typeof construire> | null = null;
