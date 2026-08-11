@@ -1,10 +1,17 @@
-import { signRequestJwt } from "./jwt";
+import { signRequestJwt, identifiantsBruts } from "./jwt";
+import { decrireIdentifiants } from "./empreinte";
 
 const BASE = "https://api.enablebanking.com";
 
 export class EnableBankingError extends Error {
   constructor(public status: number, public body: string) {
-    super(`Enable Banking HTTP ${status}: ${body}`);
+    // Un refus de signature ne dit jamais laquelle des deux moitiés est en cause, et
+    // sur un serveur on ne peut plus relire ses propres réglages : une valeur marquée
+    // secrète chez l'hébergeur ne se réaffiche pas. On joint donc de quoi la
+    // reconnaître — tailles et bords, jamais le milieu.
+    const { appId, pem } = status === 401 ? identifiantsBruts() : {};
+    const indices = status === 401 ? ` (${decrireIdentifiants(appId, pem)})` : "";
+    super(`Enable Banking HTTP ${status}: ${body}${indices}`);
   }
 }
 

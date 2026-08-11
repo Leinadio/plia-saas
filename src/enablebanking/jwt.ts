@@ -8,6 +8,22 @@ import { importPKCS8, SignJWT } from "jose";
 // déployé — et l'y mettre reviendrait à publier une clé privée. La clé voyage alors
 // dans ENABLEBANKING_PRIVATE_KEY, qui prime : quand les deux sont là, c'est celle qui
 // a voyagé avec l'app qui fait foi, le chemin n'étant qu'un reste du poste local.
+// Les deux moitiés telles qu'elles sont arrivées, sans jugement et sans exception.
+// Sert au message d'erreur quand Enable Banking refuse la signature : il faut alors
+// pouvoir décrire ce qu'on a reçu, y compris quand il manque quelque chose.
+export function identifiantsBruts(): { appId?: string; pem?: string } {
+  const appId = process.env.ENABLEBANKING_APPLICATION_ID;
+  const inline = process.env.ENABLEBANKING_PRIVATE_KEY;
+  const chemin = process.env.ENABLEBANKING_KEY_PATH;
+  if (inline) return { appId, pem: inline };
+  if (!chemin) return { appId };
+  try {
+    return { appId, pem: readFileSync(chemin, "utf8") };
+  } catch {
+    return { appId };
+  }
+}
+
 function readPrivateKey(): string {
   const inline = process.env.ENABLEBANKING_PRIVATE_KEY;
   // Un PEM tient sur plusieurs lignes, que beaucoup d'interfaces et de fichiers .env
