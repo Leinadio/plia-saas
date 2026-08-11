@@ -1,7 +1,7 @@
 import { TEST_USER } from "../../helpers/test-user";
 import { vi } from "vitest";
-import type Database from "better-sqlite3";
-import { getDb } from "../../../src/db/index";
+import { createTestDb } from "../../helpers/pg";
+import { dbFrom, type Db } from "../../../src/db/pg";
 import { upsertAccount } from "../../../src/db/repositories/accounts";
 
 // Montage commun à tous les tests d'actions serveur (src/app/app/historique/actions.ts) :
@@ -16,7 +16,7 @@ import { upsertAccount } from "../../../src/db/repositories/accounts";
 // seule fois, au chargement du module ; c'est pourquoi la base courante est un champ
 // réassigné (ctx.db = ...) à chaque test, jamais une variable module-level qu'on
 // réassignerait directement (la factory garderait alors sa valeur `null` d'origine).
-export const ctx: { db: Database.Database | null; userId: string } = { db: null, userId: TEST_USER };
+export const ctx: { db: Db | null; userId: string } = { db: null, userId: TEST_USER };
 
 // Change l'utilisateur que les actions croient voir. Sert aux tests qui vérifient
 // qu'un intrus ne peut pas écrire chez quelqu'un d'autre : c'est exactement ce que
@@ -45,8 +45,7 @@ vi.mock("../../../src/db/index", async (importOriginal) => {
   return { ...actual, db: () => ctx.db! };
 });
 
-// Base en mémoire fraîche, migrations appliquées comme en production (via getDb,
-// réexporté intact par le mock ci-dessus grâce à importOriginal), avec un compte
+// Base en mémoire fraîche — un vrai Postgres, comme en production — avec un compte
 // "a1" déjà présent — préalable de toutes les actions couvertes ici. À appeler dans
 // un beforeEach de chaque fichier de test : chaque test démarre sur une base neuve,
 // aucun état ne fuit d'un test à l'autre.
@@ -69,11 +68,14 @@ export function at(month: string): void {
   vi.setSystemTime(new Date(`${month}-15T12:00:00Z`));
 }
 
-export function freshDb(): Database.Database {
+// L'horloge n'est figée qu'APRÈS l'ouverture de la base : allumer un Postgres est
+// une opération qui prend du temps réel, et la lui refuser la ferait attendre pour
+// toujours.
+export async function freshDb(): Promise<Db> {
+  const database = dbFrom(await createTestDb());
+  await upsertAccount(database, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
   vi.useFakeTimers({ toFake: ["Date"] });
   vi.setSystemTime(new Date(`${NOW_MONTH}-05T12:00:00Z`));
-  const database = getDb(":memory:");
-  upsertAccount(database, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
   ctx.db = database;
   ctx.userId = TEST_USER;
   return database;

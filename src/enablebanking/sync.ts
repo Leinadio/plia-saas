@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Db } from "../db/pg";
 import { parseAmount } from "../lib/money";
 import { upsertAccount } from "../db/repositories/accounts";
 import { attachAccountToConnection } from "../db/repositories/bank-connections";
@@ -7,7 +7,7 @@ import { upsertTransaction } from "../db/repositories/transactions";
 type EbGet = <T>(path: string) => Promise<T>;
 
 // L'identité d'une opération synchronisée : ce compte, cette référence. Le séparateur
-// est partagé avec la reprise des bases existantes (migrateTransactionIdPerAccount).
+// est partagé avec la reprise des données existantes.
 export const TXN_ID_SEP = "::";
 export const txnId = (accountUid: string, reference: string) => `${accountUid}${TXN_ID_SEP}${reference}`;
 
@@ -81,7 +81,7 @@ async function fetchTransactions(ebGet: EbGet, uid: string): Promise<EbTxn[]> {
 }
 
 export async function syncAll(
-  db: Database.Database,
+  db: Db,
   // userId : le compte bancaire rapporté par la banque appartient à celui qui a
   // autorisé la connexion. Sans lui il serait orphelin et n'apparaîtrait chez personne.
   // connectionId : la banque d'où vient ce compte. C'est ce lien qui dira plus tard
@@ -107,7 +107,7 @@ export async function syncAll(
       // keep defaults
     }
 
-    upsertAccount(db, {
+    await upsertAccount(db, {
       id: uid,
       name,
       iban_masked: ibanMasked,
@@ -115,7 +115,7 @@ export async function syncAll(
       currency: (balances.balances ?? [])[0]?.balance_amount.currency ?? "EUR",
       last_synced: nowIso,
     }, deps.userId);
-    if (deps.connectionId != null) attachAccountToConnection(db, uid, deps.connectionId);
+    if (deps.connectionId != null) await attachAccountToConnection(db, uid, deps.connectionId);
 
     for (const t of await fetchTransactions(deps.ebGet, uid)) {
       const ref = t.entry_reference ?? t.transaction_id;
@@ -126,7 +126,7 @@ export async function syncAll(
       // disputent les mêmes clés, et la seconde ne voit jamais rien arriver.
       const id = txnId(uid, ref);
       const label = (t.remittance_information ?? []).join(" ").trim() || "(sans libellé)";
-      imported += upsertTransaction(db, {
+      imported += await upsertTransaction(db, {
         id,
         account_id: uid,
         date: t.booking_date,

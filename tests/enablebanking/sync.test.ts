@@ -1,6 +1,7 @@
 import { TEST_USER } from "../helpers/test-user";
 import { expect, test } from "vitest";
-import { getDb } from "../../src/db/index";
+import { createTestDb } from "../helpers/pg";
+import { dbFrom } from "../../src/db/pg";
 import { syncAll } from "../../src/enablebanking/sync";
 import { listTransactions } from "../../src/db/repositories/transactions";
 import { totalBalance, listAccounts } from "../../src/db/repositories/accounts";
@@ -29,15 +30,15 @@ const fakeEbGet = async (path: string): Promise<any> => {
 };
 
 test("sync imports balance + transactions", async () => {
-  const db = getDb(":memory:");
+  const db = dbFrom(await createTestDb());
   const result = await syncAll(db, {
     ebGet: fakeEbGet,
     accountUids: ["acc1"],
     accountName: "CIC", userId: TEST_USER,
   });
   expect(result.imported).toBe(1);
-  expect(totalBalance(db, TEST_USER)).toBe(500);
-  const txns = listTransactions(db, TEST_USER);
+  expect(await totalBalance(db, TEST_USER)).toBe(500);
+  const txns = await listTransactions(db, TEST_USER);
   expect(txns[0].amount).toBe(-30);
 });
 
@@ -63,16 +64,16 @@ test("keeps two accounts separate with their own balance, label and transactions
     return {};
   };
 
-  const db = getDb(":memory:");
+  const db = dbFrom(await createTestDb());
   await syncAll(db, { ebGet: perAccount, accountUids: ["accA", "accB"], accountName: "CIC", userId: TEST_USER });
 
-  const accounts = listAccounts(db, TEST_USER);
+  const accounts = await listAccounts(db, TEST_USER);
   expect(accounts).toHaveLength(2);
   expect(accounts.find((a) => a.id === "accA")?.balance).toBe(90.13);
   expect(accounts.find((a) => a.id === "accB")?.balance).toBe(471.12);
-  expect(totalBalance(db, TEST_USER)).toBeCloseTo(561.25);
+  expect(await totalBalance(db, TEST_USER)).toBeCloseTo(561.25);
 
-  const txns = listTransactions(db, TEST_USER);
+  const txns = await listTransactions(db, TEST_USER);
   // L'identifiant porte son compte : la banque rend la même référence à qui la lui
   // demande, et deux personnes branchées sur le même compte réel se disputeraient
   // sinon les mêmes clés (voir tests/db/id-transaction-par-compte.test.ts).
@@ -85,9 +86,9 @@ test("keeps two accounts separate with their own balance, label and transactions
 });
 
 test("sync deduplicates on re-run (imported === 0 on second call)", async () => {
-  const db = getDb(":memory:");
+  const db = dbFrom(await createTestDb());
   await syncAll(db, { ebGet: fakeEbGet, accountUids: ["acc1"], accountName: "CIC", userId: TEST_USER });
   const second = await syncAll(db, { ebGet: fakeEbGet, accountUids: ["acc1"], accountName: "CIC", userId: TEST_USER });
   expect(second.imported).toBe(0);
-  expect(listTransactions(db, TEST_USER)).toHaveLength(1);
+  expect(await listTransactions(db, TEST_USER)).toHaveLength(1);
 });

@@ -10,8 +10,8 @@ export async function renameAccount(formData: FormData) {
   const id = String(formData.get("id") ?? "").trim();
   const aliasRaw = String(formData.get("alias") ?? "").trim();
   if (!id) return;
-  if (!ownsAccount(db(), await requireUserId(), id)) return;
-  setAccountAlias(db(), id, aliasRaw === "" ? null : aliasRaw);
+  if (!(await ownsAccount(db(), await requireUserId(), id))) return;
+  await setAccountAlias(db(), id, aliasRaw === "" ? null : aliasRaw);
   revalidatePath("/app/settings");
   revalidatePath("/app");
   revalidatePath("/app/transactions");
@@ -22,8 +22,8 @@ export async function renameAccount(formData: FormData) {
 export async function deleteAccountAction(formData: FormData) {
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return;
-  if (!ownsAccount(db(), await requireUserId(), id)) return;
-  deleteAccount(db(), id);
+  if (!(await ownsAccount(db(), await requireUserId(), id))) return;
+  await deleteAccount(db(), id);
   toutRevalider();
 }
 
@@ -34,8 +34,8 @@ export async function deleteConnectionAction(formData: FormData) {
   const id = Number(formData.get("id") ?? 0);
   if (!Number.isInteger(id) || id <= 0) return;
   const database = db();
-  if (!ownedConnection(database, await requireUserId(), id)) return;
-  deleteConnection(database, id);
+  if (!(await ownedConnection(database, await requireUserId(), id))) return;
+  await deleteConnection(database, id);
   toutRevalider();
 }
 

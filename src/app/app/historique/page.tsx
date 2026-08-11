@@ -36,11 +36,11 @@ export default async function HistoriquePage({
   const userId = await requireUserId();
   const database = db();
   const currentMonth = currentMonthKey(new Date());
-  const accounts = listAccounts(database, userId);
-  const allGroups = listGroups(database, userId);
-  const datedBudgets = toDatedBudgets(listBudgetAmounts(database));
-  const datedLines = toDatedLineAmounts(listLineAmounts(database));
-  const dismissed = listDismissedNotifications(database);
+  const accounts = await listAccounts(database, userId);
+  const allGroups = await listGroups(database, userId);
+  const datedBudgets = toDatedBudgets(await listBudgetAmounts(database));
+  const datedLines = toDatedLineAmounts(await listLineAmounts(database));
+  const dismissed = await listDismissedNotifications(database);
   const toTxn = (t: TxnView): Txn => ({
     id: t.id,
     date: t.date,
@@ -53,16 +53,16 @@ export default async function HistoriquePage({
     comment: t.comment,
   });
   // Les transactions des calculs : listTransactions écarte les non comptabilisées.
-  const allTxns: Txn[] = listTransactions(database, userId).map(toTxn);
+  const allTxns: Txn[] = (await listTransactions(database, userId)).map(toTxn);
   // Les non comptabilisées, à part : elles ne servent qu'à la section d'affichage
   // en bas du tableau et n'entrent dans aucun calcul.
-  const allIgnored: Txn[] = listTransactions(database, userId, { includeIgnored: true })
+  const allIgnored: Txn[] = (await listTransactions(database, userId, { includeIgnored: true }))
     .filter((t) => t.ignored)
     .map(toTxn);
   // À retrancher du solde bancaire avant tout calcul : sans ça, la chaîne de soldes
   // rembobine des mouvements d'où ces opérations sont absentes, en partant d'un solde
   // qui les contient — et se retrouve décalée de leur montant.
-  const ignoredByAccount = sumIgnoredByAccount(database);
+  const ignoredByAccount = await sumIgnoredByAccount(database);
 
   if (accounts.length === 0) {
     return (

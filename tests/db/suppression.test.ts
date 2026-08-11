@@ -11,8 +11,8 @@
 // D'où ce fichier, qui vérifie table par table qu'il ne reste rien. Il est écrit en
 // négatif exprès : la seule assertion qui vaille est « zéro ligne partout ».
 import { beforeEach, expect, test } from "vitest";
-import type Database from "better-sqlite3";
-import { getDb } from "../../src/db/index";
+import { createTestDb } from "../helpers/pg";
+import { dbFrom, type Db } from "../../src/db/pg";
 import { upsertAccount, deleteAccount, listAccounts } from "../../src/db/repositories/accounts";
 import {
   createConnection, attachAccountToConnection, listConnections, setConnectionSession,
@@ -25,56 +25,55 @@ import { setLineAmount } from "../../src/db/repositories/line-amounts";
 import { dismissNotification } from "../../src/db/repositories/dismissed-notifications";
 import { TEST_USER } from "../helpers/test-user";
 
-let db: Database.Database;
+let db: Db;
 
-beforeEach(() => {
-  db = getDb(":memory:");
+beforeEach(async () => {
+  db = dbFrom(await createTestDb());
 });
 
 // Pose un compte et tout ce qui peut s'y accrocher, pour qu'aucune table n'échappe au
 // compte des restes.
-function compteGarni(id: string, userId = TEST_USER) {
-  upsertAccount(db, { id, name: `Banque ${id}`, iban_masked: null, balance: 12, currency: "EUR", last_synced: null }, userId);
-  const gid = insertGroup(db, id, "Courses", "out", 400, "2026-01", null);
-  const lid = insertLine(db, gid, "Boulangerie", 50);
-  setBudgetAmount(db, gid, "2026-07", 400);
-  setLineAmount(db, lid, "2026-07", 50);
+async function compteGarni(id: string, userId = TEST_USER) {
+  await upsertAccount(db, { id, name: `Banque ${id}`, iban_masked: null, balance: 12, currency: "EUR", last_synced: null }, userId);
+  const gid = await insertGroup(db, id, "Courses", "out", 400, "2026-01", null);
+  const lid = await insertLine(db, gid, "Boulangerie", 50);
+  await setBudgetAmount(db, gid, "2026-07", 400);
+  await setLineAmount(db, lid, "2026-07", 50);
   // La provision des non catégorisés : groupe 0, donc portée par le compte lui-même.
-  setBudgetAmount(db, 0, "2026-07", 120, "ongoing", id);
-  upsertTransaction(db, { id: `${id}-t1`, account_id: id, date: "2026-07-05", amount: -20, label: "CARREFOUR" });
-  upsertTransaction(db, { id: `manual:${id}`, account_id: id, date: "2026-07-05", amount: -20, label: "Courses" });
-  ignoreMatch(db, `manual:${id}`, `${id}-t1`);
+  await setBudgetAmount(db, 0, "2026-07", 120, "ongoing", id);
+  await upsertTransaction(db, { id: `${id}-t1`, account_id: id, date: "2026-07-05", amount: -20, label: "CARREFOUR" });
+  await upsertTransaction(db, { id: `manual:${id}`, account_id: id, date: "2026-07-05", amount: -20, label: "Courses" });
+  await ignoreMatch(db, `manual:${id}`, `${id}-t1`);
   // Un dépassement acquitté. L'identité commence par le compte : « compte::cible::mois ».
-  dismissNotification(db, `${id}::g${gid}::2026-07`);
+  await dismissNotification(db, `${id}::g${gid}::2026-07`);
   return { gid, lid };
 }
 
 // Ce qui reste accroché à un compte, table par table.
-function restes(id: string) {
-  const n = (sql: string, ...p: unknown[]) =>
-    (db.prepare(sql).get(...p) as { n: number }).n;
+async function restes(id: string) {
+  const n = async (sql: string, ...p: unknown[]) => (await db.one<{ n: number }>(sql, p))!.n;
   return {
-    comptes: n(`SELECT COUNT(*) AS n FROM accounts WHERE id = ?`, id),
-    transactions: n(`SELECT COUNT(*) AS n FROM transactions WHERE account_id = ?`, id),
-    groupes: n(`SELECT COUNT(*) AS n FROM groups WHERE account_id = ?`, id),
-    lignes: n(
+    comptes: await n(`SELECT COUNT(*) AS n FROM accounts WHERE id = $1`, id),
+    transactions: await n(`SELECT COUNT(*) AS n FROM transactions WHERE account_id = $1`, id),
+    groupes: await n(`SELECT COUNT(*) AS n FROM groups WHERE account_id = $1`, id),
+    lignes: await n(
       `SELECT COUNT(*) AS n FROM group_lines l LEFT JOIN groups g ON g.id = l.group_id WHERE g.id IS NULL`,
     ),
-    budgets: n(
+    budgets: await n(
       `SELECT COUNT(*) AS n FROM budget_amounts b
-       WHERE b.account_id = ?
+       WHERE b.account_id = $1
           OR (b.group_id <> 0 AND NOT EXISTS (SELECT 1 FROM groups g WHERE g.id = b.group_id))`,
       id,
     ),
-    budgetsLignes: n(
+    budgetsLignes: await n(
       `SELECT COUNT(*) AS n FROM line_amounts a LEFT JOIN group_lines l ON l.id = a.line_id WHERE l.id IS NULL`,
     ),
-    rapprochements: n(
+    rapprochements: await n(
       `SELECT COUNT(*) AS n FROM reconcile_ignored r
        WHERE NOT EXISTS (SELECT 1 FROM transactions t WHERE t.id = r.manual_id)
           OR NOT EXISTS (SELECT 1 FROM transactions t WHERE t.id = r.synced_id)`,
     ),
-    acquittements: n(`SELECT COUNT(*) AS n FROM dismissed_notifications WHERE id LIKE ?`, `${id}::%`),
+    acquittements: await n(`SELECT COUNT(*) AS n FROM dismissed_notifications WHERE id LIKE $1`, `${id}::%`),
   };
 }
 
@@ -83,20 +82,20 @@ const RIEN = {
   budgetsLignes: 0, rapprochements: 0, acquittements: 0,
 };
 
-test("supprimer un compte n'en laisse rien dans aucune table", () => {
-  compteGarni("a1");
-  deleteAccount(db, "a1");
-  expect(restes("a1")).toEqual(RIEN);
+test("supprimer un compte n'en laisse rien dans aucune table", async () => {
+  await compteGarni("a1");
+  await deleteAccount(db, "a1");
+  expect(await restes("a1")).toEqual(RIEN);
 });
 
 // La suppression vise un compte, pas la base : le voisin ne doit pas bouger d'une ligne.
-test("supprimer un compte ne touche pas au compte voisin", () => {
-  compteGarni("a1");
-  const voisin = compteGarni("a2");
-  deleteAccount(db, "a1");
+test("supprimer un compte ne touche pas au compte voisin", async () => {
+  await compteGarni("a1");
+  const voisin = await compteGarni("a2");
+  await deleteAccount(db, "a1");
 
-  expect(listAccounts(db, TEST_USER).map((a) => a.id)).toEqual(["a2"]);
-  expect(restes("a2")).toEqual({ ...RIEN, comptes: 1, transactions: 2, groupes: 1, budgets: 1, acquittements: 1 });
+  expect((await listAccounts(db, TEST_USER)).map((a) => a.id)).toEqual(["a2"]);
+  expect(await restes("a2")).toEqual({ ...RIEN, comptes: 1, transactions: 2, groupes: 1, budgets: 1, acquittements: 1 });
   expect(voisin.gid).toBeGreaterThan(0);
 });
 
@@ -104,40 +103,40 @@ test("supprimer un compte ne touche pas au compte voisin", () => {
 // Débrancher une banque, c'est renoncer à tout ce qu'elle a rapporté. Ses comptes
 // partent avec elle : les garder sans autorisation les figerait pour toujours, sans
 // jamais pouvoir se resynchroniser ni s'expliquer.
-test("supprimer une banque emporte ses comptes et tout ce qui y pend", () => {
-  const cx = createConnection(db, TEST_USER, "CIC", "FR");
-  setConnectionSession(db, cx, "sess", "2026-11-01T00:00:00Z");
-  compteGarni("a1");
-  compteGarni("a2");
-  attachAccountToConnection(db, "a1", cx);
-  attachAccountToConnection(db, "a2", cx);
+test("supprimer une banque emporte ses comptes et tout ce qui y pend", async () => {
+  const cx = await createConnection(db, TEST_USER, "CIC", "FR");
+  await setConnectionSession(db, cx, "sess", "2026-11-01T00:00:00Z");
+  await compteGarni("a1");
+  await compteGarni("a2");
+  await attachAccountToConnection(db, "a1", cx);
+  await attachAccountToConnection(db, "a2", cx);
 
-  deleteConnection(db, cx);
+  await deleteConnection(db, cx);
 
-  expect(listConnections(db, TEST_USER)).toEqual([]);
-  expect(restes("a1")).toEqual(RIEN);
-  expect(restes("a2")).toEqual(RIEN);
+  expect(await listConnections(db, TEST_USER)).toEqual([]);
+  expect(await restes("a1")).toEqual(RIEN);
+  expect(await restes("a2")).toEqual(RIEN);
 });
 
-test("supprimer une banque ne touche pas à une autre banque", () => {
-  const cic = createConnection(db, TEST_USER, "CIC", "FR");
-  const bourso = createConnection(db, TEST_USER, "Boursorama Banque", "FR");
-  compteGarni("a1");
-  compteGarni("a2");
-  attachAccountToConnection(db, "a1", cic);
-  attachAccountToConnection(db, "a2", bourso);
+test("supprimer une banque ne touche pas à une autre banque", async () => {
+  const cic = await createConnection(db, TEST_USER, "CIC", "FR");
+  const bourso = await createConnection(db, TEST_USER, "Boursorama Banque", "FR");
+  await compteGarni("a1");
+  await compteGarni("a2");
+  await attachAccountToConnection(db, "a1", cic);
+  await attachAccountToConnection(db, "a2", bourso);
 
-  deleteConnection(db, cic);
+  await deleteConnection(db, cic);
 
-  expect(listConnections(db, TEST_USER).map((c) => c.aspspName)).toEqual(["Boursorama Banque"]);
-  expect(listAccounts(db, TEST_USER).map((a) => a.id)).toEqual(["a2"]);
-  expect(restes("a1")).toEqual(RIEN);
+  expect((await listConnections(db, TEST_USER)).map((c) => c.aspspName)).toEqual(["Boursorama Banque"]);
+  expect((await listAccounts(db, TEST_USER)).map((a) => a.id)).toEqual(["a2"]);
+  expect(await restes("a1")).toEqual(RIEN);
 });
 
 // Une demande abandonnée en route n'a pas de compte à emporter. Elle doit tout de même
 // pouvoir se retirer de la liste.
-test("supprimer une banque sans aucun compte fonctionne", () => {
-  const cx = createConnection(db, TEST_USER, "CIC", "FR");
-  deleteConnection(db, cx);
-  expect(listConnections(db, TEST_USER)).toEqual([]);
+test("supprimer une banque sans aucun compte fonctionne", async () => {
+  const cx = await createConnection(db, TEST_USER, "CIC", "FR");
+  await deleteConnection(db, cx);
+  expect(await listConnections(db, TEST_USER)).toEqual([]);
 });

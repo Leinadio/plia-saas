@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Db } from "../db/pg";
 import { syncAll } from "./sync";
 import { listConnections } from "../db/repositories/bank-connections";
 import { listAccounts } from "../db/repositories/accounts";
@@ -17,13 +17,14 @@ type EbGet = <T>(path: string) => Promise<T>;
 // qu'à la toute première synchronisation, quand aucun compte n'existe encore : ensuite
 // elle vieillit, et s'y fier ferait revenir tout seul un compte qu'on a supprimé.
 export async function syncConnections(
-  db: Database.Database,
+  db: Db,
   deps: { ebGet: EbGet; userId: string; connectionId?: number },
 ): Promise<{ imported: number; banques: number }> {
-  const connexions = listConnections(db, deps.userId)
+  const toutes = await listConnections(db, deps.userId);
+  const connexions = toutes
     .filter((c) => c.sessionId)
     .filter((c) => deps.connectionId == null || c.id === deps.connectionId);
-  const comptes = listAccounts(db, deps.userId);
+  const comptes = await listAccounts(db, deps.userId);
 
   let imported = 0;
   let banques = 0;

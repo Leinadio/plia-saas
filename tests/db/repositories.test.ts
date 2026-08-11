@@ -1,6 +1,7 @@
 import { TEST_USER } from "../helpers/test-user";
 import { expect, test } from "vitest";
-import { getDb } from "../../src/db/index";
+import { createTestDb } from "../helpers/pg";
+import { dbFrom } from "../../src/db/pg";
 import { upsertTransaction, listTransactions, setTransactionGroup } from "../../src/db/repositories/transactions";
 import { upsertAccount, totalBalance, setAccountAlias, listAccounts, deleteAccount } from "../../src/db/repositories/accounts";
 import { setSetting, getSetting } from "../../src/db/repositories/settings";
@@ -8,67 +9,66 @@ import { listGroups, insertGroup, deleteGroup, insertLine, deleteLine, renameGro
 import { setBudgetAmount, listBudgetAmounts } from "../../src/db/repositories/budget-amounts";
 import { toDatedBudgets, budgetInForce } from "../../src/lib/history";
 import type { Group } from "../../src/lib/forecast";
-import { migrateGroupLifespan } from "../../src/db/migrations";
 
-test("transaction upsert dedupes by id and lists back", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "acc1", name: "CIC", iban_masked: "***1234", balance: 500, currency: "EUR", last_synced: null }, TEST_USER);
+test("transaction upsert dedupes by id and lists back", async () => {
+  const db = dbFrom(await createTestDb());
+  await upsertAccount(db, { id: "acc1", name: "CIC", iban_masked: "***1234", balance: 500, currency: "EUR", last_synced: null }, TEST_USER);
   const t = { id: "tx1", account_id: "acc1", date: "2026-07-01", amount: -30, label: "CARREFOUR" };
-  upsertTransaction(db, t);
-  upsertTransaction(db, t); // duplicate ignored
-  expect(listTransactions(db, TEST_USER)).toHaveLength(1);
-  expect(totalBalance(db, TEST_USER)).toBe(500);
+  await upsertTransaction(db, t);
+  await upsertTransaction(db, t); // duplicate ignored
+  expect(await listTransactions(db, TEST_USER)).toHaveLength(1);
+  expect(await totalBalance(db, TEST_USER)).toBe(500);
 });
 
-test("settings round-trip", () => {
-  const db = getDb(":memory:");
-  setSetting(db, "un_reglage", "200");
-  expect(getSetting(db, "un_reglage")).toBe("200");
-  expect(getSetting(db, "missing")).toBeNull();
+test("settings round-trip", async () => {
+  const db = dbFrom(await createTestDb());
+  await setSetting(db, "un_reglage", "200");
+  expect(await getSetting(db, "un_reglage")).toBe("200");
+  expect(await getSetting(db, "missing")).toBeNull();
 });
 
-test("une dépense découpée : ses sous-postes se lisent, et la suppression les emporte", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
-  const gid = insertGroup(db, "a1", "Abonnements", "out", 0, "2000-01", null);
-  insertLine(db, gid, "Spotify", 10);
-  insertLine(db, gid, "Netflix", 15);
-  const g = listGroups(db, TEST_USER)[0];
+test("une dépense découpée : ses sous-postes se lisent, et la suppression les emporte", async () => {
+  const db = dbFrom(await createTestDb());
+  await upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
+  const gid = await insertGroup(db, "a1", "Abonnements", "out", 0, "2000-01", null);
+  await insertLine(db, gid, "Spotify", 10);
+  await insertLine(db, gid, "Netflix", 15);
+  const g = (await listGroups(db, TEST_USER))[0];
   expect(g).toMatchObject({ id: gid, name: "Abonnements" });
   expect(g.lines.map((l) => [l.name, l.amount])).toEqual([
     ["Spotify", 10],
     ["Netflix", 15],
   ]);
-  deleteGroup(db, gid);
-  expect(listGroups(db, TEST_USER)).toHaveLength(0);
-  expect(db.prepare("SELECT COUNT(*) AS n FROM group_lines").get()).toEqual({ n: 0 });
+  await deleteGroup(db, gid);
+  expect(await listGroups(db, TEST_USER)).toHaveLength(0);
+  expect(await db.one("SELECT COUNT(*) AS n FROM group_lines")).toEqual({ n: 0 });
 });
 
 // Garde-fou : budget_amounts.group_id n'a plus de FK ON DELETE CASCADE (retirée
 // pour laisser vivre la provision du groupe 0). deleteGroup doit donc purger à la
 // main les budgets datés du groupe supprimé, sous peine de les orphelins en base.
-test("deleteGroup purge aussi les budgets datés (budget_amounts) du groupe", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
-  const gid = insertGroup(db, "a1", "Courses", "out", 300, "2000-01", null);
-  setBudgetAmount(db, gid, "2026-08", 350);
-  expect(listBudgetAmounts(db).filter((b) => b.groupId === gid)).toHaveLength(1);
-  deleteGroup(db, gid);
-  expect(listBudgetAmounts(db).filter((b) => b.groupId === gid)).toHaveLength(0);
+test("deleteGroup purge aussi les budgets datés (budget_amounts) du groupe", async () => {
+  const db = dbFrom(await createTestDb());
+  await upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
+  const gid = await insertGroup(db, "a1", "Courses", "out", 300, "2000-01", null);
+  await setBudgetAmount(db, gid, "2026-08", 350);
+  expect((await listBudgetAmounts(db)).filter((b) => b.groupId === gid)).toHaveLength(1);
+  await deleteGroup(db, gid);
+  expect((await listBudgetAmounts(db)).filter((b) => b.groupId === gid)).toHaveLength(0);
 });
 
 // La durée de vie d'une ligne se pose à sa création et se relit telle quelle : c'est
 // elle qui dira, dans la colonne de gauche du tableau, « ce mois uniquement » ou
 // « de mars à mai ». Sans bornes, la ligne est permanente.
-test("insertLine pose les bornes de mois de la ligne, listGroups les rend", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
-  const gid = insertGroup(db, "a1", "Abonnements", "out", 0, "2000-01", null);
+test("insertLine pose les bornes de mois de la ligne, listGroups les rend", async () => {
+  const db = dbFrom(await createTestDb());
+  await upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
+  const gid = await insertGroup(db, "a1", "Abonnements", "out", 0, "2000-01", null);
 
-  const borne = insertLine(db, gid, "Stage", 200, "2026-03", "2026-05");
-  const permanente = insertLine(db, gid, "Spotify", 10);
+  const borne = await insertLine(db, gid, "Stage", 200, "2026-03", "2026-05");
+  const permanente = await insertLine(db, gid, "Spotify", 10);
 
-  expect(listGroups(db, TEST_USER)[0].lines).toEqual([
+  expect((await listGroups(db, TEST_USER))[0].lines).toEqual([
     { id: borne, name: "Stage", amount: 200, startMonth: "2026-03", endMonth: "2026-05" },
     { id: permanente, name: "Spotify", amount: 10, startMonth: null, endMonth: null },
   ]);
@@ -77,88 +77,88 @@ test("insertLine pose les bornes de mois de la ligne, listGroups les rend", () =
 // Garde-fou contre la régression « ligne fantôme » : insertLine doit renvoyer le
 // vrai id auto-incrémenté de la ligne créée, pour que deleteLine/updateLine
 // appelés juste après (sans recharger la page) visent la bonne ligne en base.
-test("insertLine renvoie le vrai id, réutilisable par deleteLine", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
-  const gid = insertGroup(db, "a1", "Abonnements", "out", 0, "2000-01", null);
-  const lineId = insertLine(db, gid, "Spotify", 10);
+test("insertLine renvoie le vrai id, réutilisable par deleteLine", async () => {
+  const db = dbFrom(await createTestDb());
+  await upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
+  const gid = await insertGroup(db, "a1", "Abonnements", "out", 0, "2000-01", null);
+  const lineId = await insertLine(db, gid, "Spotify", 10);
   expect(lineId).toBeGreaterThan(0);
-  expect(listGroups(db, TEST_USER)[0].lines.map((l) => l.id)).toEqual([lineId]);
-  deleteLine(db, lineId);
-  expect(listGroups(db, TEST_USER)[0].lines).toEqual([]);
+  expect((await listGroups(db, TEST_USER))[0].lines.map((l) => l.id)).toEqual([lineId]);
+  await deleteLine(db, lineId);
+  expect((await listGroups(db, TEST_USER))[0].lines).toEqual([]);
 });
 
-test("setAccountAlias sets and resets the alias", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
-  setAccountAlias(db, "a1", "Perso");
-  expect(listAccounts(db, TEST_USER)[0].custom_name).toBe("Perso");
-  setAccountAlias(db, "a1", null);
-  expect(listAccounts(db, TEST_USER)[0].custom_name).toBeNull();
+test("setAccountAlias sets and resets the alias", async () => {
+  const db = dbFrom(await createTestDb());
+  await upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
+  await setAccountAlias(db, "a1", "Perso");
+  expect((await listAccounts(db, TEST_USER))[0].custom_name).toBe("Perso");
+  await setAccountAlias(db, "a1", null);
+  expect((await listAccounts(db, TEST_USER))[0].custom_name).toBeNull();
 });
 
-test("upsertAccount preserves a custom alias across a resync", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 100, currency: "EUR", last_synced: null }, TEST_USER);
-  setAccountAlias(db, "a1", "Compte joint");
+test("upsertAccount preserves a custom alias across a resync", async () => {
+  const db = dbFrom(await createTestDb());
+  await upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 100, currency: "EUR", last_synced: null }, TEST_USER);
+  await setAccountAlias(db, "a1", "Compte joint");
   // resynchro : même id, name/balance mis à jour
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 250, currency: "EUR", last_synced: "2026-07-07" }, TEST_USER);
-  const a = listAccounts(db, TEST_USER).find((x) => x.id === "a1")!;
+  await upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 250, currency: "EUR", last_synced: "2026-07-07" }, TEST_USER);
+  const a = (await listAccounts(db, TEST_USER)).find((x) => x.id === "a1")!;
   expect(a.custom_name).toBe("Compte joint"); // alias préservé
   expect(a.balance).toBe(250);                 // solde mis à jour
 });
 
-test("deleteAccount removes the account, its transactions and its groups+lines", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 100, currency: "EUR", last_synced: null }, TEST_USER);
-  upsertAccount(db, { id: "a2", name: "CIC", iban_masked: null, balance: 50, currency: "EUR", last_synced: null }, TEST_USER);
-  upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-07-01", amount: -10, label: "X" });
-  upsertTransaction(db, { id: "t2", account_id: "a2", date: "2026-07-01", amount: -20, label: "Y" });
-  const g1 = insertGroup(db, "a1", "Abonnements", "out", 0, "2000-01", null);
-  insertLine(db, g1, "Spotify", 10);
-  const g2 = insertGroup(db, "a2", "Courses", "out", 0, "2000-01", null);
+test("deleteAccount removes the account, its transactions and its groups+lines", async () => {
+  const db = dbFrom(await createTestDb());
+  await upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 100, currency: "EUR", last_synced: null }, TEST_USER);
+  await upsertAccount(db, { id: "a2", name: "CIC", iban_masked: null, balance: 50, currency: "EUR", last_synced: null }, TEST_USER);
+  await upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-07-01", amount: -10, label: "X" });
+  await upsertTransaction(db, { id: "t2", account_id: "a2", date: "2026-07-01", amount: -20, label: "Y" });
+  const g1 = await insertGroup(db, "a1", "Abonnements", "out", 0, "2000-01", null);
+  await insertLine(db, g1, "Spotify", 10);
+  const g2 = await insertGroup(db, "a2", "Courses", "out", 0, "2000-01", null);
 
-  deleteAccount(db, "a1");
+  await deleteAccount(db, "a1");
 
-  expect(listAccounts(db, TEST_USER).map((a) => a.id)).toEqual(["a2"]);
-  expect(listTransactions(db, TEST_USER).map((t) => t.id)).toEqual(["t2"]);
-  expect(listGroups(db, TEST_USER).map((g) => g.id)).toEqual([g2]);
+  expect((await listAccounts(db, TEST_USER)).map((a) => a.id)).toEqual(["a2"]);
+  expect((await listTransactions(db, TEST_USER)).map((t) => t.id)).toEqual(["t2"]);
+  expect((await listGroups(db, TEST_USER)).map((g) => g.id)).toEqual([g2]);
   // la ligne de g1 (Spotify) a été supprimée en cascade ; g2 n'avait pas de ligne
-  expect(db.prepare("SELECT COUNT(*) AS n FROM group_lines").get()).toEqual({ n: 0 });
+  expect(await db.one("SELECT COUNT(*) AS n FROM group_lines")).toEqual({ n: 0 });
   // Plus de liste d'uid à tenir à jour : les comptes à synchroniser se lisent dans
   // `accounts` et sur leur connexion bancaire.
 });
 
-test("setTransactionGroup attaches and detaches", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
-  const gid = insertGroup(db, "a1", "Courses", "out", 300, "2000-01", null);
-  upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-07-01", amount: -30, label: "X" });
-  setTransactionGroup(db, "t1", gid);
-  expect(listTransactions(db, TEST_USER)[0].groupId).toBe(gid);
-  setTransactionGroup(db, "t1", null);
-  expect(listTransactions(db, TEST_USER)[0].groupId).toBeNull();
+test("setTransactionGroup attaches and detaches", async () => {
+  const db = dbFrom(await createTestDb());
+  await upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
+  const gid = await insertGroup(db, "a1", "Courses", "out", 300, "2000-01", null);
+  await upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-07-01", amount: -30, label: "X" });
+  await setTransactionGroup(db, "t1", gid);
+  expect((await listTransactions(db, TEST_USER))[0].groupId).toBe(gid);
+  await setTransactionGroup(db, "t1", null);
+  expect((await listTransactions(db, TEST_USER))[0].groupId).toBeNull();
 });
 
 // Un compte accepte autant de revenus qu'on veut : la limite d'un seul exemplaire par
 // type est tombée avec les types eux-mêmes (hasIncomeGroup, supprimée).
-test("plusieurs revenus cohabitent sur un même compte", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
-  insertGroup(db, "a1", "Rémunération dirigeant", "in", 650, "2026-01", null);
-  insertGroup(db, "a1", "Rémunération extra", "in", 500, "2026-01", null);
-  insertGroup(db, "a1", "Don d'ami", "in", 300, "2026-08", "2026-08");
+test("plusieurs revenus cohabitent sur un même compte", async () => {
+  const db = dbFrom(await createTestDb());
+  await upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
+  await insertGroup(db, "a1", "Rémunération dirigeant", "in", 650, "2026-01", null);
+  await insertGroup(db, "a1", "Rémunération extra", "in", 500, "2026-01", null);
+  await insertGroup(db, "a1", "Don d'ami", "in", 300, "2026-08", "2026-08");
 
-  expect(listGroups(db, TEST_USER).filter((g) => g.direction === "in")).toHaveLength(3);
+  expect((await listGroups(db, TEST_USER)).filter((g) => g.direction === "in")).toHaveLength(3);
 });
 
-test("stocke et relit la durée de vie d'un groupe (start_month / end_month)", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
-  const permanent = insertGroup(db, "a1", "Courses", "out", 300, "2026-07", null);
-  const ponctuel = insertGroup(db, "a1", "Cadeau", "out", 50, "2026-08", "2026-08");
-  const rec = insertGroup(db, "a1", "Abonnements", "out", 0, "2026-07", null);
-  const groups = listGroups(db, TEST_USER);
+test("stocke et relit la durée de vie d'un groupe (start_month / end_month)", async () => {
+  const db = dbFrom(await createTestDb());
+  await upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
+  const permanent = await insertGroup(db, "a1", "Courses", "out", 300, "2026-07", null);
+  const ponctuel = await insertGroup(db, "a1", "Cadeau", "out", 50, "2026-08", "2026-08");
+  const rec = await insertGroup(db, "a1", "Abonnements", "out", 0, "2026-07", null);
+  const groups = await listGroups(db, TEST_USER);
   const byId = (id: number) => groups.find((g) => g.id === id)!;
   expect(byId(permanent).startMonth).toBe("2026-07");
   expect(byId(permanent).endMonth).toBeNull();
@@ -166,36 +166,25 @@ test("stocke et relit la durée de vie d'un groupe (start_month / end_month)", (
   expect(byId(rec).startMonth).toBe("2026-07");
 });
 
-test("renomme un groupe sans toucher au reste", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
-  const id = insertGroup(db, "a1", "Ancien", "out", 100, "2026-07", null);
-  renameGroup(db, id, "Nouveau");
-  expect(listGroups(db, TEST_USER).find((g) => g.id === id)!.name).toBe("Nouveau");
+test("renomme un groupe sans toucher au reste", async () => {
+  const db = dbFrom(await createTestDb());
+  await upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
+  const id = await insertGroup(db, "a1", "Ancien", "out", 100, "2026-07", null);
+  await renameGroup(db, id, "Nouveau");
+  expect((await listGroups(db, TEST_USER)).find((g) => g.id === id)!.name).toBe("Nouveau");
 });
 
-test("setGroupAmount 'once' n'affecte que le mois visé", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
-  const id = insertGroup(db, "a1", "Courses", "out", 300, "2026-01", null);
+test("setGroupAmount 'once' n'affecte que le mois visé", async () => {
+  const db = dbFrom(await createTestDb());
+  await upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
+  const id = await insertGroup(db, "a1", "Courses", "out", 300, "2026-01", null);
   // Simule l'action 'once' : montant à juillet, restauration du précédent en août.
   const prev = 300; // budget en vigueur avant juillet (monthlyAmount)
-  setBudgetAmount(db, id, "2026-07", 500);
-  setBudgetAmount(db, id, "2026-08", prev);
-  const dated = toDatedBudgets(listBudgetAmounts(db));
-  const g = listGroups(db, TEST_USER).find((x) => x.id === id)! as unknown as Group;
+  await setBudgetAmount(db, id, "2026-07", 500);
+  await setBudgetAmount(db, id, "2026-08", prev);
+  const dated = toDatedBudgets(await listBudgetAmounts(db));
+  const g = (await listGroups(db, TEST_USER)).find((x) => x.id === id)! as unknown as Group;
   expect(budgetInForce(g, "2026-07", dated)).toBe(500);
   expect(budgetInForce(g, "2026-08", dated)).toBe(300);
 });
 
-test("les groupes créés avant migration sont visibles partout (start_month '2000-01')", () => {
-  const db = getDb(":memory:");
-  upsertAccount(db, { id: "a1", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
-  // Simule une base pré-migration : on insère sans les colonnes, puis on rejoue la migration.
-  db.prepare(
-    "INSERT INTO groups (account_id, name, direction, monthly_amount) VALUES ('a1','Legacy','out',200)",
-  ).run();
-  db.exec("UPDATE groups SET start_month = NULL, end_month = NULL");
-  migrateGroupLifespan(db);
-  expect(listGroups(db, TEST_USER)[0].startMonth).toBe("2000-01");
-});

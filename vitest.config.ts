@@ -11,5 +11,14 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts"],
+    // Depuis que la base de test est un vrai Postgres, chaque fichier allume son propre
+    // moteur. Seul, cela prend une demi-seconde ; à dix en même temps, la machine se
+    // dispute ses cœurs et le même démarrage dépasse cinq secondes. Les deux réglages
+    // vont ensemble : moins de fichiers à la fois, et un délai qui laisse la place à un
+    // démarrage. Ce ne sont pas des pansements sur des tests lents — aucun ne met plus
+    // de quelques millisecondes une fois sa base ouverte, et les moteurs sont ensuite
+    // recyclés d'un test à l'autre (tests/helpers/pg.ts).
+    maxWorkers: 4,
+    testTimeout: 30_000,
   },
 });

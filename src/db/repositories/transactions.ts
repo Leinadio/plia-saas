@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Db } from "../pg";
 import { randomUUID } from "node:crypto";
 
 export type TxnRow = {
@@ -28,12 +28,16 @@ export type TxnView = {
 
 export type ReconcileSuggestion = { manual: TxnView; synced: TxnView };
 
-export function upsertTransaction(db: Database.Database, t: TxnRow): number {
-  const result = db.prepare(
-    `INSERT OR IGNORE INTO transactions (id, account_id, date, amount, label)
-     VALUES (@id, @account_id, @date, @amount, @label)`,
-  ).run(t);
-  return result.changes;
+// Rend le nombre de lignes réellement insérées (0 si elle existait déjà). Le RETURNING
+// est là pour ça : Postgres ne rend pas de compteur de lignes touchées, mais il rend
+// les lignes elles-mêmes, et il suffit de les compter.
+export async function upsertTransaction(db: Db, t: TxnRow): Promise<number> {
+  const inserees = await db.all<{ id: string }>(
+    `INSERT INTO transactions (id, account_id, date, amount, label)
+     VALUES ($1, $2, $3, $4, $5) ON CONFLICT (id) DO NOTHING RETURNING id`,
+    [t.id, t.account_id, t.date, t.amount, t.label],
+  );
+  return inserees.length;
 }
 
 // Somme des montants non comptabilisés, par compte. Le solde renvoyé par la banque
@@ -41,13 +45,11 @@ export function upsertTransaction(db: Database.Database, t: TxnRow): number {
 // Il faut donc les retrancher AVANT d'ancrer le moindre calcul, sinon les soldes
 // reconstruits sont décalés d'autant — la chaîne rembobine des mouvements dont ces
 // opérations sont absentes, à partir d'un solde qui, lui, les contient.
-export function sumIgnoredByAccount(db: Database.Database): Record<string, number> {
-  const rows = db
-    .prepare(
-      `SELECT account_id AS accountId, COALESCE(SUM(amount), 0) AS total
-       FROM transactions WHERE ignored = 1 GROUP BY account_id`,
-    )
-    .all() as { accountId: string; total: number }[];
+export async function sumIgnoredByAccount(db: Db): Promise<Record<string, number>> {
+  const rows = await db.all<{ accountId: string; total: number }>(
+    `SELECT account_id AS "accountId", COALESCE(SUM(amount), 0) AS total
+     FROM transactions WHERE ignored GROUP BY account_id`,
+  );
   return Object.fromEntries(rows.map((r) => [r.accountId, r.total]));
 }
 
@@ -58,56 +60,49 @@ export function sumIgnoredByAccount(db: Database.Database): Record<string, numbe
 // Les transactions de l'utilisateur, c'est-à-dire celles de ses comptes. Le filtre
 // passe par la jointure sur accounts, déjà présente pour l'étiquette du compte.
 export function listTransactions(
-  db: Database.Database,
+  db: Db,
   userId: string,
   filter?: { month?: string; includeIgnored?: boolean },
-): TxnView[] {
-  let sql =
-    `SELECT t.id, t.date, t.amount, t.label, t.group_id AS groupId, t.line_id AS lineId, t.excluded AS excluded,
-            t.ignored AS ignored, t.manual AS manual, t.note AS note,
-            t.comment AS comment,
-            t.account_id AS accountId,
-            COALESCE(COALESCE(a.custom_name, a.name) || ' ' || a.iban_masked, COALESCE(a.custom_name, a.name)) AS accountLabel
-     FROM transactions t
-     JOIN accounts a ON a.id = t.account_id`;
+): Promise<TxnView[]> {
   // Le propriétaire d'abord : c'est la seule clause qui n'est jamais optionnelle.
-  const clauses: string[] = ["a.user_id = @userId"];
-  const params: Record<string, string | number> = { userId };
+  const clauses: string[] = ["a.user_id = $1"];
+  const params: (string | number)[] = [userId];
   if (filter?.month) {
-    clauses.push("substr(t.date,1,7) = @month");
-    params.month = filter.month;
+    params.push(filter.month);
+    clauses.push(`substr(t.date, 1, 7) = $${params.length}`);
   }
-  if (!filter?.includeIgnored) clauses.push("t.ignored = 0");
-  if (clauses.length) sql += " WHERE " + clauses.join(" AND ");
-  sql += " ORDER BY t.date DESC";
-  const stmt = db.prepare(sql);
-  // better-sqlite3 refuse un objet de paramètres quand la requête n'en attend aucun.
-  const rows = (Object.keys(params).length ? stmt.all(params) : stmt.all()) as (Omit<TxnView, "excluded" | "ignored" | "manual"> & { excluded: number; ignored: number; manual: number })[];
-  return rows.map((r) => ({
-    ...r,
-    excluded: r.excluded === 1,
-    ignored: r.ignored === 1,
-    manual: r.manual === 1,
-  }));
+  if (!filter?.includeIgnored) clauses.push("NOT t.ignored");
+
+  return db.all<TxnView>(
+    `SELECT t.id, t.date, t.amount, t.label, t.group_id AS "groupId", t.line_id AS "lineId",
+            t.excluded, t.ignored, t.manual, t.note, t.comment,
+            t.account_id AS "accountId",
+            COALESCE(COALESCE(a.custom_name, a.name) || ' ' || a.iban_masked, COALESCE(a.custom_name, a.name)) AS "accountLabel"
+     FROM transactions t
+     JOIN accounts a ON a.id = t.account_id
+     WHERE ${clauses.join(" AND ")}
+     ORDER BY t.date DESC`,
+    params,
+  );
 }
 
 // groupId non nul => rattachement manuel ; lineId => ligne récurrente précise
 // (implique son groupe parent) ; excluded => forcé « non catégorisé ».
 // Les cas sont mutuellement exclusifs : un groupe explicite lève l'exclusion,
 // et choisir un groupe sans ligne remet line_id à NULL.
-export function setTransactionGroup(
-  db: Database.Database,
+export async function setTransactionGroup(
+  db: Db,
   id: string,
   groupId: number | null,
   excluded = false,
   lineId: number | null = null,
-): void {
-  db.prepare("UPDATE transactions SET group_id = ?, line_id = ?, excluded = ? WHERE id = ?").run(
+): Promise<void> {
+  await db.run("UPDATE transactions SET group_id = $1, line_id = $2, excluded = $3 WHERE id = $4", [
     groupId,
     lineId,
-    excluded ? 1 : 0,
+    excluded,
     id,
-  );
+  ]);
 }
 
 // Rend aux « non catégorisés » les transactions d'un groupe (ou d'une de ses lignes)
@@ -122,41 +117,39 @@ export function setTransactionGroup(
 //
 // Le groupe parent part aussi quand on vise une ligne : sans ça, la transaction
 // retomberait sous le récurrent au lieu des non catégorisés.
-export function detachTransactionsInMonths(
-  db: Database.Database,
+export async function detachTransactionsInMonths(
+  db: Db,
   cible: { groupId: number } | { lineId: number },
   months: string[],
-): number {
+): Promise<number> {
   if (months.length === 0) return 0;
-  const trous = months.map(() => "?").join(",");
   const colonne = "lineId" in cible ? "line_id" : "group_id";
   const id = "lineId" in cible ? cible.lineId : cible.groupId;
-  const info = db
-    .prepare(
-      `UPDATE transactions SET group_id = NULL, line_id = NULL
-       WHERE ${colonne} = ? AND substr(date, 1, 7) IN (${trous})`,
-    )
-    .run(id, ...months);
-  return info.changes;
+  const touchees = await db.all<{ id: string }>(
+    `UPDATE transactions SET group_id = NULL, line_id = NULL
+     WHERE ${colonne} = $1 AND substr(date, 1, 7) = ANY($2) RETURNING id`,
+    [id, months],
+  );
+  return touchees.length;
 }
 
 // Date d'une transaction (YYYY-MM-DD), null si elle n'existe pas. Sert à savoir de
 // quel mois elle relève avant de la rattacher à un groupe.
-export function getTransactionDate(db: Database.Database, id: string): string | null {
-  const row = db.prepare(`SELECT date FROM transactions WHERE id = ?`).get(id) as { date: string } | undefined;
+export async function getTransactionDate(db: Db, id: string): Promise<string | null> {
+  const row = await db.one<{ date: string }>(`SELECT date FROM transactions WHERE id = $1`, [id]);
   return row ? row.date : null;
 }
 
 // Pose (ou retire, avec null) le commentaire d'une transaction. Rien d'autre n'est
 // touché : le commentaire s'ajoute au libellé de la banque, il ne le remplace pas.
-export function setTransactionComment(db: Database.Database, id: string, comment: string | null): void {
-  db.prepare("UPDATE transactions SET comment = ? WHERE id = ?").run(comment, id);
+export async function setTransactionComment(db: Db, id: string, comment: string | null): Promise<void> {
+  await db.run("UPDATE transactions SET comment = $1 WHERE id = $2", [comment, id]);
 }
 
 // Marque une transaction comme non comptabilisée (ou la remet dans les calculs).
 // Son rattachement de groupe est conservé : la réactiver la remet où elle était.
-export function setTransactionIgnored(db: Database.Database, id: string, ignored: boolean): void {
-  db.prepare("UPDATE transactions SET ignored = ? WHERE id = ?").run(ignored ? 1 : 0, id);
+export async function setTransactionIgnored(db: Db, id: string, ignored: boolean): Promise<void> {
+  await db.run("UPDATE transactions SET ignored = $1 WHERE id = $2", [ignored, id]);
 }
 
 export type ManualTxnInput = {
@@ -168,46 +161,33 @@ export type ManualTxnInput = {
   lineId: number | null;
 };
 
-// Insère une transaction saisie à la main. id préfixé "manual:", manual = 1.
-export function insertManualTransaction(db: Database.Database, input: ManualTxnInput): string {
+// Insère une transaction saisie à la main. Identifiant préfixé « manual: ».
+export async function insertManualTransaction(db: Db, input: ManualTxnInput): Promise<string> {
   const id = `manual:${randomUUID()}`;
-  db.prepare(
+  await db.run(
     `INSERT INTO transactions (id, account_id, date, amount, label, group_id, line_id, excluded, manual, note)
-     VALUES (@id, @account_id, @date, @amount, @label, @group_id, @line_id, 0, 1, NULL)`,
-  ).run({
-    id,
-    account_id: input.accountId,
-    date: input.date,
-    amount: input.amount,
-    label: input.label,
-    group_id: input.groupId,
-    line_id: input.lineId,
-  });
+     VALUES ($1, $2, $3, $4, $5, $6, $7, FALSE, TRUE, NULL)`,
+    [id, input.accountId, input.date, input.amount, input.label, input.groupId, input.lineId],
+  );
   return id;
 }
 
-// Édite une transaction manuelle (garde-fou : n'agit que sur manual = 1).
-export function updateManualTransaction(
-  db: Database.Database,
+// Édite une transaction manuelle (garde-fou : n'agit que sur une saisie manuelle).
+export async function updateManualTransaction(
+  db: Db,
   id: string,
   input: Omit<ManualTxnInput, "accountId">,
-): void {
-  db.prepare(
-    `UPDATE transactions SET date=@date, amount=@amount, label=@label, group_id=@group_id, line_id=@line_id
-     WHERE id=@id AND manual=1`,
-  ).run({
-    id,
-    date: input.date,
-    amount: input.amount,
-    label: input.label,
-    group_id: input.groupId,
-    line_id: input.lineId,
-  });
+): Promise<void> {
+  await db.run(
+    `UPDATE transactions SET date = $1, amount = $2, label = $3, group_id = $4, line_id = $5
+     WHERE id = $6 AND manual`,
+    [input.date, input.amount, input.label, input.groupId, input.lineId, id],
+  );
 }
 
-// Supprime une transaction manuelle (garde-fou : n'agit que sur manual = 1).
-export function deleteManualTransaction(db: Database.Database, id: string): void {
-  db.prepare("DELETE FROM transactions WHERE id=? AND manual=1").run(id);
+// Supprime une transaction manuelle (garde-fou : n'agit que sur une saisie manuelle).
+export async function deleteManualTransaction(db: Db, id: string): Promise<void> {
+  await db.run("DELETE FROM transactions WHERE id = $1 AND manual", [id]);
 }
 
 // Écart en jours entre deux dates "YYYY-MM-DD" (UTC, pur calendaire).
@@ -219,14 +199,18 @@ function dayDiff(a: string, b: string): number {
 
 // Paires (manuelle, synchronisée) probablement identiques : même compte, même
 // montant, dates à windowDays près, non déjà écartées.
-export function findReconcileSuggestions(db: Database.Database, userId: string, windowDays = 5): ReconcileSuggestion[] {
-  const all = listTransactions(db, userId);
+export async function findReconcileSuggestions(
+  db: Db,
+  userId: string,
+  windowDays = 5,
+): Promise<ReconcileSuggestion[]> {
+  const all = await listTransactions(db, userId);
   const manuals = all.filter((t) => t.manual);
   const synced = all.filter((t) => !t.manual);
-  const ignored = new Set(
-    (db.prepare("SELECT manual_id, synced_id FROM reconcile_ignored").all() as { manual_id: string; synced_id: string }[])
-      .map((r) => `${r.manual_id}|${r.synced_id}`),
+  const paires = await db.all<{ manual_id: string; synced_id: string }>(
+    "SELECT manual_id, synced_id FROM reconcile_ignored",
   );
+  const ignored = new Set(paires.map((r) => `${r.manual_id}|${r.synced_id}`));
   const out: ReconcileSuggestion[] = [];
   for (const m of manuals) {
     for (const s of synced) {
@@ -243,26 +227,31 @@ export function findReconcileSuggestions(db: Database.Database, userId: string, 
 // Fusionne une saisie manuelle dans sa vraie ligne bancaire : on garde la ligne
 // bancaire, on lui reporte groupe/ligne/étiquette de la manuelle, son libellé va
 // dans note, puis la manuelle est supprimée. Atomique.
-export function mergeTransactions(
-  db: Database.Database,
+export async function mergeTransactions(
+  db: Db,
   { syncedId, manualId }: { syncedId: string; manualId: string },
-): void {
-  const run = db.transaction(() => {
-    const m = db
-      .prepare("SELECT label, group_id AS groupId, line_id AS lineId FROM transactions WHERE id=? AND manual=1")
-      .get(manualId) as { label: string; groupId: number | null; lineId: number | null } | undefined;
+): Promise<void> {
+  await db.tx(async (t) => {
+    const m = await t.one<{ label: string; groupId: number | null; lineId: number | null }>(
+      `SELECT label, group_id AS "groupId", line_id AS "lineId" FROM transactions WHERE id = $1 AND manual`,
+      [manualId],
+    );
     if (!m) return;
-    const res = db.prepare(
-      `UPDATE transactions SET group_id=@group_id, line_id=@line_id, note=@note
-       WHERE id=@id AND manual=0`,
-    ).run({ id: syncedId, group_id: m.groupId, line_id: m.lineId, note: m.label });
-    if (res.changes === 0) return; // cible synchronisée introuvable : on ne supprime pas la saisie manuelle
-    db.prepare("DELETE FROM transactions WHERE id=? AND manual=1").run(manualId);
+    const touchees = await t.all<{ id: string }>(
+      `UPDATE transactions SET group_id = $1, line_id = $2, note = $3
+       WHERE id = $4 AND NOT manual RETURNING id`,
+      [m.groupId, m.lineId, m.label, syncedId],
+    );
+    // Cible synchronisée introuvable : on ne supprime pas la saisie manuelle.
+    if (touchees.length === 0) return;
+    await t.run("DELETE FROM transactions WHERE id = $1 AND manual", [manualId]);
   });
-  run();
 }
 
 // Mémorise une paire écartée (« ce n'est pas la même »).
-export function ignoreMatch(db: Database.Database, manualId: string, syncedId: string): void {
-  db.prepare("INSERT OR IGNORE INTO reconcile_ignored (manual_id, synced_id) VALUES (?, ?)").run(manualId, syncedId);
+export async function ignoreMatch(db: Db, manualId: string, syncedId: string): Promise<void> {
+  await db.run(
+    "INSERT INTO reconcile_ignored (manual_id, synced_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+    [manualId, syncedId],
+  );
 }

@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 export default async function LandingPage() {
   // Déjà connecté : la page d'accueil n'a rien à lui apprendre.
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await auth().api.getSession({ headers: await headers() });
   if (session) redirect("/app");
 
   return (

@@ -26,7 +26,7 @@ export async function startAuth(
   aspspName: string = ASPSP_NAME,
   aspspCountry: string = ASPSP_COUNTRY,
 ): Promise<{ url: string; connectionId: number }> {
-  const connectionId = createConnection(db(), userId, aspspName, aspspCountry);
+  const connectionId = await createConnection(db(), userId, aspspName, aspspCountry);
   // valid_until : fenêtre de consentement de 90 jours (maximum permis par la DSP2).
   const validUntil = new Date(Date.now() + 89 * 24 * 3600 * 1000).toISOString();
   const res = await ebPost<{ url: string; authorization_id: string }>("/auth", {
@@ -45,13 +45,13 @@ export async function startAuth(
 export async function finishAuth(code: string, state: string, userId: string): Promise<number> {
   const connectionId = Number(state);
   if (!Number.isInteger(connectionId)) throw new Error("Retour d'autorisation sans connexion identifiable");
-  const connexion = ownedConnection(db(), userId, connectionId);
+  const connexion = await ownedConnection(db(), userId, connectionId);
   if (!connexion) throw new Error("Cette autorisation ne correspond à aucune connexion en attente");
 
   const res = await ebPost<{ session_id: string; accounts: { uid: string }[] }>("/sessions", { code });
   if (!res.session_id || !res.accounts) throw new Error("Enable Banking /sessions returned an unexpected response");
   const uids = res.accounts.map((a) => a.uid);
   const validUntil = new Date(Date.now() + 89 * 24 * 3600 * 1000).toISOString();
-  setConnectionSession(db(), connectionId, res.session_id, validUntil, uids);
+  await setConnectionSession(db(), connectionId, res.session_id, validUntil, uids);
   return connectionId;
 }

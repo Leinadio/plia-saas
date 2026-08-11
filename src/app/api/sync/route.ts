@@ -12,7 +12,7 @@ import { listConnections } from "../../../db/repositories/bank-connections";
 export async function POST() {
   const userId = await requireUserId();
   const database = db();
-  const connexions = listConnections(database, userId).filter((c) => c.sessionId);
+  const connexions = (await listConnections(database, userId)).filter((c) => c.sessionId);
   if (connexions.length === 0) return NextResponse.json({ error: "not_connected" }, { status: 400 });
 
   try {

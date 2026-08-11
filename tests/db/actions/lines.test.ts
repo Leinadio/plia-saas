@@ -1,26 +1,26 @@
 // Teste addGroupLine et editGroupLine (src/app/app/historique/actions.ts) réellement
 // appelées, base en mémoire (voir ./setup).
 import { beforeEach, expect, test, vi } from "vitest";
-import type Database from "better-sqlite3";
 import { freshDb, at } from "./setup";
 import { addGroupLine, editGroupLine, setGroupLineAmount } from "../../../src/app/app/historique/actions";
 import { revalidatePath } from "next/cache";
 import { insertGroup } from "../../../src/db/repositories/groups";
 import { listLineAmounts } from "../../../src/db/repositories/line-amounts";
 import { toDatedLineAmounts, lineAmountInForce } from "../../../src/lib/history";
+import type { Db } from "../../../src/db/pg";
 
-let db: Database.Database;
+let db: Db;
 let gid: number;
-beforeEach(() => {
-  db = freshDb();
+beforeEach(async () => {
+  db = await freshDb();
   vi.mocked(revalidatePath).mockClear();
-  gid = insertGroup(db, "a1", "Abonnements", "out", 0, "2026-01", null);
+  gid = await insertGroup(db, "a1", "Abonnements", "out", 0, "2026-01", null);
 });
 
 test("une ligne ajoutée compte à partir du mois donné, pas rétroactivement", async () => {
   const lid = await addGroupLine(gid, "Netflix", 15, "2026-06");
 
-  const datedLines = toDatedLineAmounts(listLineAmounts(db));
+  const datedLines = toDatedLineAmounts(await listLineAmounts(db));
   expect(lineAmountInForce(lid, "2026-05", datedLines)).toBe(0);
   expect(lineAmountInForce(lid, "2026-06", datedLines)).toBe(15);
   expect(lineAmountInForce(lid, "2026-12", datedLines)).toBe(15);
@@ -29,25 +29,25 @@ test("une ligne ajoutée compte à partir du mois donné, pas rétroactivement",
 // La durée d'une ligne se choisit à l'ajout, comme celle d'un groupe. Le mois de
 // départ reste celui du tableau où le panneau a été ouvert : c'est déjà de là que la
 // ligne compte, et c'est le mois qu'on avait sous les yeux.
-const bornes = (db: Database.Database, lid: number) =>
-  db.prepare(`SELECT start_month AS start, end_month AS fin FROM group_lines WHERE id = ?`).get(lid);
+const bornes = async (db: Db, lid: number) =>
+  await db.one(`SELECT start_month AS start, end_month AS fin FROM group_lines WHERE id = $1`, [lid]);
 
 test("une ligne est permanente par défaut : elle commence au mois donné et ne finit pas", async () => {
   const lid = await addGroupLine(gid, "Spotify", 10, "2026-06");
 
-  expect(bornes(db, lid)).toEqual({ start: "2026-06", fin: null });
+  expect(await bornes(db, lid)).toEqual({ start: "2026-06", fin: null });
 });
 
 test("une ligne « ce mois seulement » commence et finit au mois donné", async () => {
   const lid = await addGroupLine(gid, "Assurance vacances", 40, "2026-06", "single");
 
-  expect(bornes(db, lid)).toEqual({ start: "2026-06", fin: "2026-06" });
+  expect(await bornes(db, lid)).toEqual({ start: "2026-06", fin: "2026-06" });
 });
 
 test("une ligne « d'un mois à un autre » garde ses deux bornes", async () => {
   const lid = await addGroupLine(gid, "Stage", 200, "2026-06", "range", "2026-09");
 
-  expect(bornes(db, lid)).toEqual({ start: "2026-06", fin: "2026-09" });
+  expect(await bornes(db, lid)).toEqual({ start: "2026-06", fin: "2026-09" });
 });
 
 // Même refus que pour un groupe (cf. groupPeriod) : une plage qui ne dépasse pas son
@@ -57,7 +57,7 @@ test("refuse une plage qui finit avant d'avoir commencé, sans rien créer", asy
   expect(await addGroupLine(gid, "Stage", 200, "2026-06", "range", "2026-06")).toBe(-1);
   expect(await addGroupLine(gid, "Stage", 200, "2026-06", "range", "2026-03")).toBe(-1);
 
-  expect(db.prepare(`SELECT COUNT(*) AS n FROM group_lines`).get()).toEqual({ n: 0 });
+  expect(await db.one(`SELECT COUNT(*) AS n FROM group_lines`)).toEqual({ n: 0 });
 });
 
 // editGroupLine ne porte plus que le nom et le jour, qui valent pour tous les mois.
@@ -68,7 +68,7 @@ test("editGroupLine change le nom et le jour, pour tous les mois", async () => {
 
   await editGroupLine(lid, "Spotify Famille");
 
-  expect(db.prepare(`SELECT name FROM group_lines WHERE id = ?`).get(lid)).toEqual({ name: "Spotify Famille" });
+  expect(await db.one(`SELECT name FROM group_lines WHERE id = $1`, [lid])).toEqual({ name: "Spotify Famille" });
 });
 
 test("editGroupLine ne touche à aucun montant daté", async () => {
@@ -76,7 +76,7 @@ test("editGroupLine ne touche à aucun montant daté", async () => {
 
   await editGroupLine(lid, "Spotify Famille");
 
-  expect(listLineAmounts(db)).toEqual([{ lineId: lid, effectiveMonth: "2026-01", amount: 10, scope: "ongoing" }]);
+  expect(await listLineAmounts(db)).toEqual([{ lineId: lid, effectiveMonth: "2026-01", amount: 10, scope: "ongoing" }]);
 });
 
 test("editGroupLine refuse un nom vide", async () => {
@@ -84,7 +84,7 @@ test("editGroupLine refuse un nom vide", async () => {
 
   await editGroupLine(lid, "   ");
 
-  expect(db.prepare(`SELECT name FROM group_lines WHERE id = ?`).get(lid)).toEqual({ name: "Spotify" });
+  expect(await db.one(`SELECT name FROM group_lines WHERE id = $1`, [lid])).toEqual({ name: "Spotify" });
 });
 
 // Le montant d'une ligne se modifie désormais depuis sa case « Budget dép. », qui
@@ -95,11 +95,11 @@ test("setGroupLineAmount « à partir de ce mois » vaut pour les mois suivants,
 
   await setGroupLineAmount(lid, "2026-07", 12, "ongoing");
 
-  const datedLines = toDatedLineAmounts(listLineAmounts(db));
+  const datedLines = toDatedLineAmounts(await listLineAmounts(db));
   expect(lineAmountInForce(lid, "2026-06", datedLines)).toBe(10);
   expect(lineAmountInForce(lid, "2026-07", datedLines)).toBe(12);
   expect(lineAmountInForce(lid, "2027-01", datedLines)).toBe(12);
-  expect(db.prepare(`SELECT name FROM group_lines WHERE id = ?`).get(lid)).toEqual({ name: "Spotify" });
+  expect(await db.one(`SELECT name FROM group_lines WHERE id = $1`, [lid])).toEqual({ name: "Spotify" });
 });
 
 test("setGroupLineAmount « ce mois seulement » ne vaut que pour son mois, sans rien écrire au mois suivant", async () => {
@@ -107,11 +107,11 @@ test("setGroupLineAmount « ce mois seulement » ne vaut que pour son mois, sans
 
   await setGroupLineAmount(lid, "2026-07", 25, "once");
 
-  const datedLines = toDatedLineAmounts(listLineAmounts(db));
+  const datedLines = toDatedLineAmounts(await listLineAmounts(db));
   expect(lineAmountInForce(lid, "2026-07", datedLines)).toBe(25);
   expect(lineAmountInForce(lid, "2026-08", datedLines)).toBe(10);
   // Aucune écriture au mois suivant : la portée suffit à borner l'exception.
-  expect(listLineAmounts(db).some((l) => l.lineId === lid && l.effectiveMonth === "2026-08")).toBe(false);
+  expect((await listLineAmounts(db)).some((l) => l.lineId === lid && l.effectiveMonth === "2026-08")).toBe(false);
 });
 
 test("setGroupLineAmount écrit dans un mois passé", async () => {
@@ -120,7 +120,7 @@ test("setGroupLineAmount écrit dans un mois passé", async () => {
 
   await setGroupLineAmount(lid, "2026-03", 99, "ongoing");
 
-  expect(lineAmountInForce(lid, "2026-03", toDatedLineAmounts(listLineAmounts(db)))).toBe(99);
+  expect(lineAmountInForce(lid, "2026-03", toDatedLineAmounts(await listLineAmounts(db)))).toBe(99);
 });
 
 test("setGroupLineAmount renvoie la vie du montant à jour de la ligne", async () => {

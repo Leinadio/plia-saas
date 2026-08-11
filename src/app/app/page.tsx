@@ -17,17 +17,17 @@ export default async function Dashboard() {
   const userId = await requireUserId();
   const database = db();
   const month = currentMonthKey(new Date());
-  const accounts = listAccounts(database, userId);
+  const accounts = await listAccounts(database, userId);
   // Une transaction non comptabilisée doit se comporter comme si elle n'existait
   // pas, y compris dans le solde affiché : le solde de la banque la contient, on la
   // retranche donc partout, carte du compte comme total.
-  const ignoredByAccount = sumIgnoredByAccount(database);
+  const ignoredByAccount = await sumIgnoredByAccount(database);
   const balance = accounts.reduce(
     (s, a) => s + effectiveBalance(a.balance, ignoredByAccount[a.id]),
     0,
   );
-  const allTxns = listTransactions(database, userId);
-  const groups = listGroups(database, userId);
+  const allTxns = await listTransactions(database, userId);
+  const groups = await listGroups(database, userId);
   const ownable = groups.map((g) => ({
     id: g.id, accountId: g.accountId, direction: g.direction,
   }));

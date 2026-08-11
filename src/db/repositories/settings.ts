@@ -1,12 +1,13 @@
-import type Database from "better-sqlite3";
+import type { Db } from "../pg";
 
-export function getSetting(db: Database.Database, key: string): string | null {
-  const row = db.prepare("SELECT value FROM settings WHERE key = ?").get(key) as { value: string } | undefined;
+export async function getSetting(db: Db, key: string): Promise<string | null> {
+  const row = await db.one<{ value: string }>("SELECT value FROM settings WHERE key = $1", [key]);
   return row ? row.value : null;
 }
 
-export function setSetting(db: Database.Database, key: string, value: string): void {
-  db.prepare(
-    "INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
-  ).run(key, value);
+export async function setSetting(db: Db, key: string, value: string): Promise<void> {
+  await db.run(
+    "INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value",
+    [key, value],
+  );
 }

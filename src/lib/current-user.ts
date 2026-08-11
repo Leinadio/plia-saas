@@ -11,7 +11,7 @@ import { auth } from "./auth";
 // l'oubli est impossible : ou bien on a un identifiant, ou bien on n'est plus sur la
 // page.
 export async function requireUserId(): Promise<string> {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await auth().api.getSession({ headers: await headers() });
   if (!session) redirect("/connexion");
   return session.user.id;
 }

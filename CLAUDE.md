@@ -49,5 +49,11 @@ tourne en local (localhost), les données bancaires ne quittent pas la machine.
 - Enable Banking : le nom de banque (ASPSP) doit correspondre EXACTEMENT au catalogue de
   l'environnement. Production rejette les redirect en http (https obligatoire).
 - Next.js ne relit `.env.local` qu'au démarrage : redémarrer après modification.
-- Les tests utilisent des DB `:memory:` — ils ne voient pas certains bugs runtime
-  (dossier `data/` manquant, mot réservé SQL). Vérifier en lançant le vrai serveur.
+- Les tests tournent sur un vrai Postgres en mémoire (PGlite, `tests/helpers/pg.ts`) :
+  même moteur qu'en production, donc le même SQL. Restent invisibles pour eux les
+  problèmes de branchement — adresse de base absente ou mal formée, connexions
+  épuisées, latence réseau. Vérifier en lançant le vrai serveur.
+- Postgres met en minuscules tout alias non entouré de guillemets : `AS groupId`
+  revient en `groupid`. Les alias en casse mixte s'écrivent `AS "groupId"`.
+- Les montants et les comptages reviennent en TEXTE. La traduction est faite une fois
+  pour toutes dans `src/db/pg.ts` ; personne d'autre n'a à s'en occuper.

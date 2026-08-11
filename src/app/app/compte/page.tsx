@@ -13,11 +13,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const dynamic = "force-dynamic";
 
 export default async function ComptePage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await auth().api.getSession({ headers: await headers() });
   if (!session) redirect("/connexion");
   const database = db();
-  const comptes = listAccounts(database, session.user.id);
-  const connexions = listActiveConnections(database, session.user.id);
+  const [comptes, connexions] = await Promise.all([
+    listAccounts(database, session.user.id),
+    listActiveConnections(database, session.user.id),
+  ]);
 
   return (
     <div className="flex flex-col gap-4">

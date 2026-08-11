@@ -9,31 +9,31 @@
 // Ce n'est pas une fuite entre personnes. C'est un mélange entre les comptes d'une même
 // personne, et il existait bien avant les comptes utilisateurs.
 import { beforeEach, expect, test } from "vitest";
-import type Database from "better-sqlite3";
-import { getDb } from "../../src/db/index";
+import { createTestDb } from "../helpers/pg";
+import { dbFrom, type Db } from "../../src/db/pg";
 import { upsertAccount } from "../../src/db/repositories/accounts";
 import { listBudgetAmounts, setBudgetAmount } from "../../src/db/repositories/budget-amounts";
 import { TEST_USER } from "../helpers/test-user";
 
-let db: Database.Database;
+let db: Db;
 
-beforeEach(() => {
-  db = getDb(":memory:");
+beforeEach(async () => {
+  db = dbFrom(await createTestDb());
   for (const id of ["courant", "joint"]) {
-    upsertAccount(db, { id, name: id, iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
+    await upsertAccount(db, { id, name: id, iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
   }
 });
 
-const provisions = () =>
-  listBudgetAmounts(db)
+const provisions = async () =>
+  (await listBudgetAmounts(db))
     .filter((b) => b.groupId === 0)
     .map((b) => [b.accountId, b.effectiveMonth, b.amount]);
 
-test("deux comptes tiennent chacun leur provision au même mois", () => {
-  setBudgetAmount(db, 0, "2026-08", 200, "ongoing", "courant");
-  setBudgetAmount(db, 0, "2026-08", 50, "ongoing", "joint");
+test("deux comptes tiennent chacun leur provision au même mois", async () => {
+  await setBudgetAmount(db, 0, "2026-08", 200, "ongoing", "courant");
+  await setBudgetAmount(db, 0, "2026-08", 50, "ongoing", "joint");
 
-  expect(provisions().sort()).toEqual([
+  expect((await provisions()).sort()).toEqual([
     ["courant", "2026-08", 200],
     ["joint", "2026-08", 50],
   ]);
@@ -41,12 +41,12 @@ test("deux comptes tiennent chacun leur provision au même mois", () => {
 
 // Le cœur du bug : la seconde écriture écrasait la première, faute de compte dans la
 // clé d'unicité.
-test("corriger la provision d'un compte ne touche pas celle de l'autre", () => {
-  setBudgetAmount(db, 0, "2026-08", 200, "ongoing", "courant");
-  setBudgetAmount(db, 0, "2026-08", 50, "ongoing", "joint");
-  setBudgetAmount(db, 0, "2026-08", 300, "ongoing", "courant");
+test("corriger la provision d'un compte ne touche pas celle de l'autre", async () => {
+  await setBudgetAmount(db, 0, "2026-08", 200, "ongoing", "courant");
+  await setBudgetAmount(db, 0, "2026-08", 50, "ongoing", "joint");
+  await setBudgetAmount(db, 0, "2026-08", 300, "ongoing", "courant");
 
-  expect(provisions().sort()).toEqual([
+  expect((await provisions()).sort()).toEqual([
     ["courant", "2026-08", 300],
     ["joint", "2026-08", 50],
   ]);
@@ -55,20 +55,20 @@ test("corriger la provision d'un compte ne touche pas celle de l'autre", () => {
 // Les budgets de groupes, eux, ne portent pas de compte : ils le tiennent déjà de leur
 // groupe. Leur unicité doit rester celle d'avant, sans quoi réécrire un budget en
 // créerait un second au lieu de remplacer le premier.
-test("le budget d'une dépense se remplace toujours au même mois", () => {
-  setBudgetAmount(db, 7, "2026-08", 400);
-  setBudgetAmount(db, 7, "2026-08", 450);
+test("le budget d'une dépense se remplace toujours au même mois", async () => {
+  await setBudgetAmount(db, 7, "2026-08", 400);
+  await setBudgetAmount(db, 7, "2026-08", 450);
 
-  const dun = listBudgetAmounts(db).filter((b) => b.groupId === 7);
+  const dun = (await listBudgetAmounts(db)).filter((b) => b.groupId === 7);
   expect(dun).toHaveLength(1);
   expect(dun[0].amount).toBe(450);
 });
 
 // Les deux portées cohabitent au même mois pour un même compte : relever durablement à
 // partir d'août ET faire une exception pour août.
-test("les deux portées cohabitent sur un même compte", () => {
-  setBudgetAmount(db, 0, "2026-08", 200, "ongoing", "courant");
-  setBudgetAmount(db, 0, "2026-08", 90, "once", "courant");
+test("les deux portées cohabitent sur un même compte", async () => {
+  await setBudgetAmount(db, 0, "2026-08", 200, "ongoing", "courant");
+  await setBudgetAmount(db, 0, "2026-08", 90, "once", "courant");
 
-  expect(provisions()).toHaveLength(2);
+  expect(await provisions()).toHaveLength(2);
 });

@@ -14,9 +14,9 @@ export default async function TransactionsPage() {
   const userId = await requireUserId();
   const database = db();
   // Seul écran à voir les non comptabilisées : c'est ici qu'on les réactive.
-  const transactions = listTransactions(database, userId, { includeIgnored: true });
-  const accounts = listAccounts(database, userId).map((a) => ({ id: a.id, label: accountLabel(a) }));
-  const groups = listGroups(database, userId).map((g) => ({
+  const transactions = await listTransactions(database, userId, { includeIgnored: true });
+  const accounts = (await listAccounts(database, userId)).map((a) => ({ id: a.id, label: accountLabel(a) }));
+  const groups = (await listGroups(database, userId)).map((g) => ({
     id: g.id,
     accountId: g.accountId,
     name: g.name,
@@ -26,7 +26,7 @@ export default async function TransactionsPage() {
     lines: g.lines.map((l) => ({ id: l.id, name: l.name })),
   }));
 
-  const suggestions = findReconcileSuggestions(database, userId).map((s) => ({
+  const suggestions = (await findReconcileSuggestions(database, userId)).map((s) => ({
     manual: { id: s.manual.id, date: s.manual.date, amount: s.manual.amount, label: s.manual.label },
     synced: { id: s.synced.id, date: s.synced.date, amount: s.synced.amount, label: s.synced.label },
   }));

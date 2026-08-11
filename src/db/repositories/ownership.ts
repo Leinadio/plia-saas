@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { Db } from "../pg";
 
 // --- À qui appartient ce que l'on s'apprête à modifier ------------------------
 //
@@ -16,53 +16,48 @@ import type Database from "better-sqlite3";
 // quelqu'un d'autre. L'appelant ne doit pas pouvoir distinguer les deux : savoir qu'un
 // numéro existe est déjà un renseignement.
 
-export function ownsAccount(db: Database.Database, userId: string, accountId: string): boolean {
-  const row = db
-    .prepare(`SELECT 1 FROM accounts WHERE id = ? AND user_id = ?`)
-    .get(accountId, userId);
+export async function ownsAccount(db: Db, userId: string, accountId: string): Promise<boolean> {
+  const row = await db.one(`SELECT 1 FROM accounts WHERE id = $1 AND user_id = $2`, [accountId, userId]);
   return row !== undefined;
 }
 
-export function ownsGroup(db: Database.Database, userId: string, groupId: number): boolean {
-  const row = db
-    .prepare(
-      `SELECT 1 FROM groups g JOIN accounts a ON a.id = g.account_id
-       WHERE g.id = ? AND a.user_id = ?`,
-    )
-    .get(groupId, userId);
+export async function ownsGroup(db: Db, userId: string, groupId: number): Promise<boolean> {
+  const row = await db.one(
+    `SELECT 1 FROM groups g JOIN accounts a ON a.id = g.account_id
+     WHERE g.id = $1 AND a.user_id = $2`,
+    [groupId, userId],
+  );
   return row !== undefined;
 }
 
-export function ownsLine(db: Database.Database, userId: string, lineId: number): boolean {
-  const row = db
-    .prepare(
-      `SELECT 1 FROM group_lines l
-       JOIN groups g ON g.id = l.group_id
-       JOIN accounts a ON a.id = g.account_id
-       WHERE l.id = ? AND a.user_id = ?`,
-    )
-    .get(lineId, userId);
+export async function ownsLine(db: Db, userId: string, lineId: number): Promise<boolean> {
+  const row = await db.one(
+    `SELECT 1 FROM group_lines l
+     JOIN groups g ON g.id = l.group_id
+     JOIN accounts a ON a.id = g.account_id
+     WHERE l.id = $1 AND a.user_id = $2`,
+    [lineId, userId],
+  );
   return row !== undefined;
 }
 
-export function ownsTransaction(db: Database.Database, userId: string, txnId: string): boolean {
-  const row = db
-    .prepare(
-      `SELECT 1 FROM transactions t JOIN accounts a ON a.id = t.account_id
-       WHERE t.id = ? AND a.user_id = ?`,
-    )
-    .get(txnId, userId);
+export async function ownsTransaction(db: Db, userId: string, txnId: string): Promise<boolean> {
+  const row = await db.one(
+    `SELECT 1 FROM transactions t JOIN accounts a ON a.id = t.account_id
+     WHERE t.id = $1 AND a.user_id = $2`,
+    [txnId, userId],
+  );
   return row !== undefined;
 }
 
 // Le groupe 0 n'existe pas dans `groups` : il désigne les non catégorisés d'un compte
 // (leur provision). C'est donc le compte qu'on vérifie, et l'appelant doit dire lequel.
 export function ownsGroupOrUncategorized(
-  db: Database.Database,
+  db: Db,
   userId: string,
   groupId: number,
   accountId: string | null,
-): boolean {
-  if (groupId === 0) return accountId !== null && ownsAccount(db, userId, accountId);
+): Promise<boolean> {
+  if (groupId === 0) return accountId !== null ? ownsAccount(db, userId, accountId) : Promise.resolve(false);
   return ownsGroup(db, userId, groupId);
 }

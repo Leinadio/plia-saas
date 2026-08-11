@@ -15,20 +15,29 @@ import type { Group, Txn } from "./forecast";
 // d'Historique : l'en-tête est monté par le layout et s'affiche sur toutes les pages,
 // il ne peut donc pas dépendre du compte qu'une page particulière a sélectionné.
 //
-// Lit la base à chaque rendu, comme le reste de l'app (pas de cache) : elle est locale
-// et tient dans quelques centaines de lignes.
-export function appNotifications(userId: string): Notification[] {
+// Lit la base à chaque rendu, comme le reste de l'app (pas de cache). Les six lectures
+// partent ensemble : elles ne dépendent pas les unes des autres, et les enchaîner
+// ferait attendre six allers-retours au lieu d'un.
+export async function appNotifications(userId: string): Promise<Notification[]> {
   const database = db();
   const currentMonth = currentMonthKey(new Date());
-  const groups = listGroups(database, userId) as Group[];
-  const dated = toDatedBudgets(listBudgetAmounts(database));
-  const datedLines = toDatedLineAmounts(listLineAmounts(database));
-  const txns: Txn[] = listTransactions(database, userId).map((t) => ({
+  const [comptes, groupes, budgets, budgetsLignes, operations, ecartees] = await Promise.all([
+    listAccounts(database, userId),
+    listGroups(database, userId),
+    listBudgetAmounts(database),
+    listLineAmounts(database),
+    listTransactions(database, userId),
+    listDismissedNotifications(database),
+  ]);
+  const groups = groupes as Group[];
+  const dated = toDatedBudgets(budgets);
+  const datedLines = toDatedLineAmounts(budgetsLignes);
+  const txns: Txn[] = operations.map((t) => ({
     id: t.id, date: t.date, amount: t.amount, label: t.label, accountId: t.accountId,
     groupId: t.groupId, lineId: t.lineId, excluded: t.excluded,
   }));
   return overspendNotifications(
-    listAccounts(database, userId).map((a) => ({
+    comptes.map((a) => ({
       accountId: a.id,
       accountName: accountLabel(a),
       byMonth: computeOverspends(
@@ -39,7 +48,7 @@ export function appNotifications(userId: string): Notification[] {
         datedLines,
       ).byMonth,
     })),
-    listDismissedNotifications(database),
+    ecartees,
     currentMonth,
   );
 }

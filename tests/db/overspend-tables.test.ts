@@ -1,31 +1,32 @@
 import { test, expect } from "vitest";
-import { getDb } from "../../src/db/index";
+import { createTestDb } from "../helpers/pg";
+import { dbFrom, type Db } from "../../src/db/pg";
 import { listBudgetAmounts, setBudgetAmount } from "../../src/db/repositories/budget-amounts";
 
-function freshDb() {
-  const db = getDb(":memory:");
-  db.prepare(`INSERT INTO accounts (id, name) VALUES ('a1', 'CIC')`).run();
-  db.prepare(
+async function freshDb(): Promise<Db> {
+  const db = dbFrom(await createTestDb());
+  await db.run(`INSERT INTO accounts (id, name) VALUES ('a1', 'CIC')`);
+  await db.run(
     `INSERT INTO groups (id, account_id, name, direction, monthly_amount) VALUES (1, 'a1', 'Courses', 'out', 300)`,
-  ).run();
+  );
   return db;
 }
 
-test("budget_amounts : upsert et lecture triée", () => {
-  const db = freshDb();
-  setBudgetAmount(db, 1, "2026-08", 400);
-  setBudgetAmount(db, 1, "2026-10", 450);
-  setBudgetAmount(db, 1, "2026-08", 410); // upsert : remplace le montant d'août
-  expect(listBudgetAmounts(db)).toEqual([
+test("budget_amounts : upsert et lecture triée", async () => {
+  const db = await freshDb();
+  await setBudgetAmount(db, 1, "2026-08", 400);
+  await setBudgetAmount(db, 1, "2026-10", 450);
+  await setBudgetAmount(db, 1, "2026-08", 410); // upsert : remplace le montant d'août
+  expect(await listBudgetAmounts(db)).toEqual([
     { groupId: 1, accountId: "", effectiveMonth: "2026-08", amount: 410, scope: "ongoing" },
     { groupId: 1, accountId: "", effectiveMonth: "2026-10", amount: 450, scope: "ongoing" },
   ]);
 });
 
-test("budget_amounts : provision groupe 0 (non catégorisés) sans FK", () => {
-  const db = freshDb();
-  setBudgetAmount(db, 0, "2026-08", 400);
-  expect(listBudgetAmounts(db)).toEqual([{ groupId: 0, accountId: "", effectiveMonth: "2026-08", amount: 400, scope: "ongoing" }]);
+test("budget_amounts : provision groupe 0 (non catégorisés) sans FK", async () => {
+  const db = await freshDb();
+  await setBudgetAmount(db, 0, "2026-08", 400);
+  expect(await listBudgetAmounts(db)).toEqual([{ groupId: 0, accountId: "", effectiveMonth: "2026-08", amount: 400, scope: "ongoing" }]);
 });
 
 // La colonne `writes` est une colonne libre (TEXT), pas contrainte par le schéma :

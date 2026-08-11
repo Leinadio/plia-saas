@@ -1,60 +1,55 @@
-import Database from "better-sqlite3";
-import { mkdirSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { migrateAccountCustomName, migrateGroupsV2, migrateTransactionExcluded, migrateTransactionIgnored, migrateTransactionLineId, migrateTransactionManualFields, migrateTransactionComment, migrateReconcileIgnored, migrateGroupLifespan, migrateLineLifespan, migrateDropLineDay, migrateBudgetAmountsDropGroupFk, migrateBudgetAmountScope, migrateDismissedNotifications, migrateSeedDatedAmounts, migrateDropGroupKind, migrateDropIncomeKind, migrateGroupPlanned, migrateAccountOwner, migrateProvisionPerAccount, migrateBankConnections, migrateTransactionIdPerAccount, migrateDropDeadTables } from "./migrations";
+import { Pool } from "pg";
+import { dbFrom, type Db, type QueryHost } from "./pg";
 
-const SCHEMA = readFileSync(join(process.cwd(), "src/db/schema.sql"), "utf8");
+// --- La connexion à la base ----------------------------------------------------
+//
+// Un seul jeu de connexions pour toute l'application, ouvert à la première requête et
+// gardé ensuite. Ouvrir une connexion à un Postgres distant coûte un aller-retour
+// réseau et une poignée de main chiffrée : le faire à chaque affichage de page se
+// verrait à l'œil nu.
+//
+// Le nombre de connexions est volontairement bas. L'hébergement d'une application web
+// moderne démarre une copie du serveur par requête simultanée, et chacune voudrait son
+// jeu : quelques dizaines de visiteurs suffiraient alors à épuiser les connexions
+// autorisées par la base. C'est aussi pourquoi l'adresse doit viser le répartiteur de
+// Supabase et non la base en direct.
 
-export function getDb(path = join(process.cwd(), "data/budget.db")): Database.Database {
-  // better-sqlite3 does not create the parent directory; on a fresh checkout
-  // the git-ignored data/ folder doesn't exist yet. ":memory:" has no directory.
-  if (path !== ":memory:") mkdirSync(dirname(path), { recursive: true });
-  const db = new Database(path);
-  db.pragma("journal_mode = WAL");
-  db.pragma("foreign_keys = ON");
-  db.exec(SCHEMA);
-  migrateAccountCustomName(db);
-  migrateGroupsV2(db);
-  migrateTransactionExcluded(db);
-  migrateTransactionIgnored(db);
-  migrateTransactionLineId(db);
-  migrateTransactionManualFields(db);
-  migrateTransactionComment(db);
-  migrateReconcileIgnored(db);
-  migrateGroupLifespan(db);
-  migrateLineLifespan(db);
-  migrateDropLineDay(db);
-  migrateBudgetAmountsDropGroupFk(db);
-  migrateBudgetAmountScope(db);
-  migrateDismissedNotifications(db);
-  migrateSeedDatedAmounts(db);
-  // En dernier : tout ce qui lit encore la nature d'un groupe, ou sa classe de revenu,
-  // doit être passé avant. Une migration qui rajouterait l'une de ces colonnes après
-  // coup la ferait revenir à chaque démarrage.
-  migrateDropGroupKind(db);
-  migrateDropIncomeKind(db);
-  // Après les suppressions de colonnes de groups : elle en ajoute une, et doit passer
-  // derrière celles qui en retirent pour ne pas se la faire emporter.
-  migrateGroupPlanned(db);
-  // Après les suppressions de colonnes : elle lit accounts telle qu'elle est à la fin.
-  migrateAccountOwner(db);
-  migrateProvisionPerAccount(db);
-  // Après migrateAccountOwner : elle rattache les comptes à leur connexion par leur
-  // propriétaire, qui doit donc déjà être posé.
-  migrateBankConnections(db);
-  // En dernier : elle réécrit les identifiants d'opérations, que les migrations
-  // précédentes lisent encore telles qu'elles les ont écrites.
-  migrateTransactionIdPerAccount(db);
-  // Tout à la fin : migrateBudgets et migrateGroupsV2 recréent budgets et
-  // group_keywords sur les bases les plus anciennes. Le ménage passe derrière elles.
-  migrateDropDeadTables(db);
-  return db;
+let pool: Pool | null = null;
+
+function jeuDeConnexions(): Pool {
+  if (!pool) {
+    const url = process.env.DATABASE_URL;
+    if (!url) {
+      throw new Error(
+        "DATABASE_URL absent : donner l'adresse du répartiteur Supabase dans .env.local.",
+      );
+    }
+    pool = new Pool({ connectionString: url, max: 4 });
+  }
+  return pool;
 }
 
-let _db: Database.Database | null = null;
-export function db(): Database.Database {
-  if (!_db) {
-    _db = getDb();
-  }
-  return _db;
+function hote(p: Pool): QueryHost {
+  return {
+    query: (sql, params) => p.query(sql, params),
+    // Une transaction doit tenir la même connexion du début à la fin : on en sort une
+    // du jeu et on la garde pour elle seule.
+    reserve: async () => {
+      const client = await p.connect();
+      return {
+        host: { query: (sql, params) => client.query(sql, params) },
+        release: () => client.release(),
+      };
+    },
+  };
+}
+
+export function db(): Db {
+  return dbFrom(hote(jeuDeConnexions()));
+}
+
+// Le jeu de connexions brut, pour Better Auth : il pose et interroge ses propres
+// tables (comptes, sessions) avec son propre outillage, et veut le pilote tel quel.
+export function poolPostgres(): Pool {
+  return jeuDeConnexions();
 }

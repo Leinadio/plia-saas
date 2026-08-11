@@ -9,91 +9,87 @@
 // sa banque, et rien qui traverse. Chaque fonction de lecture ajoutée au projet doit
 // venir se déclarer ici.
 import { expect, test } from "vitest";
-import type Database from "better-sqlite3";
-import { getDb } from "../../src/db/index";
+import { createTestDb } from "../helpers/pg";
+import { dbFrom, type Db } from "../../src/db/pg";
 import { listAccounts, totalBalance, upsertAccount } from "../../src/db/repositories/accounts";
 import { listGroups, insertGroup, insertLine } from "../../src/db/repositories/groups";
 import { listTransactions, upsertTransaction } from "../../src/db/repositories/transactions";
 
 // Deux mondes séparés dans une même base. Daniel a son CIC, Maeva sa Société Générale,
 // et chacun ses transactions et ses dépenses.
-function deuxMondes(): Database.Database {
-  const db = getDb(":memory:");
-  db.exec(`CREATE TABLE IF NOT EXISTS user (
+async function deuxMondes(): Promise<Db> {
+  const db = dbFrom(await createTestDb());
+  await db.run(`CREATE TABLE IF NOT EXISTS "user" (
     id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE,
-    emailVerified INTEGER NOT NULL, createdAt DATE NOT NULL, updatedAt DATE NOT NULL
+    "emailVerified" BOOLEAN NOT NULL, "createdAt" TIMESTAMPTZ NOT NULL, "updatedAt" TIMESTAMPTZ NOT NULL
   )`);
   for (const [id, email] of [["u-daniel", "daniel@x.fr"], ["u-maeva", "maeva@x.fr"]]) {
-    db.prepare(
-      `INSERT INTO user (id, name, email, emailVerified, createdAt, updatedAt)
-       VALUES (?, ?, ?, 0, '2026-08-09', '2026-08-09')`,
-    ).run(id, id, email);
+    await db.run(`INSERT INTO "user" (id, name, email, "emailVerified", "createdAt", "updatedAt")
+       VALUES ($1, $2, $3, FALSE, '2026-08-09', '2026-08-09')`, [id, id, email]);
   }
 
-  const compte = (id: string, nom: string, solde: number, user: string) => {
-    upsertAccount(db, { id, name: nom, iban_masked: null, balance: solde, currency: "EUR", last_synced: null }, user);
+  const compte = async (id: string, nom: string, solde: number, user: string) => {
+    await upsertAccount(db, { id, name: nom, iban_masked: null, balance: solde, currency: "EUR", last_synced: null }, user);
   };
-  compte("cic", "CIC", 1000, "u-daniel");
-  compte("sg", "Société Générale", 500, "u-maeva");
+  await compte("cic", "CIC", 1000, "u-daniel");
+  await compte("sg", "Société Générale", 500, "u-maeva");
 
-  const gd = insertGroup(db, "cic", "Courses", "out", 400, "2026-01", null);
-  insertLine(db, gd, "Boulangerie", 50);
-  insertGroup(db, "sg", "Loyer", "out", 900, "2026-01", null);
+  const gd = await insertGroup(db, "cic", "Courses", "out", 400, "2026-01", null);
+  await insertLine(db, gd, "Boulangerie", 50);
+  await insertGroup(db, "sg", "Loyer", "out", 900, "2026-01", null);
 
-  upsertTransaction(db, { id: "t-daniel", account_id: "cic", date: "2026-08-01", amount: -20, label: "CARREFOUR" });
-  upsertTransaction(db, { id: "t-maeva", account_id: "sg", date: "2026-08-02", amount: -30, label: "MONOPRIX" });
+  await upsertTransaction(db, { id: "t-daniel", account_id: "cic", date: "2026-08-01", amount: -20, label: "CARREFOUR" });
+  await upsertTransaction(db, { id: "t-maeva", account_id: "sg", date: "2026-08-02", amount: -30, label: "MONOPRIX" });
   return db;
 }
 
-test("chacun ne voit que ses comptes bancaires", () => {
-  const db = deuxMondes();
-  expect(listAccounts(db, "u-daniel").map((a) => a.id)).toEqual(["cic"]);
-  expect(listAccounts(db, "u-maeva").map((a) => a.id)).toEqual(["sg"]);
+test("chacun ne voit que ses comptes bancaires", async () => {
+  const db = await deuxMondes();
+  expect((await listAccounts(db, "u-daniel")).map((a) => a.id)).toEqual(["cic"]);
+  expect((await listAccounts(db, "u-maeva")).map((a) => a.id)).toEqual(["sg"]);
 });
 
 // Le solde total est ce que l'écran d'accueil annonce en gros. Il additionnait toute
 // la table.
-test("le solde total ne cumule que ses comptes", () => {
-  const db = deuxMondes();
-  expect(totalBalance(db, "u-daniel")).toBe(1000);
-  expect(totalBalance(db, "u-maeva")).toBe(500);
+test("le solde total ne cumule que ses comptes", async () => {
+  const db = await deuxMondes();
+  expect(await totalBalance(db, "u-daniel")).toBe(1000);
+  expect(await totalBalance(db, "u-maeva")).toBe(500);
 });
 
-test("chacun ne voit que ses transactions", () => {
-  const db = deuxMondes();
-  expect(listTransactions(db, "u-daniel").map((t) => t.id)).toEqual(["t-daniel"]);
-  expect(listTransactions(db, "u-maeva").map((t) => t.id)).toEqual(["t-maeva"]);
+test("chacun ne voit que ses transactions", async () => {
+  const db = await deuxMondes();
+  expect((await listTransactions(db, "u-daniel")).map((t) => t.id)).toEqual(["t-daniel"]);
+  expect((await listTransactions(db, "u-maeva")).map((t) => t.id)).toEqual(["t-maeva"]);
 });
 
-test("chacun ne voit que ses dépenses et leurs sous-postes", () => {
-  const db = deuxMondes();
-  const daniel = listGroups(db, "u-daniel");
+test("chacun ne voit que ses dépenses et leurs sous-postes", async () => {
+  const db = await deuxMondes();
+  const daniel = await listGroups(db, "u-daniel");
   expect(daniel.map((g) => g.name)).toEqual(["Courses"]);
   expect(daniel[0].lines.map((l) => l.name)).toEqual(["Boulangerie"]);
-  expect(listGroups(db, "u-maeva").map((g) => g.name)).toEqual(["Loyer"]);
+  expect((await listGroups(db, "u-maeva")).map((g) => g.name)).toEqual(["Loyer"]);
 });
 
 // Un compte sans propriétaire n'appartient à personne, et surtout pas au premier qui
 // se connecte. C'est le cas des bases reprises où l'attribution n'a pas pu se décider.
-test("un compte orphelin n'apparaît chez personne", () => {
-  const db = deuxMondes();
-  db.prepare(
-    `INSERT INTO accounts (id, name, iban_masked, balance, currency, last_synced)
-     VALUES ('perdu', 'Vieux', NULL, 99, 'EUR', NULL)`,
-  ).run();
-  upsertTransaction(db, { id: "t-perdue", account_id: "perdu", date: "2026-08-03", amount: -5, label: "X" });
+test("un compte orphelin n'apparaît chez personne", async () => {
+  const db = await deuxMondes();
+  await db.run(`INSERT INTO accounts (id, name, iban_masked, balance, currency, last_synced)
+     VALUES ('perdu', 'Vieux', NULL, 99, 'EUR', NULL)`);
+  await upsertTransaction(db, { id: "t-perdue", account_id: "perdu", date: "2026-08-03", amount: -5, label: "X" });
 
-  expect(listAccounts(db, "u-daniel").map((a) => a.id)).toEqual(["cic"]);
-  expect(listTransactions(db, "u-daniel").map((t) => t.id)).toEqual(["t-daniel"]);
-  expect(totalBalance(db, "u-daniel")).toBe(1000);
+  expect((await listAccounts(db, "u-daniel")).map((a) => a.id)).toEqual(["cic"]);
+  expect((await listTransactions(db, "u-daniel")).map((t) => t.id)).toEqual(["t-daniel"]);
+  expect(await totalBalance(db, "u-daniel")).toBe(1000);
 });
 
 // Un identifiant qui ne correspond à personne ne doit pas ouvrir la base. C'est le cas
 // d'une session périmée dont le compte a été supprimé.
-test("un utilisateur inconnu ne voit rien", () => {
-  const db = deuxMondes();
-  expect(listAccounts(db, "u-fantome")).toEqual([]);
-  expect(listTransactions(db, "u-fantome")).toEqual([]);
-  expect(listGroups(db, "u-fantome")).toEqual([]);
-  expect(totalBalance(db, "u-fantome")).toBe(0);
+test("un utilisateur inconnu ne voit rien", async () => {
+  const db = await deuxMondes();
+  expect(await listAccounts(db, "u-fantome")).toEqual([]);
+  expect(await listTransactions(db, "u-fantome")).toEqual([]);
+  expect(await listGroups(db, "u-fantome")).toEqual([]);
+  expect(await totalBalance(db, "u-fantome")).toBe(0);
 });

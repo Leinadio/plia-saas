@@ -26,10 +26,10 @@ export default async function SettingsPage({
   const params = await searchParams;
   const userId = await requireUserId();
   const database = db();
-  const accounts = listAccounts(database, userId);
+  const accounts = await listAccounts(database, userId);
   // Seulement celles qui ont abouti : une demande abandonnée en route n'apprend
   // rien à personne et n'a rien à faire dans cette liste.
-  const connexions = listActiveConnections(database, userId);
+  const connexions = await listActiveConnections(database, userId);
 
   return (
     <div className="flex flex-col gap-4">

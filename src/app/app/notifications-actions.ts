@@ -17,12 +17,14 @@ async function siennes(ids: string[]): Promise<string[]> {
   const userId = await requireUserId();
   const database = db();
   const vus = new Map<string, boolean>();
-  return ids.filter((id) => {
+  const gardees: string[] = [];
+  for (const id of ids) {
     const compte = id.split("::")[0];
-    if (!compte) return false;
-    if (!vus.has(compte)) vus.set(compte, ownsAccount(database, userId, compte));
-    return vus.get(compte)!;
-  });
+    if (!compte) continue;
+    if (!vus.has(compte)) vus.set(compte, await ownsAccount(database, userId, compte));
+    if (vus.get(compte)) gardees.push(id);
+  }
+  return gardees;
 }
 
 // Ferme une notification : elle ne reviendra pas. L'identité vient de
@@ -34,7 +36,7 @@ async function siennes(ids: string[]): Promise<string[]> {
 // partout, et son compteur doit tomber juste où qu'on soit.
 export async function dismissNotification(id: string): Promise<void> {
   if (!id || (await siennes([id])).length === 0) return;
-  dismiss(db(), id);
+  await dismiss(db(), id);
   revalidatePath("/app", "layout");
 }
 
@@ -45,7 +47,7 @@ export async function dismissNotification(id: string): Promise<void> {
 export async function dismissAllNotifications(ids: string[]): Promise<void> {
   const miennes = await siennes(ids);
   if (miennes.length === 0) return;
-  dismissAll(db(), miennes);
+  await dismissAll(db(), miennes);
   revalidatePath("/app", "layout");
 }
 
@@ -55,6 +57,6 @@ export async function dismissAllNotifications(ids: string[]): Promise<void> {
 export async function restoreNotifications(ids: string[]): Promise<void> {
   const miennes = await siennes(ids);
   if (miennes.length === 0) return;
-  restore(db(), miennes);
+  await restore(db(), miennes);
   revalidatePath("/app", "layout");
 }
