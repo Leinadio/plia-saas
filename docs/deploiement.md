@@ -30,11 +30,14 @@ adresse est celle en `.vercel.app` que Vercel attribue.
 | `ENABLEBANKING_APPLICATION_ID` | Control Panel d'Enable Banking. La même que dans `.env.local`. |
 | `ENABLEBANKING_PRIVATE_KEY` | **Le contenu** du fichier de `secrets/`, collé tel quel, retours à la ligne compris. Il n'y a pas de dossier `secrets/` sur un serveur. |
 | `ENABLEBANKING_REDIRECT_URL` | `https://<projet>.vercel.app/api/callback` |
-| `ENABLEBANKING_ASPSP_NAME` | La même que dans `.env.local` (`CIC` en production Enable Banking). |
-| `ENABLEBANKING_ASPSP_COUNTRY` | `FR` |
 
-Ne pas reprendre `DIRECT_URL` : elle ne sert qu'aux scripts d'installation du schéma,
-lancés depuis une machine, jamais par l'application.
+`ENABLEBANKING_ASPSP_NAME` et `ENABLEBANKING_ASPSP_COUNTRY` ne sont pas à reprendre.
+L'écran de choix envoie la banque retenue avec chaque demande d'autorisation : ces deux
+variables ne sont qu'un repli pour un appel qui ne dirait rien, et le code retombe déjà
+sur CIC et la France. Les poser reviendrait à figer un choix que l'écran fait mieux.
+
+`DIRECT_URL` non plus : elle ne sert qu'aux scripts d'installation du schéma, lancés
+depuis une machine, jamais par l'application.
 
 ### Chez Enable Banking
 
