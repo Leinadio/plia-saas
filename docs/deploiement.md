@@ -44,10 +44,10 @@ continuent de fonctionner, puisqu'elles ne repassent pas par le retour.
 
 ## La base
 
-Aujourd'hui la préprod pointe sur la base **plia-preprod**, celle qui contient les
+Aujourd'hui la préprod pointe sur la base **plia-staging**, celle qui contient les
 données reprises. C'est ce qui permet de voir un vrai rendu tout de suite.
 
-Le jour où la prod existe, elle aura **sa propre base**, et plia-preprod restera la base
+Le jour où la prod existe, elle aura **sa propre base**, et plia-staging restera la base
 de préprod. Jamais l'inverse : une préprod branchée sur la base de prod, c'est un test
 qui abîme les données de quelqu'un.
 
