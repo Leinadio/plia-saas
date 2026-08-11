@@ -15,21 +15,24 @@ import type { Group, Txn } from "./forecast";
 // d'Historique : l'en-tête est monté par le layout et s'affiche sur toutes les pages,
 // il ne peut donc pas dépendre du compte qu'une page particulière a sélectionné.
 //
-// Lit la base à chaque rendu, comme le reste de l'app (pas de cache). Les six lectures
-// partent ensemble : elles ne dépendent pas les unes des autres, et les enchaîner
-// ferait attendre six allers-retours au lieu d'un.
+// Lit la base à chaque rendu, comme le reste de l'app (pas de cache).
+//
+// Les six lectures partent l'une après l'autre, et non ensemble. Elles ne dépendent
+// pourtant pas les unes des autres — mais elles empruntent toutes la MÊME connexion,
+// celle que le travail au nom de la personne a réservée pour lui seul. Une connexion
+// ne traite qu'une requête à la fois : les lancer ensemble ne les accélère pas d'une
+// milliseconde, ça les met simplement en file d'attente, et le pilote proteste.
 export async function appNotifications(): Promise<Notification[]> {
   const currentMonth = currentMonthKey(new Date());
-  const [comptes, groupes, budgets, budgetsLignes, operations, ecartees] = await pourMoi(
-    async (database, userId) =>
-      Promise.all([
-        listAccounts(database, userId),
-        listGroups(database, userId),
-        listBudgetAmounts(database),
-        listLineAmounts(database),
-        listTransactions(database, userId),
-        listDismissedNotifications(database, userId),
-      ]),
+  const { comptes, groupes, budgets, budgetsLignes, operations, ecartees } = await pourMoi(
+    async (database, userId) => ({
+      comptes: await listAccounts(database, userId),
+      groupes: await listGroups(database, userId),
+      budgets: await listBudgetAmounts(database),
+      budgetsLignes: await listLineAmounts(database),
+      operations: await listTransactions(database, userId),
+      ecartees: await listDismissedNotifications(database, userId),
+    }),
   );
   const groups = groupes as Group[];
   const dated = toDatedBudgets(budgets);
