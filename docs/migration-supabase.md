@@ -158,10 +158,18 @@ numéro repris.
 
 ## Étape 7 — Le déploiement
 
-Vercel ouvre et referme des connexions en permanence : on branche l'application sur le
-pooler de Supabase, pas sur la base en direct. Restent les variables d'environnement, la
-clé Enable Banking (qui sait déjà se lire depuis une variable, rien à changer), et
-l'adresse de retour de la banque à déclarer sur le nouveau domaine.
+**Fait pour la préprod.** L'application tourne sur https://plia-saas.vercel.app, branchée
+sur le répartiteur de Supabase et non sur la base en direct — un hébergement qui ouvre et
+referme des connexions en permanence épuiserait sinon celles que la base autorise.
+
+Le détail des branches, des variables et de leur provenance vit dans
+`docs/deploiement.md`. Deux choses ont coûté du temps et méritent d'être retenues :
+la clé Enable Banking doit voyager par sa valeur et non par son chemin — il n'y a pas
+de dossier `secrets/` sur un serveur — et un refus de signature ne disait pas laquelle
+des deux moitiés était en cause, ce que le message d'erreur explique désormais tout seul.
+
+La prod attend un nom de domaine. Elle aura son propre projet Vercel et sa propre base ;
+plia-staging restera la base de préprod.
 
 ---
 
