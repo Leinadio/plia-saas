@@ -139,9 +139,22 @@ ne peut utiliser.
 
 ## Étape 6 — Reprendre les données existantes
 
-Export de la base locale, réinjection dans Supabase, vérification à l'écran que les
-soldes, les enveloppes et l'historique sont identiques. La base locale est conservée
-telle quelle : si quelque chose manque, on recommence.
+**Fait.** `node --env-file=.env.local scripts/reprendre-donnees.mjs` verse la base
+locale dans Supabase, en une seule transaction : ou bien tout est là, ou bien rien n'a
+bougé. Le script refuse de tourner sur une base qui contient déjà quelque chose — un
+doublon d'opération, c'est un solde faux — et la base d'origine est ouverte en lecture
+seule, donc rien ne peut lui arriver.
+
+Repris : 2 comptes utilisateurs, 5 connexions bancaires, 7 comptes, 23 dépenses, 13
+sous-postes, 799 opérations, 34 budgets datés, 18 montants de sous-postes, 18
+acquittements. Laissés de côté : les sessions ouvertes (chacun se reconnecte), et un
+acquittement dont l'identité datait d'avant les numéros de compte et ne désignait plus
+rien d'affichable.
+
+Vérifié ensuite en comparant les deux bases : nombres de lignes, sommes des soldes, des
+opérations et des budgets, opérations non comptabilisées, saisies manuelles, dépenses
+non prévues. Aucun écart. Les compteurs d'identifiants repartent après le plus grand
+numéro repris.
 
 ## Étape 7 — Le déploiement
 
