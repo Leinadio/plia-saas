@@ -126,6 +126,6 @@ export async function mergeTransaction(syncedId: string, manualId: string) {
 export async function ignoreMatch(manualId: string, syncedId: string) {
   const userId = await requireUserId();
   if (!(await ownsTransaction(db(), userId, manualId)) || !(await ownsTransaction(db(), userId, syncedId))) return;
-  await ignoreMatchRepo(db(), manualId, syncedId);
+  await ignoreMatchRepo(db(), userId, manualId, syncedId);
   revalidateAll();
 }

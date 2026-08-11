@@ -27,7 +27,7 @@ export async function appNotifications(userId: string): Promise<Notification[]> 
     listBudgetAmounts(database),
     listLineAmounts(database),
     listTransactions(database, userId),
-    listDismissedNotifications(database),
+    listDismissedNotifications(database, userId),
   ]);
   const groups = groupes as Group[];
   const dated = toDatedBudgets(budgets);

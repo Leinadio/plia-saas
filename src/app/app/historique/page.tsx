@@ -40,7 +40,7 @@ export default async function HistoriquePage({
   const allGroups = await listGroups(database, userId);
   const datedBudgets = toDatedBudgets(await listBudgetAmounts(database));
   const datedLines = toDatedLineAmounts(await listLineAmounts(database));
-  const dismissed = await listDismissedNotifications(database);
+  const dismissed = await listDismissedNotifications(database, userId);
   const toTxn = (t: TxnView): Txn => ({
     id: t.id,
     date: t.date,

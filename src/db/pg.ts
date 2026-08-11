@@ -55,6 +55,17 @@ export type Db = {
   // devra donc réserver une connexion pour la durée de la transaction — c'est le
   // rôle de l'assemblage, pas de ce module.
   tx<T>(fn: (db: Db) => Promise<T>): Promise<T>;
+  // Travailler au nom de quelqu'un, sous l'habit bridé de l'application.
+  //
+  // Deux gestes en un : le serveur cesse d'être administrateur de la base, et il
+  // annonce pour qui il travaille. À partir de là, la base ne lui montre plus que les
+  // lignes de cette personne — même si la requête, elle, ne demandait aucun filtre.
+  // C'est le second verrou : un oubli dans le code ne fait plus fuiter quoi que ce soit.
+  //
+  // Les deux gestes ne valent que le temps du travail. Une annonce qui lui survivrait
+  // serait pire que rien : la connexion retourne dans le jeu commun et servirait la
+  // requête suivante, celle de quelqu'un d'autre.
+  pourUtilisateur<T>(userId: string, fn: (db: Db) => Promise<T>): Promise<T>;
 };
 
 export function dbFrom(host: QueryHost): Db {
@@ -99,6 +110,15 @@ export function dbFrom(host: QueryHost): Db {
       } finally {
         reservation?.release();
       }
+    },
+    pourUtilisateur<T>(userId: string, fn: (db: Db) => Promise<T>): Promise<T> {
+      // Tout se passe dans une transaction, et c'est ce qui borne les deux gestes :
+      // LOCAL veut dire « jusqu'au bout de celle-ci, pas plus loin ».
+      return db.tx(async (t) => {
+        await t.run("SET LOCAL ROLE budget_app");
+        await t.run("SELECT set_config('app.user_id', $1, true)", [userId]);
+        return fn(t);
+      });
     },
   };
 

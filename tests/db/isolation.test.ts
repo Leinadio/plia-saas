@@ -71,18 +71,6 @@ test("chacun ne voit que ses dépenses et leurs sous-postes", async () => {
   expect((await listGroups(db, "u-maeva")).map((g) => g.name)).toEqual(["Loyer"]);
 });
 
-// Un compte sans propriétaire n'appartient à personne, et surtout pas au premier qui
-// se connecte. C'est le cas des bases reprises où l'attribution n'a pas pu se décider.
-test("un compte orphelin n'apparaît chez personne", async () => {
-  const db = await deuxMondes();
-  await db.run(`INSERT INTO accounts (id, name, iban_masked, balance, currency, last_synced)
-     VALUES ('perdu', 'Vieux', NULL, 99, 'EUR', NULL)`);
-  await upsertTransaction(db, { id: "t-perdue", account_id: "perdu", date: "2026-08-03", amount: -5, label: "X" });
-
-  expect((await listAccounts(db, "u-daniel")).map((a) => a.id)).toEqual(["cic"]);
-  expect((await listTransactions(db, "u-daniel")).map((t) => t.id)).toEqual(["t-daniel"]);
-  expect(await totalBalance(db, "u-daniel")).toBe(1000);
-});
 
 // Un identifiant qui ne correspond à personne ne doit pas ouvrir la base. C'est le cas
 // d'une session périmée dont le compte a été supprimé.

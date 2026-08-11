@@ -19,14 +19,9 @@ async function base(): Promise<{ db: Db; gMoi: number; gAutre: number; lMoi: num
   const db = dbFrom(await createTestDb());
   await upsertAccount(db, { id: "moi", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, MOI);
   await upsertAccount(db, { id: "autre", name: "SG", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, AUTRE);
-  // Un compte hérité, sans propriétaire : il n'est à personne.
-  await db.run(`INSERT INTO accounts (id, name, iban_masked, balance, currency, last_synced)
-     VALUES ('orphelin', 'Vieux', NULL, 0, 'EUR', NULL)`);
-
   const gMoi = await insertGroup(db, "moi", "Courses", "out", 400, "2026-01", null);
   const gAutre = await insertGroup(db, "autre", "Loyer", "out", 900, "2026-01", null);
   const lMoi = await insertLine(db, gMoi, "Boulangerie", 50);
-  await insertGroup(db, "orphelin", "Perdu", "out", 10, "2026-01", null);
 
   await upsertTransaction(db, { id: "t-moi", account_id: "moi", date: "2026-08-01", amount: -20, label: "X" });
   await upsertTransaction(db, { id: "t-autre", account_id: "autre", date: "2026-08-01", amount: -20, label: "Y" });
@@ -37,7 +32,6 @@ test("un compte est à son propriétaire et à personne d'autre", async () => {
   const { db } = await base();
   expect(await ownsAccount(db, MOI, "moi")).toBe(true);
   expect(await ownsAccount(db, MOI, "autre")).toBe(false);
-  expect(await ownsAccount(db, MOI, "orphelin")).toBe(false);
 });
 
 test("une dépense suit son compte", async () => {
@@ -77,4 +71,16 @@ test("le groupe zéro se juge sur son compte", async () => {
   expect(await ownsGroupOrUncategorized(db, MOI, 0, "autre")).toBe(false);
   expect(await ownsGroupOrUncategorized(db, MOI, 0, null)).toBe(false);
   expect(await ownsGroupOrUncategorized(db, MOI, gMoi, null)).toBe(true);
+});
+
+// Un compte sans propriétaire n'appartenait à personne : il n'apparaissait chez
+// personne, mais il existait, et ses dépenses avec lui — invisibles et impossibles à
+// retirer. La base ne l'accepte plus du tout : le cas ne se traite plus, il ne peut
+// plus se produire.
+test("un compte sans propriétaire ne peut pas entrer en base", async () => {
+  const db = dbFrom(await createTestDb());
+
+  await expect(
+    db.run(`INSERT INTO accounts (id, name, balance, currency) VALUES ('orphelin', 'Vieux', 0, 'EUR')`),
+  ).rejects.toThrow();
 });

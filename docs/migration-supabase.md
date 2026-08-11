@@ -113,10 +113,22 @@ vérification. Postgres sait faire mieux : on déclare, table par table, qu'une 
 n'est visible que par son propriétaire, et la base refuse d'elle-même. Un oubli dans le
 code ne devient plus une fuite.
 
-Concrètement : le propriétaire devient obligatoire sur les comptes bancaires, chaque
-requête annonce à la base qui la passe, et les dix tables reçoivent leur règle. Les 61
-fonctions sont relues une par une pour vérifier qu'aucune ne travaille sans savoir pour
-qui.
+**Fait pour la partie base.** Le propriétaire est devenu obligatoire sur les comptes
+bancaires — un compte sans propriétaire ne peut plus entrer, le cas ne se traite plus,
+il ne peut plus se produire. Les trois tables qui n'en portaient aucun ont été
+reprises : les réglages n'étaient plus utilisés par personne et ont disparu ; les
+rapprochements écartés et les alertes acquittées ont désormais leur propriétaire, et
+le refus de l'un ne vaut plus pour l'autre. Les neuf tables restantes ont leur règle,
+et un rôle bridé remplace l'administrateur.
+
+Les tests le vérifient dans les deux sens : sans annonce, une lecture sans filtre ne
+rend rien du tout ; avec l'annonce, elle ne rend que ce qui appartient à la personne ;
+et une écriture visant le numéro de quelqu'un d'autre ne touche rien.
+
+**Reste à brancher.** Le geste qui enfile l'habit bridé existe et il est testé, mais
+l'application ne s'en sert pas encore : elle se connecte toujours en administrateur, et
+les règles ne s'appliquent pas à lui. Chaque page et chaque action doit encadrer son
+travail par ce geste. C'est mécanique, mais ça touche une quinzaine de fichiers.
 
 ## Étape 6 — Reprendre les données existantes
 

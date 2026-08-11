@@ -35,6 +35,10 @@ const occupes: PGlite[] = [];
 // RESTART IDENTITY remet les compteurs d'identifiants à zéro : beaucoup de tests
 // attendent que le premier groupe créé porte le numéro 1.
 async function vider(db: PGlite): Promise<void> {
+  // Un test qui s'est rabaissé au rôle de l'application (tests/db/rls.test.ts) rend un
+  // moteur qui n'a plus le droit de vider ses propres tables. On reprend d'abord les
+  // pleins pouvoirs, et on efface qui l'on prétendait être.
+  await db.exec(`RESET ROLE; SELECT set_config('app.user_id', '', false)`);
   const { rows } = await db.query<{ nom: string }>(
     `SELECT table_name AS nom FROM information_schema.tables WHERE table_schema = 'public'`,
   );

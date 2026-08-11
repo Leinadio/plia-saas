@@ -79,7 +79,7 @@ test("findReconcileSuggestions skips ignored pairs", async () => {
     accountId: "a1", date: "2026-07-01", amount: 50, label: "top-up", groupId: null, lineId: null, });
   await upsertTransaction(db, { id: "bank_ok", account_id: "a1", date: "2026-07-02", amount: 50, label: "VIR" });
   expect(await findReconcileSuggestions(db, TEST_USER)).toHaveLength(1);
-  await db.run("INSERT INTO reconcile_ignored (manual_id, synced_id) VALUES ($1, $2)", [m, "bank_ok"]);
+  await db.run("INSERT INTO reconcile_ignored (user_id, manual_id, synced_id) VALUES ($1, $2, $3)", [TEST_USER, m, "bank_ok"]);
   expect(await findReconcileSuggestions(db, TEST_USER)).toHaveLength(0);
 });
 
@@ -138,9 +138,27 @@ test("ignoreMatch records a dismissed pair so it is no longer suggested", async 
   const m = await insertManualTransaction(db, {
     accountId: "a1", date: "2026-07-01", amount: 50, label: "top-up", groupId: null, lineId: null, });
   await upsertTransaction(db, { id: "bank1", account_id: "a1", date: "2026-07-02", amount: 50, label: "VIR" });
-  await ignoreMatch(db, m, "bank1");
+  await ignoreMatch(db, TEST_USER, m, "bank1");
   expect(await findReconcileSuggestions(db, TEST_USER)).toHaveLength(0);
   // idempotent : deuxième écartement sans erreur
-  await ignoreMatch(db, m, "bank1");
+  await ignoreMatch(db, TEST_USER, m, "bank1");
   expect(await db.one("SELECT COUNT(*) AS n FROM reconcile_ignored")).toEqual({ n: 1 });
+});
+
+// Les paires écartées non plus n'avaient pas de propriétaire. Écarter un rapprochement
+// chez soi versait une ligne dans une table commune, que la lecture de tous parcourait.
+test("les paires écartées d'un autre ne sont pas les miennes", async () => {
+  const db = await seed();
+  const m = await insertManualTransaction(db, {
+    accountId: "a1", date: "2026-07-01", amount: 50, label: "top-up", groupId: null, lineId: null });
+  await upsertTransaction(db, { id: "bank1", account_id: "a1", date: "2026-07-02", amount: 50, label: "VIR" });
+
+  // Quelqu'un d'autre écarte exactement la même paire de son côté.
+  await ignoreMatch(db, "u-autre", m, "bank1");
+
+  // La mienne tient toujours : son écartement ne vaut pas pour moi.
+  expect(await findReconcileSuggestions(db, TEST_USER)).toHaveLength(1);
+
+  await ignoreMatch(db, TEST_USER, m, "bank1");
+  expect(await findReconcileSuggestions(db, TEST_USER)).toHaveLength(0);
 });

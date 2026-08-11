@@ -10,10 +10,9 @@
 --   3. Les tables sont déclarées dans l'ordre de leurs dépendances. SQLite acceptait
 --      qu'une table cite une table pas encore créée ; Postgres refuse.
 --
--- Ce qui reste à faire ailleurs : `settings`, `reconcile_ignored` et
--- `dismissed_notifications` n'ont pas de propriétaire. Aujourd'hui elles sont
--- communes à tout le monde. Leur cloisonnement est un changement de comportement,
--- avec ses propres tests — il se fait à l'étape 5, pas dans une traduction.
+-- Chaque table dit à qui appartiennent ses lignes, directement ou par le compte
+-- bancaire dont elles dépendent. Sans cela, aucune règle de la base ne pourrait
+-- décider quoi montrer à qui.
 
 -- Une autorisation bancaire : une banque, une session, une expiration à 90 jours. Une
 -- ligne par banque ET par utilisateur — c'est ce qui permet d'en avoir plusieurs, là
@@ -39,11 +38,12 @@ CREATE TABLE IF NOT EXISTS accounts (
   currency TEXT NOT NULL DEFAULT 'EUR',
   last_synced TEXT,                -- ISO datetime
   custom_name TEXT,                -- alias utilisateur ; NULL = utiliser name
-  -- Propriétaire du compte (user.id de Better Auth). Pas de clé étrangère : la table
-  -- `user` n'est pas créée par ce schéma mais par le CLI de Better Auth, et les bases
-  -- de test n'en ont pas. Reste nullable le temps de la migration ; devient
-  -- obligatoire à l'étape 5, quand le cloisonnement passe dans la base.
-  user_id TEXT,
+  -- Propriétaire du compte (user.id de Better Auth). Obligatoire : tout le budget pend
+  -- au compte bancaire, donc un compte sans propriétaire, ce sont des dépenses et des
+  -- opérations qui n'apparaissent chez personne et que plus rien ne peut retirer.
+  -- Pas de clé étrangère : la table `user` n'est pas créée par ce schéma mais par
+  -- l'outillage de Better Auth, et les bases de test n'en ont pas.
+  user_id TEXT NOT NULL,
   -- Connexion bancaire qui a rapporté ce compte. Dit quelle session présenter pour le
   -- rafraîchir, et quelle banque redemander quand l'autorisation expire.
   connection_id INTEGER REFERENCES bank_connections(id) ON DELETE SET NULL
@@ -92,15 +92,15 @@ CREATE TABLE IF NOT EXISTS transactions (
   comment TEXT                              -- commentaire libre, affiché sous le libellé
 );
 
-CREATE TABLE IF NOT EXISTS settings (
-  key TEXT PRIMARY KEY,
-  value TEXT
-);
-
+-- Les rapprochements que l'utilisateur a refusés : « cette saisie et cette opération
+-- ne sont pas la même ». Le propriétaire fait partie de la clé — deux personnes
+-- peuvent très bien juger différemment de la même paire, et le refus de l'une ne vaut
+-- pas pour l'autre.
 CREATE TABLE IF NOT EXISTS reconcile_ignored (
+  user_id TEXT NOT NULL,
   manual_id TEXT NOT NULL,
   synced_id TEXT NOT NULL,
-  PRIMARY KEY (manual_id, synced_id)
+  PRIMARY KEY (user_id, manual_id, synced_id)
 );
 
 -- Budgets datés : montant d'un groupe à partir d'un mois donné. SEULE source de
@@ -144,8 +144,10 @@ CREATE TABLE IF NOT EXISTS line_amounts (
 -- pas par montant, pour qu'un dépassement qui continue de grossir ne fasse pas
 -- reparaître une notification déjà écartée.
 CREATE TABLE IF NOT EXISTS dismissed_notifications (
-  id TEXT PRIMARY KEY,
-  dismissed_at TEXT NOT NULL   -- ISO datetime
+  user_id TEXT NOT NULL,
+  id TEXT NOT NULL,
+  dismissed_at TEXT NOT NULL,  -- ISO datetime
+  PRIMARY KEY (user_id, id)
 );
 
 -- --- Les index -----------------------------------------------------------------
@@ -165,3 +167,95 @@ CREATE INDEX IF NOT EXISTS group_lines_group_id_idx ON group_lines (group_id);
 CREATE INDEX IF NOT EXISTS transactions_account_date_idx ON transactions (account_id, date);
 CREATE INDEX IF NOT EXISTS transactions_group_id_idx ON transactions (group_id);
 CREATE INDEX IF NOT EXISTS transactions_line_id_idx ON transactions (line_id);
+
+-- --- Le cloisonnement, tenu par la base ----------------------------------------
+--
+-- Jusqu'ici, ce qui séparait les données de deux personnes tenait entièrement dans le
+-- code : chaque requête précisait de qui elle parlait. Ça marche tant que personne
+-- n'oublie. Le jour où quelqu'un écrit une lecture sans le préciser, rien ne proteste —
+-- la page s'affiche, simplement elle montre tout le monde.
+--
+-- Ces règles-ci vivent dans la base. Le serveur ne s'y connecte plus en administrateur
+-- mais sous le rôle ci-dessous, qui n'a aucun privilège particulier, et il annonce à
+-- chaque fois pour qui il travaille. Sans annonce, il ne voit rien.
+--
+-- Le rôle ne peut pas se connecter tout seul (NOLOGIN) : ce n'est pas un compte de
+-- base, c'est l'habit que le serveur enfile en arrivant.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'budget_app') THEN
+    CREATE ROLE budget_app NOLOGIN;
+  END IF;
+END
+$$;
+
+GRANT USAGE ON SCHEMA public TO budget_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO budget_app;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO budget_app;
+
+-- Qui parle. Le second argument à `true` veut dire « ne te fâche pas si personne ne
+-- l'a posé » : sans annonce, la valeur est vide, et une chaîne vide n'est le
+-- propriétaire de rien. C'est ce qui fait qu'un oubli ne montre rien plutôt que tout.
+CREATE OR REPLACE FUNCTION app_user_id() RETURNS TEXT
+  LANGUAGE sql STABLE AS $$ SELECT COALESCE(current_setting('app.user_id', true), '') $$;
+
+ALTER TABLE accounts               ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bank_connections       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE groups                 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE group_lines            ENABLE ROW LEVEL SECURITY;
+ALTER TABLE transactions           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE budget_amounts         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE line_amounts           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reconcile_ignored      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE dismissed_notifications ENABLE ROW LEVEL SECURITY;
+
+-- Les deux tables qui portent le propriétaire en clair.
+CREATE POLICY a_soi ON accounts               USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id());
+CREATE POLICY a_soi ON bank_connections       USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id());
+CREATE POLICY a_soi ON reconcile_ignored      USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id());
+CREATE POLICY a_soi ON dismissed_notifications USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id());
+
+-- Tout le reste du budget pend à un compte bancaire : c'est par lui qu'on remonte au
+-- propriétaire. Chaque règle refait le chemin en entier plutôt que de s'appuyer sur
+-- celle de la table au-dessus — une règle qui en suppose une autre est une règle qu'on
+-- casse sans s'en apercevoir.
+CREATE POLICY a_soi ON groups
+  USING (EXISTS (SELECT 1 FROM accounts a WHERE a.id = groups.account_id AND a.user_id = app_user_id()))
+  WITH CHECK (EXISTS (SELECT 1 FROM accounts a WHERE a.id = groups.account_id AND a.user_id = app_user_id()));
+
+CREATE POLICY a_soi ON group_lines
+  USING (EXISTS (
+    SELECT 1 FROM groups g JOIN accounts a ON a.id = g.account_id
+    WHERE g.id = group_lines.group_id AND a.user_id = app_user_id()))
+  WITH CHECK (EXISTS (
+    SELECT 1 FROM groups g JOIN accounts a ON a.id = g.account_id
+    WHERE g.id = group_lines.group_id AND a.user_id = app_user_id()));
+
+CREATE POLICY a_soi ON transactions
+  USING (EXISTS (SELECT 1 FROM accounts a WHERE a.id = transactions.account_id AND a.user_id = app_user_id()))
+  WITH CHECK (EXISTS (SELECT 1 FROM accounts a WHERE a.id = transactions.account_id AND a.user_id = app_user_id()));
+
+CREATE POLICY a_soi ON line_amounts
+  USING (EXISTS (
+    SELECT 1 FROM group_lines l JOIN groups g ON g.id = l.group_id JOIN accounts a ON a.id = g.account_id
+    WHERE l.id = line_amounts.line_id AND a.user_id = app_user_id()))
+  WITH CHECK (EXISTS (
+    SELECT 1 FROM group_lines l JOIN groups g ON g.id = l.group_id JOIN accounts a ON a.id = g.account_id
+    WHERE l.id = line_amounts.line_id AND a.user_id = app_user_id()));
+
+-- Les budgets datés ont deux formes. Celui d'une dépense se rattache à son groupe ;
+-- celui des non catégorisés (groupe 0) n'a pas de groupe et se range sous le compte
+-- lui-même. Les deux chemins doivent être ouverts, et aucun autre.
+CREATE POLICY a_soi ON budget_amounts
+  USING (
+    CASE WHEN group_id = 0
+      THEN EXISTS (SELECT 1 FROM accounts a WHERE a.id = budget_amounts.account_id AND a.user_id = app_user_id())
+      ELSE EXISTS (SELECT 1 FROM groups g JOIN accounts a ON a.id = g.account_id
+                   WHERE g.id = budget_amounts.group_id AND a.user_id = app_user_id())
+    END)
+  WITH CHECK (
+    CASE WHEN group_id = 0
+      THEN EXISTS (SELECT 1 FROM accounts a WHERE a.id = budget_amounts.account_id AND a.user_id = app_user_id())
+      ELSE EXISTS (SELECT 1 FROM groups g JOIN accounts a ON a.id = g.account_id
+                   WHERE g.id = budget_amounts.group_id AND a.user_id = app_user_id())
+    END);

@@ -13,7 +13,7 @@
 import { expect, test } from "vitest";
 import { createTestDb } from "../helpers/pg";
 
-test("le schéma pose les dix tables du budget", async () => {
+test("le schéma pose les neuf tables du budget", async () => {
   const db = await createTestDb();
   const { rows } = await db.query<{ table_name: string }>(
     `SELECT table_name FROM information_schema.tables
@@ -28,7 +28,6 @@ test("le schéma pose les dix tables du budget", async () => {
     "groups",
     "line_amounts",
     "reconcile_ignored",
-    "settings",
     "transactions",
   ]);
 });
@@ -55,9 +54,9 @@ test("les montants sont exacts au centime", async () => {
 // passeraient au vert pour de mauvaises raisons.
 test("deux bases ouvertes ensemble s'ignorent", async () => {
   const a = await createTestDb();
-  await a.query(`INSERT INTO settings (key, value) VALUES ('x', '1')`);
+  await a.query(`INSERT INTO accounts (id, name, user_id) VALUES ('c1', 'Courant', 'u1')`);
   const b = await createTestDb();
-  const { rows } = await b.query<{ n: number }>(`SELECT COUNT(*)::int AS n FROM settings`);
+  const { rows } = await b.query<{ n: number }>(`SELECT COUNT(*)::int AS n FROM accounts`);
   expect(rows[0].n).toBe(0);
 });
 
@@ -67,7 +66,7 @@ test("deux bases ouvertes ensemble s'ignorent", async () => {
 // beaucoup de tests attendent qu'ils repartent à 1.
 test("une base recyclée repart de zéro, compteurs compris", async () => {
   const db = await createTestDb();
-  const vide = await db.query<{ n: number }>(`SELECT COUNT(*)::int AS n FROM settings`);
+  const vide = await db.query<{ n: number }>(`SELECT COUNT(*)::int AS n FROM accounts`);
   expect(vide.rows[0].n).toBe(0);
 
   await db.query(`INSERT INTO accounts (id, name, user_id) VALUES ('c1', 'Courant', 'u1')`);
@@ -100,7 +99,7 @@ const FORME: Record<string, string[]> = {
     "account_id:text", "amount:numeric", "effective_month:text", "group_id:integer",
     "id:integer", "scope:text",
   ],
-  dismissed_notifications: ["dismissed_at:text", "id:text"],
+  dismissed_notifications: ["dismissed_at:text", "id:text", "user_id:text"],
   group_lines: [
     "amount:numeric", "end_month:text", "group_id:integer", "id:integer",
     "keyword:text", "name:text", "start_month:text",
@@ -113,8 +112,7 @@ const FORME: Record<string, string[]> = {
     "amount:numeric", "effective_month:text", "id:integer", "line_id:integer",
     "scope:text",
   ],
-  reconcile_ignored: ["manual_id:text", "synced_id:text"],
-  settings: ["key:text", "value:text"],
+  reconcile_ignored: ["manual_id:text", "synced_id:text", "user_id:text"],
   transactions: [
     "account_id:text", "amount:numeric", "comment:text", "date:text",
     "excluded:boolean", "group_id:integer", "id:text", "ignored:boolean",

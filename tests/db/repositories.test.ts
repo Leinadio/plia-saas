@@ -4,7 +4,6 @@ import { createTestDb } from "../helpers/pg";
 import { dbFrom } from "../../src/db/pg";
 import { upsertTransaction, listTransactions, setTransactionGroup } from "../../src/db/repositories/transactions";
 import { upsertAccount, totalBalance, setAccountAlias, listAccounts, deleteAccount } from "../../src/db/repositories/accounts";
-import { setSetting, getSetting } from "../../src/db/repositories/settings";
 import { listGroups, insertGroup, deleteGroup, insertLine, deleteLine, renameGroup } from "../../src/db/repositories/groups";
 import { setBudgetAmount, listBudgetAmounts } from "../../src/db/repositories/budget-amounts";
 import { toDatedBudgets, budgetInForce } from "../../src/lib/history";
@@ -20,12 +19,6 @@ test("transaction upsert dedupes by id and lists back", async () => {
   expect(await totalBalance(db, TEST_USER)).toBe(500);
 });
 
-test("settings round-trip", async () => {
-  const db = dbFrom(await createTestDb());
-  await setSetting(db, "un_reglage", "200");
-  expect(await getSetting(db, "un_reglage")).toBe("200");
-  expect(await getSetting(db, "missing")).toBeNull();
-});
 
 test("une dépense découpée : ses sous-postes se lisent, et la suppression les emporte", async () => {
   const db = dbFrom(await createTestDb());

@@ -43,9 +43,9 @@ async function compteGarni(id: string, userId = TEST_USER) {
   await setBudgetAmount(db, 0, "2026-07", 120, "ongoing", id);
   await upsertTransaction(db, { id: `${id}-t1`, account_id: id, date: "2026-07-05", amount: -20, label: "CARREFOUR" });
   await upsertTransaction(db, { id: `manual:${id}`, account_id: id, date: "2026-07-05", amount: -20, label: "Courses" });
-  await ignoreMatch(db, `manual:${id}`, `${id}-t1`);
+  await ignoreMatch(db, TEST_USER, `manual:${id}`, `${id}-t1`);
   // Un dépassement acquitté. L'identité commence par le compte : « compte::cible::mois ».
-  await dismissNotification(db, `${id}::g${gid}::2026-07`);
+  await dismissNotification(db, TEST_USER, `${id}::g${gid}::2026-07`);
   return { gid, lid };
 }
 

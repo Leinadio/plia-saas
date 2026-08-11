@@ -208,7 +208,8 @@ export async function findReconcileSuggestions(
   const manuals = all.filter((t) => t.manual);
   const synced = all.filter((t) => !t.manual);
   const paires = await db.all<{ manual_id: string; synced_id: string }>(
-    "SELECT manual_id, synced_id FROM reconcile_ignored",
+    "SELECT manual_id, synced_id FROM reconcile_ignored WHERE user_id = $1",
+    [userId],
   );
   const ignored = new Set(paires.map((r) => `${r.manual_id}|${r.synced_id}`));
   const out: ReconcileSuggestion[] = [];
@@ -248,10 +249,13 @@ export async function mergeTransactions(
   });
 }
 
-// Mémorise une paire écartée (« ce n'est pas la même »).
-export async function ignoreMatch(db: Db, manualId: string, syncedId: string): Promise<void> {
+// Mémorise une paire écartée (« ce n'est pas la même »). Le refus appartient à celui
+// qui l'a prononcé : deux personnes peuvent juger différemment de la même paire, et
+// l'écartement de l'une ne doit pas faire disparaître la suggestion de l'autre.
+export async function ignoreMatch(db: Db, userId: string, manualId: string, syncedId: string): Promise<void> {
   await db.run(
-    "INSERT INTO reconcile_ignored (manual_id, synced_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
-    [manualId, syncedId],
+    `INSERT INTO reconcile_ignored (user_id, manual_id, synced_id) VALUES ($1, $2, $3)
+     ON CONFLICT DO NOTHING`,
+    [userId, manualId, syncedId],
   );
 }
