@@ -125,10 +125,17 @@ Les tests le vérifient dans les deux sens : sans annonce, une lecture sans filt
 rend rien du tout ; avec l'annonce, elle ne rend que ce qui appartient à la personne ;
 et une écriture visant le numéro de quelqu'un d'autre ne touche rien.
 
-**Reste à brancher.** Le geste qui enfile l'habit bridé existe et il est testé, mais
-l'application ne s'en sert pas encore : elle se connecte toujours en administrateur, et
-les règles ne s'appliquent pas à lui. Chaque page et chaque action doit encadrer son
-travail par ce geste. C'est mécanique, mais ça touche une quinzaine de fichiers.
+**Branché.** Il n'y a plus qu'un seul chemin vers la base depuis un écran, et il
+identifie la personne, enfile l'habit bridé et annonce à la base pour qui elle
+travaille. Toutes les pages et les vingt-six actions serveur passent par là ; il
+n'existe pas de version « sans propriétaire » de ce geste, donc l'oubli est impossible.
+
+Deux précautions au passage. Les tests d'actions empruntent le vrai chemin plutôt qu'un
+raccourci : ils éprouvent donc aussi les règles de la base, pas seulement les
+vérifications écrites dans le code. Et la synchronisation bancaire demande tout à la
+banque AVANT d'écrire : une banque peut mettre plusieurs secondes à répondre, et une
+connexion à la base retenue pendant ce temps-là est une connexion que personne d'autre
+ne peut utiliser.
 
 ## Étape 6 — Reprendre les données existantes
 

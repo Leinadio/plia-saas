@@ -20,11 +20,13 @@ export async function syncConnections(
   db: Db,
   deps: { ebGet: EbGet; userId: string; connectionId?: number },
 ): Promise<{ imported: number; banques: number }> {
-  const toutes = await listConnections(db, deps.userId);
+  const { toutes, comptes } = await db.pourUtilisateur(deps.userId, async (t) => ({
+    toutes: await listConnections(t, deps.userId),
+    comptes: await listAccounts(t, deps.userId),
+  }));
   const connexions = toutes
     .filter((c) => c.sessionId)
     .filter((c) => deps.connectionId == null || c.id === deps.connectionId);
-  const comptes = await listAccounts(db, deps.userId);
 
   let imported = 0;
   let banques = 0;

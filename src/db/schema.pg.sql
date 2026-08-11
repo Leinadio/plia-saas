@@ -189,6 +189,11 @@ BEGIN
 END
 $$;
 
+-- Le compte par lequel l'application se connecte doit avoir le droit d'enfiler cet
+-- habit-là. Sans cette appartenance, le serveur ne pourrait tout simplement pas se
+-- rabaisser, et travaillerait en administrateur sans que rien ne le signale.
+GRANT budget_app TO CURRENT_USER;
+
 GRANT USAGE ON SCHEMA public TO budget_app;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO budget_app;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO budget_app;

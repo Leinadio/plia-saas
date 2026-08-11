@@ -39,7 +39,16 @@ vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 // tomberait sur `headers()` hors du contexte d'une requête Next. Il rend le même
 // propriétaire que celui posé sur le compte "a1" par freshDb, sinon les actions
 // travailleraient sur une base qu'elles ne voient pas.
-vi.mock("../../../src/lib/current-user", () => ({ requireUserId: async () => ctx.userId }));
+// `pourMoi` est le chemin unique vers la base depuis un écran : il identifie la
+// personne, enfile l'habit bridé de l'application et annonce à la base pour qui elle
+// travaille. Les tests d'actions passent par le vrai geste, pas par un raccourci —
+// c'est ce qui fait qu'ils éprouvent aussi les règles de la base, et pas seulement les
+// vérifications écrites dans le code.
+vi.mock("../../../src/lib/current-user", () => ({
+  requireUserId: async () => ctx.userId,
+  pourMoi: <T,>(fn: (db: Db, userId: string) => Promise<T>) =>
+    ctx.db!.pourUtilisateur(ctx.userId, (db) => fn(db, ctx.userId)),
+}));
 vi.mock("../../../src/db/index", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../../../src/db/index")>();
   return { ...actual, db: () => ctx.db! };

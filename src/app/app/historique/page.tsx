@@ -1,4 +1,3 @@
-import { db } from "../../../db/index";
 import { listAccounts } from "../../../db/repositories/accounts";
 import { listTransactions, sumIgnoredByAccount, type TxnView } from "../../../db/repositories/transactions";
 import { listGroups } from "../../../db/repositories/groups";
@@ -22,7 +21,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HistoryWithDetail } from "@/components/history-with-detail";
 import { MonthRangePicker } from "@/components/month-range-picker";
 
-import { requireUserId } from "@/lib/current-user";
+import { pourMoi } from "@/lib/current-user";
 
 export const dynamic = "force-dynamic";
 
@@ -33,14 +32,7 @@ export default async function HistoriquePage({
 }: {
   searchParams: Promise<{ from?: string | string[]; to?: string | string[] }>;
 }) {
-  const userId = await requireUserId();
-  const database = db();
   const currentMonth = currentMonthKey(new Date());
-  const accounts = await listAccounts(database, userId);
-  const allGroups = await listGroups(database, userId);
-  const datedBudgets = toDatedBudgets(await listBudgetAmounts(database));
-  const datedLines = toDatedLineAmounts(await listLineAmounts(database));
-  const dismissed = await listDismissedNotifications(database, userId);
   const toTxn = (t: TxnView): Txn => ({
     id: t.id,
     date: t.date,
@@ -52,17 +44,26 @@ export default async function HistoriquePage({
     excluded: t.excluded,
     comment: t.comment,
   });
-  // Les transactions des calculs : listTransactions écarte les non comptabilisées.
-  const allTxns: Txn[] = (await listTransactions(database, userId)).map(toTxn);
-  // Les non comptabilisées, à part : elles ne servent qu'à la section d'affichage
-  // en bas du tableau et n'entrent dans aucun calcul.
-  const allIgnored: Txn[] = (await listTransactions(database, userId, { includeIgnored: true }))
-    .filter((t) => t.ignored)
-    .map(toTxn);
-  // À retrancher du solde bancaire avant tout calcul : sans ça, la chaîne de soldes
-  // rembobine des mouvements d'où ces opérations sont absentes, en partant d'un solde
-  // qui les contient — et se retrouve décalée de leur montant.
-  const ignoredByAccount = await sumIgnoredByAccount(database);
+  // Tout ce que la page lit, en une fois et au nom de la personne connectée.
+  const { accounts, allGroups, datedBudgets, datedLines, dismissed, allTxns, allIgnored, ignoredByAccount } =
+    await pourMoi(async (database, userId) => ({
+      accounts: await listAccounts(database, userId),
+      allGroups: await listGroups(database, userId),
+      datedBudgets: toDatedBudgets(await listBudgetAmounts(database)),
+      datedLines: toDatedLineAmounts(await listLineAmounts(database)),
+      dismissed: await listDismissedNotifications(database, userId),
+      // Les transactions des calculs : listTransactions écarte les non comptabilisées.
+      allTxns: (await listTransactions(database, userId)).map(toTxn) as Txn[],
+      // Les non comptabilisées, à part : elles ne servent qu'à la section d'affichage
+      // en bas du tableau et n'entrent dans aucun calcul.
+      allIgnored: (await listTransactions(database, userId, { includeIgnored: true }))
+        .filter((t) => t.ignored)
+        .map(toTxn) as Txn[],
+      // À retrancher du solde bancaire avant tout calcul : sans ça, la chaîne de soldes
+      // rembobine des mouvements d'où ces opérations sont absentes, en partant d'un solde
+      // qui les contient — et se retrouve décalée de leur montant.
+      ignoredByAccount: await sumIgnoredByAccount(database),
+    }));
 
   if (accounts.length === 0) {
     return (

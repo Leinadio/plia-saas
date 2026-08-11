@@ -1,4 +1,4 @@
-import { db } from "../db/index";
+import { pourMoi } from "./current-user";
 import { listAccounts } from "../db/repositories/accounts";
 import { listGroups } from "../db/repositories/groups";
 import { listTransactions } from "../db/repositories/transactions";
@@ -18,17 +18,19 @@ import type { Group, Txn } from "./forecast";
 // Lit la base à chaque rendu, comme le reste de l'app (pas de cache). Les six lectures
 // partent ensemble : elles ne dépendent pas les unes des autres, et les enchaîner
 // ferait attendre six allers-retours au lieu d'un.
-export async function appNotifications(userId: string): Promise<Notification[]> {
-  const database = db();
+export async function appNotifications(): Promise<Notification[]> {
   const currentMonth = currentMonthKey(new Date());
-  const [comptes, groupes, budgets, budgetsLignes, operations, ecartees] = await Promise.all([
-    listAccounts(database, userId),
-    listGroups(database, userId),
-    listBudgetAmounts(database),
-    listLineAmounts(database),
-    listTransactions(database, userId),
-    listDismissedNotifications(database, userId),
-  ]);
+  const [comptes, groupes, budgets, budgetsLignes, operations, ecartees] = await pourMoi(
+    async (database, userId) =>
+      Promise.all([
+        listAccounts(database, userId),
+        listGroups(database, userId),
+        listBudgetAmounts(database),
+        listLineAmounts(database),
+        listTransactions(database, userId),
+        listDismissedNotifications(database, userId),
+      ]),
+  );
   const groups = groupes as Group[];
   const dated = toDatedBudgets(budgets);
   const datedLines = toDatedLineAmounts(budgetsLignes);

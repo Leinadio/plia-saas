@@ -107,33 +107,41 @@ export async function syncAll(
       // keep defaults
     }
 
-    await upsertAccount(db, {
-      id: uid,
-      name,
-      iban_masked: ibanMasked,
-      balance,
-      currency: (balances.balances ?? [])[0]?.balance_amount.currency ?? "EUR",
-      last_synced: nowIso,
-    }, deps.userId);
-    if (deps.connectionId != null) await attachAccountToConnection(db, uid, deps.connectionId);
+    // Tout ce que la banque a à dire est demandé AVANT d'écrire. Les écritures se
+    // font ensuite d'un bloc, court : elles tiennent une connexion et la parole d'une
+    // banque peut se faire attendre plusieurs secondes par compte.
+    const operations = await fetchTransactions(deps.ebGet, uid);
 
-    for (const t of await fetchTransactions(deps.ebGet, uid)) {
-      const ref = t.entry_reference ?? t.transaction_id;
-      if (!ref) continue;
-      // Préfixé par le compte. La banque rend le même identifiant pour la même
-      // opération à qui la lui demande, et l'insertion se fait en OR IGNORE : sans ce
-      // préfixe, deux personnes branchées sur le même compte bancaire réel se
-      // disputent les mêmes clés, et la seconde ne voit jamais rien arriver.
-      const id = txnId(uid, ref);
-      const label = (t.remittance_information ?? []).join(" ").trim() || "(sans libellé)";
-      imported += await upsertTransaction(db, {
-        id,
-        account_id: uid,
-        date: t.booking_date,
-        amount: parseAmount(t.transaction_amount.amount, t.credit_debit_indicator),
-        label,
-      });
-    }
+    imported += await db.pourUtilisateur(deps.userId, async (t) => {
+      await upsertAccount(t, {
+        id: uid,
+        name,
+        iban_masked: ibanMasked,
+        balance,
+        currency: (balances.balances ?? [])[0]?.balance_amount.currency ?? "EUR",
+        last_synced: nowIso,
+      }, deps.userId);
+      if (deps.connectionId != null) await attachAccountToConnection(t, uid, deps.connectionId);
+
+      let nouvelles = 0;
+      for (const op of operations) {
+        const ref = op.entry_reference ?? op.transaction_id;
+        if (!ref) continue;
+        // Préfixé par le compte. La banque rend le même identifiant pour la même
+        // opération à qui la lui demande, et l'insertion ignore les doublons : sans ce
+        // préfixe, deux personnes branchées sur le même compte bancaire réel se
+        // disputent les mêmes clés, et la seconde ne voit jamais rien arriver.
+        const label = (op.remittance_information ?? []).join(" ").trim() || "(sans libellé)";
+        nouvelles += await upsertTransaction(t, {
+          id: txnId(uid, ref),
+          account_id: uid,
+          date: op.booking_date,
+          amount: parseAmount(op.transaction_amount.amount, op.credit_debit_indicator),
+          label,
+        });
+      }
+      return nouvelles;
+    });
   }
 
   return { imported };

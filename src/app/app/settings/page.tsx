@@ -1,4 +1,3 @@
-import { db } from "../../../db/index";
 import { listAccounts } from "../../../db/repositories/accounts";
 import { accountDisplayName } from "../../../lib/account";
 import { renameAccount } from "./actions";
@@ -12,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-import { requireUserId } from "@/lib/current-user";
+import { pourMoi } from "@/lib/current-user";
 
 export const dynamic = "force-dynamic";
 
@@ -24,12 +23,12 @@ export default async function SettingsPage({
   // Ce que le retour de la banque a rapporté. Sans cet affichage, une autorisation qui
   // échoue laisse l'écran exactement dans l'état d'avant : on croit avoir mal cliqué.
   const params = await searchParams;
-  const userId = await requireUserId();
-  const database = db();
-  const accounts = await listAccounts(database, userId);
-  // Seulement celles qui ont abouti : une demande abandonnée en route n'apprend
-  // rien à personne et n'a rien à faire dans cette liste.
-  const connexions = await listActiveConnections(database, userId);
+  // Seulement les connexions qui ont abouti : une demande abandonnée en route
+  // n'apprend rien à personne et n'a rien à faire dans cette liste.
+  const { accounts, connexions } = await pourMoi(async (database, userId) => ({
+    accounts: await listAccounts(database, userId),
+    connexions: await listActiveConnections(database, userId),
+  }));
 
   return (
     <div className="flex flex-col gap-4">

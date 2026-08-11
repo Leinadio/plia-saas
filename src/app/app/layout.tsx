@@ -21,7 +21,7 @@ export const dynamic = "force-dynamic";
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth().api.getSession({ headers: await headers() });
   if (!session) redirect("/connexion");
-  const notifications = await appNotifications(session.user.id);
+  const notifications = await appNotifications();
   // La sidebar de detail (droite) englobe le shell : elle occupe sa propre colonne,
   // donc l'en-tete et le contenu se retrecissent a son ouverture.
   return (

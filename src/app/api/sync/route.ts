@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "../../../db/index";
 import { ebGet } from "../../../enablebanking/client";
 import { syncConnections } from "../../../enablebanking/sync-connections";
-import { requireUserId } from "../../../lib/current-user";
+import { pourMoi, requireUserId } from "../../../lib/current-user";
 import { listConnections } from "../../../db/repositories/bank-connections";
 
 // Rafraîchit toutes les banques de l'utilisateur, une connexion après l'autre. Il n'y a
@@ -12,7 +12,7 @@ import { listConnections } from "../../../db/repositories/bank-connections";
 export async function POST() {
   const userId = await requireUserId();
   const database = db();
-  const connexions = (await listConnections(database, userId)).filter((c) => c.sessionId);
+  const connexions = (await pourMoi((t, moi) => listConnections(t, moi))).filter((c) => c.sessionId);
   if (connexions.length === 0) return NextResponse.json({ error: "not_connected" }, { status: 400 });
 
   try {

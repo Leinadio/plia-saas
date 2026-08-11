@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { db } from "../../../db/index";
+import { pourMoi } from "@/lib/current-user";
 import { listAccounts } from "../../../db/repositories/accounts";
 import { listActiveConnections } from "../../../db/repositories/bank-connections";
 import { AccountNameForm } from "@/components/account-name-form";
@@ -15,11 +15,10 @@ export const dynamic = "force-dynamic";
 export default async function ComptePage() {
   const session = await auth().api.getSession({ headers: await headers() });
   if (!session) redirect("/connexion");
-  const database = db();
-  const [comptes, connexions] = await Promise.all([
-    listAccounts(database, session.user.id),
-    listActiveConnections(database, session.user.id),
-  ]);
+  const { comptes, connexions } = await pourMoi(async (database, userId) => ({
+    comptes: await listAccounts(database, userId),
+    connexions: await listActiveConnections(database, userId),
+  }));
 
   return (
     <div className="flex flex-col gap-4">

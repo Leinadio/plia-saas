@@ -1,4 +1,3 @@
-import { db } from "../../db/index";
 import { listAccounts } from "../../db/repositories/accounts";
 import { listTransactions, sumIgnoredByAccount } from "../../db/repositories/transactions";
 import { listGroups } from "../../db/repositories/groups";
@@ -9,25 +8,26 @@ import { accountLabel, effectiveBalance } from "../../lib/account";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
-import { requireUserId } from "@/lib/current-user";
+import { pourMoi } from "@/lib/current-user";
 
 export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
-  const userId = await requireUserId();
-  const database = db();
   const month = currentMonthKey(new Date());
-  const accounts = await listAccounts(database, userId);
+  // Tout ce que la page lit, en une fois et au nom de la personne connectée.
   // Une transaction non comptabilisée doit se comporter comme si elle n'existait
   // pas, y compris dans le solde affiché : le solde de la banque la contient, on la
   // retranche donc partout, carte du compte comme total.
-  const ignoredByAccount = await sumIgnoredByAccount(database);
+  const { accounts, ignoredByAccount, allTxns, groups } = await pourMoi(async (database, userId) => ({
+    accounts: await listAccounts(database, userId),
+    ignoredByAccount: await sumIgnoredByAccount(database),
+    allTxns: await listTransactions(database, userId),
+    groups: await listGroups(database, userId),
+  }));
   const balance = accounts.reduce(
     (s, a) => s + effectiveBalance(a.balance, ignoredByAccount[a.id]),
     0,
   );
-  const allTxns = await listTransactions(database, userId);
-  const groups = await listGroups(database, userId);
   const ownable = groups.map((g) => ({
     id: g.id, accountId: g.accountId, direction: g.direction,
   }));
