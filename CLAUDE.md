@@ -15,12 +15,18 @@ listes, pas d'emoji.
 
 App web locale et personnelle de suivi de budget. Elle se connecte au compte CIC
 de l'utilisateur via l'agrégateur Open Banking Enable Banking, catégorise les
-dépenses, gère des enveloppes de budget mensuelles et affiche des alertes. Tout
-tourne en local (localhost), les données bancaires ne quittent pas la machine.
+dépenses, gère des enveloppes de budget mensuelles et affiche des alertes. Les données
+vivent dans Postgres, chez Supabase, cloisonnées par utilisateur (cf.
+docs/migration-supabase.md et docs/deploiement.md).
 
 ## Config (.env.local, jamais commité)
-- `ENABLEBANKING_APPLICATION_ID`, `ENABLEBANKING_KEY_PATH` (clé dans `secrets/`, jamais commitée),
-  `ENABLEBANKING_REDIRECT_URL`, `ENABLEBANKING_ASPSP_NAME`.
+- `DATABASE_URL` (répartiteur Supabase, port 6543) et `DIRECT_URL` (pour les scripts
+  d'installation du schéma seulement).
+- `ENABLEBANKING_APPLICATION_ID`, `ENABLEBANKING_KEY_PATH` (clé dans `secrets/`, jamais
+  commitée), `ENABLEBANKING_REDIRECT_URL`.
+- `ENABLEBANKING_ASPSP_NAME` et `ENABLEBANKING_ASPSP_COUNTRY` ne servent plus : l'écran
+  de choix envoie la banque avec chaque demande d'autorisation, et le code retombe sur
+  CIC et la France quand personne ne dit rien.
 - Sandbox : banques de test seulement (Mock ASPSP, BBVA), pas le vrai CIC.
 - Production : vrai CIC. Redirect en `https://localhost:3000/api/callback`, lancer avec
   `npm run dev -- --experimental-https`. L'app Enable Banking doit être "Active"
