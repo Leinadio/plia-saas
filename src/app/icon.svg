@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <!-- Favicon de l'app : la pastille euro sur le dégradé cyan/mauve.
+       Redessiné en SVG natif à partir de la maquette exportée du navigateur, qui
+       enfermait le dessin dans un foreignObject HTML — illisible hors d'un moteur
+       de rendu web. Le cadre blanc de la maquette est retiré : sur une pastille de
+       16 px, chaque pixel de marge est perdu. -->
+  <defs>
+    <!-- Équivalent de linear-gradient(45deg, ...) : la ligne part du coin bas
+         gauche vers le coin haut droit. -->
+    <linearGradient id="fond" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#70e0ef" />
+      <stop offset="1" stop-color="#eca0ff" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" rx="141" fill="url(#fond)" />
+  <!-- Icône « badge-euro » de Lucide, dessinée sur une grille de 24. -->
+  <g
+    transform="translate(65 65) scale(19.5833)"
+    fill="none"
+    stroke="#1e1e1e"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"
+      fill="#ffffff"
+      fill-opacity="0.9"
+    />
+    <path d="M7 12h5" />
+    <path d="M15 9.4a4 4 0 1 0 0 5.2" />
+  </g>
+</svg>
