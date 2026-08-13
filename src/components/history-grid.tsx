@@ -91,7 +91,7 @@ const fmt = (n: number) => NUM.format(Math.abs(n) < 0.005 ? 0 : n).replace(/[  ]
 // Couleur d'un montant « Reste/Manque » : rouge s'il manque (négatif), vert sinon
 // (reste positif ou à zéro).
 function resteColor(v: number): string {
-  return v < -0.005 ? "text-red-600" : "text-green-600";
+  return v < -0.005 ? "text-tension-ink" : "text-foreground";
 }
 
 // Couleur de fond d'une case des trois colonnes de solde : rouge si le solde est
@@ -100,7 +100,7 @@ function resteColor(v: number): string {
 // case ne pouvait porter qu'une des deux informations à la fois.
 function soldeColor(v: number | null | undefined): string | undefined {
   if (v == null) return undefined;
-  return v < -0.005 ? "text-red-600" : undefined;
+  return v < -0.005 ? "text-tension-ink" : undefined;
 }
 
 // Étiquette posée sous un montant de Balance en dépassement. Un simple constat : la
@@ -114,7 +114,7 @@ function OverspendTag() {
   return (
     <span
       title="La dépense a dépassé le budget de ce mois."
-      className="inline-block rounded-[3px] border border-amber-300 bg-amber-50 px-1 py-px font-sans text-[9px] leading-[1.5] font-semibold tracking-[0.06em] text-amber-800 uppercase dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
+      className="chip chip-tension mt-0.5"
     >
       dépassement
     </span>
@@ -143,15 +143,20 @@ const COL1_W = "w-44 sm:w-80";
 // Posés sur CHAQUE cellule (via renderCols) plutôt que sur le <colgroup> : un fond de
 // cellule recouvre celui de sa ligne, si bien que la teinte reste lisible partout,
 // y compris sous une ligne survolée.
-const DATA_TINT = "bg-[color-mix(in_oklab,var(--muted)_30%,var(--background))]";
-const BALANCE_TINT = "bg-[color-mix(in_oklab,oklch(0.75_0.16_80)_16%,var(--background))]";
-const SOLDE_TINT = "bg-[color-mix(in_oklab,oklch(0.75_0.10_210)_15%,var(--background))]";
+//
+// Les familles ne se distinguent plus par la teinte mais par la DENSITÉ : c'est
+// le même carbone, de plus en plus dense, parce que le monde n'a qu'une couleur
+// et qu'elle est réservée à ce qui tire. Le rouge n'entre dans ce tableau que
+// pour la section des dépenses et pour les montants négatifs.
+const DATA_TINT = "bg-[color-mix(in_oklab,var(--carbon)_4%,var(--background))]";
+const BALANCE_TINT = "bg-[color-mix(in_oklab,var(--carbon)_9%,var(--background))]";
+const SOLDE_TINT = "bg-[color-mix(in_oklab,var(--carbon)_14%,var(--background))]";
 // Fond des lignes de totaux (« Total revenus », « Total Dépenses », « Total »).
 // Posé sur les CELLULES et non sur la ligne : chaque cellule de données porte déjà le
 // fond de sa colonne, qui recouvrirait celui de la ligne et ne laisserait la teinte
 // visible que dans les trous. Plus soutenu que DATA_TINT, pour que l'œil trouve les
 // totaux sans avoir à lire les libellés.
-const TOTAL_TINT = "bg-[color-mix(in_oklab,var(--muted-foreground)_22%,var(--background))]";
+const TOTAL_TINT = "bg-[color-mix(in_oklab,var(--carbon)_20%,var(--background))]";
 
 // Les deux blocs de la section des dépenses.
 type ExpenseBloc = "planned" | "unplanned";
@@ -165,15 +170,17 @@ const TITRE_BLOC: Record<ExpenseBloc, string> = {
 // disent autre chose et doivent rester lisibles d'une section à l'autre.
 // Plus pâles que les teintes de colonne, exprès : elles situent, elles ne signalent
 // rien. Le mélange se fait avec --background, donc elles suivent le thème.
-const INCOME_TINT = "bg-[color-mix(in_oklab,oklch(0.72_0.13_155)_16%,var(--background))]";
-const EXPENSE_TINT = "bg-[color-mix(in_oklab,oklch(0.62_0.16_25)_12%,var(--background))]";
+// Ce qui porte reste à l'encre neutre ; ce qui tire prend le rouge de tension,
+// très dilué. C'est la seule couleur du tableau, et elle ne dit qu'une chose.
+const INCOME_TINT = "bg-[color-mix(in_oklab,var(--carbon)_6%,var(--background))]";
+const EXPENSE_TINT = "bg-[color-mix(in_oklab,var(--tension)_7%,var(--background))]";
 // Trois crans par couleur, du plus clair au plus foncé : les lignes de données, le
 // sous-total d'un bloc de dépenses, le total de la section. La hiérarchie se lit à la
 // densité, pas à la teinte — c'est la même couleur qui s'assombrit, donc l'œil relie
 // chaque total à la section qu'il ferme.
-const EXPENSE_SUBTOTAL_TINT = "bg-[color-mix(in_oklab,oklch(0.62_0.16_25)_20%,var(--background))]";
-const EXPENSE_TOTAL_TINT = "bg-[color-mix(in_oklab,oklch(0.62_0.16_25)_30%,var(--background))]";
-const INCOME_TOTAL_TINT = "bg-[color-mix(in_oklab,oklch(0.72_0.13_155)_30%,var(--background))]";
+const EXPENSE_SUBTOTAL_TINT = "bg-[color-mix(in_oklab,var(--tension)_13%,var(--background))]";
+const EXPENSE_TOTAL_TINT = "bg-[color-mix(in_oklab,var(--tension)_20%,var(--background))]";
+const INCOME_TOTAL_TINT = "bg-[color-mix(in_oklab,var(--carbon)_16%,var(--background))]";
 
 // La teinte de la section où l'on se trouve, portée par le contexte plutôt que passée
 // de main en main : les lignes s'imbriquent (groupe, sous-poste, transaction) et
@@ -338,8 +345,8 @@ function SoldeAmount({ v, delta }: { v: number; delta?: number | null }) {
     // plus pouvoir lire ni l'une ni l'autre quand toutes deux étaient rouges.
     return (
       <>
-        <span className={cell.sign === "+" ? "text-green-600" : "text-red-600"}>{cell.sign} </span>
-        <span className={cell.negative ? "text-red-600" : "text-foreground"}>{fmt(cell.value)}</span>
+        <span className={cell.sign === "+" ? "text-foreground" : "text-tension-ink"}>{cell.sign} </span>
+        <span className={cell.negative ? "text-tension-ink" : "text-foreground"}>{fmt(cell.value)}</span>
       </>
     );
   }
@@ -352,12 +359,12 @@ function SoldeAmount({ v, delta }: { v: number; delta?: number | null }) {
       <span
         className={cn(
           "block text-[10px] leading-tight",
-          cell.delta > 0 ? "text-green-600" : "text-red-600",
+          cell.delta > 0 ? "text-foreground" : "text-tension-ink",
         )}
       >
         ({cell.delta > 0 ? "+" : "−"} {fmt(Math.abs(cell.delta))})
       </span>
-      <span className={cn("block", cell.value < -0.005 ? "text-red-600" : "text-foreground")}>
+      <span className={cn("block", cell.value < -0.005 ? "text-tension-ink" : "text-foreground")}>
         {fmt(cell.value)}
       </span>
     </>
@@ -1620,7 +1627,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 mois : une étiquette, pas un contenu. */}
             <span
               title={groupPeriodLabel(sg?.startMonth, sg?.endMonth)}
-              className="text-muted-foreground/60 min-w-0 text-[9px] font-normal tracking-[0.12em] break-words whitespace-normal uppercase sm:truncate"
+              className="text-muted-foreground/60 min-w-0 text-[0.625rem] font-normal tracking-[0.12em] break-words whitespace-normal uppercase sm:truncate"
             >
               {groupPeriodLabel(sg?.startMonth, sg?.endMonth)}
             </span>
@@ -1727,7 +1734,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                           n'explique pourquoi l'un disparaît le mois suivant. */}
                       <span
                         title={groupPeriodLabel(sgLine?.startMonth, sgLine?.endMonth)}
-                        className="text-muted-foreground/60 min-w-0 text-[9px] font-normal tracking-[0.12em] break-words whitespace-normal uppercase sm:truncate"
+                        className="text-muted-foreground/60 min-w-0 text-[0.625rem] font-normal tracking-[0.12em] break-words whitespace-normal uppercase sm:truncate"
                       >
                         {groupPeriodLabel(sgLine?.startMonth, sgLine?.endMonth)}
                       </span>
@@ -2105,7 +2112,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 <div className="flex items-baseline justify-center gap-1.5">
                   <span
                     className={cn(
-                      "font-display text-[15px] leading-none",
+                      "font-display text-base leading-none",
                       m === currentMonth && "text-foreground decoration-foreground/40 underline decoration-1 underline-offset-[6px]",
                     )}
                   >
@@ -2116,16 +2123,18 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                   </span>
                 </div>
                 {m > currentMonth && (
-                  <div className="text-muted-foreground/60 mt-1 font-sans text-[9px] font-normal tracking-[0.16em] uppercase">
+                  <div className="text-muted-foreground/60 mt-1 font-sans text-[0.625rem] font-normal tracking-[0.16em] uppercase">
                     projection
                   </div>
                 )}
                 {/* Ce que ce mois laisse hors des calculs. Même formulation et même
-                    ambre que sur la page Transactions : c'est la même chose qu'on
-                    annonce, elle doit se reconnaître d'un écran à l'autre. */}
+                    étiquette dormante que sur la page Transactions : c'est la même
+                    chose qu'on annonce, elle doit se reconnaître d'un écran à l'autre. */}
                 {nonComptees > 0 && (
-                  <div className="mt-1 font-sans text-[10px] font-normal text-amber-700 dark:text-amber-500">
-                    {nonComptees} non comptabilisée{nonComptees > 1 ? "s" : ""}
+                  <div className="mt-1">
+                    <span className="chip chip-slack">
+                      {nonComptees} hors calcul
+                    </span>
                   </div>
                 )}
               </TableHead>
@@ -2455,7 +2464,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             const type = monthType(m, currentMonth);
             const cols = monthColumns(type);
             const depCell = (b: boolean) => (
-              <CellAmount key="overspend" className={cn(b && MONTH_GAP, "text-right tabular-nums", val > 0.005 && "text-red-600")} detail={detail} onSelect={onSelect} cellKey={cellKey("overspend", "reste", i)} selCellKey={selCellKey}>
+              <CellAmount key="overspend" className={cn(b && MONTH_GAP, "text-right tabular-nums", val > 0.005 && "text-tension-ink")} detail={detail} onSelect={onSelect} cellKey={cellKey("overspend", "reste", i)} selCellKey={selCellKey}>
                 {val > 0.005 ? fmt(val) : ""}
               </CellAmount>
             );

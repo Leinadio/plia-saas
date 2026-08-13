@@ -33,7 +33,7 @@ export function MonthPicker({ mois, precedent, suivant }: {
   };
 
   const fleche = (cible: string | null, sens: "avant" | "apres") => {
-    const classes = "flex size-9 shrink-0 items-center justify-center rounded-md";
+    const classes = "flex size-9 shrink-0 items-center justify-center";
     const Icone = sens === "avant" ? ChevronLeft : ChevronRight;
     const label = sens === "avant" ? "Mois précédent" : "Mois suivant";
     if (!cible) {

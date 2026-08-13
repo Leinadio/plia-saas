@@ -4,6 +4,7 @@ import { X, ChevronDown, ChevronRight } from "lucide-react";
 import { resolveOwnership, type OwnableGroup } from "@/lib/ownership";
 import type { TxnView } from "@/db/repositories/transactions";
 import { formatEur } from "@/lib/money";
+import { cn } from "@/lib/utils";
 import { groupByMonth } from "@/lib/transactions-view";
 import {
   filterTransactions,
@@ -62,8 +63,14 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
 
   // Une transaction non comptabilisée reste lisible mais visiblement hors-jeu.
   const rowClass = (t: TxnView) => (t.ignored ? "text-muted-foreground" : undefined);
+  // Un montant est une force : celui qui retranche tire, et il est rouge. Celui
+  // qui ajoute porte, et il reste à l'encre. Une opération non comptabilisée est
+  // hors structure : elle est barrée et rendue au cendre.
   const amountClass = (t: TxnView) =>
-    t.ignored ? "text-right font-medium whitespace-nowrap line-through" : "text-right font-medium whitespace-nowrap";
+    cn(
+      "text-right font-mono text-[0.8125rem] whitespace-nowrap",
+      t.ignored ? "text-muted-foreground line-through" : t.amount < 0 && "text-tension-ink",
+    );
 
   const groupName = (id: number) => groups.find((g) => g.id === id)?.name ?? "?";
   // Les groupes proposés à une transaction : ceux de son compte, et parmi eux ceux
@@ -145,7 +152,9 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
       <div className="flex justify-end">
         <AddTransactionSheet accounts={accounts} groups={formGroups} />
       </div>
-      <div className="flex flex-wrap items-center gap-2">
+      {/* La rangée de commandes, sur sa propre plaque : les filtres sont un
+          pupitre, pas des champs qui flottent au-dessus du relevé. */}
+      <div className="plate flex flex-wrap items-center gap-2 px-3 py-3">
         <Input
           placeholder="Rechercher un libellé…"
           value={filters.text}
@@ -158,7 +167,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
             const v = e.target.value;
             set({ group: v === "all" || v === "none" ? v : Number(v) });
           }}
-          className="border-input bg-background h-9 max-w-full rounded-md border px-3 text-sm"
+          className="plate plate-cut h-9 max-w-full px-3 text-sm"
         >
           <option value="all">Tous les groupes</option>
           <option value="none">Non catégorisées</option>
@@ -204,11 +213,26 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
 
       {active ? (
         <div className="flex flex-col gap-2">
-          <div className="text-muted-foreground text-sm">
-            {summary.count} transaction{summary.count > 1 ? "s" : ""} · Sorties{" "}
-            <span className="tabular-nums">{formatEur(-summary.out)}</span> · Entrées{" "}
-            <span className="tabular-nums">{formatEur(summary.in)}</span> · Net{" "}
-            <span className={summary.net < 0 ? "text-red-600 tabular-nums" : "tabular-nums"}>{formatEur(summary.net)}</span>
+          {/* Le relevé du filtre : trois mesures gravées, sur la même grammaire
+              que la bande du tableau de bord. */}
+          <div className="plate flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
+            <span className="caption">
+              {summary.count} opération{summary.count > 1 ? "s" : ""}
+            </span>
+            <span className="flex items-baseline gap-2">
+              <span className="caption">Sorties</span>
+              <span className="text-tension-ink font-mono text-sm">{formatEur(-summary.out)}</span>
+            </span>
+            <span className="flex items-baseline gap-2">
+              <span className="caption">Entrées</span>
+              <span className="font-mono text-sm">{formatEur(summary.in)}</span>
+            </span>
+            <span className="flex items-baseline gap-2">
+              <span className="caption">Net</span>
+              <span className={cn("font-mono text-sm font-medium", summary.net < 0 && "text-tension-ink")}>
+                {formatEur(summary.net)}
+              </span>
+            </span>
           </div>
           <Table>
             <TableHeader>
@@ -296,14 +320,14 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
                     return (
                     <Fragment key={m.month}>
                       <TableRow className="cursor-pointer hover:bg-muted/50" onClick={() => toggleMonth(key)}>
-                        <TableCell colSpan={6} className="text-muted-foreground text-sm font-medium">
-                          <span className="flex items-center gap-1.5">
-                            {isCollapsed ? <ChevronRight className="size-4" /> : <ChevronDown className="size-4" />}
-                            {m.label}
-                            <span className="text-xs font-normal">({m.items.length})</span>
+                        <TableCell colSpan={6} className="bg-muted/70 py-2">
+                          <span className="flex items-center gap-2">
+                            {isCollapsed ? <ChevronRight className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+                            <span className="chip">{m.label}</span>
+                            <span className="caption">{m.items.length} opérations</span>
                             {nonComptees > 0 && (
-                              <span className="text-xs font-normal text-amber-700 dark:text-amber-500">
-                                {nonComptees} non comptabilisée{nonComptees > 1 ? "s" : ""}
+                              <span className="chip chip-slack">
+                                {nonComptees} hors calcul
                               </span>
                             )}
                           </span>

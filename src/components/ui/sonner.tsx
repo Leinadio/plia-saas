@@ -10,11 +10,10 @@ import { Toaster as Sonner, type ToasterProps } from "sonner";
 // système (cf. layout.tsx). « system » dit à sonner de lire la même préférence, ce qui
 // revient au même sans ajouter une dépendance pour une seule lecture.
 //
-// Le second : les couleurs du succès. Un toast d'accusé de réception est vert, et ce
-// vert est déjà celui de l'app — celui des montants positifs du tableau
-// (text-green-600). Le fond reste un color-mix avec le popover, comme toutes les
-// teintes de l'app : il se réchauffe avec le fond papier au lieu de plaquer un vert
-// d'écran par-dessus.
+// Le second : les couleurs. L'app n'a pas de vert — un accusé de réception se dit
+// en carbone, comme tout ce qui porte, et l'échec se dit en rouge de tension, la
+// seule couleur du système. Les deux fonds sont des color-mix avec le popover :
+// ils suivent le thème au lieu d'y plaquer une couleur d'écran.
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
@@ -31,9 +30,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-bg": "var(--popover)",
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
-          "--success-bg": "color-mix(in oklab, var(--color-green-600) 12%, var(--popover))",
+          "--success-bg": "color-mix(in oklab, var(--carbon) 8%, var(--popover))",
           "--success-text": "var(--popover-foreground)",
-          "--success-border": "color-mix(in oklab, var(--color-green-600) 45%, var(--border))",
+          "--success-border": "var(--rule-strong)",
+          "--error-bg": "color-mix(in oklab, var(--tension) 10%, var(--popover))",
+          "--error-text": "var(--popover-foreground)",
+          "--error-border": "var(--tension)",
           "--border-radius": "var(--radius)",
         } as React.CSSProperties
       }

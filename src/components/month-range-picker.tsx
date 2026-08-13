@@ -53,7 +53,7 @@ export function MonthRangePicker({ min, max, from, to, current }: {
         type="button"
         aria-label="Défiler vers la gauche"
         onClick={() => scrollBy(-1)}
-        className="hover:bg-muted flex size-8 shrink-0 items-center justify-center rounded-md"
+        className="hover:bg-muted flex size-8 shrink-0 items-center justify-center"
       >
         <ChevronLeft className="size-4" />
       </button>
@@ -75,7 +75,7 @@ export function MonthRangePicker({ min, max, from, to, current }: {
                 type="button"
                 onClick={() => onPick(m)}
                 className={cn(
-                  "w-11 rounded-md py-1 text-center text-xs capitalize transition-colors",
+                  "w-11 py-1 text-center text-xs capitalize transition-colors",
                   selected ? "bg-primary text-primary-foreground" : "hover:bg-muted",
                   isAnchor && "ring-primary ring-2",
                   m === current && "font-semibold",
@@ -98,7 +98,7 @@ export function MonthRangePicker({ min, max, from, to, current }: {
         type="button"
         aria-label="Défiler vers la droite"
         onClick={() => scrollBy(1)}
-        className="hover:bg-muted flex size-8 shrink-0 items-center justify-center rounded-md"
+        className="hover:bg-muted flex size-8 shrink-0 items-center justify-center"
       >
         <ChevronRight className="size-4" />
       </button>

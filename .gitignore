@@ -51,3 +51,14 @@ next-env.d.ts
 
 certificates
 .superpowers/
+
+# Impeccable : on garde le système de design et la composition approuvée,
+# pas les brouillons ni les captures de contrôle.
+.impeccable/shots/
+.impeccable/sketches/
+.impeccable/questions/
+.impeccable/hook.cache.json
+.impeccable/*-payload.json
+.impeccable/qb-*.webp
+.impeccable/mocks/comp-a-*
+.impeccable/mocks/comp-c-*

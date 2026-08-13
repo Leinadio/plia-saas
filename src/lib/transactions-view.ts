@@ -57,3 +57,14 @@ export function groupByMonth<T extends { date: string }>(
     items: monthItems,
   }));
 }
+
+// Le libellé court d'une colonne de mois : « sept. », et « janv. 27 » dès qu'on
+// change d'année. Six colonnes de plan de charge doivent tenir sur un écran de
+// 375 px, où « Septembre 2026 » ne rentre pas — mais laisser tomber l'année sans
+// condition ferait lire deux janviers comme le même.
+export function monthShort(ym: string, reference: string): string {
+  const [y, m] = ym.split("-").map(Number);
+  const court = new Intl.DateTimeFormat("fr-FR", { month: "short" }).format(new Date(y, m - 1, 1));
+  const memeAnnee = ym.slice(0, 4) === reference.slice(0, 4);
+  return memeAnnee ? court : `${court} ${ym.slice(2, 4)}`;
+}

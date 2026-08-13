@@ -3,84 +3,128 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Le parti pris : du papier, pas un écran. Le fond n'est plus le blanc pur de
-   shadcn mais un blanc chaud très légèrement teinté, et l'encre n'est plus un
-   noir pur mais un brun-noir. Rien de spectaculaire pris isolément ; ensemble,
-   c'est la différence entre une interface générique et un relevé imprimé.
-   Toutes les teintes de colonnes du tableau sont des color-mix avec
-   var(--background) : elles se réchauffent d'elles-mêmes. */
+/* LE PARTI PRIS : une structure en tenségrité, pas un tableau de bord.
+   Un budget tient par deux forces opposées — ce qui porte (les mâts de carbone :
+   le solde acquis, les revenus encaissés) et ce qui tire (les câbles rouges :
+   les dépenses engagées, les reports, les dépassements). L'équilibre est le
+   sujet, et il n'a qu'une couleur : le rouge de tension. Tout le reste est du
+   béton, du carbone et du cendre.
+
+   Trois règles tiennent le système :
+   1. Le rouge ne décore jamais. Il dit une force qui tire : un montant qui
+      retranche, un câble tendu, la commande active.
+   2. Les angles sont coupés à 45°, jamais arrondis. Une plaque d'appareillage
+      se coupe, elle ne s'adoucit pas.
+   3. Les chiffres sont le sujet : mono technique, chasse fixe, tabulaires,
+      alignés à droite, partout. */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(0.992 0.004 85);
-  --foreground: oklch(0.23 0.012 65);
-  --card: oklch(0.998 0.003 85);
-  --card-foreground: oklch(0.23 0.012 65);
-  --popover: oklch(0.998 0.003 85);
-  --popover-foreground: oklch(0.23 0.012 65);
-  --primary: oklch(0.27 0.024 55);
-  --primary-foreground: oklch(0.985 0.004 85);
-  --secondary: oklch(0.965 0.006 85);
-  --secondary-foreground: oklch(0.27 0.024 55);
-  --muted: oklch(0.965 0.006 85);
-  --muted-foreground: oklch(0.53 0.014 65);
-  --accent: oklch(0.965 0.006 85);
-  --accent-foreground: oklch(0.27 0.024 55);
-  --destructive: oklch(0.55 0.2 27);
-  --border: oklch(0.902 0.008 80);
-  --input: oklch(0.902 0.008 80);
-  --ring: oklch(0.68 0.03 70);
-  --sidebar: oklch(0.975 0.006 85);
-  --sidebar-foreground: oklch(0.36 0.014 65);
-  --sidebar-primary: oklch(0.27 0.024 55);
-  --sidebar-primary-foreground: oklch(0.985 0.004 85);
-  --sidebar-accent: oklch(0.945 0.008 85);
-  --sidebar-accent-foreground: oklch(0.27 0.024 55);
-  --sidebar-border: oklch(0.9 0.008 80);
-  --sidebar-ring: oklch(0.68 0.03 70);
+  /* Le sol : béton coulé. Ni blanc d'écran, ni papier chaud. */
+  --ground: #e6e3df;
+  --plate: #eeece8;
+  --carbon: #0d000f;
+  --graphite: #2b2b2e;
+  --ash: #9a9a9c;
+  --void-white: #f7f7f8;
+  /* Le rouge a deux valeurs : celle du trait (câbles, repères, filets) et
+     celle du texte, plus sombre, pour tenir 4.5:1 sur le béton. */
+  --tension: #d7262e;
+  --tension-ink: #b31d25;
+
+  --radius: 0px;
+  --notch: 9px;
+  --background: var(--ground);
+  --foreground: var(--carbon);
+  --card: var(--plate);
+  --card-foreground: var(--carbon);
+  --popover: var(--void-white);
+  --popover-foreground: var(--carbon);
+  --primary: var(--carbon);
+  --primary-foreground: var(--void-white);
+  --secondary: #dcd9d4;
+  --secondary-foreground: var(--carbon);
+  --muted: #dcd9d4;
+  /* Le cendre pur ne tient pas le contraste sur le béton : le texte secondaire
+     est un cendre assombri, le #9a9a9c reste pour les filets et le dormant. */
+  --muted-foreground: #6b6966;
+  --accent: #dcd9d4;
+  --accent-foreground: var(--carbon);
+  --destructive: var(--tension-ink);
+  --border: #c7c3bd;
+  --rule-strong: #0d000f;
+  --input: #b6b2ab;
+  --ring: var(--tension);
+  /* LA POUTRE. La seule masse de carbone d'un écran de béton : le bandeau de
+     navigation, sur lequel toute l'app s'appuie. Ses jetons lui sont propres —
+     le panneau de détail, lui, reste une plaque claire. */
+  --beam: #17161a;
+  --beam-foreground: #b9b6b1;
+  --beam-bright: var(--void-white);
+  --beam-accent: #232227;
+  --beam-rule: #2e2d32;
+  --sidebar: var(--plate);
+  --sidebar-foreground: var(--carbon);
+  --sidebar-primary: var(--carbon);
+  --sidebar-primary-foreground: var(--void-white);
+  --sidebar-accent: #dcd9d4;
+  --sidebar-accent-foreground: var(--carbon);
+  --sidebar-border: #c7c3bd;
+  --sidebar-ring: var(--tension);
 }
 
-/* Le pendant sombre du papier : de l'encre chaude sur un support sombre chaud,
-   pas le gris neutre par défaut. Même intention, éclairage inverse. */
+/* Le pendant sombre : le même atelier, lumière éteinte. Le béton devient
+   l'ombre, le carbone devient le fond, et le câble rouge s'éclaircit juste
+   assez pour rester lisible sur du noir. */
 .dark {
-  --background: oklch(0.168 0.008 70);
-  --foreground: oklch(0.945 0.006 85);
-  --card: oklch(0.215 0.009 70);
-  --card-foreground: oklch(0.945 0.006 85);
-  --popover: oklch(0.215 0.009 70);
-  --popover-foreground: oklch(0.945 0.006 85);
-  --primary: oklch(0.925 0.006 85);
-  --primary-foreground: oklch(0.215 0.009 70);
-  --secondary: oklch(0.278 0.01 70);
-  --secondary-foreground: oklch(0.945 0.006 85);
-  --muted: oklch(0.278 0.01 70);
-  --muted-foreground: oklch(0.715 0.012 78);
-  --accent: oklch(0.278 0.01 70);
-  --accent-foreground: oklch(0.945 0.006 85);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.98 0.01 85 / 11%);
-  --input: oklch(0.98 0.01 85 / 16%);
-  --ring: oklch(0.58 0.02 70);
-  --sidebar: oklch(0.135 0.008 70);
-  --sidebar-foreground: oklch(0.93 0.006 85);
-  --sidebar-primary: oklch(0.55 0.13 250);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.235 0.009 70);
-  --sidebar-accent-foreground: oklch(0.93 0.006 85);
-  --sidebar-border: oklch(0.235 0.009 70);
-  --sidebar-ring: oklch(0.58 0.02 70);
+  --ground: #121114;
+  --plate: #1a191d;
+  --tension: #e8434a;
+  --tension-ink: #f0666c;
+
+  --background: var(--ground);
+  --foreground: #e6e3df;
+  --card: var(--plate);
+  --card-foreground: #e6e3df;
+  --popover: #212025;
+  --popover-foreground: #e6e3df;
+  --primary: #e6e3df;
+  --primary-foreground: var(--carbon);
+  --secondary: #26252a;
+  --secondary-foreground: #e6e3df;
+  --muted: #26252a;
+  --muted-foreground: #97948f;
+  --accent: #26252a;
+  --accent-foreground: #e6e3df;
+  --destructive: var(--tension-ink);
+  --border: #302f34;
+  --rule-strong: #4a484e;
+  --input: #3a393f;
+  --ring: var(--tension);
+  /* Éteinte, la poutre s'enfonce d'un cran sous le sol : c'est encore elle qui
+     porte, mais dans le noir on ne distingue plus que son arête. */
+  --beam: #08070a;
+  --beam-foreground: #97948f;
+  --beam-bright: #e6e3df;
+  --beam-accent: #1c1b20;
+  --beam-rule: #242328;
+  --sidebar: var(--plate);
+  --sidebar-foreground: #e6e3df;
+  --sidebar-accent: #26252a;
+  --sidebar-accent-foreground: #e6e3df;
+  --sidebar-border: #302f34;
 }
 
 @theme inline {
-  /* Les trois rôles typographiques, déclarés par next/font dans layout.tsx.
-     font-sans = interface, font-mono = tout ce qui est chiffre,
-     font-display = les mois et les titres de compte, rien d'autre. */
-  --font-sans: var(--font-sans-ui), ui-sans-serif, system-ui, sans-serif;
+  /* Deux fontes, deux rôles. Archivo (variable, resserrée à l'axe wdth) porte
+     l'interface et les capitales gravées ; Azeret Mono porte TOUT ce qui est
+     chiffre, mesure ou état. Aucune serif : rien ici n'est imprimé. */
+  --font-sans: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-num), ui-monospace, "SF Mono", monospace;
-  --font-display: var(--font-display-vf), Georgia, "Times New Roman", serif;
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --font-display: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
+  /* Pas de rayon : la famille de formes est la coupe à 45°, pas l'arrondi. */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -99,6 +143,16 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-beam: var(--beam);
+  --color-beam-foreground: var(--beam-foreground);
+  --color-beam-bright: var(--beam-bright);
+  --color-beam-accent: var(--beam-accent);
+  --color-beam-rule: var(--beam-rule);
+  --color-tension: var(--tension);
+  --color-tension-ink: var(--tension-ink);
+  --color-ash: var(--ash);
+  --color-carbon: var(--carbon);
+  --color-rule-strong: var(--rule-strong);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -113,20 +167,260 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* LE SOL EST DU BÉTON COULÉ, et ça se voit de près : une dalle photographiée
+     posée en fond de page, à peine perceptible, qui donne à l'écran son grain.
+     Elle vit sur <html> et non sur le corps, pour passer DERRIÈRE tout le reste :
+     les plaques, elles, sont de la tôle peinte et restent lisses. C'est le seul
+     raster de l'app, et il n'est pas décoratif — c'est la matière du monde. */
+  html {
+    background-color: var(--background);
+    background-image: url("/matiere/beton.webp");
+    background-size: 420px;
+    /* En lumière douce et non en multiplication : la dalle photographiée a une
+       moyenne de 167, et la multiplier revenait à peindre le sol en gris moyen
+       — les plaques se mettaient à flotter sur un fond plus sombre qu'elles.
+       En lumière douce, le carreau module la couleur du sol au lieu de la
+       remplacer : le béton garde sa valeur et ne gagne que son grain. */
+    background-blend-mode: soft-light;
+  }
   body {
-    @apply bg-background text-foreground font-sans;
-    /* La virgule décimale et les milliers doivent tomber au même endroit d'une
-       ligne à l'autre : chiffres à chasse fixe partout, y compris hors tableau. */
+    @apply text-foreground font-sans;
+    background: transparent;
+    /* La virgule et les milliers tombent au même endroit d'une ligne à l'autre,
+       y compris hors tableau : une colonne de montants se lit verticalement. */
     font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
   }
-  /* Fraunces est une fonte variable : son axe optique doit être réglé à la taille
-     réelle d'emploi, ici 15 px pour les noms de mois. Trop haut, les déliés
-     s'amincissent et bavent ; trop bas, la serif perd son contraste et son
-     intérêt. SOFT arrondit légèrement les terminaisons : moins sévère qu'une
-     Didot, plus proche d'un caractère de labeur imprimé. */
+  /* Archivo est variable sur l'axe de chasse : resserrée à 88, elle prend le
+     dessin d'une capitale gravée sur plaque, sans avoir à charger une seconde
+     fonte condensée. */
   .font-display {
-    font-variation-settings: "opsz" 18, "SOFT" 35;
-    letter-spacing: -0.005em;
+    font-variation-settings: "wdth" 86;
+    letter-spacing: -0.01em;
   }
+}
+
+@layer components {
+  /* LA PLAQUE. Une surface aux quatre angles coupés, cerclée d'un filet d'un
+     pixel qui suit la coupe. Impossible avec `border`, qui ignore clip-path :
+     deux calques superposés, le filet dessous, la plaque un pixel à l'intérieur.
+     Tout ce qui est panneau, carte ou champ passe par là. */
+  .plate {
+    position: relative;
+    isolation: isolate;
+    --plate-fill: var(--card);
+    --plate-rule: var(--border);
+    --plate-path: polygon(
+      var(--notch) 0,
+      calc(100% - var(--notch)) 0,
+      100% var(--notch),
+      100% calc(100% - var(--notch)),
+      calc(100% - var(--notch)) 100%,
+      var(--notch) 100%,
+      0 calc(100% - var(--notch)),
+      0 var(--notch)
+    );
+  }
+  /* La plaque de commande : deux angles coupés seulement, en diagonale. C'est
+     la forme des boutons et des champs, que l'œil distingue des panneaux. */
+  .plate-cut {
+    --notch: 6px;
+    --plate-fill: var(--background);
+    --plate-path: polygon(
+      var(--notch) 0,
+      100% 0,
+      100% calc(100% - var(--notch)),
+      calc(100% - var(--notch)) 100%,
+      0 100%,
+      0 var(--notch)
+    );
+  }
+  .plate::before,
+  .plate::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    clip-path: var(--plate-path);
+  }
+  .plate::before {
+    inset: 0;
+    background: var(--plate-rule);
+  }
+  .plate::after {
+    inset: 1px;
+    background: var(--plate-fill);
+  }
+  /* La coupe simple : deux angles opposés seulement. C'est la forme des
+     commandes — boutons, onglets, champs — que l'œil distingue ainsi des
+     panneaux. */
+  .cut {
+    clip-path: polygon(
+      var(--notch) 0,
+      100% 0,
+      100% calc(100% - var(--notch)),
+      calc(100% - var(--notch)) 100%,
+      0 100%,
+      0 var(--notch)
+    );
+  }
+  .cut-sm {
+    --notch: 6px;
+  }
+
+  /* L'ÉTIQUETTE GRAVÉE. Une pastille noire, capitales blanches, chasse fixe.
+     Elle nomme une colonne, un état, une section — jamais une valeur. */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    background: var(--carbon);
+    color: var(--void-white);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    padding: 0.34em 0.55em 0.3em;
+    white-space: nowrap;
+  }
+  /* En lumière éteinte, la pastille de carbone disparaîtrait dans le fond : elle
+     s'éclaire d'un cran. Les deux variantes doivent être redites ici, sinon
+     cette règle — plus spécifique qu'elles — leur reprend leur couleur, et le
+     dépassement cesse d'être rouge exactement là où il compte le plus. */
+  .dark .chip {
+    /* Mélangée depuis les jetons plutôt que codée en dur : la pastille est du
+       carbone éclairci, comme tout ce qui remonte d'un cran dans le noir. */
+    background: color-mix(in oklab, var(--void-white) 12%, var(--carbon));
+    color: #e6e3df;
+  }
+  .dark .chip-slack {
+    background: transparent;
+    color: var(--muted-foreground);
+  }
+  .dark .chip-tension {
+    background: var(--tension);
+    color: var(--void-white);
+  }
+  /* L'état dormant : ce qui n'est pas encore engagé, ou ce qui est éteint. */
+  .chip-slack {
+    background: transparent;
+    color: var(--muted-foreground);
+    box-shadow: inset 0 0 0 1px var(--input);
+  }
+  /* L'état rompu : le câble a lâché. Le seul chip rouge du système. */
+  .chip-tension {
+    background: var(--tension);
+    color: var(--void-white);
+  }
+
+  /* LE FILET DE MESURE. Les capitales minuscules posées au-dessus d'un
+     montant : ce n'est pas une étiquette gravée, c'est une légende. */
+  .caption {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  /* LE TRAIT OBLIQUE. La marque de la commande active, héritée du monde :
+     un trait rouge à 45° posé dans l'angle. Décoratif nulle part : il ne se
+     pose que sur ce qui est actif ou sélectionné. */
+  .slash::after {
+    content: "";
+    position: absolute;
+    left: 0.45rem;
+    top: 50%;
+    width: 0.85rem;
+    height: 1px;
+    background: var(--tension);
+    transform: translateY(-50%) rotate(-45deg);
+  }
+
+  /* LA MISE EN TENSION. Le seul moment animé de l'app, et il n'arrive qu'une
+     fois : à l'ouverture, les mâts se lèvent du sol l'un après l'autre, les
+     nœuds se posent, et le câble se tend d'un bout à l'autre. C'est le geste
+     propre à une structure en tenségrité — elle se monte, elle ne surgit pas.
+     Nulle part ailleurs il n'y a d'animation : une colonne de chiffres qui
+     bouge est une colonne qu'on relit. */
+  .mat {
+    animation: mat-lever 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .noeud {
+    animation: noeud-poser 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  /* Le câble se tend d'un bout à l'autre. Un tracé au pointillé (dasharray)
+     serait plus élégant, mais le dessin est étiré en largeur et pas en hauteur :
+     le navigateur calcule alors les tirets dans l'espace déformé et le câble
+     sort en morceaux. Un rideau de gauche à droite dit la même chose et ne
+     dépend d'aucune longueur. */
+  .cable-tendu {
+    animation: cable-tendre 900ms cubic-bezier(0.16, 1, 0.3, 1) 160ms both;
+  }
+  @keyframes mat-lever {
+    from {
+      scale: 1 0;
+    }
+    to {
+      scale: 1 1;
+    }
+  }
+  @keyframes noeud-poser {
+    from {
+      scale: 0;
+      opacity: 0;
+    }
+    to {
+      scale: 1;
+      opacity: 1;
+    }
+  }
+  @keyframes cable-tendre {
+    from {
+      clip-path: inset(-20% 100% -20% 0);
+    }
+    to {
+      clip-path: inset(-20% 0 -20% 0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mat,
+    .noeud,
+    .cable-tendu {
+      animation: none;
+    }
+    .cable-tendu {
+      stroke-dasharray: none;
+    }
+  }
+
+  /* LA MARQUE DE RUPTURE. Là où un mât a percé le sol : le trait du sol est
+     interrompu sur une vingtaine de pixels, et deux obliques rouges disent la
+     cassure. Dessinée et non photographiée — c'est un élément de plan, il doit
+     rester net à toutes les largeurs. */
+  .rupture {
+    width: 22px;
+    height: 14px;
+    background: var(--plate-fill, var(--card));
+  }
+  .rupture::before,
+  .rupture::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    height: 14px;
+    width: 2px;
+    background: var(--tension);
+  }
+  .rupture::before {
+    left: 5px;
+    transform: rotate(24deg);
+  }
+  .rupture::after {
+    right: 5px;
+    transform: rotate(24deg);
+  }
+
 }

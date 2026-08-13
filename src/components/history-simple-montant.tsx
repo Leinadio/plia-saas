@@ -12,7 +12,7 @@ export const fmt = (n: number) => NUM.format(Math.abs(n) < 0.005 ? 0 : n).replac
 
 export function soldeColor(v: number | null | undefined): string | undefined {
   if (v == null) return undefined;
-  return v < -0.005 ? "text-red-600" : undefined;
+  return v < -0.005 ? "text-tension-ink" : undefined;
 }
 
 // Un montant de la vue simple : son mot, puis le chiffre. Le mot remplace
@@ -50,9 +50,7 @@ export function Montant({ mot, valeur, col, discret, teinte, etiquette }: {
       {/* Un simple constat : la dépense a dépassé le budget de ce mois-là. En
           bloc sous le montant plutôt qu'à côté, pour ne pas élargir la ligne. */}
       {etiquette && (
-        <span className="text-[9px] tracking-[0.1em] text-amber-700 uppercase dark:text-amber-500">
-          {etiquette}
-        </span>
+        <span className="chip chip-tension mt-0.5 self-start">{etiquette}</span>
       )}
     </button>
   );

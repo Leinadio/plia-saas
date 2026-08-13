@@ -35,7 +35,7 @@ function Confirmation({
           size="sm"
           variant="ghost"
           disabled={enCours}
-          className="cursor-pointer text-red-600 hover:text-red-700"
+          className="cursor-pointer text-tension-ink hover:text-tension"
         >
           <Trash2 className="size-4" />
           {libelle}
@@ -51,7 +51,7 @@ function Confirmation({
         <AlertDialogFooter>
           <AlertDialogCancel className="cursor-pointer">Annuler</AlertDialogCancel>
           <AlertDialogAction
-            className="cursor-pointer bg-red-600 text-white hover:bg-red-700"
+            className="cursor-pointer bg-tension text-white hover:brightness-110"
             onClick={onConfirm}
           >
             Supprimer définitivement

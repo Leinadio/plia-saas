@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import type { AccountForecast } from "@/lib/forecast";
 import {
   type MonthCell, type HistorySection, type SoldeColumn, type PlannedSoldes,
@@ -84,6 +85,17 @@ export function HistorySimple(props: {
   overspendsByMonth?: Record<string, Overspend[]>;
 }) {
   const { setDetail } = useDetailSidebar();
+  // Les postes dépliés. La clé est l'identifiant du poste SEUL, sans le mois :
+  // contrairement au tableau, il n'y a qu'un mois à l'écran, donc pas de clé
+  // composite à fabriquer. Ce n'est pas un oubli.
+  const [deplies, setDeplies] = useState<Set<number>>(new Set());
+  const basculer = (id: number) =>
+    setDeplies((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   // Un seul mois à l'écran : l'index est toujours 0, et le dire une fois évite
   // de le redemander partout.
   const mois = props.months[0];
@@ -108,7 +120,7 @@ export function HistorySimple(props: {
         key={cle}
         type="button"
         onClick={() => setDetail(makeInfo(COL_LABEL[col], COL_INFO[col]))}
-        className="hover:bg-muted/60 flex w-full items-baseline justify-between gap-4 rounded-md px-3 py-2 text-left transition-colors"
+        className="hover:bg-muted/60 flex w-full items-baseline justify-between gap-4 px-3 py-2 text-left transition-colors"
       >
         <span className="text-muted-foreground text-sm">{PHRASES[type][cle]}</span>
         <span className={cn("font-mono text-base tabular-nums", soldeColor(valeur))}>
@@ -122,14 +134,25 @@ export function HistorySimple(props: {
   const rendreRentrees = (sec: HistorySection) => {
     const t = sec.totals[0];
     return (
-      <section key="income" className="rounded-lg border">
+      <section key="income" className="plate">
         <TitreSection titre="Ce qui rentre">
           <Montant mot="attendu" valeur={t.budgeted} col="budgetRem" />
           <Montant mot="reçu" valeur={t.recu} col="recu" />
         </TitreSection>
         <div className="divide-y">
           {sec.rows.map((r) => (
-            <PosteSimple key={r.id} row={r} groupes={props.groups} signaleDepassement={false} />
+            <PosteSimple
+              key={r.id}
+              row={r}
+              groupes={props.groups}
+              signaleDepassement={false}
+              mois={mois}
+              currentMonth={props.currentMonth}
+              stripMin={props.stripMin}
+              stripMax={props.stripMax}
+              ouvert={deplies.has(r.id)}
+              onToggle={() => basculer(r.id)}
+            />
           ))}
         </div>
       </section>
@@ -143,7 +166,7 @@ export function HistorySimple(props: {
     const blocs = splitExpenseSection(sec, props.months.length);
     const t = sec.totals[0];
     return (
-      <section key="expense" className="rounded-lg border">
+      <section key="expense" className="plate">
         <TitreSection titre="Ce qui sort">
           <Montant mot="prévu" valeur={t.budgeted} col="budgetDep" discret />
           <Montant mot="sorti" valeur={t.depense} col="dep" />
@@ -151,7 +174,7 @@ export function HistorySimple(props: {
             mot={t.balance < -0.005 ? "il manque" : "il reste"}
             valeur={t.balance}
             col="reste"
-            teinte={t.balance < -0.005 ? "text-red-600" : "text-green-600"}
+            teinte={t.balance < -0.005 ? "text-tension-ink" : "text-foreground"}
           />
         </TitreSection>
         {(["planned", "unplanned"] as const).map((cle) => {
@@ -170,6 +193,12 @@ export function HistorySimple(props: {
                     row={r}
                     groupes={props.groups}
                     signaleDepassement={enDepassement.has(`${r.id}::${mois}`)}
+                    mois={mois}
+                    currentMonth={props.currentMonth}
+                    stripMin={props.stripMin}
+                    stripMax={props.stripMax}
+                    ouvert={deplies.has(r.id)}
+                    onToggle={() => basculer(r.id)}
                   />
                 ))}
               </div>
@@ -186,7 +215,7 @@ export function HistorySimple(props: {
     const entrant = (sec.uncatDirection ?? "out") === "in";
     const t = sec.totals[0];
     return (
-      <section key={`uncat-${sec.uncatDirection ?? "out"}`} className="rounded-lg border">
+      <section key={`uncat-${sec.uncatDirection ?? "out"}`} className="plate">
         <TitreSection titre="Pas encore rangé">
           {entrant ? (
             <Montant mot="reçu" valeur={t.recu} col="recu" />
@@ -198,7 +227,7 @@ export function HistorySimple(props: {
                 mot={t.balance < -0.005 ? "il manque" : "il reste"}
                 valeur={t.balance}
                 col="reste"
-                teinte={t.balance < -0.005 ? "text-red-600" : "text-green-600"}
+                teinte={t.balance < -0.005 ? "text-tension-ink" : "text-foreground"}
               />
             </>
           )}
@@ -220,7 +249,7 @@ export function HistorySimple(props: {
     <button
       type="button"
       onClick={() => setDetail(makeInfo(COL_LABEL[col], COL_INFO[col]))}
-      className="hover:bg-muted/60 flex w-full items-baseline justify-between gap-4 rounded-md px-3 py-1.5 text-left transition-colors"
+      className="hover:bg-muted/60 flex w-full items-baseline justify-between gap-4 px-3 py-1.5 text-left transition-colors"
     >
       <span className="text-muted-foreground text-sm">{mot}</span>
       <span className={cn("font-mono text-sm tabular-nums", teinte)}>{fmt(valeur)}&nbsp;€</span>
@@ -229,7 +258,7 @@ export function HistorySimple(props: {
 
   return (
     <div className="flex flex-col gap-4">
-      <section className="bg-muted/30 flex flex-col rounded-lg p-1">
+      <section className="bg-muted/30 flex flex-col p-1">
         {ligneSolde("depart", soldes.depart)}
         {ligneSolde("reel", soldes.reel)}
         {ligneSolde("prevu", soldes.prevu)}
@@ -246,11 +275,11 @@ export function HistorySimple(props: {
         return rendreNonCategorises(sec);
       })}
 
-      <section className="bg-muted/30 flex flex-col rounded-lg p-1">
+      <section className="bg-muted/30 flex flex-col p-1">
         {ligneTotal("Le mois, au total", g.balance, "reste", soldeColor(g.balance))}
         {ligneTotal("Estimé de fin de mois", estime, "soldeReel", soldeColor(estime))}
         {depassementTotal > 0.005 &&
-          ligneTotal("Dépassé hors budget", depassementTotal, "reste", "text-red-600")}
+          ligneTotal("Dépassé hors budget", depassementTotal, "reste", "text-tension-ink")}
       </section>
 
       {/* Le dépliage d'un poste et ses actions arrivent à la tâche 6, les
