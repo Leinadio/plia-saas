@@ -115,7 +115,7 @@ export function BankPicker() {
           {!charge && (
             // Des lignes à la place des noms : la liste garde sa forme pendant que le
             // catalogue arrive, plutôt que de sauter d'un texte à une liste.
-            <div className="flex min-h-0 flex-1 flex-col gap-2 rounded-md border p-3">
+            <div className="plate flex min-h-0 flex-1 flex-col gap-2 p-3">
               {Array.from({ length: 8 }, (_, i) => (
                 <Skeleton key={i} className="h-8 w-full" />
               ))}
@@ -128,7 +128,7 @@ export function BankPicker() {
             // flex-1 et min-h-0 : la liste prend la hauteur qui reste et défile
             // dedans. Sans min-h-0 elle refuserait de rétrécir sous son contenu et
             // pousserait le pied du tiroir hors de l'écran.
-            <ul className="min-h-0 flex-1 divide-y overflow-y-auto rounded-md border">
+            <ul className="plate min-h-0 flex-1 divide-y overflow-y-auto">
               {resultats.map((b) => (
                 <li key={`${b.country}-${b.name}`}>
                   <button

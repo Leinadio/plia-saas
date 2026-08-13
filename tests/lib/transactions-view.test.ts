@@ -1,5 +1,5 @@
-import { expect, test, describe } from "vitest";
-import { monthLabel, groupByMonth, monthPhrase, deMonthPhrase, deMonthLabel } from "../../src/lib/transactions-view";
+import { expect, test, describe, it } from "vitest";
+import { monthLabel, groupByMonth, monthPhrase, deMonthPhrase, deMonthLabel, monthShort } from "../../src/lib/transactions-view";
 
 test("monthLabel formats the French month with a capital initial", () => {
   expect(monthLabel("2026-07")).toBe("Juillet 2026");
@@ -94,4 +94,18 @@ test("groupByMonth groups by month, first-seen order, items order preserved", ()
   expect(g.map((x) => x.label)).toEqual(["Juillet 2026", "Juin 2026"]);
   expect(g[0].items.map((x) => x.id)).toEqual(["a", "b"]);
   expect(g[1].items.map((x) => x.id)).toEqual(["c", "d"]);
+});
+
+// Le libellé court des colonnes du plan de charge : six mois doivent tenir côte
+// à côte sur un téléphone, donc « sept. » et pas « Septembre 2026 ». L'année
+// revient dès qu'on change d'année, sinon on ne saurait plus de quel janvier on
+// parle.
+describe("monthShort", () => {
+  it("rend le mois abrégé sans l'année dans l'année de référence", () => {
+    expect(monthShort("2026-09", "2026-08")).toBe("sept.");
+  });
+
+  it("ajoute l'année dès qu'elle change", () => {
+    expect(monthShort("2027-01", "2026-08")).toBe("janv. 27");
+  });
 });

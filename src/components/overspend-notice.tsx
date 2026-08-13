@@ -40,13 +40,13 @@ export function OverspendNotice({ id, name, month, amount, accountName, seen = f
   return (
     <div
       className={cn(
-        "flex items-start gap-2 rounded-md border p-3 text-sm",
+        "plate flex items-start gap-2 p-3 text-sm",
         seen
-          ? "bg-muted/40 text-muted-foreground"
-          : "border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950",
+          ? "text-muted-foreground [--plate-fill:var(--muted)]"
+          : "[--plate-fill:color-mix(in_oklab,var(--tension)_8%,var(--card))] [--plate-rule:var(--tension)]",
       )}
     >
-      <TriangleAlert className={cn("mt-0.5 size-4 shrink-0", seen ? "text-muted-foreground/60" : "text-amber-600")} />
+      <TriangleAlert className={cn("mt-0.5 size-4 shrink-0", seen ? "text-muted-foreground/60" : "text-tension-ink")} />
       <div className="min-w-0 flex-1">
         <p className={cn(!seen && "font-medium")}>{name}</p>
         <p className="text-muted-foreground">

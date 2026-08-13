@@ -54,11 +54,11 @@ export function SyncButton() {
       onClick={rafraichir}
       disabled={enCours}
       // Mêmes formes que le bouton voisin des dépassements : ils vont par paire dans
-      // l'en-tête, et deux dessins différents les feraient lire comme deux natures.
-      className="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm disabled:opacity-60"
+      // la poutre, et deux dessins différents les feraient lire comme deux natures.
+      className="text-beam-foreground hover:text-beam-bright hover:bg-beam-accent inline-flex items-center gap-1.5 px-2 py-1.5 font-mono text-[0.6875rem] tracking-[0.08em] uppercase transition-colors disabled:opacity-50"
     >
       <RefreshCw className={cn("size-4", enCours && "animate-spin")} />
-      <span>{enCours ? "Synchronisation…" : "Rafraîchir"}</span>
+      <span className="hidden sm:inline">{enCours ? "Synchro…" : "Rafraîchir"}</span>
     </button>
   );
 }

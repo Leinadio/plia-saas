@@ -19,7 +19,7 @@ const fmtNum = (n: number) => NUM.format(n);
 
 function Amount({ n }: { n: number }) {
   return (
-    <span className={cn("tabular-nums whitespace-nowrap", n < 0 ? "text-red-600" : "text-emerald-600")}>
+    <span className={cn("tabular-nums whitespace-nowrap", n < 0 ? "text-tension-ink" : "text-foreground")}>
       {n >= 0 ? "+" : ""}
       {formatEur(n)}
     </span>
@@ -48,14 +48,14 @@ function Breakdown({ start, startLabel, steps, total, totalLabel }: {
   totalLabel: string;
 }) {
   return (
-    <div className="rounded-lg border p-3">
+    <div className="plate p-3">
       <Line label={startLabel} value={<span className="tabular-nums whitespace-nowrap">{formatEur(start)}</span>} />
       {steps.length === 0 ? (
         <p className="py-1 text-muted-foreground text-sm">Rien de prévu, l&apos;estimé reste identique.</p>
       ) : (
         steps.map((s, i) => <Line key={i} label={s.label} value={<Amount n={s.amount} />} />)
       )}
-      <Line label={totalLabel} value={<span className={cn("tabular-nums whitespace-nowrap", total < 0 && "text-red-600")}>{formatEur(total)}</span>} strong />
+      <Line label={totalLabel} value={<span className={cn("tabular-nums whitespace-nowrap", total < 0 && "text-tension-ink")}>{formatEur(total)}</span>} strong />
     </div>
   );
 }
@@ -84,7 +84,7 @@ export function ForecastDetailSheet({ label, forecast: f }: { label: string; for
           </section>
 
           <section className="flex flex-col gap-2">
-            <h3 className={cn("font-semibold", f.currentEstimate < 0 && "text-red-600")}>
+            <h3 className={cn("font-semibold", f.currentEstimate < 0 && "text-tension-ink")}>
               Solde estimé fin de mois · {formatEur(f.currentEstimate)}
             </h3>
             <p className="text-muted-foreground text-sm">
@@ -101,7 +101,7 @@ export function ForecastDetailSheet({ label, forecast: f }: { label: string; for
           </section>
 
           <section className="flex flex-col gap-2">
-            <h3 className={cn("font-semibold", f.overspendTotal > 0 && "text-red-600")}>
+            <h3 className={cn("font-semibold", f.overspendTotal > 0 && "text-tension-ink")}>
               Dépassement du solde · {f.overspendTotal > 0 ? formatEur(f.overspendTotal) : "aucun"}
             </h3>
             <p className="text-muted-foreground text-sm">
@@ -116,7 +116,7 @@ export function ForecastDetailSheet({ label, forecast: f }: { label: string; for
               const totBudg = rows.reduce((s, g) => s + g.total, 0);
               const totDep = rows.reduce((s, g) => s + g.spent, 0);
               return (
-                <div className="overflow-hidden rounded-lg border">
+                <div className="plate overflow-hidden">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -132,14 +132,14 @@ export function ForecastDetailSheet({ label, forecast: f }: { label: string; for
                           <TableCell>{g.name}</TableCell>
                           <TableCell className="text-right tabular-nums text-muted-foreground">{fmtNum(g.total)}</TableCell>
                           <TableCell className="text-right tabular-nums">{fmtNum(g.spent)}</TableCell>
-                          <TableCell className="text-right tabular-nums text-red-600">{fmtNum(g.total - g.spent)}</TableCell>
+                          <TableCell className="text-right tabular-nums text-tension-ink">{fmtNum(g.total - g.spent)}</TableCell>
                         </TableRow>
                       ))}
                       <TableRow className="font-semibold">
                         <TableCell>Total</TableCell>
                         <TableCell className="text-right tabular-nums text-muted-foreground">{fmtNum(totBudg)}</TableCell>
                         <TableCell className="text-right tabular-nums">{fmtNum(totDep)}</TableCell>
-                        <TableCell className="text-right tabular-nums text-red-600">{fmtNum(-f.overspendTotal)}</TableCell>
+                        <TableCell className="text-right tabular-nums text-tension-ink">{fmtNum(-f.overspendTotal)}</TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
@@ -149,7 +149,7 @@ export function ForecastDetailSheet({ label, forecast: f }: { label: string; for
           </section>
 
           <section className="flex flex-col gap-2">
-            <h3 className={cn("font-semibold", f.nextEstimate < 0 && "text-red-600")}>
+            <h3 className={cn("font-semibold", f.nextEstimate < 0 && "text-tension-ink")}>
               Solde estimé mois prochain · {formatEur(f.nextEstimate)}
             </h3>
             <p className="text-muted-foreground text-sm">
@@ -167,7 +167,7 @@ export function ForecastDetailSheet({ label, forecast: f }: { label: string; for
 
           {f.overspendTotal > 0 && (
             <section className="flex flex-col gap-2">
-              <h3 className={cn("font-semibold", f.nextEstimateWithOverspend < 0 && "text-red-600")}>
+              <h3 className={cn("font-semibold", f.nextEstimateWithOverspend < 0 && "text-tension-ink")}>
                 Solde mois prochain, dépassements maintenus · {formatEur(f.nextEstimateWithOverspend)}
               </h3>
               <p className="text-muted-foreground text-sm">

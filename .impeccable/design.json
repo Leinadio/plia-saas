@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-13T20:00:00.000Z",
+  "title": "Design System: Plia",
+  "extensions": {
+    "colorMeta": {
+      "tension": {
+        "role": "primary",
+        "displayName": "Rouge de tension",
+        "canonical": "oklch(0.5688 0.2099 25.4)",
+        "darkValue": "#e8434a",
+        "usage": "La couleur du trait : câble, mât rompu, marque de rupture, repère d'appui sous la destination courante et sous l'onglet actif, trait oblique de la commande pleine, filet du champ en saisie, étiquette d'un poste dépassé.",
+        "tonalRamp": ["oklch(0.15 0.2099 25.4)", "oklch(0.26 0.2099 25.4)", "oklch(0.37 0.2099 25.4)", "oklch(0.49 0.2099 25.4)", "oklch(0.60 0.2099 25.4)", "oklch(0.72 0.2099 25.4)", "oklch(0.83 0.2099 25.4)", "oklch(0.95 0.2099 25.4)"]
+      },
+      "tension-ink": {
+        "role": "primary",
+        "displayName": "Encre de tension",
+        "canonical": "oklch(0.4956 0.1835 25.1)",
+        "darkValue": "#f0666c",
+        "usage": "La même force en version texte, assombrie pour tenir 4.5:1 sur le béton : tout montant négatif, le solde d'un mois rompu, les liens.",
+        "tonalRamp": ["oklch(0.15 0.1835 25.1)", "oklch(0.26 0.1835 25.1)", "oklch(0.37 0.1835 25.1)", "oklch(0.49 0.1835 25.1)", "oklch(0.60 0.1835 25.1)", "oklch(0.72 0.1835 25.1)", "oklch(0.83 0.1835 25.1)", "oklch(0.95 0.1835 25.1)"]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Béton coulé",
+        "canonical": "oklch(0.917 0.0063 75.4)",
+        "darkValue": "#121114",
+        "usage": "Le sol de l'application, porteur du grain photographié, et l'ingrédient de tout mélange de fond.",
+        "tonalRamp": ["oklch(0.15 0.0063 75.4)", "oklch(0.26 0.0063 75.4)", "oklch(0.37 0.0063 75.4)", "oklch(0.49 0.0063 75.4)", "oklch(0.60 0.0063 75.4)", "oklch(0.72 0.0063 75.4)", "oklch(0.83 0.0063 75.4)", "oklch(0.95 0.0063 75.4)"]
+      },
+      "plate": {
+        "role": "neutral",
+        "displayName": "Tôle peinte",
+        "canonical": "oklch(0.9435 0.0058 84.6)",
+        "darkValue": "#1a191d",
+        "usage": "La surface des plaques — cartes, panneaux, bande de relevés, panneau de détail. Lisse : le grain s'arrête au bord de la plaque.",
+        "tonalRamp": ["oklch(0.15 0.0058 84.6)", "oklch(0.26 0.0058 84.6)", "oklch(0.37 0.0058 84.6)", "oklch(0.49 0.0058 84.6)", "oklch(0.60 0.0058 84.6)", "oklch(0.72 0.0058 84.6)", "oklch(0.83 0.0058 84.6)", "oklch(0.95 0.0058 84.6)"]
+      },
+      "carbon": {
+        "role": "neutral",
+        "displayName": "Carbone",
+        "canonical": "oklch(0.1135 0.0533 324.3)",
+        "usage": "La structure : texte courant, mâts debout, pastilles gravées, fond des commandes pleines, filet fort sous un en-tête de tableau, et la couleur qu'on dilue pour teinter les familles de colonnes.",
+        "tonalRamp": ["oklch(0.15 0.0533 324.3)", "oklch(0.26 0.0533 324.3)", "oklch(0.37 0.0533 324.3)", "oklch(0.49 0.0533 324.3)", "oklch(0.60 0.0533 324.3)", "oklch(0.72 0.0533 324.3)", "oklch(0.83 0.0533 324.3)", "oklch(0.95 0.0533 324.3)"]
+      },
+      "graphite": {
+        "role": "neutral",
+        "displayName": "Graphite",
+        "canonical": "oklch(0.2903 0.0054 286.1)",
+        "usage": "Le survol de la commande pleine, en clair uniquement.",
+        "tonalRamp": ["oklch(0.15 0.0054 286.1)", "oklch(0.26 0.0054 286.1)", "oklch(0.37 0.0054 286.1)", "oklch(0.49 0.0054 286.1)", "oklch(0.60 0.0054 286.1)", "oklch(0.72 0.0054 286.1)", "oklch(0.83 0.0054 286.1)", "oklch(0.95 0.0054 286.1)"]
+      },
+      "ash": {
+        "role": "neutral",
+        "displayName": "Cendre",
+        "canonical": "oklch(0.6868 0.0029 286.3)",
+        "usage": "Le ton du dormant, prévu pour les filets et les contours. Écart connu : déclaré et exposé à Tailwind, mais employé par aucun composant à ce jour.",
+        "tonalRamp": ["oklch(0.15 0.0029 286.3)", "oklch(0.26 0.0029 286.3)", "oklch(0.37 0.0029 286.3)", "oklch(0.49 0.0029 286.3)", "oklch(0.60 0.0029 286.3)", "oklch(0.72 0.0029 286.3)", "oklch(0.83 0.0029 286.3)", "oklch(0.95 0.0029 286.3)"]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Cendre assombri",
+        "canonical": "oklch(0.5216 0.0053 78.3)",
+        "darkValue": "#97948f",
+        "usage": "Texte secondaire, légendes, en-têtes de colonne, montants à zéro. Le cendre pur ne tenait pas le contraste sur le béton ; celui-ci le tient.",
+        "tonalRamp": ["oklch(0.15 0.0053 78.3)", "oklch(0.26 0.0053 78.3)", "oklch(0.37 0.0053 78.3)", "oklch(0.49 0.0053 78.3)", "oklch(0.60 0.0053 78.3)", "oklch(0.72 0.0053 78.3)", "oklch(0.83 0.0053 78.3)", "oklch(0.95 0.0053 78.3)"]
+      },
+      "void-white": {
+        "role": "neutral",
+        "displayName": "Blanc de vide",
+        "canonical": "oklch(0.9764 0.0013 286.4)",
+        "usage": "Les capitales sur carbone et les popovers en clair. Ce n'est pas un blanc pur.",
+        "tonalRamp": ["oklch(0.15 0.0013 286.4)", "oklch(0.26 0.0013 286.4)", "oklch(0.37 0.0013 286.4)", "oklch(0.49 0.0013 286.4)", "oklch(0.60 0.0013 286.4)", "oklch(0.72 0.0013 286.4)", "oklch(0.83 0.0013 286.4)", "oklch(0.95 0.0013 286.4)"]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Sourdine",
+        "canonical": "oklch(0.8863 0.0075 80.7)",
+        "darkValue": "#26252a",
+        "usage": "Fonds secondaires, survols de ligne, commande secondaire.",
+        "tonalRamp": ["oklch(0.15 0.0075 80.7)", "oklch(0.26 0.0075 80.7)", "oklch(0.37 0.0075 80.7)", "oklch(0.49 0.0075 80.7)", "oklch(0.60 0.0075 80.7)", "oklch(0.72 0.0075 80.7)", "oklch(0.83 0.0075 80.7)", "oklch(0.95 0.0075 80.7)"]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Filet",
+        "canonical": "oklch(0.8187 0.0094 78.3)",
+        "darkValue": "#302f34",
+        "usage": "Bordures, séparateurs, fils de rappel du plan de charge.",
+        "tonalRamp": ["oklch(0.15 0.0094 78.3)", "oklch(0.26 0.0094 78.3)", "oklch(0.37 0.0094 78.3)", "oklch(0.49 0.0094 78.3)", "oklch(0.60 0.0094 78.3)", "oklch(0.72 0.0094 78.3)", "oklch(0.83 0.0094 78.3)", "oklch(0.95 0.0094 78.3)"]
+      },
+      "input": {
+        "role": "neutral",
+        "displayName": "Dormant",
+        "canonical": "oklch(0.7648 0.0108 81.8)",
+        "darkValue": "#3a393f",
+        "usage": "Le contour du champ au repos et celui de l'étiquette évidée.",
+        "tonalRamp": ["oklch(0.15 0.0108 81.8)", "oklch(0.26 0.0108 81.8)", "oklch(0.37 0.0108 81.8)", "oklch(0.49 0.0108 81.8)", "oklch(0.60 0.0108 81.8)", "oklch(0.72 0.0108 81.8)", "oklch(0.83 0.0108 81.8)", "oklch(0.95 0.0108 81.8)"]
+      },
+      "beam": {
+        "role": "secondary",
+        "displayName": "Poutre",
+        "canonical": "oklch(0.2031 0.008 297.1)",
+        "darkValue": "#08070a",
+        "usage": "Le fond du bandeau de navigation. En sombre elle s'enfonce d'un cran SOUS le sol : on ne distingue plus que son arête.",
+        "tonalRamp": ["oklch(0.15 0.008 297.1)", "oklch(0.26 0.008 297.1)", "oklch(0.37 0.008 297.1)", "oklch(0.49 0.008 297.1)", "oklch(0.60 0.008 297.1)", "oklch(0.72 0.008 297.1)", "oklch(0.83 0.008 297.1)", "oklch(0.95 0.008 297.1)"]
+      },
+      "beam-foreground": {
+        "role": "secondary",
+        "displayName": "Texte de poutre",
+        "canonical": "oklch(0.7773 0.0078 80.7)",
+        "darkValue": "#97948f",
+        "usage": "Les destinations au repos. La destination courante passe au brillant de la poutre.",
+        "tonalRamp": ["oklch(0.15 0.0078 80.7)", "oklch(0.26 0.0078 80.7)", "oklch(0.37 0.0078 80.7)", "oklch(0.49 0.0078 80.7)", "oklch(0.60 0.0078 80.7)", "oklch(0.72 0.0078 80.7)", "oklch(0.83 0.0078 80.7)", "oklch(0.95 0.0078 80.7)"]
+      },
+      "beam-accent": {
+        "role": "secondary",
+        "displayName": "Appui de poutre",
+        "canonical": "oklch(0.2551 0.0094 294.9)",
+        "darkValue": "#1c1b20",
+        "usage": "Le fond de survol des deux commandes posées dans la poutre : synchroniser et notifications.",
+        "tonalRamp": ["oklch(0.15 0.0094 294.9)", "oklch(0.26 0.0094 294.9)", "oklch(0.37 0.0094 294.9)", "oklch(0.49 0.0094 294.9)", "oklch(0.60 0.0094 294.9)", "oklch(0.72 0.0094 294.9)", "oklch(0.83 0.0094 294.9)", "oklch(0.95 0.0094 294.9)"]
+      },
+      "beam-rule": {
+        "role": "secondary",
+        "displayName": "Filet de poutre",
+        "canonical": "oklch(0.3002 0.009 295)",
+        "darkValue": "#242328",
+        "usage": "Le trait vertical de 24 px qui sépare le nom du produit des destinations.",
+        "tonalRamp": ["oklch(0.15 0.009 295)", "oklch(0.26 0.009 295)", "oklch(0.37 0.009 295)", "oklch(0.49 0.009 295)", "oklch(0.60 0.009 295)", "oklch(0.72 0.009 295)", "oklch(0.83 0.009 295)", "oklch(0.95 0.009 295)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Archivo resserrée à wdth 86 : le nom du produit dans la poutre et les rares titres gravés. Jamais une donnée." },
+      "title": { "displayName": "Titre de plaque", "purpose": "Azeret Mono capitales : le titre d'une plaque. Ce n'est pas une phrase, c'est une inscription." },
+      "body": { "displayName": "Interface", "purpose": "Archivo à sa chasse normale : libellés, phrases explicatives, noms de poste, états vides." },
+      "numeric": { "displayName": "Montant", "purpose": "Azeret Mono tabulaire, aligné à droite : tous les montants. Les montants de tête de la bande de relevés montent à 17 / 20 / 24 px selon la largeur." },
+      "label": { "displayName": "Étiquette gravée", "purpose": "Le texte d'un .chip : nomme un état, une colonne, une section — jamais une valeur." },
+      "caption": { "displayName": "Légende", "purpose": "La cote posée au-dessus d'un montant ou en tête de colonne. Plus ouverte que l'étiquette, et sans fond." },
+      "command": { "displayName": "Commande", "purpose": "Le texte de toute commande : boutons, onglets, destinations de la poutre." }
+    },
+    "shapes": {
+      "philosophy": "Aucun rayon. La famille de formes est la coupe à 45°, réalisée en clip-path polygon() avec un filet d'un pixel en double calque (une border CSS ignore clip-path).",
+      "notch": "9px",
+      "notch-command": "6px",
+      "plate-path": "polygon(var(--notch) 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, var(--notch) 100%, 0 calc(100% - var(--notch)), 0 var(--notch))",
+      "cut-path": "polygon(var(--notch) 0, 100% 0, 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, 0 100%, 0 var(--notch))",
+      "exceptions": "Deux formes rondes et deux seulement : le nœud du plan de charge (8 px) et la pastille ouverte d'annotation (7 px). Ce sont des points de structure, pas des surfaces."
+    },
+    "shadows": [
+      { "name": "chip-slack-rule", "value": "inset 0 0 0 1px var(--input)", "purpose": "Le contour de l'étiquette évidée. Une ombre interne, pas une bordure : la pastille ne doit pas grandir." },
+      { "name": "selection-rule", "value": "inset 3px 0 0 0 var(--primary)", "purpose": "Le liseré de la ligne sélectionnée du panneau de détail. Interne, pour ne pas décaler le tableau d'un pixel à chaque clic." },
+      { "name": "elevation", "value": "none", "purpose": "Le système n'a aucune ombre portée. Le relief vient de la coupe, du filet d'un pixel et de la masse du carbone." }
+    ],
+    "motion": [
+      { "name": "ease-tension", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "La seule courbe du système : la mise en tension du plan de charge." },
+      { "name": "mat-lever", "value": "620ms, décalage 70ms par mât, scale 1 0 → 1 1 depuis le pied (depuis le sommet si le mât est rompu)", "purpose": "Les mâts se lèvent du sol l'un après l'autre à l'ouverture." },
+      { "name": "noeud-poser", "value": "360ms, décalage 70ms par nœud + 120ms", "purpose": "Les nœuds se posent après leur mât." },
+      { "name": "cable-tendre", "value": "900ms, délai 160ms, clip-path inset(-20% 100% -20% 0) → inset(-20% 0 -20% 0)", "purpose": "Le câble se tend de gauche à droite. Un rideau et non un stroke-dasharray : le dessin est étiré en largeur, les tirets sortiraient en morceaux." },
+      { "name": "reduced-motion", "value": "@media (prefers-reduced-motion: reduce) { animation: none }", "purpose": "Les trois animations sont coupées net. Il n'y en a aucune autre dans l'application." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ],
+    "material": [
+      { "name": "beton", "value": "url(/matiere/beton.webp), background-size: 420px, blend multiply (clair) / soft-light (sombre), posé sur <html>", "purpose": "La seule image du produit. Elle vit derrière tout le reste : les plaques sont de la tôle peinte, lisse." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Commande pleine",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "La touche de pupitre du système : carbone plein, deux angles coupés, et le trait rouge oblique qui marque ce qui engage.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Enregistrer</button>",
+      "css": ".ds-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 0 16px; border: none; cursor: pointer; font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; transition: all 0.15s ease; outline: none; } .ds-btn-primary { background: var(--carbon, #0d000f); color: var(--void-white, #f7f7f8); padding-left: 28px; clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px); } .ds-btn-primary::after { content: ''; position: absolute; left: 0.45rem; top: 50%; width: 0.85rem; height: 1px; background: var(--tension, #d7262e); transform: translateY(-50%) rotate(-45deg); } .ds-btn-primary:hover { background: var(--graphite, #2b2b2e); } .ds-btn-primary:focus-visible { box-shadow: 0 0 0 2px var(--tension, #d7262e); } .ds-btn-primary:active { background: #000; }"
+    },
+    {
+      "name": "Commande à contour",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "La plaque de commande évidée : fond béton, filet d'un pixel qui suit la coupe, obtenu par deux calques superposés parce qu'une border ignore clip-path.",
+      "html": "<button class=\"ds-btn ds-btn-outline\">Annuler</button>",
+      "css": ".ds-btn-outline { position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 16px; border: none; cursor: pointer; background: transparent; color: var(--carbon, #0d000f); font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; transition: all 0.15s ease; outline: none; --ds-rule: var(--border, #c7c3bd); --ds-fill: var(--ground, #e6e3df); } .ds-btn-outline::before, .ds-btn-outline::after { content: ''; position: absolute; z-index: -1; clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px); } .ds-btn-outline::before { inset: 0; background: var(--ds-rule); } .ds-btn-outline::after { inset: 1px; background: var(--ds-fill); } .ds-btn-outline:hover { --ds-rule: var(--rule-strong, #0d000f); --ds-fill: var(--muted, #dcd9d4); } .ds-btn-outline:focus-visible { box-shadow: 0 0 0 2px var(--tension, #d7262e); }"
+    },
+    {
+      "name": "Étiquettes gravées",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Trois états et trois seulement : engagé (carbone plein), dormant (évidé), rompu (rouge de tension). Elle nomme un état, jamais une valeur.",
+      "html": "<span class=\"ds-chip\">engagé</span> <span class=\"ds-chip ds-chip-slack\">attendu</span> <span class=\"ds-chip ds-chip-tension\">dépassé</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 0.35em; background: var(--carbon, #0d000f); color: var(--void-white, #f7f7f8); font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.625rem; font-weight: 500; line-height: 1; letter-spacing: 0.09em; text-transform: uppercase; padding: 0.34em 0.55em 0.3em; white-space: nowrap; } .ds-chip-slack { background: transparent; color: var(--muted-foreground, #6b6966); box-shadow: inset 0 0 0 1px var(--input, #b6b2ab); } .ds-chip-tension { background: var(--tension, #d7262e); color: #fff; box-shadow: none; }"
+    },
+    {
+      "name": "Champ de saisie",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Une plaque de commande évidée. À la mise au point, son filet passe au rouge de tension et un anneau l'entoure.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Montant\" />",
+      "css": ".ds-input { position: relative; isolation: isolate; height: 36px; width: 220px; padding: 4px 12px; border: none; background: transparent; color: var(--carbon, #0d000f); font-family: var(--font-sans, Archivo, ui-sans-serif, system-ui, sans-serif); font-size: 0.875rem; outline: none; transition: all 0.15s ease; --ds-rule: var(--border, #c7c3bd); } .ds-input::placeholder { color: var(--muted-foreground, #6b6966); } .ds-input::before, .ds-input::after { content: ''; position: absolute; z-index: -1; clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px); } .ds-input::before { inset: 0; background: var(--ds-rule); } .ds-input::after { inset: 1px; background: var(--ground, #e6e3df); } .ds-input:focus-visible { --ds-rule: var(--tension, #d7262e); box-shadow: 0 0 0 2px color-mix(in oklab, var(--tension, #d7262e) 60%, transparent); } .ds-input[aria-invalid='true'] { --ds-rule: var(--tension-ink, #b31d25); }"
+    },
+    {
+      "name": "Poutre de navigation",
+      "kind": "nav",
+      "refersTo": "beam-nav-item",
+      "description": "La seule masse de carbone d'un écran de béton : 52 px de haut, le nom en Archivo resserrée, trois destinations, et le trait de tension sous celle qui porte la charge.",
+      "html": "<header class=\"ds-beam\"><span class=\"ds-beam-name\">Plia</span><span class=\"ds-beam-rule\"></span><nav class=\"ds-beam-nav\"><a class=\"ds-beam-item ds-beam-item-active\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/></svg>Tableau de bord</a><a class=\"ds-beam-item\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m16 3 4 4-4 4\"/><path d=\"M20 7H4\"/><path d=\"m8 21-4-4 4-4\"/><path d=\"M4 17h16\"/></svg>Transactions</a><a class=\"ds-beam-item\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/><path d=\"M12 7v5l4 2\"/></svg>Historique</a></nav></header>",
+      "css": ".ds-beam { display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 16px; background: var(--beam, #17161a); color: var(--beam-foreground, #b9b6b1); } .ds-beam-name { font-family: var(--font-sans, Archivo, ui-sans-serif, system-ui, sans-serif); font-variation-settings: 'wdth' 86; letter-spacing: -0.01em; font-size: 1.25rem; font-weight: 700; line-height: 1; color: var(--void-white, #f7f7f8); } .ds-beam-rule { width: 1px; height: 24px; background: var(--beam-rule, #2e2d32); } .ds-beam-nav { display: flex; align-items: center; } .ds-beam-item { position: relative; display: flex; align-items: center; gap: 8px; height: 52px; padding: 0 14px; color: inherit; text-decoration: none; font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.6875rem; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.15s ease; } .ds-beam-item:hover, .ds-beam-item-active { color: var(--void-white, #f7f7f8); } .ds-beam-item-active::after { content: ''; position: absolute; left: 6px; right: 6px; bottom: 0; height: 2px; background: var(--tension, #d7262e); } .ds-beam-item:focus-visible { outline: 2px solid var(--tension, #d7262e); outline-offset: -2px; }"
+    },
+    {
+      "name": "Plaque",
+      "kind": "card",
+      "refersTo": "card-plate",
+      "description": "Quatre angles coupés à 9 px, un filet d'un pixel qui suit la coupe, aucune ombre. Toute surface du produit passe par là.",
+      "html": "<section class=\"ds-plate\"><h3 class=\"ds-plate-title\">Reste à vivre</h3><p class=\"ds-plate-amount\">1 284,50 €</p></section>",
+      "css": ".ds-plate { position: relative; isolation: isolate; padding: 20px; color: var(--carbon, #0d000f); } .ds-plate::before, .ds-plate::after { content: ''; position: absolute; z-index: -1; clip-path: polygon(9px 0, calc(100% - 9px) 0, 100% 9px, 100% calc(100% - 9px), calc(100% - 9px) 100%, 9px 100%, 0 calc(100% - 9px), 0 9px); } .ds-plate::before { inset: 0; background: var(--border, #c7c3bd); } .ds-plate::after { inset: 1px; background: var(--plate, #eeece8); } .ds-plate-title { margin: 0 0 12px; font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.75rem; font-weight: 500; line-height: 1; letter-spacing: 0.09em; text-transform: uppercase; } .ds-plate-amount { margin: 0; text-align: right; font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 1.5rem; font-weight: 500; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Relevé",
+      "kind": "custom",
+      "refersTo": "table-head",
+      "description": "La forme du produit qui ne se discute pas : en-têtes gravés sur un filet fort, lignes séparées d'un filet d'un pixel, montants à droite en mono tabulaire, négatifs à l'encre de tension.",
+      "html": "<table class=\"ds-table\"><thead><tr><th>Poste</th><th>État</th><th class=\"ds-num\">Budget</th><th class=\"ds-num\">Reste</th></tr></thead><tbody><tr><td>Courses</td><td><span class=\"ds-chip\">engagé</span></td><td class=\"ds-num\">420,00 €</td><td class=\"ds-num\">86,40 €</td></tr><tr><td>Essence</td><td><span class=\"ds-chip ds-chip-tension\">dépassé</span></td><td class=\"ds-num\">120,00 €</td><td class=\"ds-num ds-neg\">−34,10 €</td></tr></tbody></table>",
+      "css": ".ds-table { width: 100%; border-collapse: collapse; font-family: var(--font-sans, Archivo, ui-sans-serif, system-ui, sans-serif); font-size: 0.875rem; color: var(--carbon, #0d000f); font-variant-numeric: tabular-nums; } .ds-table thead tr { border-bottom: 1px solid var(--rule-strong, #0d000f); } .ds-table th { height: 32px; padding: 0 8px; text-align: left; color: var(--muted-foreground, #6b6966); font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.625rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; } .ds-table td { padding: 6px 8px; border-bottom: 1px solid var(--border, #c7c3bd); white-space: nowrap; } .ds-table tbody tr:last-child td { border-bottom: 0; } .ds-table tbody tr:hover td { background: color-mix(in oklab, var(--muted, #dcd9d4) 60%, transparent); } .ds-table .ds-num { text-align: right; font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.8125rem; } .ds-table .ds-neg { color: var(--tension-ink, #b31d25); }"
+    },
+    {
+      "name": "Plan de charge",
+      "kind": "custom",
+      "refersTo": "card-plate",
+      "description": "Le composant signature : un mât par mois planté sur la ligne du zéro, un câble rouge qui pend d'un sommet à l'autre, et un mât rompu qui traverse le sol. Chaque montant est écrit au-dessus de son mât — retirez le dessin, les chiffres suffisent encore.",
+      "html": "<section class=\"ds-plan\"><div class=\"ds-plan-head\"><div><span class=\"ds-plan-cap\">Sept.</span><span class=\"ds-plan-amt\">1 830,00 €</span></div><div><span class=\"ds-plan-cap\">Oct.</span><span class=\"ds-plan-amt\">940,00 €</span></div><div><span class=\"ds-plan-cap\">Nov.</span><span class=\"ds-plan-amt ds-plan-amt-neg\">−320,00 €</span></div></div><div class=\"ds-plan-zone\"><span class=\"ds-plan-sol\"></span><span class=\"ds-chip ds-plan-zero\">zéro</span><svg class=\"ds-plan-cable\" viewBox=\"0 0 100 100\" preserveAspectRatio=\"none\"><path d=\"M 16.7 18 Q 33.3 60 50 52 Q 66.7 96 83.3 88\" fill=\"none\" stroke=\"var(--tension, #d7262e)\" stroke-width=\"2.5\" stroke-linecap=\"round\" vector-effect=\"non-scaling-stroke\"/></svg><span class=\"ds-plan-mat\" style=\"left:16.7%; top:18%; height:52%\"></span><span class=\"ds-plan-noeud\" style=\"left:16.7%; top:18%\"></span><span class=\"ds-plan-mat\" style=\"left:50%; top:52%; height:18%\"></span><span class=\"ds-plan-noeud\" style=\"left:50%; top:52%\"></span><span class=\"ds-plan-mat ds-plan-mat-brise\" style=\"left:83.3%; top:calc(70% - 10px); height:calc(18% + 10px)\"></span><span class=\"ds-plan-rupture\" style=\"left:83.3%; top:70%\"></span><span class=\"ds-plan-noeud ds-plan-noeud-brise\" style=\"left:83.3%; top:88%\"></span></div></section>",
+      "css": ".ds-plan { position: relative; isolation: isolate; padding: 20px; } .ds-plan::before, .ds-plan::after { content: ''; position: absolute; z-index: -1; clip-path: polygon(9px 0, calc(100% - 9px) 0, 100% 9px, 100% calc(100% - 9px), calc(100% - 9px) 100%, 9px 100%, 0 calc(100% - 9px), 0 9px); } .ds-plan::before { inset: 0; background: var(--border, #c7c3bd); } .ds-plan::after { inset: 1px; background: var(--plate, #eeece8); } .ds-plan-head { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; } .ds-plan-head > div { display: flex; flex-direction: column; align-items: center; gap: 4px; } .ds-plan-cap { font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.625rem; font-weight: 500; letter-spacing: 0.11em; text-transform: uppercase; color: var(--muted-foreground, #6b6966); } .ds-plan-amt { font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.875rem; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--carbon, #0d000f); } .ds-plan-amt-neg { color: var(--tension-ink, #b31d25); } .ds-plan-zone { position: relative; height: 224px; margin-top: 8px; } .ds-plan-sol { position: absolute; left: 0; right: 0; top: 70%; height: 1px; background: var(--rule-strong, #0d000f); } .ds-plan-zero { position: absolute; left: 0; top: 70%; transform: translateY(-50%); font-size: 0.5625rem; } .ds-plan-cable { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; } .ds-plan-mat { position: absolute; width: 3px; transform: translateX(-50%); background: var(--carbon, #0d000f); animation: ds-mat 620ms cubic-bezier(0.16, 1, 0.3, 1) both; transform-origin: bottom; } .ds-plan-mat-brise { background: var(--tension, #d7262e); transform-origin: top; } .ds-plan-noeud { position: absolute; width: 8px; height: 8px; border-radius: 9999px; transform: translate(-50%, -50%); background: var(--carbon, #0d000f); animation: ds-noeud 360ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both; } .ds-plan-noeud-brise { background: var(--tension, #d7262e); box-shadow: 0 0 0 2px color-mix(in oklab, var(--tension, #d7262e) 30%, transparent); } .ds-plan-rupture { position: absolute; width: 22px; height: 14px; transform: translate(-50%, -50%); background: var(--plate, #eeece8); } .ds-plan-rupture::before, .ds-plan-rupture::after { content: ''; position: absolute; top: 0; height: 14px; width: 2px; background: var(--tension, #d7262e); transform: rotate(24deg); } .ds-plan-rupture::before { left: 5px; } .ds-plan-rupture::after { right: 5px; } @keyframes ds-mat { from { scale: 1 0; } to { scale: 1 1; } } @keyframes ds-noeud { from { scale: 0; opacity: 0; } to { scale: 1; opacity: 1; } } @media (prefers-reduced-motion: reduce) { .ds-plan-mat, .ds-plan-noeud { animation: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La colonne en tension",
+    "overview": "Un budget n'est pas un tableau de bord : c'est une structure qui tient par deux forces opposées. Ce qui porte — le solde acquis, les revenus encaissés — est un mât de carbone planté dans le sol. Ce qui tire — les dépenses engagées, les reports, les dépassements — est un câble rouge. L'équilibre entre les deux est le sujet de l'application, et il n'a qu'une couleur.\n\nLe monde est fait de trois matières et d'un seul accent : un sol de béton coulé (une dalle photographiée posée en fond de page, à peine perceptible, la seule image du produit), une structure de carbone presque noir, du cendre pour ce qui dort, et le rouge de tension. Ni vert ni ambre n'existent dans ce système : un montant n'est pas « bon » ou « mauvais », il porte ou il tire. Aucune surface n'est arrondie — la famille de formes est la coupe à 45°, comme une plaque d'appareillage qu'on chanfreine plutôt que d'adoucir. Aucune ombre non plus : le relief vient de la découpe, du filet d'un pixel et de la masse du carbone.\n\nLes chiffres sont le sujet, tout le reste est de la charpente. Ils sont en mono technique (Azeret Mono), tabulaires, alignés à droite, partout — y compris isolés dans une phrase, parce que font-variant-numeric: tabular-nums est posé sur le corps du document et non sur les tableaux. L'interface autour d'eux est en Archivo, resserrée sur son axe de chasse pour prendre le dessin d'une capitale gravée. Rien ne bouge nulle part, sauf une seule fois : la mise en tension du plan de charge à l'ouverture.",
+    "keyCharacteristics": [
+      "Du béton et du carbone, pas du papier ni du blanc d'écran ; un grain photographié sur <html>, jamais sur les plaques.",
+      "Un seul accent, le rouge de tension, et il ne dit qu'une chose : une force qui tire.",
+      "Aucun rayon, aucune ombre : la coupe à 45° et le filet d'un pixel font tout le relief.",
+      "Deux fontes, deux rôles étanches : Archivo pour l'interface, Azeret Mono pour tout chiffre, mesure ou état.",
+      "Quatre états de structure et rien d'autre : acquis, engagé, attendu, dépassé.",
+      "Un seul moment animé dans toute l'application."
+    ],
+    "rules": [
+      { "name": "La règle du mélange au fond", "body": "Toute teinte de fond s'écrit color-mix(in oklab, <couleur> N%, var(--background)). Jamais un aplat opaque, jamais une valeur codée en dur par thème. C'est pour cette raison que le thème sombre ne redéfinit presque rien : le grand tableau entier bascule sans une seule teinte réécrite.", "section": "colors" },
+      { "name": "La règle du rouge qui tire", "body": "Le rouge ne décore jamais. Il ne se pose que sur une force qui tire : un montant qui retranche, un câble, un mât rompu, une section de dépenses, un état dépassé, la commande qui engage. S'il apparaît ailleurs, ce n'est pas une variante, c'est une faute.", "section": "colors" },
+      { "name": "La règle de la densité, pas de la teinte", "body": "Dans le grand tableau, les familles de colonnes se distinguent par la densité d'un même carbone, pas par la couleur : données à 4 %, Balance à 9 %, les trois chaînes de solde à 14 %, les lignes de totaux à 20 %. La section des revenus est du carbone dilué (6 %, total à 16 %) ; la section des dépenses est le seul endroit du tableau où le rouge entre en fond (7 %, sous-total 13 %, total 20 %).", "section": "colors" },
+      { "name": "La règle des cellules, pas des lignes", "body": "Une teinte se pose sur chaque cellule, jamais sur la ligne. Un fond de cellule recouvre celui de sa ligne : peinte sur la ligne, la teinte de colonne disparaîtrait au survol et ne resterait visible que dans les trous.", "section": "colors" },
+      { "name": "La règle des deux rôles", "body": "Archivo ne porte jamais un chiffre, un état ou une mesure. Azeret Mono ne porte jamais une phrase. Il n'y a pas de troisième fonte, et il n'y aura pas de serif : le jour où une donnée a besoin d'un caractère de titre, c'est la donnée qui a été mal classée.", "section": "typography" },
+      { "name": "La règle de la virgule alignée", "body": "font-variant-numeric: tabular-nums est posé sur le corps du document, pas sur les tableaux. Un montant isolé dans une phrase s'aligne donc avec ses voisins d'une ligne à l'autre. Et tout montant s'aligne à droite, partout.", "section": "typography" },
+      { "name": "La règle de la capitale gravée", "body": "Tout ce qui est capitales est en Azeret Mono avec un interlettrage ouvert (0.08em à 0.11em selon le rôle). Une capitale en Archivo non resserrée n'appartient pas au système.", "section": "typography" },
+      { "name": "La règle du défilement plutôt que de l'écrasement", "body": "Ce qui ne tient pas se fait défiler horizontalement dans son propre conteneur : le plan de charge garde une largeur minimale de 620 px, les tables ont leur overflow-x. Jamais on n'écrase des montants en colonnes de deux lettres pour les faire entrer.", "section": "layout" },
+      { "name": "La règle du zéro ombre", "body": "Aucune surface ne se soulève. Si un élément a besoin de se détacher, il prend une coupe et un filet, ou il change de matière — jamais une ombre.", "section": "elevation" },
+      { "name": "La règle de la coupe suivie", "body": "Toute bordure d'une surface coupée doit suivre la coupe. Si un contour reste rectangulaire aux angles, la forme est fausse — repasser par .plate.", "section": "shapes" },
+      { "name": "La règle du dessin qui ne porte rien de neuf", "body": "Chaque montant projeté est écrit en toutes lettres au-dessus de son mât. Retirez le dessin, les chiffres suffisent encore — c'est la condition pour qu'il ait le droit d'être là.", "section": "components" },
+      { "name": "La règle du seul mouvement", "body": "Nulle part ailleurs il n'y a d'animation. Une colonne de chiffres qui bouge est une colonne qu'on relit.", "section": "components" }
+    ],
+    "dos": [
+      "Do écrire toute teinte de fond en color-mix(in oklab, <couleur> N%, var(--background)), pour qu'elle suive le thème sans redéfinition.",
+      "Do passer toute nouvelle surface par .plate (quatre angles) ou .plate-cut (deux angles) plutôt que de redessiner une coupe.",
+      "Do poser les teintes sur les cellules, jamais sur les lignes.",
+      "Do garder tout chiffre en Azeret Mono, tabulaire et aligné à droite, même isolé dans une phrase.",
+      "Do réserver le rouge à une force qui tire : montant négatif, câble, rupture, dépassement, section de dépenses, commande qui engage.",
+      "Do n'utiliser que les quatre états de la structure — acquis, engagé, attendu, dépassé — avec les mêmes mots partout.",
+      "Do laisser l'état d'erreur découler de aria-invalid, pas d'une classe posée à la main.",
+      "Do garder 16 px de corps sur les champs de saisie en dessous de 768 px.",
+      "Do faire défiler horizontalement ce qui ne tient pas, plutôt que d'écraser des colonnes de chiffres.",
+      "Do redire les variantes de .chip dans le thème sombre : la règle sombre est plus spécifique et leur reprendrait leur couleur.",
+      "Do laisser le barème de rayon à 0px : c'est lui qui rend carrées les primitives héritées sans qu'on ait à les réécrire.",
+      "Do marquer une sélection par une ombre interne (inset 3px 0 0 0) et jamais par une bordure, qui décalerait le tableau."
+    ],
+    "donts": [
+      "Don't ajouter un rayon, nulle part. Le barème vaut 0px sur ses quatre pas, et la seule exception ronde est le nœud de structure.",
+      "Don't ajouter une ombre portée. Le relief vient de la coupe, du filet et de la matière.",
+      "Don't introduire du vert ou de l'ambre. Il n'y a qu'un accent, et un montant ne se juge pas bon ou mauvais.",
+      "Don't poser le rouge sur autre chose qu'une force qui tire — pas de titre rouge, pas d'icône rouge, pas de fond rouge décoratif.",
+      "Don't ajouter une seconde animation. Le seul moment animé est la mise en tension du plan de charge.",
+      "Don't introduire une troisième fonte, et surtout pas une serif : rien ici n'est imprimé.",
+      "Don't utiliser une border CSS pour cercler une surface coupée : elle ignore clip-path et ressort rectangulaire aux angles.",
+      "Don't poser le grain de béton ailleurs que sur <html>. Les plaques sont de la tôle peinte, lisse.",
+      "Don't ajouter un graphique décoratif — camembert, jauge, dégradé, courbe de tendance. Le câble n'est pas une courbe : il pend.",
+      "Don't confondre les jetons de la poutre (--beam*) avec ceux du panneau de détail (--sidebar*) : la poutre est du carbone, le panneau est une plaque claire."
+    ]
+  }
+}

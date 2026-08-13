@@ -70,7 +70,7 @@ export function AddTransactionSheet({ accounts, groups, edit }: { accounts: Acco
           <label className="flex flex-col gap-1 text-sm">
             Compte
             <select value={accountId} onChange={(e) => { setAccountId(e.target.value); setGroupId(null); }}
-              className="border-input bg-background h-9 rounded-md border px-3 text-sm">
+              className="plate plate-cut h-9 px-3 text-sm">
               {accounts.map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}
             </select>
           </label>
@@ -115,7 +115,7 @@ export function AddTransactionSheet({ accounts, groups, edit }: { accounts: Acco
           <label className="flex flex-col gap-1 text-sm">
             Groupe
             <select value={groupId ?? ""} onChange={(e) => setGroupId(e.target.value ? Number(e.target.value) : null)}
-              className="border-input bg-background h-9 rounded-md border px-3 text-sm">
+              className="plate plate-cut h-9 px-3 text-sm">
               <option value="">Non catégorisé</option>
               {groupChoices.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
             </select>

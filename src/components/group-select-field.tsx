@@ -60,7 +60,7 @@ export function GroupSelectField({
     <select
       value={value}
       disabled={disabled || isPending}
-      className={cn("border-input bg-background h-9 rounded-md border px-3 text-sm disabled:opacity-60", className)}
+      className={cn("plate plate-cut h-9 px-3 text-sm disabled:opacity-60", className)}
       onChange={(e) => {
         const v = e.currentTarget.value;
         setValue(v);

@@ -69,12 +69,14 @@ export function NotificationsButton({ items }: { items: Notification[] }) {
             quoi elle parle, et le compte seul encore moins. */}
         <button
           type="button"
-          className="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm"
+          className="text-beam-foreground hover:text-beam-bright hover:bg-beam-accent inline-flex items-center gap-1.5 px-2 py-1.5 font-mono text-[0.6875rem] tracking-[0.08em] uppercase transition-colors"
         >
           <Bell className="size-4" />
-          <span>Dépassements</span>
+          <span className="hidden sm:inline">Dépassements</span>
+          {/* Le compte de ce qui reste à voir : c'est une charge qui tire, donc
+              c'est rouge, carré, et posé contre le mot. */}
           {restants.length > 0 && (
-            <span className="flex min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 font-sans text-[11px] leading-4 font-semibold text-white">
+            <span className="bg-tension flex min-w-4 items-center justify-center px-1 font-mono text-[0.625rem] leading-4 font-medium text-white">
               {restants.length}
             </span>
           )}

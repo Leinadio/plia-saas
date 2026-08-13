@@ -36,7 +36,7 @@ export function PeriodFields({ draft, onChange, stripMin, stripMax, compact = fa
         <select
           value={choice}
           onChange={(e) => onChange({ ...draft, choice: e.target.value as PeriodDraft["choice"] })}
-          className={cn("rounded-md border bg-transparent px-2 text-sm", compact ? "h-8" : "h-9")}
+          className={cn("plate plate-cut px-2 text-sm", compact ? "h-8" : "h-9")}
         >
           <option value="always">Depuis toujours</option>
           <option value="from">À partir d&apos;un mois, sans fin</option>

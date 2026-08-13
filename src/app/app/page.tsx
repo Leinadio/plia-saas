@@ -1,97 +1,153 @@
+import Link from "next/link";
 import { listAccounts } from "../../db/repositories/accounts";
-import { listTransactions, sumIgnoredByAccount } from "../../db/repositories/transactions";
+import { listTransactions, sumIgnoredByAccount, type TxnView } from "../../db/repositories/transactions";
 import { listGroups } from "../../db/repositories/groups";
-import { resolveOwnership } from "../../lib/ownership";
-import { formatEur, monthKey } from "../../lib/money";
+import { listBudgetAmounts } from "../../db/repositories/budget-amounts";
+import { listLineAmounts } from "../../db/repositories/line-amounts";
+import {
+  computeHistory, computeSolde, computePlannedSoldes, computeTableEstimate,
+  grandTotals, monthlyOverspend, monthRange, addMonthsKey,
+  toDatedBudgets, toDatedLineAmounts,
+} from "../../lib/history";
+import type { Group, Txn } from "../../lib/forecast";
+import { monthPhrase, monthShort } from "../../lib/transactions-view";
+import { monthType } from "../../lib/history-columns";
+import { soldeAffiche } from "../../lib/solde-affiche";
 import { currentMonthKey } from "../../lib/current-month";
-import { accountLabel, effectiveBalance } from "../../lib/account";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { effectiveBalance } from "../../lib/account";
+import { PlanDeCharge } from "@/components/plan-de-charge";
+import { RelevesBand } from "@/components/releves-band";
+import { PosteTable } from "@/components/poste-table";
 
 import { pourMoi } from "@/lib/current-user";
 
 export const dynamic = "force-dynamic";
 
+// Six mois : le mois courant et cinq devant. Assez pour voir venir une rentrée
+// d'argent qui glisse, assez peu pour que six mâts tiennent sur un téléphone.
+const PORTEE = 6;
+
 export default async function Dashboard() {
-  const month = currentMonthKey(new Date());
+  const currentMonth = currentMonthKey(new Date());
+  const months = monthRange(currentMonth, addMonthsKey(currentMonth, PORTEE - 1));
+
+  const toTxn = (t: TxnView): Txn => ({
+    id: t.id, date: t.date, amount: t.amount, label: t.label,
+    accountId: t.accountId, groupId: t.groupId, lineId: t.lineId,
+    excluded: t.excluded, comment: t.comment,
+  });
   // Tout ce que la page lit, en une fois et au nom de la personne connectée.
   // Une transaction non comptabilisée doit se comporter comme si elle n'existait
   // pas, y compris dans le solde affiché : le solde de la banque la contient, on la
-  // retranche donc partout, carte du compte comme total.
-  const { accounts, ignoredByAccount, allTxns, groups } = await pourMoi(async (database, userId) => ({
-    accounts: await listAccounts(database, userId),
-    ignoredByAccount: await sumIgnoredByAccount(database),
-    allTxns: await listTransactions(database, userId),
-    groups: await listGroups(database, userId),
-  }));
+  // retranche donc partout.
+  const { accounts, ignoredByAccount, allTxns, groups, datedBudgets, datedLines } =
+    await pourMoi(async (database, userId) => ({
+      accounts: await listAccounts(database, userId),
+      ignoredByAccount: await sumIgnoredByAccount(database),
+      allTxns: (await listTransactions(database, userId)).map(toTxn) as Txn[],
+      groups: (await listGroups(database, userId)) as Group[],
+      datedBudgets: toDatedBudgets(await listBudgetAmounts(database)),
+      datedLines: toDatedLineAmounts(await listLineAmounts(database)),
+    }));
+
+  if (accounts.length === 0) {
+    return (
+      <div className="plate mx-auto max-w-lg px-5 py-8 text-center">
+        <p className="font-mono text-xs tracking-[0.09em] uppercase">Rien à porter</p>
+        <p className="text-muted-foreground mx-auto mt-3 max-w-sm text-sm">
+          Aucun compte n&apos;est encore relié. Connecte ta banque et le plan de charge
+          se dresse tout seul.
+        </p>
+        <Link
+          href="/app/settings"
+          className="cut cut-sm bg-primary text-primary-foreground mt-5 inline-flex h-9 items-center px-4 font-mono text-[0.6875rem] tracking-[0.08em] uppercase"
+        >
+          Connecter une banque
+        </Link>
+      </div>
+    );
+  }
+
   const balance = accounts.reduce(
     (s, a) => s + effectiveBalance(a.balance, ignoredByAccount[a.id]),
     0,
   );
-  const ownable = groups.map((g) => ({
-    id: g.id, accountId: g.accountId, direction: g.direction,
-  }));
-  const groupCell = (t: (typeof allTxns)[number]) => {
-    const res = resolveOwnership(
-      { id: t.id, date: t.date, amount: t.amount, label: t.label, accountId: t.accountId, groupId: t.groupId, excluded: t.excluded },
-      ownable,
-    );
-    if (res.status === "manual") return groups.find((g) => g.id === res.groupId)?.name ?? "";
-    return "";
-  };
 
-  const monthSpend = allTxns
-    .filter((t) => monthKey(t.date) === month && t.amount < 0)
-    .reduce((s, t) => s + Math.abs(t.amount), 0);
+  // Le même moteur que l'Historique, mais tous comptes confondus : ce que cette
+  // page montre, c'est la structure entière, pas un compte à la fois.
+  const sections = computeHistory(groups, allTxns, months, currentMonth, datedBudgets, datedLines);
+  // L'estimé de fin du mois courant ancre les mois suivants : sans lui, la
+  // projection repart du solde d'aujourd'hui et ignore ce qui est déjà engagé.
+  const estime = computeTableEstimate(sections, months, currentMonth, balance)?.value ?? null;
+  const solde = computeSolde(sections, months, currentMonth, balance, estime);
+  const planned = computePlannedSoldes(sections, months, currentMonth, solde.openings, estime, datedBudgets);
+  const totaux = grandTotals(sections, months.length);
+
+  // ATTENTION. La chaîne réelle est PLATE sur les mois à venir : rien n'y est
+  // encore réalisé. Prise telle quelle, elle dessinerait six mâts de la même
+  // hauteur et le plan de charge ne dirait plus rien. C'est le prévu qui porte
+  // l'atterrissage (cf. soldeAffiche).
+  const mois = months.map((m, i) => ({
+    key: m,
+    label: monthShort(m, currentMonth),
+    solde: soldeAffiche(solde.closings, planned.prevuClosings, i, monthType(m, currentMonth) === "future"),
+  }));
+
+  const income = sections.find((s) => s.kind === "income");
+  const expense = sections.find((s) => s.kind === "expense");
+  const entrees = (income?.rows ?? []).filter((r) => r.aliveMonths[0]);
+  const sorties = (expense?.rows ?? []).filter((r) => r.aliveMonths[0]);
+
+  // Les cinq mesures du mois, dans le vocabulaire du produit. « Solde » est ce
+  // que la banque dit aujourd'hui ; « projection » est là où le mois atterrit :
+  // deux chiffres différents, et c'est l'écart entre eux qui fait décider.
+  const depassement = monthlyOverspend(sections, months.length)[0];
+  const releves = [
+    { label: "Solde", valeur: balance },
+    { label: `Entrées ${monthPhrase(currentMonth)}`, valeur: totaux[0].recu },
+    { label: `Sorties ${monthPhrase(currentMonth)}`, valeur: -totaux[0].depense },
+    { label: "Dépassement", valeur: -depassement },
+    // « Projection », c'est où le mois atterrit si le plan tient — pas le solde
+    // de la banque, que la colonne « Solde » dit déjà juste à côté.
+    { label: "Projection", valeur: planned.prevuClosings[0] ?? solde.closings[0] },
+  ];
 
   return (
-    <div className="flex flex-col gap-4">
-      <Card>
-        <CardContent className="flex flex-col gap-1">
-          <div className="text-3xl font-bold">{formatEur(balance)}</div>
-          <div className="text-muted-foreground text-sm">
-            Solde total ({accounts.length} compte{accounts.length > 1 ? "s" : ""})
-          </div>
-          <div className="text-muted-foreground text-sm">
-            Dépensé ce mois-ci : {formatEur(monthSpend)}
-          </div>
-        </CardContent>
-      </Card>
+    <div className="mx-auto flex max-w-[1400px] flex-col gap-4">
+      <PlanDeCharge mois={mois} />
 
-      {accounts.map((a) => {
-        const accountTxns = allTxns.filter((t) => t.accountId === a.id).slice(0, 8);
-        return (
-          <Card key={a.id}>
-            <CardHeader className="flex-row flex-wrap items-baseline justify-between gap-2">
-              <CardTitle>{accountLabel(a)}</CardTitle>
-              <span className="text-xl font-bold">
-                {formatEur(effectiveBalance(a.balance, ignoredByAccount[a.id]))}
-              </span>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableBody>
-                  {accountTxns.length === 0 && (
-                    <TableRow>
-                      <TableCell className="text-muted-foreground">Aucune transaction.</TableCell>
-                    </TableRow>
-                  )}
-                  {accountTxns.map((t) => (
-                    <TableRow key={t.id}>
-                      <TableCell className="text-muted-foreground">{t.date}</TableCell>
-                      <TableCell>{t.label}</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {groupCell(t)}
-                      </TableCell>
-                      <TableCell className="text-right font-medium">{formatEur(t.amount)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        );
-      })}
+      <RelevesBand releves={releves} />
+
+      {/* Les deux tables du mois : ce qui porte à gauche, ce qui tire à droite. */}
+      <div className="grid gap-4 xl:grid-cols-2">
+        <PosteTable
+          titre="Entrées"
+          vide="Aucune entrée prévue ce mois-ci."
+          colonnes={["Prévu", "Reçu"]}
+          lignes={entrees.map((r) => ({
+            id: r.id,
+            nom: r.name,
+            montants: [r.cells[0].budgeted, r.cells[0].recu],
+            etat: r.cells[0].recu > 0 ? "acquis" : "attendu",
+          }))}
+        />
+        <PosteTable
+          titre="Sorties"
+          vide="Aucune enveloppe ce mois-ci."
+          colonnes={["Enveloppe", "Dépensé", "Reste"]}
+          lignes={sorties.map((r) => ({
+            id: r.id,
+            nom: r.name,
+            montants: [r.cells[0].budgeted, -r.cells[0].depense, r.cells[0].balance],
+            etat:
+              r.cells[0].balance < 0
+                ? "dépassé"
+                : r.cells[0].depense > 0
+                  ? "engagé"
+                  : "attendu",
+          }))}
+        />
+      </div>
     </div>
   );
 }

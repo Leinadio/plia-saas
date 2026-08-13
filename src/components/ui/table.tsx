@@ -1,6 +1,10 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+// Le relevé : des lignes séparées par un filet d'un pixel, des chiffres à droite
+// en chasse fixe, des en-têtes gravés en capitales. Rien d'autre. C'est la seule
+// forme du produit qui ne se discute pas — une colonne de montants doit se lire
+// verticalement, d'un coup d'œil.
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     <div data-slot="table-container" className="relative w-full overflow-x-auto">
@@ -10,7 +14,13 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
 }
 
 function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
-  return <thead data-slot="table-header" className={cn("[&_tr]:border-b", className)} {...props} />;
+  return (
+    <thead
+      data-slot="table-header"
+      className={cn("[&_tr]:border-b [&_tr]:border-rule-strong", className)}
+      {...props}
+    />
+  );
 }
 
 function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
@@ -23,7 +33,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   return (
     <tr
       data-slot="table-row"
-      className={cn("hover:bg-muted/50 border-b transition-colors", className)}
+      className={cn("hover:bg-muted/60 border-b transition-colors", className)}
       {...props}
     />
   );
@@ -34,7 +44,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap",
+        "text-muted-foreground h-8 px-2 text-left align-middle font-mono text-[0.625rem] font-medium tracking-[0.1em] whitespace-nowrap uppercase",
         className
       )}
       {...props}
@@ -44,7 +54,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
 
 function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return (
-    <td data-slot="table-cell" className={cn("p-2 align-middle whitespace-nowrap", className)} {...props} />
+    <td data-slot="table-cell" className={cn("px-2 py-1.5 align-middle whitespace-nowrap", className)} {...props} />
   );
 }
 
