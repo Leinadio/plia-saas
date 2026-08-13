@@ -53,7 +53,16 @@ export function HistoryWithDetail(props: {
         <Checkbox checked={showDeltas} onCheckedChange={(v) => setShowDeltas(v === true)} />
         Détailler les mouvements de solde
       </Label>
-      <CenterScroll>
+      {/* LA PLAQUE. Le tableau repose sur une surface aux quatre angles coupés à
+          45°, cerclée d'un filet d'un pixel qui suit la coupe — la forme de tout
+          panneau du produit.
+          Deux calques, parce qu'une bordure CSS ignore clip-path et ressortirait
+          carrée aux angles : la plaque dessine le filet, et le tableau qui défile
+          est posé un pixel à l'intérieur, coupé du même polygone. Sans ce pixel de
+          retrait, les fonds de cellules recouvraient le filet et il n'en restait
+          rien. */}
+      <div className="plate [--notch:14px] p-px">
+        <CenterScroll className="[clip-path:var(--plate-path)]">
         <HistoryGrid
           {...props}
           onSelect={setDetail}
@@ -61,7 +70,8 @@ export function HistoryWithDetail(props: {
           anchor={anchor}
           showDeltas={showDeltas}
         />
-      </CenterScroll>
+        </CenterScroll>
+      </div>
     </div>
   );
 }

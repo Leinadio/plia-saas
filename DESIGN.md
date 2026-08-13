@@ -9,6 +9,7 @@ colors:
   ash: "#9a9a9c"
   void-white: "#f7f7f8"
   tension: "#d7262e"
+  portant: "#1f7f52"
   tension-ink: "#b31d25"
   muted: "#dcd9d4"
   muted-foreground: "#6b6966"
@@ -173,8 +174,10 @@ qu'une couleur.
 Le monde est fait de trois matières et d'un seul accent : un sol de béton coulé (une
 dalle photographiée posée en fond de page, à peine perceptible, la seule image du
 produit), une structure de carbone presque noir, du cendre pour ce qui dort, et le rouge
-de tension. Ni vert ni ambre n'existent dans ce système : un montant n'est pas
-« bon » ou « mauvais », il porte ou il tire. Aucune surface n'est arrondie — la famille
+de tension pour ce qui tire, le vert du portant pour ce qui entre. Ces deux couleurs ne
+jugent pas : elles ne disent pas « bon » ou « mauvais », elles disent le SENS d'une
+force — ça porte ou ça tire. L'ambre n'existe toujours pas, et aucune troisième
+couleur n'entre dans ce système. Aucune surface n'est arrondie — la famille
 de formes est la coupe à 45°, comme une plaque d'appareillage qu'on chanfreine plutôt que
 d'adoucir. Aucune ombre non plus : le relief vient de la découpe, du filet d'un pixel et
 de la masse du carbone.
@@ -581,7 +584,7 @@ chiffres qui bouge est une colonne qu'on relit.
 ### Don't:
 - **Don't** ajouter un rayon, nulle part. Le barème vaut `0px` sur ses quatre pas, et la seule exception ronde est le nœud de structure.
 - **Don't** ajouter une ombre portée. Le relief vient de la coupe, du filet et de la matière.
-- **Don't** introduire du vert ou de l'ambre. Il n'y a qu'un accent, et un montant ne se juge pas bon ou mauvais.
+- **Don't** introduire une troisième couleur, ni l'ambre. Il n'y a que deux forces, le portant et la tension, et un montant ne se juge pas bon ou mauvais.
 - **Don't** poser le rouge sur autre chose qu'une force qui tire — pas de titre rouge, pas d'icône rouge, pas de fond rouge décoratif.
 - **Don't** ajouter une seconde animation. Le seul moment animé est la mise en tension du plan de charge.
 - **Don't** introduire une troisième fonte, et surtout pas une serif : rien ici n'est imprimé.

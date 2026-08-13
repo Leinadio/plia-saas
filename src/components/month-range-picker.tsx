@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { addMonthsKey, monthRange } from "@/lib/history";
+import { monthRange } from "@/lib/history";
 import { cn } from "@/lib/utils";
 
 const MONTHS_FR = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
@@ -48,49 +48,54 @@ export function MonthRangePicker({ min, max, from, to, current }: {
   const scrollBy = (dir: -1 | 1) => scroller.current?.scrollBy({ left: dir * 260, behavior: "smooth" });
 
   return (
-    <div className="flex items-center gap-1">
+    // Les deux bornes encadrent la frise : la plage est dite en toutes lettres à
+    // gauche et à droite, la frise n'est plus l'information mais l'outil qui la
+    // règle. Les bornes sont des plaques à deux angles coupés, comme toute
+    // commande du produit.
+    <div className="flex items-center gap-3">
+      <div className="plate plate-cut shrink-0 px-3 py-1.5">
+        <span className="caption text-muted-foreground block">depuis</span>
+        <span className="block font-mono text-[13px] whitespace-nowrap capitalize">
+          {shortLabel(from)} {yearOf(from)}
+        </span>
+      </div>
+
       <button
         type="button"
         aria-label="Défiler vers la gauche"
         onClick={() => scrollBy(-1)}
-        className="hover:bg-muted flex size-8 shrink-0 items-center justify-center"
+        className="text-muted-foreground hover:text-foreground flex size-7 shrink-0 cursor-pointer items-center justify-center"
       >
         <ChevronLeft className="size-4" />
       </button>
 
-      <div ref={scroller} className="min-w-0 flex-1 overflow-x-auto scroll-px-2 py-1">
+      <div ref={scroller} className="min-w-0 flex-1 overflow-x-auto scroll-px-2">
         {/* mx-auto : centre la frise quand elle tient, défile sans rognage quand elle déborde. */}
-        <div className="mx-auto flex w-fit gap-0.5 px-1">
-        {months.map((m) => {
-          const selected = m >= from && m <= to;
-          const isAnchor = m === anchor;
-          const showYear = m.slice(5, 7) === "01" || m === months[0];
-          return (
-            <div key={m} className="flex flex-col items-center">
-              <span className="text-muted-foreground h-4 text-[10px] leading-4">
-                {showYear ? yearOf(m) : ""}
-              </span>
+        <div className="mx-auto flex w-fit gap-px px-1">
+          {months.map((m) => {
+            const selected = m >= from && m <= to;
+            return (
               <button
+                key={m}
                 ref={m === mid ? midRef : undefined}
                 type="button"
                 onClick={() => onPick(m)}
                 className={cn(
-                  "w-11 py-1 text-center text-xs capitalize transition-colors",
-                  selected ? "bg-primary text-primary-foreground" : "hover:bg-muted",
-                  isAnchor && "ring-primary ring-2",
-                  m === current && "font-semibold",
+                  "w-10 cursor-pointer py-1.5 text-center text-[11px] capitalize transition-colors",
+                  selected
+                    ? "text-foreground bg-[color-mix(in_oklab,var(--foreground)_14%,var(--background))]"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  // Le mois courant se signale par un filet de tension sous son
+                  // nom : un repère, pas une sélection — il reste lisible même
+                  // quand il est hors de la plage choisie.
+                  m === current && "shadow-[inset_0_-2px_0_0_var(--tension)]",
+                  m === anchor && "ring-primary ring-2",
                 )}
               >
                 {shortLabel(m)}
               </button>
-              {/* Pastille sous le mois courant, toujours visible (repère « aujourd'hui »).
-                  Hauteur réservée sur chaque colonne pour garder l'alignement. */}
-              <span className="mt-0.5 flex h-1.5 items-center justify-center">
-                {m === current && <span className="bg-primary size-1.5 rounded-full" />}
-              </span>
-            </div>
-          );
-        })}
+            );
+          })}
         </div>
       </div>
 
@@ -98,10 +103,17 @@ export function MonthRangePicker({ min, max, from, to, current }: {
         type="button"
         aria-label="Défiler vers la droite"
         onClick={() => scrollBy(1)}
-        className="hover:bg-muted flex size-8 shrink-0 items-center justify-center"
+        className="text-muted-foreground hover:text-foreground flex size-7 shrink-0 cursor-pointer items-center justify-center"
       >
         <ChevronRight className="size-4" />
       </button>
+
+      <div className="plate plate-cut shrink-0 px-3 py-1.5">
+        <span className="caption text-muted-foreground block">jusqu&apos;à</span>
+        <span className="block font-mono text-[13px] whitespace-nowrap capitalize">
+          {shortLabel(to)} {yearOf(to)}
+        </span>
+      </div>
     </div>
   );
 }

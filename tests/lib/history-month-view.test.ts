@@ -3,7 +3,7 @@
 // lignes par mois — c'est ce que cette découpe fabrique.
 import { describe, expect, it } from "vitest";
 import type { HistoryRow, HistorySection, HistoryTxn, IgnoredBlock, MonthCell } from "../../src/lib/history";
-import { sectionsAtMonth, sectionSlots, ignoredBlocksAtMonth, countIgnoredAtMonth } from "../../src/lib/history-month-view";
+import { sectionsAtMonth, sectionSlots, ignoredBlocksAtMonth, countIgnoredAtMonth, ligneVivante } from "../../src/lib/history-month-view";
 
 const MOIS = ["2026-06", "2026-07"];
 
@@ -163,5 +163,29 @@ describe("Les non comptabilisées d'un mois", () => {
     expect(countIgnoredAtMonth([bloc, recus], "2026-06")).toBe(1);
     expect(countIgnoredAtMonth([bloc, recus], "2026-05")).toBe(0);
     expect(countIgnoredAtMonth(undefined, "2026-07")).toBe(0);
+  });
+});
+
+// --- La ligne qui ne vit pas ce mois-là -------------------------------------
+// Le tableau ne se découpe plus en un tableau par mois : il n'y en a qu'un, et la
+// même ligne traverse tous les mois affichés. Une enveloppe qui commence en
+// septembre ne peut donc plus disparaître du mois d'août — elle y est, mais ses
+// cases doivent rester VIDES. Écrire 0,00 € y ferait lire un budget épuisé là où
+// il n'y a simplement rien encore.
+describe("ligneVivante", () => {
+  it("dit vrai sur un mois où la ligne vit", () => {
+    expect(ligneVivante([true, true], 0)).toBe(true);
+    expect(ligneVivante([false, true], 1)).toBe(true);
+  });
+
+  it("dit faux sur un mois où la ligne ne vit pas", () => {
+    expect(ligneVivante([false, true], 0)).toBe(false);
+  });
+
+  // Mieux vaut une ligne de trop qu'un budget qui s'efface sans qu'on sache
+  // pourquoi : sans information, on affiche.
+  it("dit vrai quand on ne sait rien de ce mois-là", () => {
+    expect(ligneVivante(undefined, 0)).toBe(true);
+    expect(ligneVivante([true], 5)).toBe(true);
   });
 });

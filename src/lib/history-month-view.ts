@@ -12,7 +12,12 @@ import type { HistorySection, IgnoredBlock } from "./history";
 
 // Une ligne dont on ne sait rien (aliveMonths trop court) reste affichée : mieux
 // vaut une ligne de trop qu'un budget qui disparaît sans qu'on sache pourquoi.
-const vivante = (alive: boolean[] | undefined, i: number) => alive?.[i] !== false;
+//
+// Exportée parce que le grand tableau en a besoin pour autre chose que couper une
+// liste : il n'affiche plus qu'UN tableau pour tous les mois, donc la même ligne
+// traverse des mois où elle ne vit pas. Elle y reste, mais ses cases se vident.
+export const ligneVivante = (alive: boolean[] | undefined, i: number) => alive?.[i] !== false;
+const vivante = ligneVivante;
 
 // --- Les emplacements du tableau, garnis ou non -----------------------------
 // computeHistory ne produit une section que si elle a quelque chose à montrer :
