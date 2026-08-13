@@ -5,11 +5,14 @@ import { listGroups } from "../../db/repositories/groups";
 import { listBudgetAmounts } from "../../db/repositories/budget-amounts";
 import { listLineAmounts } from "../../db/repositories/line-amounts";
 import {
-  computeHistory, computeSolde, grandTotals, monthlyOverspend, monthRange, addMonthsKey,
+  computeHistory, computeSolde, computePlannedSoldes, computeTableEstimate,
+  grandTotals, monthlyOverspend, monthRange, addMonthsKey,
   toDatedBudgets, toDatedLineAmounts,
 } from "../../lib/history";
 import type { Group, Txn } from "../../lib/forecast";
 import { monthPhrase, monthShort } from "../../lib/transactions-view";
+import { monthType } from "../../lib/history-columns";
+import { soldeAffiche } from "../../lib/solde-affiche";
 import { currentMonthKey } from "../../lib/current-month";
 import { effectiveBalance } from "../../lib/account";
 import { PlanDeCharge } from "@/components/plan-de-charge";
@@ -73,13 +76,21 @@ export default async function Dashboard() {
   // Le même moteur que l'Historique, mais tous comptes confondus : ce que cette
   // page montre, c'est la structure entière, pas un compte à la fois.
   const sections = computeHistory(groups, allTxns, months, currentMonth, datedBudgets, datedLines);
-  const solde = computeSolde(sections, months, currentMonth, balance);
+  // L'estimé de fin du mois courant ancre les mois suivants : sans lui, la
+  // projection repart du solde d'aujourd'hui et ignore ce qui est déjà engagé.
+  const estime = computeTableEstimate(sections, months, currentMonth, balance)?.value ?? null;
+  const solde = computeSolde(sections, months, currentMonth, balance, estime);
+  const planned = computePlannedSoldes(sections, months, currentMonth, solde.openings, estime, datedBudgets);
   const totaux = grandTotals(sections, months.length);
 
+  // ATTENTION. La chaîne réelle est PLATE sur les mois à venir : rien n'y est
+  // encore réalisé. Prise telle quelle, elle dessinerait six mâts de la même
+  // hauteur et le plan de charge ne dirait plus rien. C'est le prévu qui porte
+  // l'atterrissage (cf. soldeAffiche).
   const mois = months.map((m, i) => ({
     key: m,
     label: monthShort(m, currentMonth),
-    solde: solde.closings[i],
+    solde: soldeAffiche(solde.closings, planned.prevuClosings, i, monthType(m, currentMonth) === "future"),
   }));
 
   const income = sections.find((s) => s.kind === "income");
@@ -96,7 +107,9 @@ export default async function Dashboard() {
     { label: `Entrées ${monthPhrase(currentMonth)}`, valeur: totaux[0].recu },
     { label: `Sorties ${monthPhrase(currentMonth)}`, valeur: -totaux[0].depense },
     { label: "Dépassement", valeur: -depassement },
-    { label: "Projection", valeur: solde.closings[0] },
+    // « Projection », c'est où le mois atterrit si le plan tient — pas le solde
+    // de la banque, que la colonne « Solde » dit déjà juste à côté.
+    { label: "Projection", valeur: planned.prevuClosings[0] ?? solde.closings[0] },
   ];
 
   return (
