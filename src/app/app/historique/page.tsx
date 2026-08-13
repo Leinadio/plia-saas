@@ -19,7 +19,12 @@ import { currentMonthKey } from "../../../lib/current-month";
 import { accountLabel, effectiveBalance } from "../../../lib/account";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HistoryWithDetail } from "@/components/history-with-detail";
+import { HistorySimple } from "@/components/history-simple";
 import { MonthRangePicker } from "@/components/month-range-picker";
+import { MonthPicker } from "@/components/month-picker";
+import { HistoryViewSwitch } from "@/components/history-view-switch";
+import { COOKIE_VUE, lireVue, moisAffiche, moisPrecedent, moisSuivant } from "../../../lib/history-view";
+import { cookies } from "next/headers";
 
 import { pourMoi } from "@/lib/current-user";
 
@@ -30,9 +35,13 @@ const MAX_MONTHS = 24; // garde-fou : nombre de colonnes affichées au maximum
 export default async function HistoriquePage({
   searchParams,
 }: {
-  searchParams: Promise<{ from?: string | string[]; to?: string | string[] }>;
+  searchParams: Promise<{ from?: string | string[]; to?: string | string[]; mois?: string | string[] }>;
 }) {
   const currentMonth = currentMonthKey(new Date());
+  // La vue choisie, lue côté serveur : c'est lui qui rend la page, il doit la
+  // connaître avant le premier octet. Lue dans un cookie et non dans l'adresse,
+  // pour qu'elle survive à un lien partagé comme à une nouvelle visite.
+  const vue = lireVue((await cookies()).get(COOKIE_VUE)?.value);
   const toTxn = (t: TxnView): Txn => ({
     id: t.id,
     date: t.date,
@@ -84,6 +93,10 @@ export default async function HistoriquePage({
   const sp = await searchParams;
   const rawFrom = Array.isArray(sp.from) ? sp.from[0] : sp.from;
   const rawTo = Array.isArray(sp.to) ? sp.to[0] : sp.to;
+  // Le mois de la vue simple vit à part de la plage du tableau, exprès :
+  // basculer d'une vue à l'autre ne doit pas détruire le réglage de celle
+  // qu'on quitte.
+  const rawMois = Array.isArray(sp.mois) ? sp.mois[0] : sp.mois;
 
   return (
     <div className="flex flex-col gap-4">
@@ -112,12 +125,20 @@ export default async function HistoriquePage({
           let to = isMonthKey(rawTo) ? clampMonth(rawTo, stripMin, stripMax) : addMonthsKey(currentMonth, 2);
           if (from > to) [from, to] = [to, from];
           if (monthRange(from, to).length > MAX_MONTHS) to = addMonthsKey(from, MAX_MONTHS - 1);
-          const months = monthRange(from, to);
+          // La vue simple n'affiche qu'un mois : c'est le seul écart entre les
+          // deux vues côté données. Tout ce qui suit — fenêtre de calcul,
+          // sections, chaînes de solde, coupes — est rigoureusement le même code.
+          const moisSimple = moisAffiche(rawMois, stripMin, stripMax, currentMonth);
+          const months = vue === "simple" ? [moisSimple] : monthRange(from, to);
           // La fenêtre de calcul contient TOUJOURS le mois courant, quitte à s'étendre
           // des deux côtés : c'est lui qui ancre les chaînes de solde, en se fermant sur
           // le solde de la banque. On coupe ensuite ce qui dépasse — les montants d'un
           // mois ne doivent pas dépendre des mois affichés à côté (cf. calcWindow).
-          const w = calcWindow(from, to, currentMonth);
+          // La fenêtre de calcul doit couvrir EXACTEMENT les mois affichés,
+          // sinon les coupes (dropStart/dropEnd) décalent les colonnes.
+          const w = vue === "simple"
+            ? calcWindow(moisSimple, moisSimple, currentMonth)
+            : calcWindow(from, to, currentMonth);
           const calcMonths = monthRange(w.calcFrom, w.calcTo);
           // Le solde de la banque privé de ce qui est hors calcul : c'est LUI qui
           // ancre tout ce qui suit (prévision, estimé de fin de mois, chaîne de soldes).
@@ -165,32 +186,63 @@ export default async function HistoriquePage({
               {/* Au-dessus de la frise, pas en dessous : la frise et le tableau
                   qu'elle commande restent collés, et le bouton d'explication du
                   calcul se lit comme un outil de la page, à l'écart de ce couple. */}
-              <div className="flex justify-end">
+              <div className="flex items-center justify-between gap-3">
+                <HistoryViewSwitch vue={vue} />
                 <ForecastDetailSheet label={accountLabel(a)} forecast={forecast} />
               </div>
-              <MonthRangePicker min={stripMin} max={stripMax} from={from} to={to} current={currentMonth} />
+              {vue === "simple" ? (
+                <MonthPicker
+                  mois={moisSimple}
+                  precedent={moisPrecedent(moisSimple, stripMin)}
+                  suivant={moisSuivant(moisSimple, stripMax)}
+                />
+              ) : (
+                <MonthRangePicker min={stripMin} max={stripMax} from={from} to={to} current={currentMonth} />
+              )}
               {/* Le tableau s'affiche même sans une seule ligne. Un compte tout neuf
                   n'a ni transaction ni dépense, et c'est précisément là qu'on veut ses
                   colonnes de mois et ses boutons de création : le message qui les
                   remplaçait laissait sans aucun moyen de commencer. Les en-têtes de
                   section sont rendus même quand la section n'existe pas encore
                   (cf. sectionSlots). */}
-              <HistoryWithDetail
-                months={months}
-                currentMonth={currentMonth}
-                stripMin={stripMin}
-                stripMax={stripMax}
-                forecast={forecast}
-                sections={sections}
-                ignoredBlocks={ignoredBlocks}
-                overspend={overspend}
-                grand={grand}
-                groups={selectGroups}
-                solde={solde}
-                planned={planned}
-                accountId={a.id}
-                overspendsByMonth={overspendsByMonth}
-              />
+              {/* Deux vues, un seul jeu de données : la page choisit un
+                  composant, elle ne prépare pas deux fois les mêmes chiffres.
+                  D'où les props identiques de part et d'autre. */}
+              {vue === "simple" ? (
+                <HistorySimple
+                  months={months}
+                  currentMonth={currentMonth}
+                  stripMin={stripMin}
+                  stripMax={stripMax}
+                  forecast={forecast}
+                  sections={sections}
+                  ignoredBlocks={ignoredBlocks}
+                  overspend={overspend}
+                  grand={grand}
+                  groups={selectGroups}
+                  solde={solde}
+                  planned={planned}
+                  accountId={a.id}
+                  overspendsByMonth={overspendsByMonth}
+                />
+              ) : (
+                <HistoryWithDetail
+                  months={months}
+                  currentMonth={currentMonth}
+                  stripMin={stripMin}
+                  stripMax={stripMax}
+                  forecast={forecast}
+                  sections={sections}
+                  ignoredBlocks={ignoredBlocks}
+                  overspend={overspend}
+                  grand={grand}
+                  groups={selectGroups}
+                  solde={solde}
+                  planned={planned}
+                  accountId={a.id}
+                  overspendsByMonth={overspendsByMonth}
+                />
+              )}
             </TabsContent>
           );
         })}
