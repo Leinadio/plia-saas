@@ -11,22 +11,33 @@ sidecar `.json`. Pour le relire :
 
 | Fichier | Nom | Idée |
 |---|---|---|
-| `comp-histo-ac2.png` | **Le bandeau et l'épine (retenue)** | Bandeau carbone des soldes en haut, une seule épine de postes en dessous, six colonnes par mois coupées en deux registres, et trois lignes de total dont « Solde fin de mois » en noir plein. |
-| `comp-histo-ac.png` | Le bandeau et l'épine, première version | Même structure, mais la grille ne gardait que budget / dépensé / balance : les trois colonnes de solde vivaient uniquement dans le bandeau. |
-| `comp-histo-a.png` | L'épine et les mois | Un seul tableau au lieu d'un par mois, sans bandeau. Les noms de postes ne s'écrivent qu'une fois, les mois défilent à leur droite. |
+| `comp-histo-a.png` | **L'épine et les mois (RETENUE, construite)** | Un seul tableau au lieu d'un par mois : les noms de postes ne s'écrivent qu'une fois, à gauche, le nom du mois coiffe son bloc de colonnes, les sections sont des bandes pleine largeur et le pied tient en trois lignes de carbone plein. |
+| `comp-histo-ac2.png` | Le bandeau et l'épine | Fusion de A et de C : les soldes montaient dans un bandeau carbone au-dessus de la grille. Construite, puis abandonnée — le bandeau éloignait le nom du mois de ses chiffres et disparaissait dès qu'on défilait. |
+| `comp-histo-ac.png` | Le bandeau et l'épine, première version | Même bandeau, mais la grille ne gardait que budget / dépensé / balance : les trois colonnes de solde vivaient uniquement dans le bandeau. |
 | `comp-histo-b.png` | Un mois ouvert, les autres en rail | Un seul mois déplié en entier ; les autres réduits, à droite, à leur nom et à leur solde d'atterrissage. |
 | `comp-histo-c.png` | Les soldes en bandeau, la grille en dessous | Le bandeau apparaît ici pour la première fois, mais rien ne le cale sur la grille et les noms de postes restent répétés à chaque mois. |
 
 ## Ce qui a été retenu, et pourquoi
 
-`comp-histo-ac2.png` est approuvée. Elle vient de la fusion de A et de C, puis
-d'une correction demandée : les colonnes réel / prévu / si dépassement reviennent
-dans la grille, parce qu'elles se lisent verticalement comme une opération, et la
-ligne « Solde fin de mois » s'ajoute en bas.
+`comp-histo-a.png` est approuvée et construite. Le bandeau de carbone des deux
+fusions a d'abord été construit, puis abandonné : à l'écran il éloignait le nom du
+mois de ses chiffres, élargissait les colonnes pour rien, et n'existait plus dès
+qu'on avait défilé d'un mois. La composition A garde le nom du mois là où il sert,
+en tête de son bloc de colonnes.
 
-Sa règle de construction, celle à ne pas perdre : les filets verticaux du bandeau
-noir sont exactement ceux de la grille. Un solde et les postes qui l'ont fabriqué
-tombent dans la même colonne.
+Ce qu'elle pose, et qu'il ne faut pas défaire :
+
+- Une PLAQUE aux quatre angles coupés à 45°, cerclée d'un filet d'un pixel qui suit
+  la coupe. Deux calques, parce qu'une bordure CSS ignore `clip-path`.
+- UN seul tableau pour tous les mois, la colonne des noms écrite une fois et figée
+  à gauche, les mois séparés par un filet franc.
+- L'épine de l'en-tête est NUE. Le nom du mois est centré au-dessus de son bloc,
+  l'année en chasse fixe à côté, les intitulés de colonnes courts en dessous.
+- AUCUNE teinte de colonne. Ce qui teinte, ce sont les BANDES de section, pleine
+  largeur, nom dans l'épine — et le rouge n'y sert qu'aux dépenses non prévues.
+- La durée d'un poste s'écrit SOUS son nom, pas à côté.
+- Le pied : trois lignes en carbone plein, encre claire, montants négatifs en rouge
+  vif.
 
 ## Ce que la construction ne doit pas perdre
 

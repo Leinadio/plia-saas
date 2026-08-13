@@ -28,6 +28,10 @@
   /* Le rouge a deux valeurs : celle du trait (câbles, repères, filets) et
      celle du texte, plus sombre, pour tenir 4.5:1 sur le béton. */
   --tension: #d7262e;
+  /* LE PORTANT. Contrepartie du rouge de tension : ce qui entre, ce qui porte.
+     Un vert d'atelier désaturé, pas un vert d'interface — il ne dit pas « bon »,
+     il dit « ça rentre », comme le rouge dit « ça tire ». */
+  --portant: #1f7f52;
   --tension-ink: #b31d25;
 
   --radius: 0px;
@@ -78,6 +82,7 @@
   --ground: #121114;
   --plate: #1a191d;
   --tension: #e8434a;
+  --portant: #35a873;
   --tension-ink: #f0666c;
 
   --background: var(--ground);
@@ -149,6 +154,7 @@
   --color-beam-accent: var(--beam-accent);
   --color-beam-rule: var(--beam-rule);
   --color-tension: var(--tension);
+  --color-portant: var(--portant);
   --color-tension-ink: var(--tension-ink);
   --color-ash: var(--ash);
   --color-carbon: var(--carbon);

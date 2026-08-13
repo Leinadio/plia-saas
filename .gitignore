@@ -62,3 +62,8 @@ certificates
 .impeccable/qb-*.webp
 .impeccable/mocks/comp-a-*
 .impeccable/mocks/comp-c-*
+
+# Mode live d'impeccable : journaux de session, propres à une machine.
+.impeccable/live/sessions/
+.impeccable/live/accept-receipts/
+.impeccable/live/roots.json
