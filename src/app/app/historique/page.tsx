@@ -9,6 +9,7 @@ import {
   sliceHistorySections, sliceSoldeColumn, slicePlannedSoldes, computeTableEstimate,
   toDatedBudgets, toDatedLineAmounts, computeOverspends, computeIgnoredBlocks,
 } from "../../../lib/history";
+import { sansLignesAbsentes } from "../../../lib/history-month-view";
 import { calcWindow } from "../../../lib/calc-window";
 import { budgetChanges } from "../../../lib/budget-history";
 import { withoutDismissed } from "../../../lib/notifications";
@@ -146,6 +147,12 @@ export default async function HistoriquePage({
           const planned = slicePlannedSoldes(plannedFull, w.dropStart, w.dropEnd);
           const overspend = monthlyOverspend(sections, months.length);
           const grand = grandTotals(sections, months.length);
+          // Les postes qui n'existent à aucun des mois affichés sortent du tableau,
+          // et seulement de lui : les totaux, les dépassements et les chaînes de
+          // solde sont déjà calculés au-dessus, sur les sections entières. Ce qu'on
+          // retire ne pèse rien de toute façon — sansLignesAbsentes garde toute
+          // ligne qui porte un montant, même hors de sa période de vie.
+          const sectionsAffichees = sansLignesAbsentes(sections);
           // Calculé sur les mois affichés, à l'écart des sections : aucun total ne le voit.
           const ignoredBlocks = computeIgnoredBlocks(allIgnored.filter((t) => t.accountId === a.id), months);
           const selectGroups = groups.map((g) => ({
@@ -183,7 +190,7 @@ export default async function HistoriquePage({
                 stripMin={stripMin}
                 stripMax={stripMax}
                 forecast={forecast}
-                sections={sections}
+                sections={sectionsAffichees}
                 ignoredBlocks={ignoredBlocks}
                 overspend={overspend}
                 grand={grand}

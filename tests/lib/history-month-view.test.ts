@@ -2,7 +2,7 @@
 // calculs, et la règle qui dit si une ligne vit un mois donné.
 import { describe, expect, it } from "vitest";
 import type { HistoryRow, HistorySection, HistoryTxn, IgnoredBlock, MonthCell } from "../../src/lib/history";
-import { sectionSlots, ignoredBlocksAtMonth, countIgnoredAtMonth, ligneVivante } from "../../src/lib/history-month-view";
+import { sectionSlots, ignoredBlocksAtMonth, countIgnoredAtMonth, ligneVivante, sansLignesAbsentes } from "../../src/lib/history-month-view";
 
 const MOIS = ["2026-06", "2026-07"];
 
@@ -137,3 +137,71 @@ describe("ligneVivante", () => {
   });
 });
 
+
+// --- La ligne qui n'existe à aucun des mois affichés -------------------------
+// Elle, on ne la montre pas du tout. Une enveloppe « Sucreries » qui commence en
+// juillet n'a rien à faire dans un tableau qui n'affiche que juin : elle y tenait
+// une ligne entière de cases vides, et il fallait la lire pour comprendre qu'elle
+// ne disait rien. Dès que la fenêtre touche juillet, elle revient.
+//
+// La seule exception est le cas où elle porte de l'argent quand même : une
+// transaction peut être rattachée à un poste hors de sa période de vie, et un
+// montant ne disparaît jamais de l'écran sans qu'on l'ait demandé.
+describe("sansLignesAbsentes", () => {
+  const noms = (secs: HistorySection[]) => secs.flatMap((s) => s.rows.map((r) => r.name));
+
+  it("retire une ligne qui ne vit aucun des mois affichés", () => {
+    const sucreries = row({ id: 3, name: "Sucreries", aliveMonths: [false, false] });
+    const secs = sansLignesAbsentes([{ ...depenses, rows: [courses, sucreries] }]);
+    expect(noms(secs)).toEqual(["Courses"]);
+  });
+
+  it("garde une ligne dès qu'elle vit UN des mois affichés", () => {
+    // Stage ne vit pas en juin mais vit en juillet : la fenêtre le contient.
+    expect(noms(sansLignesAbsentes([depenses]))).toEqual(["Courses", "Stage"]);
+  });
+
+  it("garde une ligne éteinte qui porte tout de même un montant", () => {
+    // Rattachement d'une transaction à un poste hors de sa période : le montant
+    // compte dans les totaux, il doit rester lisible quelque part.
+    const avance = row({
+      id: 4, name: "Avance", aliveMonths: [false, false],
+      cells: [cell({ depense: 42 }), cell()],
+    });
+    expect(noms(sansLignesAbsentes([{ ...depenses, rows: [avance] }]))).toEqual(["Avance"]);
+  });
+
+  it("garde une ligne éteinte qui porte une transaction", () => {
+    const avance = row({
+      id: 5, name: "Avance", aliveMonths: [false, false],
+      txns: [txn("t9", "2026-06-03", -12)],
+    });
+    expect(noms(sansLignesAbsentes([{ ...depenses, rows: [avance] }]))).toEqual(["Avance"]);
+  });
+
+  it("applique la même règle aux sous-postes", () => {
+    const abonnements = row({
+      id: 6, name: "Abonnements",
+      subRows: [
+        { id: 61, name: "Internet", cells: [cell(), cell()], aliveMonths: [true, true], txns: [] },
+        { id: 62, name: "Streaming", cells: [cell(), cell()], aliveMonths: [false, false], txns: [] },
+      ],
+    });
+    const secs = sansLignesAbsentes([{ ...depenses, rows: [abonnements] }]);
+    expect(secs[0].rows[0].subRows.map((s) => s.name)).toEqual(["Internet"]);
+  });
+
+  // On ne retire que du vide : les totaux de la section n'ont aucune raison de bouger.
+  it("ne touche pas aux totaux", () => {
+    const sucreries = row({ id: 7, name: "Sucreries", aliveMonths: [false, false] });
+    const secs = sansLignesAbsentes([{ ...depenses, rows: [courses, sucreries] }]);
+    expect(secs[0].totals).toEqual(depenses.totals);
+  });
+
+  // Sans information sur la vie de la ligne (fixtures, lignes fabriquées ailleurs),
+  // on affiche : mieux vaut une ligne de trop qu'un poste évaporé.
+  it("garde une ligne dont on ne sait rien", () => {
+    const inconnue = { ...row({ id: 8, name: "Inconnue" }), aliveMonths: [] as boolean[] };
+    expect(noms(sansLignesAbsentes([{ ...depenses, rows: [inconnue] }]))).toEqual(["Inconnue"]);
+  });
+});
