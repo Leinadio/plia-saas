@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 import { monthLabel } from "@/lib/transactions-view";
 import type { AccountForecast } from "@/lib/forecast";
 import { type MonthCell, type HistorySection, type HistoryRow, type HistorySubRow, type HistoryTxn, type SoldeColumn, type PlannedSoldes, type Overspend, type IgnoredBlock, uncatOverspend, uncatOverspendOf, splitExpenseSection, computeTableEstimate, rowRevenus, rowOverspend, groupsWithPending } from "@/lib/history";
-import { sectionSlots, countIgnoredAtMonth } from "@/lib/history-month-view";
+import { sectionSlots, countIgnoredAtMonth, ligneVivante } from "@/lib/history-month-view";
 import { groupsForMonth } from "@/lib/group-options";
 import { groupPeriodLabel } from "@/lib/group-period-label";
 import { soldeCell } from "@/lib/solde-cell";
@@ -168,7 +168,7 @@ const BLOC_EPINE = "sticky left-0 z-20";
 // titre de chapitre en travers du relevé. Le nom se pose dans l'épine, la teinte
 // traverse tous les mois — c'est ce qui fait lire le tableau par bandes horizontales
 // et non par colonnes.
-const BANDE = "bg-[color-mix(in_oklab,var(--foreground)_9%,var(--background))]";
+const BANDE = "bg-[color-mix(in_oklab,var(--voile)_13%,var(--background))]";
 const BANDE_TENSION = "bg-[color-mix(in_oklab,var(--tension)_11%,var(--background))]";
 const BANDE_PORTANT = "bg-[color-mix(in_oklab,var(--portant)_14%,var(--background))]";
 
@@ -212,15 +212,15 @@ const PIED_LIGNE = "text-beam-bright [&>td]:bg-carbon";
 // le même carbone, de plus en plus dense, parce que le monde n'a qu'une couleur
 // et qu'elle est réservée à ce qui tire. Le rouge n'entre dans ce tableau que
 // pour la section des dépenses et pour les montants négatifs.
-const DATA_TINT = "bg-[color-mix(in_oklab,var(--foreground)_5%,var(--background))]";
-const BALANCE_TINT = "bg-[color-mix(in_oklab,var(--foreground)_10%,var(--background))]";
-const SOLDE_TINT = "bg-[color-mix(in_oklab,var(--foreground)_17%,var(--background))]";
+const DATA_TINT = "bg-[color-mix(in_oklab,var(--voile)_7%,var(--background))]";
+const BALANCE_TINT = "bg-[color-mix(in_oklab,var(--voile)_14%,var(--background))]";
+const SOLDE_TINT = "bg-[color-mix(in_oklab,var(--voile)_24%,var(--background))]";
 // Fond des lignes de totaux (« Total revenus », « Total Dépenses », « Total »).
 // Posé sur les CELLULES et non sur la ligne : chaque cellule de données porte déjà le
 // fond de sa colonne, qui recouvrirait celui de la ligne et ne laisserait la teinte
 // visible que dans les trous. Plus soutenu que DATA_TINT, pour que l'œil trouve les
 // totaux sans avoir à lire les libellés.
-const TOTAL_TINT = "bg-[color-mix(in_oklab,var(--foreground)_22%,var(--background))]";
+const TOTAL_TINT = "bg-[color-mix(in_oklab,var(--voile)_30%,var(--background))]";
 
 // Les deux blocs de la section des dépenses.
 type ExpenseBloc = "planned" | "unplanned";
@@ -256,10 +256,11 @@ const INCOME_TOTAL_TINT = "bg-[color-mix(in_oklab,var(--portant)_18%,var(--backg
 // chacune aurait dû la relayer.
 const TeinteSection = createContext<string | undefined>(undefined);
 
-// Le mélange se fait avec l'ENCRE du thème et non avec le carbone : en thème clair
-// l'encre est le carbone, la teinte assombrit ; en thème sombre l'encre est claire,
-// la teinte éclaircit. Écrites avec le carbone, les trois familles étaient trois
-// nuances de noir sur du noir et ne se distinguaient plus du tout.
+// Le mélange se fait avec le VOILE, un jeton qui n'existe que pour ça : du béton
+// dans l'ombre en thème clair, du béton sous une autre lumière en thème sombre.
+// Pris sur l'encre, comme avant, les gris viraient au mauve — l'encre de ce monde
+// est un noir violet, et dilué dans un béton chaud il tire la teinte hors de sa
+// famille. Le voile garde la chaleur du sol.
 //
 // Trois familles de colonnes, trois densités. Ce qu'on a prévu et ce
 // qu'on a fait — tout ce qui est à gauche de Balance — partagent le fond le plus
@@ -564,7 +565,7 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
         // les colonnes du groupe (budget, dépensé, reçu, reste) s'affichent vides —
         // rien, pas « 0,00 ». Les colonnes de solde ne sont pas concernées : elles
         // poursuivent leur propre chaîne cumulée indépendamment de ce groupe.
-        const dead = r ? r.aliveMonths[i] === false : false;
+        const dead = r ? !ligneVivante(r.aliveMonths, i) : false;
 
         // Dép. affiche c.depense sauf pour une entrée (—) : cliquable même à 0,00,
         // avec les transactions du mois si présentes, sinon aucune décomposition.

@@ -9,7 +9,8 @@ colors:
   ash: "#9a9a9c"
   void-white: "#f7f7f8"
   tension: "#d7262e"
-  portant: "#1f7f52"
+  portant: "#1f8a55"
+  voile: "#383838"
   tension-ink: "#b31d25"
   muted: "#dcd9d4"
   muted-foreground: "#6b6966"
@@ -584,6 +585,7 @@ chiffres qui bouge est une colonne qu'on relit.
 ### Don't:
 - **Don't** ajouter un rayon, nulle part. Le barème vaut `0px` sur ses quatre pas, et la seule exception ronde est le nœud de structure.
 - **Don't** ajouter une ombre portée. Le relief vient de la coupe, du filet et de la matière.
+- **Don't** teinter les fonds de colonnes du grand tableau. Ils se font au voile, un gris neutre sans chroma : les deux seules couleurs du tableau doivent se voir sans effort.
 - **Don't** introduire une troisième couleur, ni l'ambre. Il n'y a que deux forces, le portant et la tension, et un montant ne se juge pas bon ou mauvais.
 - **Don't** poser le rouge sur autre chose qu'une force qui tire — pas de titre rouge, pas d'icône rouge, pas de fond rouge décoratif.
 - **Don't** ajouter une seconde animation. Le seul moment animé est la mise en tension du plan de charge.

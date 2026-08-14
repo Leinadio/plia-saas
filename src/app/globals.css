@@ -31,8 +31,20 @@
   /* LE PORTANT. Contrepartie du rouge de tension : ce qui entre, ce qui porte.
      Un vert d'atelier désaturé, pas un vert d'interface — il ne dit pas « bon »,
      il dit « ça rentre », comme le rouge dit « ça tire ». */
-  --portant: #1f7f52;
+  --portant: #1f8a55;
   --tension-ink: #b31d25;
+  /* LE VOILE. La couleur dont sont faits les fonds de colonnes du grand tableau,
+     et rien d'autre. Elle existe à part parce qu'elle était prise sur l'encre :
+     or l'encre est un noir VIOLET (--carbon), et dilué à 17 % dans un béton chaud
+     il vire au mauve. Les colonnes prenaient une teinte de gris d'interface, sans
+     rapport avec la matière du produit.
+
+     Le voile est un gris NEUTRE, sans chroma — le gris d'un tirage de plan. C'est
+     un choix : les fonds de colonnes ne doivent porter aucune couleur, pour que
+     les deux seules du tableau, le portant et la tension, se voient sans effort.
+     Le sol reste chaud, les voiles ne le sont pas, et c'est ce contraste de
+     température qui fait ressortir la grille sur le béton. */
+  --voile: #383838;
 
   --radius: 0px;
   --notch: 9px;
@@ -84,6 +96,9 @@
   --tension: #e8434a;
   --portant: #35a873;
   --tension-ink: #f0666c;
+  /* Dans le noir, le voile éclaircit au lieu d'assombrir : c'est la même matière
+     vue sous une autre lumière, pas une inversion mécanique. */
+  --voile: #cccccc;
 
   --background: var(--ground);
   --foreground: #e6e3df;
