@@ -18,9 +18,15 @@
    3. Les chiffres sont le sujet : mono technique, chasse fixe, tabulaires,
       alignés à droite, partout. */
 :root {
-  /* Le sol : béton coulé. Ni blanc d'écran, ni papier chaud. */
-  --ground: #e6e3df;
-  --plate: #eeece8;
+  /* LE SOL EST BLANC. Il a été du béton coulé — un gris chaud, avec le grain
+     d'une dalle photographiée par-dessus — et c'est encore la matière du monde
+     en lumière éteinte. En lumière claire, il est blanc : les colonnes de
+     chiffres du grand tableau tombent sur du papier, et les teintes de
+     colonnes, qui se mélangent toutes au fond, y gagnent leur pleine valeur.
+     La plaque est blanche aussi : ce qui la distingue du sol n'est plus sa
+     couleur mais sa coupe à 45° et son filet d'un pixel. */
+  --ground: #ffffff;
+  --plate: #ffffff;
   --carbon: #0d000f;
   --graphite: #2b2b2e;
   --ash: #9a9a9c;
@@ -188,13 +194,21 @@
   * {
     @apply border-border outline-ring/50;
   }
-  /* LE SOL EST DU BÉTON COULÉ, et ça se voit de près : une dalle photographiée
-     posée en fond de page, à peine perceptible, qui donne à l'écran son grain.
-     Elle vit sur <html> et non sur le corps, pour passer DERRIÈRE tout le reste :
-     les plaques, elles, sont de la tôle peinte et restent lisses. C'est le seul
-     raster de l'app, et il n'est pas décoratif — c'est la matière du monde. */
+  /* LE GRAIN DE BÉTON, et il ne reste qu'en lumière éteinte. Une dalle
+     photographiée posée en fond de page, à peine perceptible, qui donne à
+     l'écran sa matière. Elle vit sur <html> et non sur le corps, pour passer
+     DERRIÈRE tout le reste : les plaques, elles, sont de la tôle peinte et
+     restent lisses. C'est le seul raster de l'app.
+
+     En lumière claire, le sol est blanc, et un grain sur du blanc ne fait pas
+     de la matière : il fait du sale. Une dalle de moyenne 167 posée en lumière
+     douce sur du #ffffff le tache d'un gris irrégulier — ce n'est plus un fond
+     blanc, c'est un fond gris mal imprimé. Le grain ne se pose donc que sur le
+     noir, où il a de quoi moduler. */
   html {
     background-color: var(--background);
+  }
+  .dark {
     background-image: url("/matiere/beton.webp");
     background-size: 420px;
     /* En lumière douce et non en multiplication : la dalle photographiée a une
@@ -271,6 +285,25 @@
     inset: 1px;
     background: var(--plate-fill);
   }
+  /* LE CHAMP, QUI NE SAIT PAS PORTER DE PSEUDO-ÉLÉMENT. Un input, un select et
+     un textarea sont des éléments REMPLACÉS : le navigateur n'y dessine ni
+     ::before ni ::after. Les deux calques de .plate — le filet dessous, la
+     plaque un pixel dedans — n'y apparaissaient donc jamais, et ces champs
+     n'étaient depuis toujours que du texte posé à même la plaque.
+     Ça ne se voyait pas tant que le sol était du béton et la plaque une tôle
+     plus claire : le champ prenait la couleur du sol et se détachait d'un cran.
+     Sur un sol blanc il n'y avait plus rien à voir du tout — la recherche, les
+     montants et les menus du pupitre de filtres avaient disparu.
+     Le filet leur est donc posé en ombre interne, qui, elle, fonctionne sur un
+     élément remplacé. Il lit --plate-rule comme le reste du système : la mise au
+     point le passe en tension et l'erreur en destructif sans rien redire ici. */
+  input.plate,
+  select.plate,
+  textarea.plate {
+    background: var(--plate-fill);
+    box-shadow: inset 0 0 0 1px var(--plate-rule);
+  }
+
   /* La coupe simple : deux angles opposés seulement. C'est la forme des
      commandes — boutons, onglets, champs — que l'œil distingue ainsi des
      panneaux. */

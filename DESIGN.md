@@ -2,8 +2,8 @@
 name: Plia
 description: Un budget dessiné comme une structure en tenségrité — du béton, du carbone, un seul câble rouge.
 colors:
-  ground: "#e6e3df"
-  plate: "#eeece8"
+  ground: "#ffffff"
+  plate: "#ffffff"
   carbon: "#0d000f"
   graphite: "#2b2b2e"
   ash: "#9a9a9c"
@@ -172,9 +172,10 @@ planté dans le sol. Ce qui tire — les dépenses engagées, les reports, les d
 est un câble rouge. L'équilibre entre les deux est le sujet de l'application, et il n'a
 qu'une couleur.
 
-Le monde est fait de trois matières et d'un seul accent : un sol de béton coulé (une
-dalle photographiée posée en fond de page, à peine perceptible, la seule image du
-produit), une structure de carbone presque noir, du cendre pour ce qui dort, et le rouge
+Le monde est fait de trois matières et d'un seul accent : un sol BLANC en lumière claire
+— du béton coulé en lumière éteinte, avec sa dalle photographiée en fond de page, la
+seule image du produit —, une structure de carbone presque noir, du cendre pour ce qui
+dort, et le rouge
 de tension pour ce qui tire, le vert du portant pour ce qui entre. Ces deux couleurs ne
 jugent pas : elles ne disent pas « bon » ou « mauvais », elles disent le SENS d'une
 force — ça porte ou ça tire. L'ambre n'existe toujours pas, et aucune troisième
@@ -192,7 +193,7 @@ plaisir : la mise en tension du plan de charge à l'ouverture, et le mouvement d
 — le tirage, le fil de tension — qui dit qu'une machine travaille.
 
 **Key Characteristics:**
-- Du béton et du carbone, pas du papier ni du blanc d'écran ; un grain photographié sur `<html>`, jamais sur les plaques.
+- Du blanc et du carbone en lumière claire ; du béton et son grain photographié en lumière éteinte, sur `<html>` et jamais sur les plaques.
 - Un seul accent, le rouge de tension, et il ne dit qu'une chose : une force qui tire.
 - Aucun rayon, aucune ombre : la coupe à 45° et le filet d'un pixel font tout le relief.
 - Deux fontes, deux rôles étanches : Archivo pour l'interface, Azeret Mono pour tout chiffre, mesure ou état.
@@ -201,10 +202,10 @@ plaisir : la mise en tension du plan de charge à l'ouverture, et le mouvement d
 
 ## Colors
 
-Une palette de chantier : un béton clair, un carbone presque noir, du cendre pour le
-dormant, et un rouge unique pour la tension. Le thème sombre est le même atelier, lumière
-éteinte — il ne redéfinit qu'une poignée de jetons parce que toutes les teintes de fond
-sont des mélanges au fond de page.
+Une palette de chantier posée sur du papier : un sol blanc, un carbone presque noir, du
+cendre pour le dormant, et un rouge unique pour la tension. Le thème sombre est le même
+atelier, lumière éteinte — le sol y redevient du béton, et il ne redéfinit qu'une poignée
+de jetons parce que toutes les teintes de fond sont des mélanges au fond de page.
 
 ### Primary
 - **Rouge de tension** (`{colors.tension}`) : la couleur du trait. Le câble du plan de
@@ -217,11 +218,15 @@ sont des mélanges au fond de page.
   mois rompu, et les liens. En sombre elle s'éclaircit à `#f0666c`.
 
 ### Neutral
-- **Béton coulé** (`{colors.ground}`) : le sol de l'application, et l'ingrédient de tout
-  mélange de fond. Il porte le grain photographié. En sombre : `#121114`.
-- **Tôle peinte** (`{colors.plate}`) : la surface des plaques — cartes, panneaux,
-  bande de relevés, panneau de détail. Un cran plus clair que le sol, et lisse : le grain
-  s'arrête au bord de la plaque. En sombre : `#1a191d`.
+- **Le sol** (`{colors.ground}`) : le fond de l'application, et l'ingrédient de tout
+  mélange de fond. Blanc en lumière claire : les colonnes de chiffres tombent sur du
+  papier, et les teintes de colonnes, qui se mélangent toutes à lui, y prennent leur
+  pleine valeur. En sombre il redevient du béton coulé (`#121114`) et porte le grain
+  photographié.
+- **La plaque** (`{colors.plate}`) : la surface des plaques — cartes, panneaux, bande de
+  relevés, panneau de détail. Blanche elle aussi en lumière claire : ce qui la distingue
+  du sol n'est plus sa couleur mais sa coupe à 45° et son filet d'un pixel. En sombre :
+  `#1a191d`, un cran plus clair que le sol, et lisse — le grain s'arrête à son bord.
 - **Carbone** (`{colors.carbon}`) : la structure. Le texte courant, les mâts debout, les
   pastilles gravées, le fond des commandes pleines, le filet fort qui souligne un en-tête
   de tableau. C'est aussi la couleur qu'on dilue pour teinter les familles de colonnes.
@@ -420,11 +425,15 @@ choses, dans cet ordre : la découpe (une plaque se distingue du sol par ses ang
 pas par une ombre portée), le filet d'un pixel qui suit cette découpe, et la masse — le
 carbone de la poutre est ce qu'il y a de plus lourd à l'écran, et tout s'appuie dessus.
 
-Le grain du béton renforce cette lecture : la dalle photographiée vit sur `<html>`, donc
-DERRIÈRE tout le reste, en `background-size: 420px`, mélangée en `multiply` sur le béton
-clair pour creuser le grain et en `soft-light` en lumière éteinte pour ne pas l'effacer.
-Les plaques, elles, sont de la tôle peinte : lisses, sans grain. C'est cette différence de
-matière qui décolle une plaque de son fond.
+En lumière éteinte, le grain du béton renforce cette lecture : la dalle photographiée vit
+sur `<html>`, donc DERRIÈRE tout le reste, en `background-size: 420px`, mélangée en
+`soft-light` pour ne pas s'effacer dans le noir. Les plaques, elles, restent lisses.
+
+**Le grain ne se pose pas sur du blanc.** Une dalle de moyenne 167 posée en lumière douce
+sur du `#ffffff` ne fait pas de la matière : elle le tache d'un gris irrégulier, et ce
+n'est plus un fond blanc mais un fond gris mal imprimé. En lumière claire, la plaque se
+décolle donc de son fond par sa seule découpe et son filet — ce qui est exactement ce que
+la règle ci-dessus annonce.
 
 Les seuls `box-shadow` du système ne sont pas des ombres mais des traits, tous en `inset` :
 `inset 0 0 0 1px var(--input)` dessine le contour de l'étiquette évidée, et
@@ -510,7 +519,7 @@ Si un contour reste rectangulaire aux angles, la forme est fausse — repasser p
 
 ### Cards / Containers
 - **Corner Style:** quatre angles coupés à 9 px, aucun rayon.
-- **Background:** tôle peinte, un cran plus clair que le sol, sans grain.
+- **Background:** blanc en lumière claire (le sol aussi : c'est la coupe et le filet qui décollent la plaque) ; tôle peinte sans grain, un cran plus clair que le sol, en lumière éteinte.
 - **Shadow Strategy:** aucune (voir Elevation & Depth).
 - **Border:** filet d'un pixel qui suit la coupe, via le double calque de `.plate`.
 - **Internal Padding:** 20 px, 20 px de gouttière entre blocs internes ; 12 px horizontal
@@ -518,9 +527,17 @@ Si un contour reste rectangulaire aux angles, la forme est fausse — repasser p
 - **Titre:** gravé en mono capitales 12 px, interlettrage 0.09em.
 
 ### Inputs / Fields
-- **Style:** une plaque de commande évidée — deux angles coupés à 6 px, fond béton, filet
-  d'un pixel, hauteur 36 px, padding `4px 12px`. Le texte reste à 16 px sous 768 px : en
-  dessous, iOS zoome à la mise au point.
+- **Style:** une plaque de commande évidée — deux angles coupés à 6 px, filet d'un pixel,
+  hauteur 36 px, padding `4px 12px`. Le texte reste à 16 px sous 768 px : en dessous, iOS
+  zoome à la mise au point.
+- **Le filet d'un champ est une ombre interne, pas un pseudo-élément.** `input`, `select`
+  et `textarea` sont des éléments REMPLACÉS : le navigateur n'y dessine ni `::before` ni
+  `::after`, donc les deux calques de `.plate` n'y apparaissent jamais. Tant que le sol
+  était du béton et la plaque une tôle plus claire, le champ prenait la couleur du sol et
+  se détachait d'un cran ; sur un sol blanc il n'en restait rien du tout. Ces trois
+  sélecteurs portent donc `background: var(--plate-fill)` et
+  `box-shadow: inset 0 0 0 1px var(--plate-rule)` — qui, elle, fonctionne sur un élément
+  remplacé, et suit les états sans qu'on ait à les redire.
 - **Focus:** le filet de la plaque passe au rouge de tension et un anneau de 2 px à 60 %
   d'opacité l'entoure. C'est le seul endroit où le rouge marque autre chose qu'une force
   qui tire — assumé : le champ actif est ce qui va engager une modification.
@@ -658,6 +675,7 @@ mouvement.
 - **Do** faire passer toute écriture par la mise à jour partagée (`useMiseAJour`), pour qu'elle allume le fil de tension et garde sa commande éteinte jusqu'à ce que les nouveaux chiffres soient à l'écran.
 
 ### Don't:
+- **Don't** compter sur `::before` / `::after` pour habiller un `input`, un `select` ou un `textarea` : ces éléments n'en dessinent pas. Le filet leur vient d'une ombre interne.
 - **Don't** ajouter un rayon, nulle part. Le barème vaut `0px` sur ses quatre pas, et la seule exception ronde est le nœud de structure.
 - **Don't** ajouter une ombre portée. Le relief vient de la coupe, du filet et de la matière.
 - **Don't** teinter les fonds de colonnes du grand tableau. Ils se font au voile, un gris neutre sans chroma : les deux seules couleurs du tableau doivent se voir sans effort.
@@ -666,7 +684,7 @@ mouvement.
 - **Don't** ajouter une animation décorative. Il n'y a que deux familles de mouvement : la mise en tension du plan de charge, une fois à l'ouverture, et l'attente (le tirage, le fil de tension), qui dit qu'une machine travaille.
 - **Don't** introduire une troisième fonte, et surtout pas une serif : rien ici n'est imprimé.
 - **Don't** utiliser une `border` CSS pour cercler une surface coupée : elle ignore `clip-path` et ressort rectangulaire aux angles.
-- **Don't** poser le grain de béton ailleurs que sur `<html>`. Les plaques sont de la tôle peinte, lisse.
+- **Don't** poser le grain de béton ailleurs que sur `.dark` de `<html>`. Les plaques sont lisses, et le sol clair est blanc : un grain sur du blanc ne fait pas de la matière, il fait du sale.
 - **Don't** ajouter un graphique décoratif — camembert, jauge, dégradé, courbe de tendance. Le câble n'est pas une courbe : il pend.
 - **Don't** rétrécir une colonne de texte au serrage des chiffres : ce qu'on retire d'une colonne étroite, ce sont ses locataires (icônes, étiquettes secondaires), pas la place du nom.
 - **Don't** confondre les jetons de la poutre (`--beam*`) avec ceux du panneau de détail (`--sidebar*`) : la poutre est du carbone, le panneau est une plaque claire.
