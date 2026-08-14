@@ -149,20 +149,32 @@ function OverspendTag() {
 // noms mangeait un écran de 375 px entier et il ne restait rien pour les chiffres,
 // qui sont ce qu'on vient lire. Les noms trop longs se coupent, et un tap les
 // déplie (cf. TruncatedText).
+// 176 px sur téléphone, 320 au-delà. L'épine mange la largeur qui reste aux
+// chiffres, mais on ne la rétrécit pas davantage : un poste qu'on n'arrive plus
+// à nommer ne sert à rien. Ce sont les DEUX autres locataires de cette colonne
+// qu'on renvoie sur téléphone — la flèche de sens et l'étiquette de durée — et
+// c'est là qu'on récupère de la place, pas sur le nom.
 const COL1_W = "w-44 sm:w-80";
 
-// La colonne des noms reste collée au bord gauche pendant que les mois défilent
-// sous elle. C'est la contrepartie du tableau unique : les noms ne sont plus écrits
-// qu'une fois, donc ils doivent rester lisibles quel que soit le mois qu'on regarde.
-// Sans ça, défiler jusqu'à septembre laisse des colonnes de chiffres sans étiquette.
-const COL1_STICKY = "sticky left-0 z-10";
+// À partir de 640 px, la colonne des noms reste collée au bord gauche pendant que
+// les mois défilent sous elle. C'est la contrepartie du tableau unique : les noms ne
+// sont plus écrits qu'une fois, donc ils doivent rester lisibles quel que soit le mois
+// qu'on regarde. Sans ça, défiler jusqu'à septembre laisse des colonnes de chiffres
+// sans étiquette.
+//
+// En dessous, elle défile avec le reste. Figée, elle occupait 176 des 390 pixels d'un
+// téléphone en permanence : il ne restait que deux colonnes de chiffres, et des noms
+// qu'on gardait sous les yeux au prix des montants qu'on venait lire. Le tableau
+// s'ouvre donc sur les noms, et on les quitte en glissant vers les mois (voir aussi
+// CenterScroll, qui ne saute au mois courant que si l'épine est figée).
+const COL1_STICKY = "sm:sticky sm:left-0 sm:z-10";
 
 // Les titres de bloc (« Dépenses prévues »), leurs boutons de création et les
 // formulaires en ligne vivent dans une cellule qui traverse tout le tableau. Leur
 // contenu se posait donc à la gauche ABSOLUE du tableau — c'est-à-dire hors de
 // l'écran dès qu'on avait fait défiler d'un mois. Collés au bord comme la colonne
 // des noms, ils restent là où on les cherche.
-const BLOC_EPINE = "sticky left-0 z-20";
+const BLOC_EPINE = "sm:sticky sm:left-0 sm:z-20";
 
 // La bande de section : une rangée pleine largeur qui nomme ce qui suit, comme un
 // titre de chapitre en travers du relevé. Le nom se pose dans l'épine, la teinte
@@ -1727,16 +1739,16 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         <TableRow className={cn("group", topLevel ? "font-medium" : hasChildren && "hover:bg-muted/50")}>
           <NameCell indent={0} expandable={hasChildren} expanded={gOpen} onToggle={hasChildren ? () => toggleIn(gKey) : undefined}>
             {r.direction === "in" ? (
-              <ArrowUpRight className="size-4 shrink-0 text-sky-600" />
+              <ArrowUpRight className="hidden size-4 shrink-0 text-sky-600 sm:block" />
             ) : (
-              <ArrowDownRight className="size-4 shrink-0 text-muted-foreground" />
+              <ArrowDownRight className="hidden size-4 shrink-0 text-muted-foreground sm:block" />
             )}
             {/* Le nom et la durée côte à côte quand la colonne est large, empilés
                 quand elle ne fait plus que 176 px : à cette largeur, deux textes sur
                 la même ligne se coupent tous les deux. Empilés, ils se lisent en
                 entier, et rien ne disparaît. */}
             <span className="flex min-w-0 flex-col">
-            <span className="min-w-0 font-medium break-words whitespace-normal sm:truncate">{r.name}</span>
+            <span className="min-w-0 font-medium break-words whitespace-normal [hyphens:auto] sm:truncate sm:[hyphens:none]">{r.name}</span>
             {/* Durée de vie du groupe, dite en clair : « depuis toujours »,
                 « depuis juillet 2026 », « ce mois uniquement », ou la plage.
                 Sans elle, une dépense de vacances
@@ -1746,7 +1758,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 mois : une étiquette, pas un contenu. */}
             <span
               title={groupPeriodLabel(sg?.startMonth, sg?.endMonth)}
-              className="text-muted-foreground/60 min-w-0 text-[0.625rem] font-normal tracking-[0.12em] break-words whitespace-normal uppercase sm:truncate"
+              className="text-muted-foreground/60 hidden min-w-0 text-[0.625rem] font-normal tracking-[0.12em] break-words whitespace-normal uppercase sm:block sm:truncate"
             >
               {groupPeriodLabel(sg?.startMonth, sg?.endMonth)}
             </span>
@@ -1759,7 +1771,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 e.stopPropagation();
                 onSelect(manageDetail);
               }}
-              className="text-muted-foreground hover:text-foreground ml-1 shrink-0 cursor-pointer opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
+              className="text-muted-foreground hover:text-foreground ml-1 -m-1.5 shrink-0 cursor-pointer p-1.5 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
             >
               <Pencil className="size-3.5" />
             </button>
@@ -1845,14 +1857,14 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                     <NameCell indent={1} expandable={subHasTxns} expanded={lOpen} onToggle={subHasTxns ? () => toggleIn(lKey) : undefined}>
                       {/* Même empilement que sur la ligne du groupe au-dessus. */}
                       <span className="flex min-w-0 flex-col">
-                      <span className="min-w-0 break-words whitespace-normal sm:truncate">{sub.name}</span>
+                      <span className="min-w-0 break-words whitespace-normal [hyphens:auto] sm:truncate sm:[hyphens:none]">{sub.name}</span>
                       {/* Durée de vie du poste, dite comme celle du groupe juste
                           au-dessus : un abonnement résilié en mai et un abonnement
                           permanent se ressemblent sinon trait pour trait, et rien
                           n'explique pourquoi l'un disparaît le mois suivant. */}
                       <span
                         title={groupPeriodLabel(sgLine?.startMonth, sgLine?.endMonth)}
-                        className="text-muted-foreground/60 min-w-0 text-[0.625rem] font-normal tracking-[0.12em] break-words whitespace-normal uppercase sm:truncate"
+                        className="text-muted-foreground/60 hidden min-w-0 text-[0.625rem] font-normal tracking-[0.12em] break-words whitespace-normal uppercase sm:block sm:truncate"
                       >
                         {groupPeriodLabel(sgLine?.startMonth, sgLine?.endMonth)}
                       </span>
@@ -1885,7 +1897,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                             },
                           });
                         }}
-                        className="text-muted-foreground hover:text-foreground ml-1 shrink-0 cursor-pointer opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
+                        className="text-muted-foreground hover:text-foreground ml-1 -m-1.5 shrink-0 cursor-pointer p-1.5 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
                       >
                         <Pencil className="size-3.5" />
                       </button>
@@ -1985,7 +1997,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 haut, celle des décaissements plus bas, mais quand aucun revenu n'est
                 encore créé la première se retrouve seule, sans en-tête pour dire ce
                 qu'elle est. On croit alors voir deux fois la même chose. */}
-            <span className="min-w-0 break-words whitespace-normal sm:truncate">
+            <span className="min-w-0 break-words whitespace-normal [hyphens:auto] sm:truncate sm:[hyphens:none]">
               {dir === "in" ? "Reçus non catégorisés" : "Dépenses non catégorisées"}
             </span>
           </NameCell>
@@ -2023,7 +2035,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       <Fragment key={key}>
         <TableRow className="font-medium">
           <NameCell indent={0} expandable expanded={opened} onToggle={() => toggleIn(key)}>
-            <span className="min-w-0 break-words whitespace-normal sm:truncate">{title}</span>
+            <span className="min-w-0 break-words whitespace-normal [hyphens:auto] sm:truncate sm:[hyphens:none]">{title}</span>
           </NameCell>
           {months.map((m, i) => {
             const val = isIn ? block.totals[i].recu : block.totals[i].depense;
@@ -2092,7 +2104,11 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     }) => (
       <TableRow key={cle} className="hover:bg-transparent">
         <TableCell className={cn(COL1_STICKY, tint, "h-px p-0")}>
-          <div className={cn("border-border/60 flex h-full items-center gap-2 border-r py-2 pr-2 pl-2 font-sans", COL1_W)}>
+          {/* Sur téléphone le nom du bloc et son bouton de création ne tiennent pas
+              côte à côte dans 176 px : « Dépenses non prévues » passait SOUS le
+              bouton, et on lisait « Dépenses [+ Dépense] és ». Ils s'empilent donc,
+              le titre d'abord, le bouton dessous. */}
+          <div className={cn("border-border/60 flex h-full flex-col items-start gap-1 border-r py-2 pr-2 pl-2 font-sans sm:flex-row sm:items-center sm:gap-2", COL1_W)}>
             {opts?.onToggle ? (
               <button
                 type="button"
@@ -2101,10 +2117,10 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 className="flex min-w-0 flex-1 cursor-pointer items-center gap-1"
               >
                 {opts.replie ? <ChevronRight className="size-3.5 shrink-0" /> : <ChevronDown className="size-3.5 shrink-0" />}
-                <span className="caption text-left leading-tight">{titre}</span>
+                <span className="caption min-w-0 text-left leading-tight">{titre}</span>
               </button>
             ) : (
-              <span className="caption leading-tight">{titre}</span>
+              <span className="caption min-w-0 leading-tight">{titre}</span>
             )}
             {opts?.action}
           </div>
@@ -2135,7 +2151,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             replie,
             onToggle: () => toggleBloc(bloc),
             action: (
-              <Button type="button" size="xs" variant="outline" className="ml-auto shrink-0 cursor-pointer" onClick={() => toggleAdding("expense", moisDeTravail, bloc)}>
+              <Button type="button" size="xs" variant="outline" className="shrink-0 cursor-pointer sm:ml-auto" onClick={() => toggleAdding("expense", moisDeTravail, bloc)}>
                 <Plus />
                 Dépense
               </Button>
@@ -2172,7 +2188,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       <>
         {bande("bloc-revenu", "Ce qui rentre", BANDE_PORTANT, {
           action: (
-            <Button type="button" size="xs" variant="outline" className="ml-auto shrink-0 cursor-pointer" onClick={() => toggleAdding("income", moisDeTravail)}>
+            <Button type="button" size="xs" variant="outline" className="shrink-0 cursor-pointer sm:ml-auto" onClick={() => toggleAdding("income", moisDeTravail)}>
               <Plus />
               Revenu
             </Button>
@@ -2212,7 +2228,18 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         rapport aux chiffres du reste de la ligne. Calés en haut, tous les nombres
         d'une même ligne restent sur la même ligne de base ; les lignes sans
         étiquette, qui tiennent sur une seule ligne, ne bougent pas. */}
-    <Table className="w-max font-mono text-[13px] [&_td]:align-top">
+    <Table
+      className={cn(
+        "w-max font-mono text-[13px] [&_td]:align-top",
+        // Le serrage de téléphone. Il ne touche QUE les cases de chiffres —
+        // reconnaissables à leur tabular-nums — parce que l'épine, elle, porte du
+        // texte : la rétrécir aussi rendrait les noms de postes illisibles. Onze
+        // pixels et deux de gouttière font gagner une centaine de pixels par mois,
+        // soit une colonne et demie de plus à l'écran.
+        "max-sm:[&_td.tabular-nums]:px-1 max-sm:[&_td.tabular-nums]:text-[11px]",
+        "max-sm:[&_th.tabular-nums]:px-1 max-sm:[&_th.tabular-nums]:text-[11px]",
+      )}
+    >
       {/* Le colgroup ne porte plus de teinte : il ne reste que la structure des
           colonnes, qui sert au calage des largeurs. */}
       <colgroup>
@@ -2225,7 +2252,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         {/* Le nom du mois coiffe son bloc, centré. L'épine reste nue : la maquette
             n'y met aucun intitulé, et « Catégorie » n'apprenait rien à personne. */}
         <TableRow className="hover:bg-transparent">
-          <TableHead rowSpan={2} className={cn(COL1_STICKY, "bg-card h-px p-0 align-bottom")}>
+          <TableHead rowSpan={2} data-epine="" className={cn(COL1_STICKY, "bg-card h-px p-0 align-bottom")}>
             <FirstColBox>&nbsp;</FirstColBox>
           </TableHead>
           {months.map((m, mi) => {
@@ -2237,9 +2264,13 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 key={m}
                 colSpan={cols.length}
                 data-current-month={m === currentMonth ? "" : undefined}
-                className={cn(mi > 0 && MONTH_RULE, "px-4 pt-4 pb-1 text-center align-middle")}
+                className={cn(mi > 0 && MONTH_RULE, "px-2 pt-4 pb-1 text-left align-middle sm:px-4 sm:text-center")}
               >
-                <div className="flex items-baseline justify-center gap-2 whitespace-nowrap">
+                {/* Le nom du mois se pose À GAUCHE de son bloc sur téléphone. Centré, il
+                    tombait au milieu de six cents pixels de colonnes : on arrivait sur
+                    le tableau sans savoir quel mois on regardait, le titre étant hors
+                    de l'écran à droite. */}
+                <div className="flex items-baseline justify-start gap-2 whitespace-nowrap sm:justify-center">
                   <span className={cn("font-display text-lg leading-none", futur && "text-muted-foreground")}>
                     {monthName(m)}
                   </span>
@@ -2274,7 +2305,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                     className={cn(
                       COL_TINT[col],
                       idx === 0 && mi > 0 && MONTH_RULE,
-                      "text-muted-foreground h-auto px-2 pt-1 pb-2 text-right align-bottom font-sans text-[10px] font-medium tracking-[0.09em] uppercase",
+                      "text-muted-foreground h-auto px-1 pt-1 pb-2 text-right align-bottom font-sans text-[10px] font-medium tracking-[0.09em] uppercase sm:px-2",
                     )}
                   >
                     <button

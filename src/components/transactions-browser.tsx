@@ -26,6 +26,47 @@ import { Badge } from "@/components/ui/badge";
 import { ManualTxnActions } from "@/components/manual-txn-actions";
 import { IgnoreTxnToggle } from "@/components/ignore-txn-toggle";
 
+// --- LE RELEVÉ SUR TÉLÉPHONE -------------------------------------------------
+// Six colonnes ne tiennent pas dans 390 pixels. Le relevé se lisait donc jusqu'au
+// libellé, et le MONTANT — la seule chose qu'on vient chercher — attendait hors de
+// l'écran, à droite, derrière un défilement que rien n'annonçait.
+//
+// Sous 640 px la ligne cesse d'être une rangée de tableau et devient une grille de
+// deux étages : la date, le libellé et le montant en haut ; le rattachement et les
+// commandes en dessous. Rien ne disparaît sauf l'appartenance, que le menu de
+// rattachement dit déjà juste à côté.
+//
+// En grille plutôt qu'en second balisage : deux listes, l'une pour le téléphone et
+// l'autre pour l'écran, doubleraient chaque menu de rattachement — et un menu, ce
+// sont autant d'options que de postes, sur chaque ligne du relevé.
+const RELEVE = [
+  "max-sm:block",
+  "max-sm:[&_thead]:hidden",
+  "max-sm:[&_tbody]:block",
+  // Seules les lignes d'opération deviennent des grilles : la bande d'un mois
+  // traverse la largeur et doit rester une rangée ordinaire, sinon elle se réduit
+  // à la largeur de ses pastilles et s'arrête avant le bord de la plaque.
+  "max-sm:[&_tbody_tr[data-txn]]:grid max-sm:[&_tbody_tr[data-txn]]:grid-cols-[auto_1fr_auto]",
+  "max-sm:[&_tbody_tr[data-txn]]:items-center max-sm:[&_tbody_tr[data-txn]]:gap-x-3 max-sm:[&_tbody_tr[data-txn]]:gap-y-1.5",
+  "max-sm:[&_tbody_tr]:px-2 max-sm:[&_tbody_tr]:py-2.5",
+  // La gouttière des cases part seulement dans les lignes d'opération : c'est la
+  // rangée qui l'y porte. La bande d'un mois garde la sienne.
+  "max-sm:[&_tr[data-txn]_td]:p-0",
+].join(" ");
+const M_DATE = "max-sm:col-start-1 max-sm:row-start-1";
+const M_LIBELLE = "max-sm:col-start-2 max-sm:row-start-1 max-sm:min-w-0";
+const M_MONTANT = "max-sm:col-start-3 max-sm:row-start-1";
+const M_GROUPE = "max-sm:col-span-2 max-sm:col-start-1 max-sm:row-start-2";
+const M_ACTIONS = "max-sm:col-start-3 max-sm:row-start-2";
+const M_HORS = "max-sm:hidden";
+// La bande d'un mois traverse les trois colonnes de la grille.
+// La bande d'un mois : rien à placer, sa rangée n'est pas une grille.
+const M_BANDE = "max-sm:block max-sm:w-full";
+
+// Sur téléphone la date se dit en jour et mois : l'année est celle de la bande
+// juste au-dessus, et « 2026-08-02 » prenait la place du libellé.
+const jourCourt = (d: string) => `${d.slice(8, 10)}/${d.slice(5, 7)}`;
+
 // startMonth / endMonth : durée de vie du groupe, pour ne proposer au rattachement
 // d'une transaction que les groupes qui vivent son mois.
 type ClientGroup = OwnableGroup & {
@@ -51,13 +92,13 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
   const renderLabel = (t: TxnView) => (
     <span className="group/txn flex flex-col gap-0.5">
       <span className="flex items-center gap-1.5">
-        <TruncatedText text={t.label} className="max-w-[190px] sm:max-w-[380px]" />
+        <TruncatedText text={t.label} className="max-w-full sm:max-w-[380px]" />
         {t.manual && <Badge variant="outline">manuel · en attente</Badge>}
         {t.ignored && <Badge variant="outline">non comptabilisée</Badge>}
       </span>
       {t.note && <span className="text-muted-foreground text-xs">{t.note}</span>}
       {/* Le commentaire vient juste sous le libellé. */}
-      <TxnCommentField txnId={t.id} comment={t.comment} className="max-w-[190px] sm:max-w-[380px]" />
+      <TxnCommentField txnId={t.id} comment={t.comment} className="max-w-full sm:max-w-[380px]" />
     </span>
   );
 
@@ -153,13 +194,17 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
         <AddTransactionSheet accounts={accounts} groups={formGroups} />
       </div>
       {/* La rangée de commandes, sur sa propre plaque : les filtres sont un
-          pupitre, pas des champs qui flottent au-dessus du relevé. */}
-      <div className="plate flex flex-wrap items-center gap-2 px-3 py-3">
+          pupitre, pas des champs qui flottent au-dessus du relevé.
+          Sur téléphone, deux colonnes réglées plutôt qu'un retour à la ligne
+          libre : à 390 px, les six champs de largeurs différentes retombaient en
+          escalier, un « Min € » collé au menu des groupes et une date toute
+          seule sur sa ligne. */}
+      <div className="plate grid grid-cols-2 gap-2 px-3 py-3 sm:flex sm:flex-wrap sm:items-center">
         <Input
           placeholder="Rechercher un libellé…"
           value={filters.text}
           onChange={(e) => set({ text: e.target.value })}
-          className="w-full sm:w-56"
+          className="col-span-2 w-full sm:w-56"
         />
         <select
           value={filters.group === "all" ? "all" : filters.group === "none" ? "none" : String(filters.group)}
@@ -167,7 +212,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
             const v = e.target.value;
             set({ group: v === "all" || v === "none" ? v : Number(v) });
           }}
-          className="plate plate-cut h-9 max-w-full px-3 text-sm"
+          className="plate plate-cut col-span-2 h-9 w-full max-w-full px-3 text-sm sm:w-auto"
         >
           <option value="all">Tous les groupes</option>
           <option value="none">Non catégorisées</option>
@@ -181,7 +226,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
           placeholder="Min €"
           value={filters.amountMin ?? ""}
           onChange={(e) => set({ amountMin: numOrNull(e.target.value) })}
-          className="w-24"
+          className="w-full sm:w-24"
         />
         <Input
           type="number"
@@ -189,22 +234,22 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
           placeholder="Max €"
           value={filters.amountMax ?? ""}
           onChange={(e) => set({ amountMax: numOrNull(e.target.value) })}
-          className="w-24"
+          className="w-full sm:w-24"
         />
         <Input
           type="date"
           value={filters.dateFrom ?? ""}
           onChange={(e) => set({ dateFrom: e.target.value || null })}
-          className="w-40"
+          className="w-full sm:w-40"
         />
         <Input
           type="date"
           value={filters.dateTo ?? ""}
           onChange={(e) => set({ dateTo: e.target.value || null })}
-          className="w-40"
+          className="w-full sm:w-40"
         />
         {active && (
-          <Button variant="ghost" size="sm" onClick={() => setFilters(EMPTY_FILTERS)}>
+          <Button variant="ghost" size="sm" className="col-span-2 sm:col-span-1" onClick={() => setFilters(EMPTY_FILTERS)}>
             <X className="size-4" />
             Réinitialiser
           </Button>
@@ -234,7 +279,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
               </span>
             </span>
           </div>
-          <Table>
+          <Table className={RELEVE}>
             <TableHeader>
               <TableRow>
                 <TableHead>Date</TableHead>
@@ -249,22 +294,27 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
             <TableBody>
               {results.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-muted-foreground">Aucun résultat.</TableCell>
+                  <TableCell colSpan={7} className={cn("text-muted-foreground", M_BANDE, "max-sm:px-2 max-sm:py-3")}>Aucun résultat.</TableCell>
                 </TableRow>
               ) : (
                 results.map((t) => (
-                  <TableRow key={t.id} className={rowClass(t)}>
-                    <TableCell className="text-muted-foreground whitespace-nowrap">{t.date}</TableCell>
-                    <TableCell className="text-muted-foreground whitespace-nowrap">{t.accountLabel}</TableCell>
-                    <TableCell>{renderLabel(t)}</TableCell>
-                    <TableCell>
+                  <TableRow key={t.id} data-txn="" className={rowClass(t)}>
+                    <TableCell className={cn("text-muted-foreground whitespace-nowrap", M_DATE)}>
+                      <span className="sm:hidden">{jourCourt(t.date)}</span>
+                      <span className="hidden sm:inline">{t.date}</span>
+                    </TableCell>
+                    {/* Le compte : hors de la grille du téléphone, il est déjà dit par
+                        l'onglet qu'on a ouvert pour arriver ici. */}
+                    <TableCell className={cn("text-muted-foreground whitespace-nowrap", M_HORS)}>{t.accountLabel}</TableCell>
+                    <TableCell className={M_LIBELLE}>{renderLabel(t)}</TableCell>
+                    <TableCell className={M_GROUPE}>
                       <GroupSelectField txnId={t.id} groups={groupsOfTxn(t)} defaultGroupId={t.groupId} defaultLineId={t.lineId} disabled={t.ignored} />
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className={cn("text-muted-foreground", M_HORS)}>
                       <TruncatedText text={statusLabel(t)} className="max-w-[130px] sm:max-w-[200px]" />
                     </TableCell>
-                    <TableCell className={amountClass(t)}>{formatEur(t.amount)}</TableCell>
-                    <TableCell className="text-right whitespace-nowrap">
+                    <TableCell className={cn(amountClass(t), M_MONTANT)}>{formatEur(t.amount)}</TableCell>
+                    <TableCell className={cn("text-right whitespace-nowrap", M_ACTIONS)}>
                       <IgnoreTxnToggle txnId={t.id} ignored={t.ignored} />
                       {t.manual && <ManualTxnActions txn={t} accounts={accounts} groups={formGroups} />}
                     </TableCell>
@@ -298,7 +348,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
                   Aucune opération sur ce compte sur les trois derniers mois.
                 </p>
               ) : (
-              <Table>
+              <Table className={RELEVE}>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Date</TableHead>
@@ -320,8 +370,8 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
                     return (
                     <Fragment key={m.month}>
                       <TableRow className="cursor-pointer hover:bg-muted/50" onClick={() => toggleMonth(key)}>
-                        <TableCell colSpan={6} className="bg-muted/70 py-2">
-                          <span className="flex items-center gap-2">
+                        <TableCell colSpan={6} className={cn("bg-muted/70 py-2", M_BANDE, "max-sm:px-2 max-sm:py-2")}>
+                          <span className="flex flex-wrap items-center gap-2">
                             {isCollapsed ? <ChevronRight className="size-3.5" /> : <ChevronDown className="size-3.5" />}
                             <span className="chip">{m.label}</span>
                             <span className="caption">{m.items.length} opérations</span>
@@ -334,18 +384,21 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
                         </TableCell>
                       </TableRow>
                       {!isCollapsed && m.items.map((t) => (
-                        <TableRow key={t.id} className={rowClass(t)}>
-                          <TableCell className="text-muted-foreground">{t.date}</TableCell>
-                          <TableCell>{renderLabel(t)}</TableCell>
-                          <TableCell>
+                        <TableRow key={t.id} data-txn="" className={rowClass(t)}>
+                          <TableCell className={cn("text-muted-foreground", M_DATE)}>
+                            <span className="sm:hidden">{jourCourt(t.date)}</span>
+                            <span className="hidden sm:inline">{t.date}</span>
+                          </TableCell>
+                          <TableCell className={M_LIBELLE}>{renderLabel(t)}</TableCell>
+                          <TableCell className={M_GROUPE}>
                             <GroupSelectField txnId={t.id} groups={groupsOfTxn(t)} defaultGroupId={t.groupId} defaultLineId={t.lineId} disabled={t.ignored} />
                           </TableCell>
-                          <TableCell className="text-muted-foreground">
+                          <TableCell className={cn("text-muted-foreground", M_HORS)}>
                             <TruncatedText text={statusLabel(t)} className="max-w-[130px] sm:max-w-[200px]" />
                           </TableCell>
-                          <TableCell className={amountClass(t)}>{formatEur(t.amount)}</TableCell>
-                          <TableCell className="text-right whitespace-nowrap">
-                                  <IgnoreTxnToggle txnId={t.id} ignored={t.ignored} />
+                          <TableCell className={cn(amountClass(t), M_MONTANT)}>{formatEur(t.amount)}</TableCell>
+                          <TableCell className={cn("text-right whitespace-nowrap", M_ACTIONS)}>
+                            <IgnoreTxnToggle txnId={t.id} ignored={t.ignored} />
                             {t.manual && <ManualTxnActions txn={t} accounts={accounts} groups={formGroups} />}
                           </TableCell>
                         </TableRow>

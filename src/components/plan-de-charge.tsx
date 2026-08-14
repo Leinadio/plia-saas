@@ -45,15 +45,18 @@ export function PlanDeCharge({ mois }: { mois: MoisDeCharge[] }) {
 
   return (
     <section aria-label="Plan de charge des prochains mois" className="plate px-3 py-4 sm:px-5 sm:py-5">
-      {/* Sur un écran étroit, six mâts ne tiennent pas : la structure garde sa
-          largeur minimale et se fait défiler, plutôt que d'écraser les montants
-          en colonnes de deux lettres. */}
+      {/* Sur un écran étroit, la structure garde une largeur minimale et se fait
+          défiler, plutôt que d'écraser les montants en colonnes de deux lettres.
+          Cette largeur descend à 470 px sur téléphone — les annotations y passent
+          en petite chasse et les mâts se resserrent — au lieu des 620 px d'écran :
+          les six mois tiennent alors presque entiers là où on n'en voyait que
+          trois et demi. */}
       <div className="-mx-1 overflow-x-auto px-1">
-        <div className="min-w-[620px]">
+        <div className="min-w-[470px] sm:min-w-[620px]">
           {/* Les annotations en tête, alignées sur leur mât, chacune terminée par
               la pastille ouverte du monde d'où tombe son fil de rappel. */}
           <div
-            className="grid gap-3"
+            className="grid gap-1.5 sm:gap-3"
             style={{ gridTemplateColumns: `repeat(${plan.mats.length}, minmax(0, 1fr))` }}
           >
             {mois.map((m, i) => (
@@ -61,7 +64,7 @@ export function PlanDeCharge({ mois }: { mois: MoisDeCharge[] }) {
                 <span className="caption">{m.label}</span>
                 <span
                   className={cn(
-                    "font-mono text-sm font-medium whitespace-nowrap",
+                    "font-mono text-[11px] font-medium whitespace-nowrap sm:text-sm",
                     plan.mats[i].brise && "text-tension-ink",
                   )}
                 >

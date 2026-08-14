@@ -52,19 +52,36 @@ export function MonthRangePicker({ min, max, from, to, current }: {
     // gauche et à droite, la frise n'est plus l'information mais l'outil qui la
     // règle. Les bornes sont des plaques à deux angles coupés, comme toute
     // commande du produit.
-    <div className="flex items-center gap-3">
-      <div className="plate plate-cut shrink-0 px-3 py-1.5">
+    //
+    // Sur téléphone les deux plaques mangeaient 250 des 390 pixels et il ne
+    // restait qu'UN mois cliquable entre les flèches : la frise ne servait plus à
+    // rien. La plage passe donc au-dessus, dite en une ligne, et la frise prend
+    // toute la largeur — neuf mois au lieu d'un.
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+      <div className="flex items-baseline gap-2 sm:hidden">
+        <span className="caption text-muted-foreground">de</span>
+        <span className="font-mono text-[13px] whitespace-nowrap capitalize">
+          {shortLabel(from)} {yearOf(from)}
+        </span>
+        <span className="caption text-muted-foreground">à</span>
+        <span className="font-mono text-[13px] whitespace-nowrap capitalize">
+          {shortLabel(to)} {yearOf(to)}
+        </span>
+      </div>
+
+      <div className="plate plate-cut hidden shrink-0 px-3 py-1.5 sm:block">
         <span className="caption text-muted-foreground block">depuis</span>
         <span className="block font-mono text-[13px] whitespace-nowrap capitalize">
           {shortLabel(from)} {yearOf(from)}
         </span>
       </div>
 
+      <div className="flex min-w-0 items-center gap-1 sm:contents">
       <button
         type="button"
         aria-label="Défiler vers la gauche"
         onClick={() => scrollBy(-1)}
-        className="text-muted-foreground hover:text-foreground flex size-7 shrink-0 cursor-pointer items-center justify-center"
+        className="text-muted-foreground hover:text-foreground flex size-9 shrink-0 cursor-pointer items-center justify-center sm:size-7"
       >
         <ChevronLeft className="size-4" />
       </button>
@@ -81,7 +98,8 @@ export function MonthRangePicker({ min, max, from, to, current }: {
                 type="button"
                 onClick={() => onPick(m)}
                 className={cn(
-                  "w-10 cursor-pointer py-1.5 text-center text-[11px] capitalize transition-colors",
+                  // py-3 sur téléphone : un mois est une cible qu'on vise au doigt, pas au curseur.
+                  "w-10 cursor-pointer py-3 text-center text-[11px] capitalize transition-colors sm:py-1.5",
                   selected
                     ? "text-foreground bg-[color-mix(in_oklab,var(--foreground)_14%,var(--background))]"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -103,12 +121,13 @@ export function MonthRangePicker({ min, max, from, to, current }: {
         type="button"
         aria-label="Défiler vers la droite"
         onClick={() => scrollBy(1)}
-        className="text-muted-foreground hover:text-foreground flex size-7 shrink-0 cursor-pointer items-center justify-center"
+        className="text-muted-foreground hover:text-foreground flex size-9 shrink-0 cursor-pointer items-center justify-center sm:size-7"
       >
         <ChevronRight className="size-4" />
       </button>
+      </div>
 
-      <div className="plate plate-cut shrink-0 px-3 py-1.5">
+      <div className="plate plate-cut hidden shrink-0 px-3 py-1.5 sm:block">
         <span className="caption text-muted-foreground block">jusqu&apos;à</span>
         <span className="block font-mono text-[13px] whitespace-nowrap capitalize">
           {shortLabel(to)} {yearOf(to)}

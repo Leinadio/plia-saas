@@ -364,14 +364,53 @@ le détail d'un calcul est une pile de montants alignés qu'un tiroir étroit re
 
 Deux points de rupture portent du sens. À 640 px (`sm`), les gouttières se desserrent,
 l'état d'un poste remonte du dessous du nom vers sa propre colonne, la première colonne du
-grand tableau passe de 176 px à 320 px, et les destinations de la poutre disent leur nom
-court. À 1024 px (`lg`), les destinations prennent leur nom complet et le panneau de détail
+grand tableau passe de 176 px à 320 px ET se fige au bord gauche, et les destinations de la
+poutre disent leur nom court. À 1024 px (`lg`), les destinations prennent leur nom complet et le panneau de détail
 pousse le contenu au lieu de le recouvrir.
 
 **La règle du défilement plutôt que de l'écrasement.** Ce qui ne tient pas se fait
 défiler horizontalement dans son propre conteneur : le plan de charge garde une largeur
-minimale de 620 px, les tables ont leur `overflow-x`. Jamais on n'écrase des montants en
+minimale, les tables ont leur `overflow-x`. Jamais on n'écrase des montants en
 colonnes de deux lettres pour les faire entrer.
+
+**La règle du montant qui ne sort jamais de l'écran.** Le corollaire, et il prime : un
+montant est ce qu'on vient chercher, il ne se met pas derrière un défilement. Quand une
+rangée de tableau ne tient pas dans 390 px, ce n'est pas au montant de partir à droite —
+c'est à la rangée de se plier. Le relevé des transactions le fait sous 640 px : la ligne
+cesse d'être une rangée et devient une grille de deux étages, la date, le libellé et le
+MONTANT en haut, le rattachement et les commandes en dessous. Rien ne disparaît sauf ce
+qui est dit deux fois (l'appartenance, que le menu de rattachement porte déjà ; le compte,
+que l'onglet ouvert annonce).
+
+**Une colonne figée est un luxe d'écran large.** L'épine du grand tableau ne se colle au
+bord gauche qu'à partir de 640 px. En dessous elle défile avec les chiffres : figée, elle
+occupait 176 des 390 pixels d'un téléphone en permanence, et il ne restait que deux
+colonnes de montants — on gardait les noms sous les yeux au prix de ce qu'on venait lire.
+Le tableau s'ouvre alors sur les noms, à son bord gauche, et on les quitte en glissant. Le
+saut d'ouverture au mois courant suit la même règle : il ne se produit que si l'épine est
+figée, sinon il emporterait les noms hors de l'écran avant qu'on ait rien lu.
+
+**Ce qu'on retire d'une colonne étroite, ce sont ses locataires, pas son contenu.**
+L'épine du grand tableau garde ses 176 px sur téléphone — un poste qu'on n'arrive plus à
+nommer ne sert à rien. C'est autour du nom qu'on fait la place : la flèche de sens s'en
+va (la bande de section dit déjà « ce qui rentre »), l'étiquette de durée aussi (trois
+lignes de « DEPUIS TOUJOURS » par poste, pour une annotation qu'on lit une fois), et le
+titre d'un bloc s'empile au-dessus de son bouton de création au lieu de passer dessous.
+Les noms se coupent à la césure française (`hyphens: auto`, `lang="fr"`), jamais au
+milieu d'un mot par `break-words` seul.
+
+**Le serrage ne touche que les chiffres.** Sur téléphone les cases de montants du grand
+tableau passent à 11 px et 2 px de gouttière — cent pixels gagnés par mois, une colonne et
+demie de plus à l'écran — mais l'épine, qui porte du texte, garde sa taille. Un nom rétréci
+au niveau d'un nombre devient illisible bien avant lui.
+
+**Ce qui est fixe dans la largeur doit se poser à gauche sur téléphone.** Le nom d'un mois
+centré au milieu de six cents pixels de colonnes tombe hors de l'écran : on arrive sur le
+tableau sans savoir quel mois on regarde. Sous 640 px il se cale au début de son bloc.
+
+**Une cible se vise au doigt.** Les commandes de ligne gardent leur dessin de 14 px mais
+gagnent une zone tactile par un `p-1.5` compensé d'un `-m-1.5` : la cible grandit, la
+largeur ne bouge pas. Les mois de la frise passent à `py-3`, ses flèches à 36 px.
 
 ## Elevation & Depth
 
@@ -539,7 +578,9 @@ d'un anneau de tension à 30 % quand ils sont rompus ; fils de rappel d'un pixel
 tombent de chaque annotation jusqu'à son sommet, pour qu'aucun montant ne flotte au-dessus
 de rien ; câble SVG de 2,5 px en `vector-effect: non-scaling-stroke`, tracé en coordonnées
 relatives pour s'étirer avec la plaque sans épaissir. Hauteur 176 px sur téléphone, 224 px
-au-delà de 640 px, largeur minimale 620 px.
+au-delà de 640 px. Largeur minimale 470 px sur téléphone — annotations en 11 px, mâts
+resserrés — et 620 px au-delà : à 620 px partout, on ne voyait que trois mois et demi sur
+un écran de 390.
 
 **La marque de rupture** : là où un mât a percé le sol, le trait du sol est interrompu sur
 22 px et deux obliques rouges de 2 px inclinées à 24° disent la cassure. Dessinée et non
@@ -607,7 +648,9 @@ mouvement.
 - **Do** n'utiliser que les quatre états de la structure — acquis, engagé, attendu, dépassé — avec les mêmes mots partout.
 - **Do** laisser l'état d'erreur découler de `aria-invalid`, pas d'une classe posée à la main.
 - **Do** garder 16 px de corps sur les champs de saisie en dessous de 768 px.
-- **Do** faire défiler horizontalement ce qui ne tient pas, plutôt que d'écraser des colonnes de chiffres.
+- **Do** faire défiler horizontalement ce qui ne tient pas, plutôt que d'écraser des colonnes de chiffres — sauf un montant, qui ne part jamais hors de l'écran : c'est la rangée qui se plie.
+- **Do** couper les noms à la césure française (`hyphens: auto`) dans une colonne étroite, jamais au milieu d'un mot.
+- **Do** élargir une cible tactile par un padding compensé d'une marge négative, pour qu'elle ne coûte pas un pixel de largeur.
 - **Do** redire les variantes de `.chip` dans le thème sombre : la règle sombre est plus spécifique et leur reprendrait leur couleur.
 - **Do** laisser le barème de rayon à `0px` : c'est lui qui rend carrées les primitives héritées sans qu'on ait à les réécrire.
 - **Do** marquer une sélection par une ombre interne (`inset 3px 0 0 0`) et jamais par une bordure, qui décalerait le tableau.
@@ -625,4 +668,5 @@ mouvement.
 - **Don't** utiliser une `border` CSS pour cercler une surface coupée : elle ignore `clip-path` et ressort rectangulaire aux angles.
 - **Don't** poser le grain de béton ailleurs que sur `<html>`. Les plaques sont de la tôle peinte, lisse.
 - **Don't** ajouter un graphique décoratif — camembert, jauge, dégradé, courbe de tendance. Le câble n'est pas une courbe : il pend.
+- **Don't** rétrécir une colonne de texte au serrage des chiffres : ce qu'on retire d'une colonne étroite, ce sont ses locataires (icônes, étiquettes secondaires), pas la place du nom.
 - **Don't** confondre les jetons de la poutre (`--beam*`) avec ceux du panneau de détail (`--sidebar*`) : la poutre est du carbone, le panneau est une plaque claire.
