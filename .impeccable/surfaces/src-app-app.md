@@ -7,7 +7,7 @@ related_targets: []
 
 ## Portée
 Toute l'app connectée sous `/app` : la poutre de navigation, le tableau de bord,
-les transactions, l'historique (vue simple et grand tableau), les réglages et le
+les transactions, l'historique (un seul grand tableau), les réglages et le
 compte. Hors portée : la landing publique et l'écran de connexion, qui héritent
 seulement des nouveaux jetons.
 
@@ -92,8 +92,8 @@ ligne, pour que les cellules gardent le dernier mot.
 ## Décisions ouvertes
 ## Décisions ouvertes
 - La landing et l'écran de connexion restent à refondre.
-- La vue simple et sa bascule sont intactes : le grand tableau ne cherche plus à la
-  rendre inutile, les deux vues coexistent.
+- La vue simple a été supprimée, avec sa bascule : le grand tableau est la seule
+  lecture de l'historique.
 - Sur le mois en cours, la ligne « Solde fin de mois » affiche dans sa colonne réelle
   l'argent d'aujourd'hui, pas celui de la fin du mois. C'est la colonne qui le dit,
   et la ligne « Estimé fin de mois » juste en dessous donne la fin du mois. À

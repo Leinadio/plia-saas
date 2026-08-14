@@ -7,7 +7,7 @@ import { detailKey } from "@/lib/history-detail";
 import { OverspendNotice } from "@/components/overspend-notice";
 import { flattenNodes, cellsForNode, cellsForTotal, TOTAL_ROW, type PanelRow } from "@/lib/history-nav";
 // Les cinq blocs d'édition vivent à part : le panneau n'est plus leur seul lecteur,
-// la vue simple les rend sur place (voir src/components/history-blocks/).
+// ces blocs se rendent aussi sur place ailleurs (voir src/components/history-blocks/).
 import { BudgetEditBlock } from "@/components/history-blocks/budget-edit-block";
 import { GroupManageBlock } from "@/components/history-blocks/group-manage-block";
 import { LineManageBlock } from "@/components/history-blocks/line-manage-block";

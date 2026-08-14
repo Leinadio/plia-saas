@@ -59,8 +59,8 @@ ouvre dix fois par jour.
 Ce qui existe : connexion bancaire via Enable Banking (choix de la banque à l'écran,
 CIC et la France par défaut), synchronisation des transactions et du solde, enveloppes
 de budget mensuelles, transactions manuelles, règles de catégorisation, groupes,
-projection sur plusieurs mois, notifications et alertes de dépassement, vue simple et
-vue détaillée de l'historique, suppression de compte.
+projection sur plusieurs mois, notifications et alertes de dépassement, historique en
+un seul grand tableau, suppression de compte.
 
 Contraintes durables et assumées :
 

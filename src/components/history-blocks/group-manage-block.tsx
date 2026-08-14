@@ -38,7 +38,7 @@ import { toastSucces } from "@/components/history-blocks/toast";
 // leur case « Budget dép. », au mois de la colonne (voir BudgetEditBlock).
 // Chaque action revalide côté serveur ; on rafraîchit ensuite la vue.
 //
-// `inline` : rendu sur place, dans le dépliage d'un poste de la vue simple, au lieu
+// `inline` : rendu sur place, dans le dépliage d'un poste, au lieu
 // du panneau de droite. L'en-tête tombe alors — le nom du poste et sa durée sont
 // déjà écrits juste au-dessus, les répéter dirait deux fois la même chose — et la
 // croix de fermeture avec, puisqu'on referme en repliant le poste.
