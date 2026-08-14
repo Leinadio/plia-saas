@@ -444,4 +444,69 @@
     transform: rotate(24deg);
   }
 
+  /* LE TIRAGE. Ce qui tient la place d'un chiffre le temps qu'il arrive : une
+     barre de voile, posée là où le montant tombera et large de ce qu'il fera.
+     Le plan est déjà tiré, l'encre n'est pas encore sèche — l'écran ne se vide
+     jamais, il se remplit.
+
+     C'est la seule chose du produit qui ait le droit de respirer en dehors de
+     la mise en tension, et pour une raison précise : une barre parfaitement
+     immobile se lit comme un écran gelé, c'est-à-dire exactement le contraire
+     de ce qu'elle doit dire. La respiration est lente et de faible amplitude —
+     elle signale, elle n'attire pas. */
+  .tirage {
+    background: color-mix(in oklab, var(--voile) 15%, var(--background));
+    animation: tirage-respirer 1600ms ease-in-out infinite;
+  }
+  @keyframes tirage-respirer {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.42;
+    }
+  }
+
+  /* LE FIL DE TENSION. Sous la poutre, un câble rouge parcourt l'écran tant que
+     le serveur recalcule. Il ne mesure rien — personne ne sait combien de temps
+     ça prendra — il dit seulement qu'une force travaille quelque part. C'est le
+     rouge dans son rôle : il ne décore pas, il dit une traction en cours.
+
+     La gouttière fait deux pixels et reste là même au repos : une barre qui
+     apparaît décalerait tout l'écran d'un cran à chaque enregistrement. */
+  .fil-tension {
+    position: relative;
+    overflow: hidden;
+  }
+  .fil-tension::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 32%;
+    background: var(--tension);
+    animation: fil-courir 1050ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  @keyframes fil-courir {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(313%);
+    }
+  }
+  /* Rien ne bouge pour qui a demandé que rien ne bouge : le tirage reste une
+     barre pleine, le fil reste un câble tendu d'un bord à l'autre. Les deux
+     disent encore ce qu'ils ont à dire, sans le mouvement. */
+  @media (prefers-reduced-motion: reduce) {
+    .tirage {
+      animation: none;
+    }
+    .fil-tension::after {
+      width: 100%;
+      animation: none;
+      opacity: 0.55;
+    }
+  }
 }

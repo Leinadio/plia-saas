@@ -1,9 +1,9 @@
 "use client";
-import { useMemo, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import { setGroup } from "@/app/app/transactions/actions";
 import { groupSelectSections } from "@/lib/group-select-options";
 import { cn } from "@/lib/utils";
+import { useMiseAJour } from "@/components/mise-a-jour";
 
 type LineOpt = { id: number; name: string };
 // direction : le sens sépare les rémunérations des dépenses dans le menu (cf.
@@ -36,8 +36,7 @@ export function GroupSelectField({
   // tableau de l'historique, où il doit pouvoir rétrécir).
   className?: string;
 }) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const { pendant, enCours: isPending } = useMiseAJour();
   // ligne -> groupe parent, pour retrouver le group_id quand on choisit une ligne.
   const parentOf = useMemo(() => {
     const m = new Map<number, number>();
@@ -72,12 +71,10 @@ export function GroupSelectField({
           lineId = Number.parseInt(v.slice(2), 10);
           groupId = parentOf.get(lineId) ?? null;
         }
-        startTransition(async () => {
-          // revalidatePath seul ne rafraîchit pas la vue courante après l'action ;
-          // router.refresh() re-télécharge le rendu serveur de façon fiable.
-          await setGroup(txnId, groupId, lineId);
-          router.refresh();
-        });
+        // revalidatePath seul ne rafraîchit pas la vue courante après l'action ;
+        // la mise à jour partagée re-télécharge le rendu serveur, et allume le fil
+        // de tension sous la poutre pendant ce temps.
+        pendant(() => setGroup(txnId, groupId, lineId));
       }}
     >
       <option value="">Non catégorisé</option>

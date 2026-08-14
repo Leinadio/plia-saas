@@ -1,20 +1,18 @@
 "use client";
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { formatEur } from "@/lib/money";
 import { mergeTransaction, ignoreMatch } from "@/app/app/transactions/actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useMiseAJour } from "@/components/mise-a-jour";
 
 type Line = { id: string; date: string; amount: number; label: string };
 type Suggestion = { manual: Line; synced: Line };
 
 export function ReconcileBanner({ suggestions }: { suggestions: Suggestion[] }) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const { pendant, enCours: isPending } = useMiseAJour();
   if (suggestions.length === 0) return null;
 
-  const act = (fn: () => Promise<void>) => startTransition(async () => { await fn(); router.refresh(); });
+  const act = (fn: () => Promise<void>) => pendant(fn);
 
   return (
     <Card className="flex flex-col gap-3 p-4">

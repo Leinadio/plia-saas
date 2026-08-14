@@ -187,8 +187,9 @@ Les chiffres sont le sujet, tout le reste est de la charpente. Ils sont en mono 
 (Azeret Mono), tabulaires, alignés à droite, partout — y compris isolés dans une phrase,
 parce que `font-variant-numeric: tabular-nums` est posé sur le corps du document et non
 sur les tableaux. L'interface autour d'eux est en Archivo, resserrée sur son axe de
-chasse pour prendre le dessin d'une capitale gravée. Rien ne bouge nulle part, sauf une
-seule fois : la mise en tension du plan de charge à l'ouverture.
+chasse pour prendre le dessin d'une capitale gravée. Rien ne bouge nulle part pour le
+plaisir : la mise en tension du plan de charge à l'ouverture, et le mouvement d'attente
+— le tirage, le fil de tension — qui dit qu'une machine travaille.
 
 **Key Characteristics:**
 - Du béton et du carbone, pas du papier ni du blanc d'écran ; un grain photographié sur `<html>`, jamais sur les plaques.
@@ -196,7 +197,7 @@ seule fois : la mise en tension du plan de charge à l'ouverture.
 - Aucun rayon, aucune ombre : la coupe à 45° et le filet d'un pixel font tout le relief.
 - Deux fontes, deux rôles étanches : Archivo pour l'interface, Azeret Mono pour tout chiffre, mesure ou état.
 - Quatre états de structure et rien d'autre : acquis, engagé, attendu, dépassé.
-- Un seul moment animé dans toute l'application.
+- Aucun mouvement décoratif : la mise en tension à l'ouverture, et l'attente qui dit qu'une machine travaille.
 
 ## Colors
 
@@ -563,8 +564,37 @@ largeur et pas en hauteur, le navigateur calcule alors les tirets dans l'espace 
 le câble sort en morceaux. Sous `prefers-reduced-motion: reduce`, les trois animations
 sont coupées net.
 
-**La règle du seul mouvement.** Nulle part ailleurs il n'y a d'animation. Une colonne de
-chiffres qui bouge est une colonne qu'on relit.
+**La règle du seul mouvement.** Nulle part ailleurs il n'y a d'animation décorative. Une
+colonne de chiffres qui bouge est une colonne qu'on relit.
+
+### L'attente (le tirage et le fil de tension)
+La seule exception à la règle du seul mouvement, et elle ne décore rien : elle dit qu'une
+machine travaille. Toutes les pages de l'app relisent la base à chaque visite, et chaque
+modification fait recalculer l'écran entier côté serveur. Une à deux secondes pendant
+lesquelles, sans repère, on croit que le clic n'a pas pris.
+
+**Le tirage** (`.tirage`) tient la place d'une valeur qui n'est pas encore arrivée : une
+barre de voile à 15 %, carrée comme tout le reste, posée à l'emplacement exact et à la
+largeur approximative de ce qui la remplacera. Elle respire lentement — 1 600 ms, de 1 à
+0,42 d'opacité — parce qu'une barre parfaitement immobile se lit comme un écran gelé,
+c'est-à-dire le contraire de ce qu'elle doit dire. Les squelettes d'écran (`loading.tsx`)
+en sont faits : ils dessinent la structure RÉELLE de leur page, jamais une grappe de
+rectangles génériques, pour que l'arrivée des chiffres ne déplace rien.
+
+**Le fil de tension** (`.fil-tension`) court sous la poutre tant qu'une écriture n'est pas
+retombée à l'écran : un segment rouge de 32 % de large, 1 050 ms par passage. Il ne mesure
+rien — personne ne sait combien de temps ça prendra — il dit seulement qu'une force
+travaille quelque part. C'est le rouge dans son rôle : une traction en cours. Sa gouttière
+de deux pixels reste là même au repos, sans quoi chaque enregistrement décalerait l'écran
+d'un cran.
+
+Pendant ce temps, le tableau concerné passe sous un **voile d'attente** : ses chiffres
+s'éteignent d'un cran et cessent de répondre au clic. Ils restent lisibles — on ne cache
+pas un montant — mais on n'ouvre pas le détail d'une case qui va changer dans la seconde.
+
+Sous `prefers-reduced-motion: reduce`, le tirage devient une barre pleine et le fil un
+câble tendu d'un bord à l'autre : les deux disent encore ce qu'ils ont à dire, sans le
+mouvement.
 
 ## Do's and Don'ts
 
@@ -581,6 +611,8 @@ chiffres qui bouge est une colonne qu'on relit.
 - **Do** redire les variantes de `.chip` dans le thème sombre : la règle sombre est plus spécifique et leur reprendrait leur couleur.
 - **Do** laisser le barème de rayon à `0px` : c'est lui qui rend carrées les primitives héritées sans qu'on ait à les réécrire.
 - **Do** marquer une sélection par une ombre interne (`inset 3px 0 0 0`) et jamais par une bordure, qui décalerait le tableau.
+- **Do** donner un `loading.tsx` à tout écran ajouté sous `/app`, et lui faire dessiner la structure réelle de sa page.
+- **Do** faire passer toute écriture par la mise à jour partagée (`useMiseAJour`), pour qu'elle allume le fil de tension et garde sa commande éteinte jusqu'à ce que les nouveaux chiffres soient à l'écran.
 
 ### Don't:
 - **Don't** ajouter un rayon, nulle part. Le barème vaut `0px` sur ses quatre pas, et la seule exception ronde est le nœud de structure.
@@ -588,7 +620,7 @@ chiffres qui bouge est une colonne qu'on relit.
 - **Don't** teinter les fonds de colonnes du grand tableau. Ils se font au voile, un gris neutre sans chroma : les deux seules couleurs du tableau doivent se voir sans effort.
 - **Don't** introduire une troisième couleur, ni l'ambre. Il n'y a que deux forces, le portant et la tension, et un montant ne se juge pas bon ou mauvais.
 - **Don't** poser le rouge sur autre chose qu'une force qui tire — pas de titre rouge, pas d'icône rouge, pas de fond rouge décoratif.
-- **Don't** ajouter une seconde animation. Le seul moment animé est la mise en tension du plan de charge.
+- **Don't** ajouter une animation décorative. Il n'y a que deux familles de mouvement : la mise en tension du plan de charge, une fois à l'ouverture, et l'attente (le tirage, le fil de tension), qui dit qu'une machine travaille.
 - **Don't** introduire une troisième fonte, et surtout pas une serif : rien ici n'est imprimé.
 - **Don't** utiliser une `border` CSS pour cercler une surface coupée : elle ignore `clip-path` et ressort rectangulaire aux angles.
 - **Don't** poser le grain de béton ailleurs que sur `<html>`. Les plaques sont de la tôle peinte, lisse.

@@ -5,6 +5,7 @@ import type { MonthCell, HistorySection, SoldeColumn, PlannedSoldes, Overspend, 
 import { CenterScroll } from "@/components/center-scroll";
 import { HistoryGrid, type SelectGroup } from "@/components/history-grid";
 import { useDetailSidebar } from "@/components/detail-sidebar";
+import { VoileDAttente } from "@/components/mise-a-jour";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
@@ -61,7 +62,11 @@ export function HistoryWithDetail(props: {
           est posé un pixel à l'intérieur, coupé du même polygone. Sans ce pixel de
           retrait, les fonds de cellules recouvraient le filet et il n'en restait
           rien. */}
-      <div className="plate [--notch:14px] p-px">
+      {/* Le voile d'attente : pendant qu'une modification se propage, les chiffres
+          s'éteignent d'un cran et cessent de répondre au clic. Ils restent lisibles
+          — on ne cache pas un montant — mais on ne peut plus ouvrir le détail d'une
+          case qui va changer dans la seconde. */}
+      <VoileDAttente className="plate [--notch:14px] p-px">
         <CenterScroll className="[clip-path:var(--plate-path)]">
         <HistoryGrid
           {...props}
@@ -71,7 +76,7 @@ export function HistoryWithDetail(props: {
           showDeltas={showDeltas}
         />
         </CenterScroll>
-      </div>
+      </VoileDAttente>
     </div>
   );
 }

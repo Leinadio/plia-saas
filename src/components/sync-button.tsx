@@ -1,10 +1,10 @@
 "use client";
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { syncMessage } from "@/lib/sync-message";
+import { useMiseAJour } from "@/components/mise-a-jour";
 
 // Rafraîchit les transactions depuis la banque, depuis l'en-tête. Le même appel que le
 // bouton « Synchroniser » des Réglages (POST /api/sync) : c'est le geste qu'on fait le
@@ -12,16 +12,16 @@ import { syncMessage } from "@/lib/sync-message";
 //
 // Pas une server action mais l'API existante : la synchronisation parle à Enable
 // Banking et peut durer, et cette route sait déjà rendre le compte de ce qui est entré
-// comme les erreurs de la banque. Une fois finie, router.refresh() recharge la page
+// comme les erreurs de la banque. Une fois finie, la page se redemande au serveur
 // courante — sans quoi le tableau montrerait encore l'avant.
 export function SyncButton() {
-  const router = useRouter();
   const [appel, setAppel] = useState(false);
-  // router.refresh rend la main tout de suite : le nouveau rendu arrive après. Sans
-  // cette transition le bouton redevenait actif alors que le tableau montrait encore
-  // l'avant, et on croyait la synchronisation sans effet. isPending ne retombe qu'une
-  // fois le rendu reçu et affiché.
-  const [rendu, startTransition] = useTransition();
+  // Le rafraîchissement rend la main tout de suite : le nouveau rendu arrive après.
+  // Sans l'attente partagée, le bouton redevenait actif alors que le tableau montrait
+  // encore l'avant, et on croyait la synchronisation sans effet. `rendu` ne retombe
+  // qu'une fois le rendu reçu et affiché — et pendant ce temps le fil de tension
+  // court sous la poutre.
+  const { rafraichir: redessiner, enCours: rendu } = useMiseAJour();
   const enCours = appel || rendu;
 
   const rafraichir = async () => {
@@ -40,7 +40,7 @@ export function SyncButton() {
         return;
       }
       toast.success(syncMessage(Number(data.imported)));
-      startTransition(() => router.refresh());
+      redessiner();
     } catch {
       toast.error("Serveur injoignable : la synchronisation n'a pas eu lieu.");
     } finally {

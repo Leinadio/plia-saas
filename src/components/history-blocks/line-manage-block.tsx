@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { X, Trash2 } from "lucide-react";
 import type { LineManageInfo } from "@/lib/history-explain";
 import { editGroupLine, removeGroupLine, setLinePeriod, linePeriodImpact } from "@/app/app/historique/actions";
@@ -22,6 +21,7 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { toastSucces } from "@/components/history-blocks/toast";
+import { useMiseAJour } from "@/components/mise-a-jour";
 
 // Vue de gestion d'une ligne de récurrent, ouverte par le crayon au survol de la
 // ligne dans le tableau. Son nom, seule propriété qui vaille pour tous les mois, et
@@ -32,17 +32,12 @@ import { toastSucces } from "@/components/history-blocks/toast";
 // maintenant que n'importe quelle dépense peut avoir des sous-postes — « Boulangerie,
 // le combien ? ». La colonne a été retirée de la base (migrateDropLineDay).
 export function LineManageBlock({ info, onClose }: { info: LineManageInfo; onClose: () => void }) {
-  const router = useRouter();
-  const [busy, setBusy] = useState(false);
+  // Occupé jusqu'à ce que le tableau derrière soit refait (voir mise-a-jour.tsx).
+  const { pendant, enCours: busy } = useMiseAJour();
   const [name, setName] = useState(info.name);
   // Même raison que pour un groupe : l'instantané du panneau ne se rafraîchit pas.
   const [periode, setPeriode] = useState({ startMonth: info.startMonth, endMonth: info.endMonth });
-  const run = async (fn: () => Promise<void>) => {
-    setBusy(true);
-    await fn();
-    setBusy(false);
-    router.refresh();
-  };
+  const run = (fn: () => Promise<void>) => pendant(fn);
   return (
     <>
       <SidebarHeader className="gap-0 border-b p-4">
@@ -73,7 +68,7 @@ export function LineManageBlock({ info, onClose }: { info: LineManageInfo; onClo
               disabled={busy || !name.trim() || name.trim() === info.name}
               onClick={() => run(() => editGroupLine(info.lineId, name.trim()))}
             >
-              Enregistrer
+              {busy ? "Enregistrement…" : "Enregistrer"}
             </Button>
           </div>
         </div>

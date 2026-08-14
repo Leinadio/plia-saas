@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { X, Trash2 } from "lucide-react";
 import type { GroupManageInfo } from "@/lib/history-explain";
 import {
@@ -28,6 +27,7 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { toastSucces } from "@/components/history-blocks/toast";
+import { useMiseAJour } from "@/components/mise-a-jour";
 
 // Vue de gestion d'un groupe (ouverte depuis l'icône au survol d'une ligne de
 // groupe) : renommer le groupe, gérer les lignes d'un récurrent (nom, jour, ajout,
@@ -43,8 +43,9 @@ import { toastSucces } from "@/components/history-blocks/toast";
 // déjà écrits juste au-dessus, les répéter dirait deux fois la même chose — et la
 // croix de fermeture avec, puisqu'on referme en repliant le poste.
 export function GroupManageBlock({ info, onClose, inline }: { info: GroupManageInfo; onClose: () => void; inline?: boolean }) {
-  const router = useRouter();
-  const [busy, setBusy] = useState(false);
+  // Occupé jusqu'à ce que le tableau derrière soit refait, pas seulement jusqu'à
+  // ce que l'écriture soit passée (voir mise-a-jour.tsx).
+  const { pendant, enCours: busy } = useMiseAJour();
   const [name, setName] = useState(info.name);
   // Durée du groupe, en état local : `info` est un instantané capturé à l'ouverture du
   // panneau que router.refresh() ne remplace pas. Sans ça, l'étiquette du titre
@@ -54,11 +55,11 @@ export function GroupManageBlock({ info, onClose, inline }: { info: GroupManageI
   // doit dire tout de suite où la dépense vient d'atterrir. Absent pour un revenu.
   const [prevue, setPrevue] = useState(info.planned);
   const run = async <T,>(fn: () => Promise<T>): Promise<T> => {
-    setBusy(true);
-    const result = await fn();
-    setBusy(false);
-    router.refresh();
-    return result;
+    let resultat!: T;
+    await pendant(async () => {
+      resultat = await fn();
+    });
+    return resultat;
   };
   const entete = (
       <SidebarHeader className="gap-0 border-b p-4">

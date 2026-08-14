@@ -1,6 +1,5 @@
 "use client";
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Bell, CheckCheck, Undo2 } from "lucide-react";
 import { notificationsByMonth, unseenIds, type Notification } from "@/lib/notifications";
 import { monthLabel } from "@/lib/transactions-view";
@@ -8,6 +7,7 @@ import { dismissAllNotifications, restoreNotifications } from "@/app/app/notific
 import { OverspendNotice } from "@/components/overspend-notice";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
+import { useMiseAJour } from "@/components/mise-a-jour";
 
 // Bouton de notifications de l'en-tête, et le panneau qui les liste : un bandeau par
 // montant dépassé.
@@ -23,8 +23,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTr
 // « vu » veut dire « je sais », pas « ça n'a pas eu lieu ». Seul le compteur du bouton
 // ne retient que ce qui reste à voir : c'est lui l'alerte.
 export function NotificationsButton({ items }: { items: Notification[] }) {
-  const router = useRouter();
-  const [enCours, startTransition] = useTransition();
+  const { pendant, enCours } = useMiseAJour();
   // Ce qu'on vient de changer à l'écran, sans attendre le serveur : le clic doit se
   // voir tout de suite. Une table id → vu, et non deux ensembles, parce que le geste
   // va dans les deux sens. Le rafraîchissement qui suit ramène la même chose depuis la
@@ -46,20 +45,14 @@ export function NotificationsButton({ items }: { items: Notification[] }) {
     const lot = restants;
     marquer(lot, true);
     setDernierLot(lot);
-    startTransition(async () => {
-      await dismissAllNotifications(lot);
-      router.refresh();
-    });
+    pendant(() => dismissAllNotifications(lot));
   };
 
   const annuler = () => {
     const lot = dernierLot ?? [];
     marquer(lot, false);
     setDernierLot(null);
-    startTransition(async () => {
-      await restoreNotifications(lot);
-      router.refresh();
-    });
+    pendant(() => restoreNotifications(lot));
   };
 
   return (

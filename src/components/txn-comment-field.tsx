@@ -1,14 +1,14 @@
 "use client";
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { MessageSquarePlus } from "lucide-react";
 import { setComment } from "@/app/app/transactions/actions";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { hasComment } from "@/lib/txn-comment";
+import { useMiseAJour } from "@/components/mise-a-jour";
 
 // Le commentaire d'une transaction, posé sous son libellé. Même schéma que
-// GroupSelectField et IgnoreTxnToggle : action serveur puis router.refresh()
+// GroupSelectField et IgnoreTxnToggle : action serveur puis mise à jour partagée
 // (revalidatePath seul ne rafraîchit pas la vue courante).
 //
 // Sans commentaire, la ligne se réduit à un bouton discret qui n'apparaît qu'au
@@ -19,19 +19,15 @@ export function TxnCommentField({ txnId, comment, className }: {
   comment?: string | null;
   className?: string;
 }) {
-  const router = useRouter();
+  const { pendant, enCours: pending } = useMiseAJour();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(comment ?? "");
-  const [pending, startTransition] = useTransition();
 
   const enregistrer = (value: string) => {
     setEditing(false);
     // Rien n'a bougé : pas d'aller-retour serveur pour un champ ouvert puis refermé.
     if (value === (comment ?? "")) return;
-    startTransition(async () => {
-      await setComment(txnId, value);
-      router.refresh();
-    });
+    pendant(() => setComment(txnId, value));
   };
 
   const ouvrir = () => {

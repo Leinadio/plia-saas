@@ -1,11 +1,10 @@
 "use client";
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { TriangleAlert, Undo2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { monthLabel } from "@/lib/transactions-view";
 import { dismissNotification, restoreNotifications } from "@/app/app/notifications-actions";
 import { Button } from "@/components/ui/button";
+import { useMiseAJour } from "@/components/mise-a-jour";
 
 const NUM = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -35,8 +34,7 @@ export function OverspendNotice({ id, name, month, amount, accountName, seen = f
   // mention : là-bas les acquittés sont filtrés en amont, le cas ne se présente pas.
   onRestore?: () => void;
 }) {
-  const router = useRouter();
-  const [enCours, startTransition] = useTransition();
+  const { pendant, enCours } = useMiseAJour();
   return (
     <div
       className={cn(
@@ -68,10 +66,7 @@ export function OverspendNotice({ id, name, month, amount, accountName, seen = f
             disabled={enCours}
             onClick={() => {
               onRestore();
-              startTransition(async () => {
-                await restoreNotifications([id]);
-                router.refresh();
-              });
+              pendant(() => restoreNotifications([id]));
             }}
           >
             <Undo2 className="size-3.5" />
@@ -88,10 +83,7 @@ export function OverspendNotice({ id, name, month, amount, accountName, seen = f
           disabled={enCours}
           onClick={() => {
             onDone?.();
-            startTransition(async () => {
-              await dismissNotification(id);
-              router.refresh();
-            });
+            pendant(() => dismissNotification(id));
           }}
         >
           Vu

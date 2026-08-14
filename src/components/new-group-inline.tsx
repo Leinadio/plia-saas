@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { createGroup } from "@/app/app/historique/actions";
+import { useMiseAJour } from "@/components/mise-a-jour";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,23 +45,28 @@ export function NewGroupInline({
   // reste plus prudent que « depuis toujours », qui remonterait le groupe sur tout le
   // passé sans qu'on l'ait demandé.
   const [draft, setDraft] = useState<PeriodDraft>({ choice: "from", start: defaut, end: null });
-  const [pending, setPending] = useState(false);
+  // « En cours » court jusqu'à ce que le nouveau poste soit VISIBLE dans le
+  // tableau, pas jusqu'à ce que la base l'ait accepté : c'est la ligne qu'on
+  // attend, pas l'écriture. createGroup revalide la page lui-même, donc rien à
+  // redemander derrière — d'où `attendre` et non `pendant`.
+  const { attendre, enCours: pending } = useMiseAJour();
 
   async function submit(formData: FormData) {
-    setPending(true);
-    await createGroup({
-      accountId,
-      name: String(formData.get("name") ?? ""),
-      amount: Number(formData.get("amount") ?? 0),
-      startMonth: draftStart(draft),
-      // Sans mois de fin, la durée vaut pour le seul mois de départ : c'est le mode
-      // qui le dit (single), le mois de fin envoyé n'est là que pour une plage.
-      endMonth: draft.end ?? draft.start,
-      period: draftMode(draft),
-      direction,
-      planned,
-    });
-    setPending(false);
+    await attendre(() =>
+      createGroup({
+        accountId,
+        name: String(formData.get("name") ?? ""),
+        amount: Number(formData.get("amount") ?? 0),
+        startMonth: draftStart(draft),
+        // Sans mois de fin, la durée vaut pour le seul mois de départ : c'est le
+        // mode qui le dit (single), le mois de fin envoyé n'est là que pour une
+        // plage.
+        endMonth: draft.end ?? draft.start,
+        period: draftMode(draft),
+        direction,
+        planned,
+      }),
+    );
     onDone();
   }
 
@@ -75,7 +81,9 @@ export function NewGroupInline({
         <Input type="number" name="amount" step="0.01" min="0" className="max-w-28" placeholder="0.00" />
       </div>
       <PeriodFields draft={draft} onChange={setDraft} stripMin={stripMin} stripMax={stripMax} />
-      <Button type="submit" size="sm" variant="secondary" disabled={pending}>Ajouter</Button>
+      <Button type="submit" size="sm" variant="secondary" disabled={pending}>
+        {pending ? "Ajout…" : "Ajouter"}
+      </Button>
       <Button type="button" size="sm" variant="ghost" onClick={onDone}>Annuler</Button>
     </form>
   );

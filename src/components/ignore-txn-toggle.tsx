@@ -1,14 +1,13 @@
 "use client";
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { setIgnored } from "@/app/app/transactions/actions";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useMiseAJour } from "@/components/mise-a-jour";
 
 // Bascule « non comptabilisée » : la transaction reste visible ici mais sort de
 // tous les calculs. Même schéma que GroupSelectField (action serveur puis
-// router.refresh(), revalidatePath seul ne rafraîchit pas la vue courante).
+// mise à jour partagée, revalidatePath seul ne rafraîchit pas la vue courante).
 export function IgnoreTxnToggle({ txnId, ignored, withLabel = false, size = "icon" }: {
   txnId: string;
   ignored: boolean;
@@ -19,14 +18,9 @@ export function IgnoreTxnToggle({ txnId, ignored, withLabel = false, size = "ico
   // de rattachement, dans la colonne étroite du tableau de l'historique.
   size?: "icon" | "icon-sm";
 }) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const { pendant, enCours: isPending } = useMiseAJour();
   const label = ignored ? "Remettre dans les calculs" : "Ne pas comptabiliser";
-  const run = () =>
-    startTransition(async () => {
-      await setIgnored(txnId, !ignored);
-      router.refresh();
-    });
+  const run = () => pendant(() => setIgnored(txnId, !ignored));
 
   if (withLabel) {
     return (

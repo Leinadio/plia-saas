@@ -1,6 +1,5 @@
 "use client";
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Plus, Pencil } from "lucide-react";
 import { addTransaction, editTransaction } from "@/app/app/transactions/actions";
 import type { ManualFormInput } from "@/lib/manual-txn";
@@ -8,6 +7,7 @@ import { groupsForMonth } from "@/lib/group-options";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { useMiseAJour } from "@/components/mise-a-jour";
 
 type AccountOpt = { id: string; label: string };
 type GroupOpt = {
@@ -21,9 +21,8 @@ type EditData = {
 };
 
 export function AddTransactionSheet({ accounts, groups, edit }: { accounts: AccountOpt[]; groups: GroupOpt[]; edit?: EditData }) {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const { pendant, enCours: isPending } = useMiseAJour();
 
   const [accountId, setAccountId] = useState(edit?.accountId ?? accounts[0]?.id ?? "");
   const [date, setDate] = useState(edit?.date ?? "");
@@ -44,11 +43,10 @@ export function AddTransactionSheet({ accounts, groups, edit }: { accounts: Acco
       accountId, date, direction, amount: Number(amount.replace(",", ".")),
       label, groupId, lineId: null,
     };
-    startTransition(async () => {
+    pendant(async () => {
       if (edit) await editTransaction(edit.id, form);
       else await addTransaction(form);
       setOpen(false);
-      router.refresh();
     });
   };
 

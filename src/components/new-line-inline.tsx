@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { addGroupLine } from "@/app/app/historique/actions";
+import { useMiseAJour } from "@/components/mise-a-jour";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,33 +31,34 @@ export function NewLineInline({
   defaultMonth: string;
   onDone: () => void;
 }) {
-  const router = useRouter();
+  // « En cours » court jusqu'à ce que le sous-poste soit VISIBLE dans le tableau,
+  // pas jusqu'à ce que la base l'ait accepté (voir mise-a-jour.tsx).
+  const { pendant, enCours: pending } = useMiseAJour();
   // Mois choisissables : toute la frise du compte, comme pour un groupe.
   const defaut = clampMonth(defaultMonth, stripMin, stripMax);
   const [draft, setDraft] = useState<PeriodDraft>({ choice: "from", start: defaut, end: null });
-  const [pending, setPending] = useState(false);
 
   async function submit(formData: FormData) {
     const name = String(formData.get("name") ?? "").trim();
-    setPending(true);
-    const id = await addGroupLine(
-      groupId,
-      name,
-      Number(formData.get("amount") ?? 0),
-      draftStart(draft),
-      draftMode(draft),
-      // Sans mois de fin, la durée vaut pour le seul mois de départ : c'est le mode
-      // qui le dit (single), le mois de fin envoyé n'est là que pour une plage.
-      draft.end ?? draft.start,
-    );
-    setPending(false);
-    // -1 = rien n'est entré en base (nom vide, plage impossible) : pas d'accusé de
-    // réception pour une création qui n'a pas eu lieu.
-    if (id > 0) {
-      toast.success(`Sous-poste « ${name} » ajouté`);
-      router.refresh();
-      onDone();
-    }
+    await pendant(async () => {
+      const id = await addGroupLine(
+        groupId,
+        name,
+        Number(formData.get("amount") ?? 0),
+        draftStart(draft),
+        draftMode(draft),
+        // Sans mois de fin, la durée vaut pour le seul mois de départ : c'est le
+        // mode qui le dit (single), le mois de fin envoyé n'est là que pour une
+        // plage.
+        draft.end ?? draft.start,
+      );
+      // -1 = rien n'est entré en base (nom vide, plage impossible) : pas d'accusé de
+      // réception pour une création qui n'a pas eu lieu.
+      if (id > 0) {
+        toast.success(`Sous-poste « ${name} » ajouté`);
+        onDone();
+      }
+    });
   }
 
   return (
@@ -71,7 +72,9 @@ export function NewLineInline({
         <Input type="number" name="amount" step="0.01" min="0" className="max-w-28" placeholder="0.00" />
       </div>
       <PeriodFields draft={draft} onChange={setDraft} stripMin={stripMin} stripMax={stripMax} />
-      <Button type="submit" size="sm" variant="secondary" disabled={pending}>Ajouter</Button>
+      <Button type="submit" size="sm" variant="secondary" disabled={pending}>
+        {pending ? "Ajout…" : "Ajouter"}
+      </Button>
       <Button type="button" size="sm" variant="ghost" onClick={onDone}>Annuler</Button>
     </form>
   );

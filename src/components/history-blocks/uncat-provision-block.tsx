@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import type { UncatProvisionInfo } from "@/lib/history-explain";
 import { monthLabel } from "@/lib/transactions-view";
@@ -11,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toastSucces } from "@/components/history-blocks/toast";
+import { useMiseAJour } from "@/components/mise-a-jour";
 
 // Vue d'édition de la provision des non catégorisés (ouverte depuis la case Budget
 // dép. de la section non catégorisés) : fixe le montant daté du groupe 0, avec la
@@ -18,19 +18,15 @@ import { toastSucces } from "@/components/history-blocks/toast";
 // GroupManageBlock ci-dessus). Pas de renommage, de lignes ni de suppression : le
 // groupe 0 est un pseudo-groupe, pas une ligne de `groups`.
 export function UncatProvisionBlock({ info, onClose }: { info: UncatProvisionInfo; onClose: () => void }) {
-  const router = useRouter();
-  const [busy, setBusy] = useState(false);
+  // Occupé jusqu'à ce que le tableau derrière montre la nouvelle provision, et
+  // pas seulement jusqu'à ce que l'écriture soit passée (voir mise-a-jour.tsx).
+  const { pendant, enCours: busy } = useMiseAJour();
   const [amount, setAmount] = useState(() => String(info.currentAmount));
   // Montant tout juste appliqué : tant qu'il est là, on pose la question de la
   // propagation. Même règle que pour un budget d'enveloppe (voir BudgetEditBlock) :
   // on applique au mois cliqué, puis on demande pour les mois suivants.
   const [applique, setApplique] = useState<number | null>(null);
-  const run = async (fn: () => Promise<void>) => {
-    setBusy(true);
-    await fn();
-    setBusy(false);
-    router.refresh();
-  };
+  const run = (fn: () => Promise<void>) => pendant(fn);
   const saisi = parseFloat(amount);
   return (
     <>
@@ -70,7 +66,7 @@ export function UncatProvisionBlock({ info, onClose }: { info: UncatProvisionInf
                 setApplique(saisi);
               }}
             >
-              Appliquer
+              {busy ? "Application…" : "Appliquer"}
             </Button>
           </div>
           {applique !== null && (

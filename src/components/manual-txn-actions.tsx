@@ -1,18 +1,16 @@
 "use client";
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import type { TxnView } from "@/db/repositories/transactions";
 import { removeTransaction } from "@/app/app/transactions/actions";
 import { AddTransactionSheet } from "@/components/add-transaction-sheet";
 import { Button } from "@/components/ui/button";
+import { useMiseAJour } from "@/components/mise-a-jour";
 
 type AccountOpt = { id: string; label: string };
 type GroupOpt = { id: number; name: string; accountId: string; direction: "in" | "out" };
 
 export function ManualTxnActions({ txn, accounts, groups }: { txn: TxnView; accounts: AccountOpt[]; groups: GroupOpt[] }) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const { pendant, enCours: isPending } = useMiseAJour();
   return (
     <span className="inline-flex items-center gap-1">
       <AddTransactionSheet
@@ -25,7 +23,7 @@ export function ManualTxnActions({ txn, accounts, groups }: { txn: TxnView; acco
         }}
       />
       <Button variant="ghost" size="sm" disabled={isPending}
-        onClick={() => startTransition(async () => { await removeTransaction(txn.id); router.refresh(); })}>
+        onClick={() => pendant(() => removeTransaction(txn.id))}>
         <Trash2 className="size-4" />
       </Button>
     </span>

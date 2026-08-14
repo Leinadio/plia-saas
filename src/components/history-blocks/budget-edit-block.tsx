@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import type { BudgetEditInfo } from "@/lib/history-explain";
 import { monthLabel } from "@/lib/transactions-view";
 import { formatEur } from "@/lib/money";
@@ -15,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toastSucces } from "@/components/history-blocks/toast";
+import { useMiseAJour } from "@/components/mise-a-jour";
 
 // Bloc d'édition d'un budget, affiché sous la décomposition de sa case « Budget dép. ».
 // C'est le seul endroit d'où un montant se modifie : la case dit le mois, et un montant
@@ -30,8 +30,11 @@ import { toastSucces } from "@/components/history-blocks/toast";
 // groupe récurrent, où budgetEditOfGroup rend null — son budget est la somme de ses
 // lignes, il n'y a rien à écrire à son niveau.
 export function BudgetEditBlock({ info }: { info: BudgetEditInfo }) {
-  const router = useRouter();
-  const [busy, setBusy] = useState(false);
+  // « Occupé » ne veut pas dire « l'écriture court » mais « le tableau derrière
+  // n'est pas encore à jour » : le bouton reste éteint jusqu'à ce que le nouveau
+  // montant soit réellement dans la case, sinon on peut recliquer sur un écran
+  // qui montre encore l'ancien chiffre.
+  const { pendant, enCours: busy } = useMiseAJour();
   // Montant en vigueur au mois cliqué, resynchronisé sur ce que le serveur vient
   // réellement de poser : recalculer la sémantique des portées côté client
   // dupliquerait la règle de lecture, avec le risque de diverger.
@@ -49,13 +52,7 @@ export function BudgetEditBlock({ info }: { info: BudgetEditInfo }) {
     setPrevEnForce(enForce);
     setAmount(String(enForce));
   }
-  const run = async (fn: () => Promise<BudgetChange[]>) => {
-    setBusy(true);
-    const next = await fn();
-    setBusy(false);
-    setChanges(next);
-    router.refresh();
-  };
+  const run = (fn: () => Promise<BudgetChange[]>) => pendant(async () => setChanges(await fn()));
   const saisi = parseFloat(amount);
   const apply = async () => {
     await run(() =>
@@ -93,7 +90,7 @@ export function BudgetEditBlock({ info }: { info: BudgetEditInfo }) {
             className="h-9 w-28 text-right tabular-nums"
           />
           <Button type="button" size="sm" variant="secondary" disabled={busy || !(saisi >= 0)} onClick={apply}>
-            Appliquer
+            {busy ? "Application…" : "Appliquer"}
           </Button>
         </div>
       </div>
