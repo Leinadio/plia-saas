@@ -46,6 +46,7 @@ import {
   sectionLabel,
   uncatTxnNodes,
   sectionTxnChildren,
+  contreSensNodes,
   sectionNode,
   soldeActuelDetail,
   budgetEditOfGroup,
@@ -579,17 +580,39 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
         // poursuivent leur propre chaîne cumulée indépendamment de ce groupe.
         const dead = r ? !ligneVivante(r.aliveMonths, i) : false;
 
-        // Dép. affiche c.depense sauf pour une entrée (—) : cliquable même à 0,00,
-        // avec les transactions du mois si présentes, sinon aucune décomposition.
-        const depDetail: CellDetail | null =
-          mode !== "in" && r
-            ? makeDetail("Dépensé", txnChildren(r, month, 1, i) ?? [], { subtitle, result: c.depense })
+        // L'argent passé à contre-sens ce mois-là, et rien s'il n'y en a pas : la case
+        // d'en face reste vide plutôt que d'afficher un 0,00 qui n'apprendrait rien.
+        const contreSensVal = c.rembourse ?? 0;
+        const contreSens = contreSensVal > 0.005 ? fmt(contreSensVal) : "";
+        // Son calcul, quand il y a quelque chose à montrer : les transactions qui l'ont
+        // fait, et la phrase qui dit pourquoi il ne s'ajoute à rien.
+        const contreSensDetail: CellDetail | null =
+          contreSens && r
+            ? makeDetail(
+                mode === "out" ? "Remboursé" : "Rendu",
+                contreSensNodes(r, month, mode === "out" ? "in" : "out", i) ?? [],
+                {
+                  subtitle,
+                  result: contreSensVal,
+                  note: mode === "out"
+                    ? "Déjà retiré de ce que le poste a dépensé, juste à côté. Ce montant ne s'ajoute donc ni au solde ni aux rentrées du mois : il y est entré en diminuant la dépense."
+                    : "Déjà retiré de ce que le poste a reçu, juste à côté. Ce montant ne compte pas une seconde fois.",
+                },
+              )
             : null;
 
-        // Reçu affiche c.recu sauf pour une dépense (—) : cliquable même à 0,00.
+        // Dép. affiche c.depense sauf pour une entrée, où la case porte ce qui en est
+        // ressorti : cliquable même à 0,00, avec les transactions du mois si présentes.
+        const depDetail: CellDetail | null =
+          mode === "in" ? contreSensDetail
+            : r ? makeDetail("Dépensé", txnChildren(r, month, 1, i) ?? [], { subtitle, result: c.depense })
+            : null;
+
+        // Reçu affiche c.recu sauf pour une dépense, où la case porte ce qui y a été
+        // remboursé.
         const recuDetail: CellDetail | null =
-          mode !== "out" && r
-            ? makeDetail("Reçu", txnChildren(r, month, 1, i) ?? [], { subtitle, result: c.recu })
+          mode === "out" ? contreSensDetail
+            : r ? makeDetail("Reçu", txnChildren(r, month, 1, i) ?? [], { subtitle, result: c.recu })
             : null;
 
         // Reste affiche c.balance sauf pour une entrée (case vide) : cliquable même à
@@ -740,16 +763,22 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
                 {budgetDepVal != null ? fmt(budgetDepVal) : ""}
               </CellAmount>
             ),
+          // La case d'en face, celle du sens contraire, reste vide — une dépense ne
+          // reçoit pas, un revenu ne dépense pas — SAUF quand de l'argent y est
+          // vraiment passé à contre-sens : un remboursement encaissé sur une dépense,
+          // un trop-perçu rendu sur un revenu. Il s'y affiche entier, en gris clair
+          // pour dire qu'il ne s'additionne à rien : il est déjà retranché du réalisé
+          // d'à côté (cf. MonthCell.rembourse).
           dep: (b) =>
             dead ? blankCol("dep", b) : (
-              <CellAmount key="dep" className={cn(b && MONTH_GAP, "text-right tabular-nums")} detail={depDetail} onSelect={onSelect} cellKey={ck("depense")} selCellKey={selCellKey}>
-                {mode === "in" ? "" : fmt(c.depense)}
+              <CellAmount key="dep" className={cn(b && MONTH_GAP, "text-right tabular-nums", mode === "in" && "text-muted-foreground")} detail={depDetail} onSelect={onSelect} cellKey={ck("depense")} selCellKey={selCellKey}>
+                {mode === "in" ? contreSens : fmt(c.depense)}
               </CellAmount>
             ),
           recu: (b) =>
             dead ? blankCol("recu", b) : (
-              <CellAmount key="recu" className={cn(b && MONTH_GAP, "text-right tabular-nums")} detail={recuDetail} onSelect={onSelect} cellKey={ck("recu")} selCellKey={selCellKey}>
-                {mode === "out" ? "" : fmt(c.recu)}
+              <CellAmount key="recu" className={cn(b && MONTH_GAP, "text-right tabular-nums", mode === "out" && "text-muted-foreground")} detail={recuDetail} onSelect={onSelect} cellKey={ck("recu")} selCellKey={selCellKey}>
+                {mode === "out" ? contreSens : fmt(c.recu)}
               </CellAmount>
             ),
           reste: (b) =>
@@ -1323,26 +1352,33 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
 }
 
 // Cellules d'une transaction : son montant tombe dans la colonne Dép. (sortie)
-// ou Reçu (entrée), selon son signe, du mois où elle a lieu ; le reste est vide.
+// ou Reçu (entrée) du mois où elle a lieu ; le reste est vide.
+//
+// C'est le SIGNE qui décide de la colonne, jamais le poste qui porte la ligne. Un
+// remboursement rangé dans une dépense s'affiche donc dans Reçu, à son montant
+// entier : c'est de l'argent qui est bel et bien rentré, et on veut le voir tel
+// quel. Ce qu'il pèse dans son poste est une autre affaire, et elle se lit une
+// ligne plus haut — le Dépensé du poste est déjà net de ce remboursement.
 function TxnCells({ txn, months, currentMonth, onSelect, selCellKey }: { txn: HistoryTxn; months: string[]; currentMonth: string; onSelect?: (d: CellDetail) => void; selCellKey?: ReadonlySet<string> }) {
   const isOut = txn.amount < 0;
+  const montant = Math.abs(txn.amount);
   const teinteSection = useContext(TeinteSection);
   return (
     <>
       {months.map((m, i) => {
         const cols = monthColumns(monthType(m, currentMonth));
         const here = txn.month === m;
-        const val = here ? fmt(Math.abs(txn.amount)) : "";
-        // La transaction n'occupe qu'une case : Dép. si sortie, Reçu si entrée. En
-        // mois de projection, ni Dép. ni Reçu n'existent : la ligne reste vide.
+        const val = here ? fmt(montant) : "";
+        // La transaction n'occupe qu'une case. En mois de projection, ni Dép. ni Reçu
+        // n'existent : la ligne reste vide.
         const ck = here ? cellKey(txnRow(txn.id), isOut ? "depense" : "recu", i) : undefined;
         // Détail minimal d'une transaction : une seule feuille (elle-même), pour que
         // sa case chiffrée soit cliquable comme les montants agrégés.
         const detail: CellDetail | null = here
           ? makeDetail(
               "Transaction",
-              [{ label: `${txn.date} · ${txn.label}`, amount: Math.abs(txn.amount) }],
-              { subtitle: monthLabel(m), result: Math.abs(txn.amount) },
+              [{ label: `${txn.date} · ${txn.label}`, amount: montant }],
+              { subtitle: monthLabel(m), result: montant },
             )
           : null;
         const slots: ColSlots = {

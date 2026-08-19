@@ -1,5 +1,5 @@
 import { monthKey } from "./money";
-import { resolveOwnership, type OwnableGroup, type OwnedTxn } from "./ownership";
+import { resolveOwnership, partDansLePoste, type OwnableGroup, type OwnedTxn } from "./ownership";
 import { budgetInForce, lineAmountInForce, type DatedBudgets, type DatedLineAmounts } from "./budget-in-force";
 import { aliveInMonth } from "./lifespan";
 
@@ -134,8 +134,10 @@ export function computeForecast(
 
   const ownedBy = (gid: number, m: string = month) =>
     owned.filter((o) => o.ownerId === gid && monthKey(o.t.date) === m).map((o) => o.t);
-  const spentIn = (gid: number, m: string) =>
-    ownedBy(gid, m).reduce((s, t) => s + Math.abs(t.amount), 0);
+  // Compté dans le sens du poste : un remboursement rangé dans une dépense la
+  // diminue, et le reste à dépenser remonte d'autant (cf. partDansLePoste).
+  const spentIn = (g: Group, m: string) =>
+    ownedBy(g.id, m).reduce((s, t) => s + partDansLePoste(t.amount, g.direction), 0);
 
   let current = balance;
   let nextDelta = 0;
@@ -161,7 +163,7 @@ export function computeForecast(
       // mois prochain, dont le montant courant serait encore 0).
       const amount = budgetInForce(g, month, dated, datedLines);
       const nextAmount = budgetInForce(g, nextMonthKey(month), dated, datedLines);
-      const spent = spentIn(g.id, month);
+      const spent = spentIn(g, month);
       const remaining = Math.max(0, amount - spent);
       if (aliveNow) {
         // Le sens compte : une sortie retire, une entrée ajoute.
@@ -174,7 +176,7 @@ export function computeForecast(
           });
         // Le dépassement (et sa suggestion) n'a de sens que pour une dépense.
         const overspend = g.direction === "out" ? Math.max(0, spent - amount) : 0;
-        const prevSpent = spentIn(g.id, prevMonth);
+        const prevSpent = spentIn(g, prevMonth);
         const prevOverspend = g.direction === "out" ? Math.max(0, prevSpent - amount) : 0;
         groupViews.push({ id: g.id, name: g.name, direction: g.direction, total: amount, spent, overspend, prevSpent, prevOverspend });
       }

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Plus, Pencil } from "lucide-react";
 import { addTransaction, editTransaction } from "@/app/app/transactions/actions";
 import type { ManualFormInput } from "@/lib/manual-txn";
-import { groupsForMonth } from "@/lib/group-options";
+import { groupsForMonth, postesPourSaisie } from "@/lib/group-options";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -31,12 +31,11 @@ export function AddTransactionSheet({ accounts, groups, edit }: { accounts: Acco
   const [label, setLabel] = useState(edit?.label ?? "");
   const [groupId, setGroupId] = useState<number | null>(edit?.groupId ?? null);
 
-  // Le compte et le sens filtrent comme avant ; le mois de la date saisie s'y ajoute,
-  // puisqu'un groupe ne vit pas forcément tous les mois. Tant qu'aucune date n'est
-  // saisie, on ne sait pas de quel mois il s'agit : rien n'est écarté à ce titre.
+  // Le compte et la durée de vie filtrent ; le sens de la saisie, lui, ne filtre
+  // plus — il range en deux sections. Une entrée peut se poser sur une dépense :
+  // c'est un remboursement, et il la diminue (cf. postesPourSaisie).
   const mois = /^\d{4}-\d{2}/.test(date) ? date.slice(0, 7) : null;
-  const duCompte = groups.filter((g) => g.accountId === accountId && g.direction === direction);
-  const groupChoices = mois ? groupsForMonth(duCompte, mois, edit?.groupId ?? null) : duCompte;
+  const sections = postesPourSaisie(groups, accountId, mois, edit?.groupId ?? null);
 
   const submit = () => {
     const form: ManualFormInput = {
@@ -74,10 +73,13 @@ export function AddTransactionSheet({ accounts, groups, edit }: { accounts: Acco
           </label>
 
           <div className="flex gap-2">
+            {/* Changer de sens ne lâche plus le poste choisi : les deux sens
+                proposent les mêmes, et une entrée posée sur une dépense est
+                exactement ce qu'on vient chercher. */}
             <Button type="button" variant={direction === "out" ? "default" : "outline"} size="sm"
-              onClick={() => { setDirection("out"); setGroupId(null); }}>Sortie</Button>
+              onClick={() => setDirection("out")}>Sortie</Button>
             <Button type="button" variant={direction === "in" ? "default" : "outline"} size="sm"
-              onClick={() => { setDirection("in"); setGroupId(null); }}>Entrée</Button>
+              onClick={() => setDirection("in")}>Entrée</Button>
           </div>
 
           <label className="flex flex-col gap-1 text-sm">
@@ -92,6 +94,7 @@ export function AddTransactionSheet({ accounts, groups, edit }: { accounts: Acco
                 const v = e.target.value;
                 setDate(v);
                 const m = /^\d{4}-\d{2}/.test(v) ? v.slice(0, 7) : null;
+                const duCompte = groups.filter((g) => g.accountId === accountId);
                 if (m && groupId !== null && !groupsForMonth(duCompte, m).some((g) => g.id === groupId)) {
                   setGroupId(null);
                 }
@@ -115,7 +118,11 @@ export function AddTransactionSheet({ accounts, groups, edit }: { accounts: Acco
             <select value={groupId ?? ""} onChange={(e) => setGroupId(e.target.value ? Number(e.target.value) : null)}
               className="plate plate-cut h-9 px-3 text-sm">
               <option value="">Non catégorisé</option>
-              {groupChoices.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
+              {sections.map((sec) => (
+                <optgroup key={sec.label} label={sec.label}>
+                  {sec.groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
+                </optgroup>
+              ))}
             </select>
           </label>
 

@@ -32,6 +32,24 @@ export function resolveOwnership(txn: OwnedTxn, groups: OwnableGroup[]): Ownersh
   return { status: "none" };
 }
 
+// --- Ce qu'une transaction pèse dans son poste -------------------------------
+// Un poste compte dans SON sens. Une dépense compte ce qui sort ; ce qui rentre
+// dedans est un remboursement, et un remboursement retire. Un revenu compte ce
+// qui rentre ; ce qui en sort est un trop-perçu rendu, et il retire aussi.
+//
+// C'était la valeur absolue avant, et elle mentait dès qu'on rangeait un
+// remboursement quelque part : les 200 € rendus sur « Vacances Amsterdam » y
+// ajoutaient 200 € de dépense au lieu de les retrancher, et le poste passait de
+// 1 200 dépensés à 1 400. Toute la suite en découle sans rien savoir d'un
+// remboursement : le Reste remonte, le dépassement s'éteint, la prévision suit.
+//
+// Le réalisé d'un poste peut donc devenir négatif — un poste qui n'a reçu qu'un
+// remboursement. C'est voulu : son Reste vaut alors plus que son budget, et cet
+// argent-là lui appartient bien.
+export function partDansLePoste(amount: number, direction: Direction): number {
+  return direction === "out" ? -amount : amount;
+}
+
 // Une dépense découpée en sous-postes n'est pas une destination : ses transactions
 // appartiennent à un de ses sous-postes (Direct Assurance, Sosh Internet…), jamais au
 // groupe lui-même. Une dépense plate, elle, se rattache directement.

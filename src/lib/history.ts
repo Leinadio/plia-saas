@@ -1,4 +1,4 @@
-import { resolveOwnership, type OwnableGroup, type OwnedTxn } from "./ownership";
+import { resolveOwnership, partDansLePoste, type OwnableGroup, type OwnedTxn } from "./ownership";
 import { type Group, type Txn, isGroupAlive, isLineAlive } from "./forecast";
 
 // Montants en vigueur (budgets et lignes datés) : déplacés dans budget-in-force.ts
@@ -18,7 +18,22 @@ import {
 // pour une ligne ; les sous-totaux additionnent les deux). balance = « Reste » de
 // budget = budget − dépensé pour les dépenses, 0 pour les entrées et le non catégorisé
 // (une entrée d'argent n'a pas de budget, donc pas de reste).
-export type MonthCell = { budgeted: number; depense: number; recu: number; balance: number };
+export type MonthCell = {
+  budgeted: number; depense: number; recu: number; balance: number;
+  // Ce qui est venu à CONTRE-SENS du poste : un remboursement encaissé sur une
+  // dépense, un trop-perçu rendu sur un revenu. Déjà retranché de `depense` (ou de
+  // `recu`) — c'est la même somme, montrée d'un autre côté.
+  //
+  // Il vit à part et n'entre dans AUCUN calcul : ni le mouvement du mois, ni la
+  // chaîne de soldes, ni les dépassements. Les y verser compterait l'argent deux
+  // fois, une fois en moins du réalisé et une fois en plus des rentrées. Sa seule
+  // raison d'être est la case du tableau qui l'affiche, en face du poste, pour que
+  // l'écart entre les transactions listées dessous et le dépensé se lise.
+  //
+  // Facultatif : toutes les cases fabriquées ailleurs (fixtures, sous-totaux) valent
+  // zéro sans avoir à le dire.
+  rembourse?: number;
+};
 // Une transaction détaillée, rattachée à un groupe ou à un sous-groupe (ligne).
 // group_id / line_id portés pour alimenter le menu de (ré)assignation.
 export type HistoryTxn = {
@@ -130,7 +145,7 @@ function toOwnable(g: Group): OwnableGroup {
 }
 
 function emptyCell(): MonthCell {
-  return { budgeted: 0, depense: 0, recu: 0, balance: 0 };
+  return { budgeted: 0, depense: 0, recu: 0, balance: 0, rembourse: 0 };
 }
 
 // Les mois > currentMonth sont des projections, alignées sur le Prévisionnel
@@ -155,8 +170,20 @@ export function computeHistory(
     return { t, ownerId, month };
   });
 
-  const spent = (gid: number, m: string) =>
-    owned.filter((o) => o.ownerId === gid && o.month === m).reduce((s, o) => s + Math.abs(o.t.amount), 0);
+  // Le réalisé d'un poste, compté dans son sens : un remboursement rangé dans une
+  // dépense la diminue au lieu de la gonfler (cf. partDansLePoste).
+  const spent = (g: Group, m: string) =>
+    owned
+      .filter((o) => o.ownerId === g.id && o.month === m)
+      .reduce((s, o) => s + partDansLePoste(o.t.amount, g.direction), 0);
+
+  // Ce qui, dans un poste, va à contre-sens : les encaissements d'une dépense, les
+  // sorties d'un revenu. Somme positive, déjà retranchée du réalisé ci-dessus — elle
+  // ne sert qu'à l'affichage (cf. MonthCell.rembourse).
+  const contreSens = (txns: Txn[], direction: "in" | "out", m: string) =>
+    txns
+      .filter((t) => t.date.slice(0, 7) === m && partDansLePoste(t.amount, direction) < 0)
+      .reduce((s, t) => s + Math.abs(t.amount), 0);
 
   // Rattache une transaction d'un récurrent à une de ses lignes uniquement via
   // le line_id manuel ; sinon elle reste directement sous le groupe.
@@ -178,6 +205,8 @@ export function computeHistory(
     budgetedOf: (m: string) => number,
     isOut: boolean,
     realizedOf: (m: string) => number,
+    // Ce qui est venu à contre-sens du poste ce mois-là (cf. MonthCell.rembourse).
+    contreSensOf: (m: string) => number,
   ): MonthCell[] =>
     months.map((m) => {
       const budgeted = budgetedOf(m);
@@ -186,6 +215,7 @@ export function computeHistory(
         budgeted,
         depense: isOut ? realized : 0,
         recu: isOut ? 0 : realized,
+        rembourse: m > currentMonth ? 0 : contreSensOf(m),
         // Le Reste ne concerne que les dépenses (budget − dépensé). Une entrée
         // d'argent n'a pas de budget, donc son Reste est nul : le reçu ne doit
         // jamais être soustrait d'un « reste de budget ».
@@ -200,7 +230,12 @@ export function computeHistory(
       .filter((o) => o.ownerId === g.id)
       .map((o) => o.t)
       .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-    const cells = cellsFor((m) => (isGroupAlive(g, m) ? budgetInForce(g, m, dated, datedLines) : 0), isOut, (m) => spent(g.id, m));
+    const cells = cellsFor(
+      (m) => (isGroupAlive(g, m) ? budgetInForce(g, m, dated, datedLines) : 0),
+      isOut,
+      (m) => spent(g, m),
+      (m) => contreSens(mine, g.direction, m),
+    );
     const aliveMonths = months.map((m) => isGroupAlive(g, m));
 
     // Sous-groupes : une ligne par poste du récurrent ; les projections gardent
@@ -208,13 +243,18 @@ export function computeHistory(
     const subRows: HistorySubRow[] = g.lines.map((l) => {
       const lineTxns = mine.filter((t) => lineOf(g, t) === l.id);
       const realizedOf = (m: string) =>
-        lineTxns.filter((t) => t.date.slice(0, 7) === m).reduce((s, t) => s + Math.abs(t.amount), 0);
+        lineTxns.filter((t) => t.date.slice(0, 7) === m).reduce((s, t) => s + partDansLePoste(t.amount, g.direction), 0);
       return {
         id: l.id,
         name: l.name,
         // La ligne doit vivre ce mois-là ET son groupe avec elle : une ligne bornée à
         // juillet ne budgète rien en août, même si le récurrent qui la porte continue.
-        cells: cellsFor((m) => (isGroupAlive(g, m) && isLineAlive(l, m) ? lineAmountInForce(l.id, m, datedLines) : 0), isOut, realizedOf),
+        cells: cellsFor(
+          (m) => (isGroupAlive(g, m) && isLineAlive(l, m) ? lineAmountInForce(l.id, m, datedLines) : 0),
+          isOut,
+          realizedOf,
+          (m) => contreSens(lineTxns, g.direction, m),
+        ),
         aliveMonths: months.map((m) => isGroupAlive(g, m) && isLineAlive(l, m) && lineStarted(l.id, m, datedLines)),
         txns: lineTxns.filter(inRange).map(toHistoryTxn),
       };
@@ -242,6 +282,7 @@ export function computeHistory(
           depense: acc.depense + c.depense,
           recu: acc.recu + c.recu,
           balance: acc.balance + c.balance,
+          rembourse: (acc.rembourse ?? 0) + (c.rembourse ?? 0),
         };
       }, emptyCell()),
     );
@@ -411,6 +452,7 @@ export function sumRowCells(rows: HistoryRow[], monthCount: number): MonthCell[]
           depense: acc.depense + c.depense,
           recu: acc.recu + c.recu,
           balance: acc.balance + c.balance,
+          rembourse: (acc.rembourse ?? 0) + (c.rembourse ?? 0),
         };
       },
       emptyCell(),
@@ -429,6 +471,7 @@ export function grandTotals(sections: HistorySection[], monthCount: number): Mon
           depense: acc.depense + c.depense,
           recu: acc.recu + c.recu,
           balance: acc.balance + c.balance,
+          rembourse: (acc.rembourse ?? 0) + (c.rembourse ?? 0),
         };
       },
       emptyCell(),
@@ -726,14 +769,16 @@ export function computeOverspends(
         for (const l of g.lines) {
           const spent = owned
             .filter((o) => o.ownerId === g.id && o.t.lineId === l.id && o.month === m)
-            .reduce((s, o) => s + Math.abs(o.t.amount), 0);
+            .reduce((s, o) => s + partDansLePoste(o.t.amount, g.direction), 0);
           const os = Math.max(0, spent - lineAmountInForce(l.id, m, datedLines));
           if (os <= 0.005) continue;
           noter({ groupId: g.id, lineId: l.id, name: l.name, month: m, amount: os });
         }
         continue;
       }
-      const spent = owned.filter((o) => o.ownerId === g.id && o.month === m).reduce((s, o) => s + Math.abs(o.t.amount), 0);
+      const spent = owned
+        .filter((o) => o.ownerId === g.id && o.month === m)
+        .reduce((s, o) => s + partDansLePoste(o.t.amount, g.direction), 0);
       const os = Math.max(0, spent - budgetInForce(g, m, dated, datedLines));
       if (os <= 0.005) continue;
       noter({ groupId: g.id, lineId: null, name: g.name, month: m, amount: os });

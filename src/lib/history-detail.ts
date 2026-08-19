@@ -20,6 +20,7 @@ import {
   txnNode,
 } from "./history-explain";
 import { amountAtMonth, type BudgetChange } from "./budget-history";
+import { partDansLePoste } from "./ownership";
 
 // Nature du montant porté par un nœud : les trois colonnes chiffrées du tableau,
 // plus le « net » (recu − depense) que lisent les chaînes de solde.
@@ -41,11 +42,37 @@ export function colOf(kind: NodeKind, c: MonthCell): Col {
 // Transactions d'un groupe (et de ses lignes) pour un mois → nœuds feuilles signés.
 // sign = +1 pour un contexte « addition » (ex. colonne Dépensé/Reçu prise positivement),
 //        -1 pour un contexte « soustraction » (ex. sous-nœud Dépensé d'un Reste).
+//
+// Chaque feuille porte ce que la transaction pèse DANS SON POSTE, sens compris : un
+// remboursement rangé dans une dépense descend en négatif. C'est ce qui fait que la
+// colonne d'enfants se totalise exactement sur le montant qu'elle explique.
 export function txnChildren(r: HistoryRow, month: string, sign: 1 | -1, i: number): DetailNode[] | undefined {
   const all = [...r.txns, ...r.subRows.flatMap((s) => s.txns)].filter((t) => t.month === month);
   if (all.length === 0) return undefined;
   return all.map((t) =>
-    txnNode(t.date, t.label, sign * Math.abs(t.amount), cellKey(txnRow(t.id), t.amount < 0 ? "depense" : "recu", i)),
+    txnNode(
+      t.date,
+      t.label,
+      sign * partDansLePoste(t.amount, r.direction),
+      // Le renvoi désigne la case où la transaction s'affiche vraiment, et cette
+      // case-là suit le SIGNE : un remboursement se lit dans Reçu, à son montant
+      // entier, même s'il compte en moins dans le poste (cf. TxnCells).
+      cellKey(txnRow(t.id), t.amount < 0 ? "depense" : "recu", i),
+    ),
+  );
+}
+
+// Les transactions d'un poste qui vont à contre-sens de lui, pour un mois : les
+// encaissements d'une dépense, les sorties d'un revenu. C'est la décomposition de la
+// case d'en face (cf. MonthCell.rembourse), donc des montants entiers et positifs :
+// cette case-là montre l'argent tel qu'il est passé, pas ce qu'il pèse dans le poste.
+// undefined quand rien n'est venu à contre-sens : la case reste vide, sans calcul.
+export function contreSensNodes(r: HistoryRow, month: string, sens: "in" | "out", i: number): DetailNode[] | undefined {
+  const garde = (t: HistoryTxn) => (sens === "in" ? t.amount > 0 : t.amount < 0);
+  const all = [...r.txns, ...r.subRows.flatMap((s) => s.txns)].filter((t) => t.month === month && garde(t));
+  if (all.length === 0) return undefined;
+  return all.map((t) =>
+    txnNode(t.date, t.label, Math.abs(t.amount), cellKey(txnRow(t.id), t.amount < 0 ? "depense" : "recu", i)),
   );
 }
 

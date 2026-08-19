@@ -48,10 +48,12 @@ export const COL_INFO: Record<ColKey, string[]> = {
     "C'est l'argent qui est vraiment parti de ton compte ce mois-ci pour ce poste. Pas une prévision : le vrai, ce que tes achats t'ont coûté.",
     "À ne pas confondre avec le budget dépense, qui est ce que tu avais prévu de dépenser. En comparant les deux, tu vois d'un coup d'œil si tu es resté dans ton budget ou si tu l'as dépassé — c'est justement ce que t'affiche la colonne « Reste/Manque » juste après.",
     "Par exemple : si tu as payé 114 € d'abonnements et 100 € d'essence, ces montants s'additionnent dans ce que tu as dépensé sur le mois.",
+    "Si quelqu'un te rembourse, tu peux ranger son virement dans le poste qu'il rembourse : il vient en moins, et la case redescend d'autant. Des vacances à 1 200 € dont un ami te rend 200 € t'ont coûté 1 000 €, et c'est ce que la case affiche.",
   ],
   recu: [
     "C'est l'argent qui est vraiment arrivé sur ton compte ce mois-ci pour cette catégorie. Le vrai encaissement, pas la prévision.",
-    "Ça n'a de sens que pour tes rentrées d'argent, comme ta paie ou un virement, et pour les opérations que tu n'as pas encore rangées dans une catégorie. Pour tes enveloppes et tes dépenses régulières, la case reste vide : ce sont des postes de dépense, tu n'y reçois jamais rien.",
+    "Ça n'a de sens que pour tes rentrées d'argent, comme ta paie ou un virement, et pour les opérations que tu n'as pas encore rangées dans une catégorie. Sur la ligne d'un poste de dépense, la case reste vide : un poste de dépense ne reçoit rien, il coûte.",
+    "Un remboursement rangé dans un poste de dépense, lui, s'affiche bien ici, sur sa propre ligne et pour son montant entier : cet argent est vraiment rentré. Ce qu'il change au poste se lit une ligne plus haut, dans « Dép. », qui a déjà baissé d'autant.",
     "Par exemple : tu attends 650 €. Tant qu'ils ne sont pas là, cette case affiche 0. Dès qu'ils tombent sur le compte, elle passe à 650 €.",
   ],
   reste: [
