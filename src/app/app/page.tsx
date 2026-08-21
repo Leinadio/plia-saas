@@ -4,20 +4,13 @@ import { listTransactions, sumIgnoredByAccount, type TxnView } from "../../db/re
 import { listGroups } from "../../db/repositories/groups";
 import { listBudgetAmounts } from "../../db/repositories/budget-amounts";
 import { listLineAmounts } from "../../db/repositories/line-amounts";
-import {
-  computeHistory, computeSolde, computePlannedSoldes, computeTableEstimate,
-  grandTotals, monthlyOverspend, monthRange, addMonthsKey,
-  toDatedBudgets, toDatedLineAmounts,
-} from "../../lib/history";
+import { monthRange, addMonthsKey, toDatedBudgets, toDatedLineAmounts } from "../../lib/history";
 import type { Group, Txn } from "../../lib/forecast";
-import { monthPhrase, monthShort } from "../../lib/transactions-view";
-import { monthType } from "../../lib/history-columns";
-import { soldeAffiche } from "../../lib/solde-affiche";
 import { currentMonthKey } from "../../lib/current-month";
-import { effectiveBalance } from "../../lib/account";
-import { PlanDeCharge } from "@/components/plan-de-charge";
-import { RelevesBand } from "@/components/releves-band";
-import { PosteTable } from "@/components/poste-table";
+import { accountLabel, effectiveBalance } from "../../lib/account";
+import { recapCompte } from "../../lib/recap-compte";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { RecapitulatifCompte } from "@/components/recapitulatif-compte";
 
 import { pourMoi } from "@/lib/current-user";
 
@@ -40,12 +33,12 @@ export default async function Dashboard() {
   // Une transaction non comptabilisée doit se comporter comme si elle n'existait
   // pas, y compris dans le solde affiché : le solde de la banque la contient, on la
   // retranche donc partout.
-  const { accounts, ignoredByAccount, allTxns, groups, datedBudgets, datedLines } =
+  const { accounts, ignoredByAccount, allTxns, allGroups, datedBudgets, datedLines } =
     await pourMoi(async (database, userId) => ({
       accounts: await listAccounts(database, userId),
       ignoredByAccount: await sumIgnoredByAccount(database),
       allTxns: (await listTransactions(database, userId)).map(toTxn) as Txn[],
-      groups: (await listGroups(database, userId)) as Group[],
+      allGroups: (await listGroups(database, userId)) as Group[],
       datedBudgets: toDatedBudgets(await listBudgetAmounts(database)),
       datedLines: toDatedLineAmounts(await listLineAmounts(database)),
     }));
@@ -68,86 +61,52 @@ export default async function Dashboard() {
     );
   }
 
-  const balance = accounts.reduce(
-    (s, a) => s + effectiveBalance(a.balance, ignoredByAccount[a.id]),
-    0,
-  );
-
-  // Le même moteur que l'Historique, mais tous comptes confondus : ce que cette
-  // page montre, c'est la structure entière, pas un compte à la fois.
-  const sections = computeHistory(groups, allTxns, months, currentMonth, datedBudgets, datedLines);
-  // L'estimé de fin du mois courant ancre les mois suivants : sans lui, la
-  // projection repart du solde d'aujourd'hui et ignore ce qui est déjà engagé.
-  const estime = computeTableEstimate(sections, months, currentMonth, balance)?.value ?? null;
-  const solde = computeSolde(sections, months, currentMonth, balance, estime);
-  const planned = computePlannedSoldes(sections, months, currentMonth, solde.openings, estime, datedBudgets);
-  const totaux = grandTotals(sections, months.length);
-
-  // ATTENTION. La chaîne réelle est PLATE sur les mois à venir : rien n'y est
-  // encore réalisé. Prise telle quelle, elle dessinerait six mâts de la même
-  // hauteur et le plan de charge ne dirait plus rien. C'est le prévu qui porte
-  // l'atterrissage (cf. soldeAffiche).
-  const mois = months.map((m, i) => ({
-    key: m,
-    label: monthShort(m, currentMonth),
-    solde: soldeAffiche(solde.closings, planned.prevuClosings, i, monthType(m, currentMonth) === "future"),
+  // UN RÉCAPITULATIF PAR COMPTE. Le tableau de bord montrait la somme de tout :
+  // un solde que personne ne peut dépenser d'un bloc, et un dépassement dont on
+  // ne savait plus quel compte l'avait creusé. Chaque compte porte maintenant sa
+  // propre structure, calculée sur ses seuls postes et ses seules opérations.
+  const recaps = accounts.map((a) => ({
+    compte: a,
+    recap: recapCompte(
+      a.id,
+      // Le solde de la banque privé de ce qui est hors calcul : c'est LUI qui
+      // ancre tout ce qui suit.
+      effectiveBalance(a.balance, ignoredByAccount[a.id]),
+      allGroups, allTxns, months, currentMonth, datedBudgets, datedLines,
+    ),
   }));
 
-  const income = sections.find((s) => s.kind === "income");
-  const expense = sections.find((s) => s.kind === "expense");
-  const entrees = (income?.rows ?? []).filter((r) => r.aliveMonths[0]);
-  const sorties = (expense?.rows ?? []).filter((r) => r.aliveMonths[0]);
-
-  // Les cinq mesures du mois, dans le vocabulaire du produit. « Solde » est ce
-  // que la banque dit aujourd'hui ; « projection » est là où le mois atterrit :
-  // deux chiffres différents, et c'est l'écart entre eux qui fait décider.
-  const depassement = monthlyOverspend(sections, months.length)[0];
-  const releves = [
-    { label: "Solde", valeur: balance },
-    { label: `Entrées ${monthPhrase(currentMonth)}`, valeur: totaux[0].recu },
-    { label: `Sorties ${monthPhrase(currentMonth)}`, valeur: -totaux[0].depense },
-    { label: "Dépassement", valeur: -depassement },
-    // « Projection », c'est où le mois atterrit si le plan tient — pas le solde
-    // de la banque, que la colonne « Solde » dit déjà juste à côté.
-    { label: "Projection", valeur: planned.prevuClosings[0] ?? solde.closings[0] },
-  ];
+  // Un seul compte : pas d'onglet. Un onglet solitaire ne se choisit pas, il ne
+  // fait qu'ajouter une ligne à cliquer au-dessus de la seule chose à voir.
+  if (recaps.length === 1) {
+    return (
+      <div className="mx-auto flex max-w-[1400px] flex-col gap-4">
+        <RecapitulatifCompte recap={recaps[0].recap} />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex max-w-[1400px] flex-col gap-4">
-      <PlanDeCharge mois={mois} />
-
-      <RelevesBand releves={releves} />
-
-      {/* Les deux tables du mois : ce qui porte à gauche, ce qui tire à droite. */}
-      <div className="grid gap-4 xl:grid-cols-2">
-        <PosteTable
-          titre="Entrées"
-          vide="Aucune entrée prévue ce mois-ci."
-          colonnes={["Prévu", "Reçu"]}
-          lignes={entrees.map((r) => ({
-            id: r.id,
-            nom: r.name,
-            montants: [r.cells[0].budgeted, r.cells[0].recu],
-            etat: r.cells[0].recu > 0 ? "acquis" : "attendu",
-          }))}
-        />
-        <PosteTable
-          titre="Sorties"
-          vide="Aucune enveloppe ce mois-ci."
-          colonnes={["Enveloppe", "Dépensé", "Reste"]}
-          lignes={sorties.map((r) => ({
-            id: r.id,
-            nom: r.name,
-            montants: [r.cells[0].budgeted, -r.cells[0].depense, r.cells[0].balance],
-            etat:
-              r.cells[0].balance < 0
-                ? "dépassé"
-                : r.cells[0].depense > 0
-                  ? "engagé"
-                  : "attendu",
-          }))}
-        />
-      </div>
+      <Tabs defaultValue={accounts[0].id}>
+        {/* Les onglets de comptes défilent plutôt que de se tasser : sur un écran
+            étroit, quatre noms de comptes ne tiennent pas côte à côte, et aucun ne
+            doit disparaître. */}
+        <div className="max-w-full overflow-x-auto">
+          <TabsList>
+            {recaps.map(({ compte }) => (
+              <TabsTrigger key={compte.id} value={compte.id}>
+                {accountLabel(compte)}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+        {recaps.map(({ compte, recap }) => (
+          <TabsContent key={compte.id} value={compte.id} className="flex flex-col gap-4">
+            <RecapitulatifCompte recap={recap} />
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
   );
 }
