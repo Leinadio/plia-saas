@@ -1,5 +1,6 @@
 import { formatEur } from "@/lib/money";
 import { cn } from "@/lib/utils";
+import { FORMAT_MONTANT, encoderMontant } from "@/lib/calculatrice";
 
 export type LignePoste = {
   id: number;
@@ -93,7 +94,22 @@ export function PosteTable({
                         m === 0 && "text-muted-foreground",
                       )}
                     >
-                      {formatEur(m)}
+                      {/* Chaque montant s'attrape et se tire dans la calculatrice de
+                          brouillon, avec le nom de son poste et celui de sa colonne :
+                          « Courses · Reste » se lit tout seul une fois là-bas. */}
+                      <span
+                        draggable
+                        onDragStart={(e) => {
+                          e.dataTransfer.setData(FORMAT_MONTANT, encoderMontant({
+                            libelle: `${l.nom} · ${colonnes[i]}`,
+                            montant: m,
+                          }));
+                          e.dataTransfer.effectAllowed = "copy";
+                        }}
+                        className="cursor-grab active:cursor-grabbing"
+                      >
+                        {formatEur(m)}
+                      </span>
                     </td>
                   ))}
                 </tr>

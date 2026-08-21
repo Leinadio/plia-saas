@@ -6,6 +6,7 @@ import { DetailSidebarProvider } from "@/components/detail-sidebar";
 import { MiseAJourProvider, FilDeTension } from "@/components/mise-a-jour";
 import { NotificationsButton } from "@/components/notifications-button";
 import { SyncButton } from "@/components/sync-button";
+import { CalculatriceProvider, CalculatriceButton } from "@/components/calculatrice";
 import { appNotifications } from "@/lib/app-notifications";
 
 // Le shell de l'application, et le seul point de passage vers elle. Tout ce qui vit
@@ -29,23 +30,29 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       {/* Le fournisseur d'attente englobe tout le shell : n'importe quelle
           commande, où qu'elle soit, allume le même fil sous la poutre. */}
       <MiseAJourProvider>
-        {/* min-w-0 : sans lui, un contenu large (le grand tableau) empêche la colonne
-            de rétrécir sous sa taille min-content et déborde sous le panneau.
-            overflow-hidden : c'est le contenu qui défile, pas le shell — la poutre
-            reste en place. */}
-        <div className="flex h-svh min-w-0 flex-1 flex-col overflow-hidden">
-          <AppTopbar user={{ name: session.user.name || session.user.email, email: session.user.email }}>
-            <SyncButton />
-            <NotificationsButton items={notifications} />
-          </AppTopbar>
-          {/* Le fil de tension, collé sous la poutre : c'est là qu'on regarde
-              quand on vient de cliquer, et c'est la seule ligne de l'écran qui
-              traverse toute sa largeur. */}
-          <FilDeTension />
-          {/* Marges resserrées sur téléphone : 12 px de chaque côté, parce que tout
-              ce qu'on prendrait de plus serait pris sur des colonnes de chiffres. */}
-          <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-6 sm:py-6">{children}</div>
-        </div>
+        {/* La calculatrice englobe tout le shell : son brouillon doit survivre au
+            passage d'un écran à l'autre — c'est justement d'un écran à l'autre
+            qu'on compare des montants. */}
+        <CalculatriceProvider>
+          {/* min-w-0 : sans lui, un contenu large (le grand tableau) empêche la
+              colonne de rétrécir sous sa taille min-content et déborde sous le
+              panneau. overflow-hidden : c'est le contenu qui défile, pas le
+              shell — la poutre reste en place. */}
+          <div className="flex h-svh min-w-0 flex-1 flex-col overflow-hidden">
+            <AppTopbar user={{ name: session.user.name || session.user.email, email: session.user.email }}>
+              <SyncButton />
+              <CalculatriceButton />
+              <NotificationsButton items={notifications} />
+            </AppTopbar>
+            {/* Le fil de tension, collé sous la poutre : c'est là qu'on regarde
+                quand on vient de cliquer, et c'est la seule ligne de l'écran qui
+                traverse toute sa largeur. */}
+            <FilDeTension />
+            {/* Marges resserrées sur téléphone : 12 px de chaque côté, parce que tout
+                ce qu'on prendrait de plus serait pris sur des colonnes de chiffres. */}
+            <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-6 sm:py-6">{children}</div>
+          </div>
+        </CalculatriceProvider>
       </MiseAJourProvider>
     </DetailSidebarProvider>
   );

@@ -18,6 +18,7 @@
 import { Fragment, cloneElement, createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, ArrowDownRight, ChevronDown, ChevronRight, Plus, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FORMAT_MONTANT, encoderMontant } from "@/lib/calculatrice";
 import { monthLabel } from "@/lib/transactions-view";
 import type { AccountForecast } from "@/lib/forecast";
 import { type MonthCell, type HistorySection, type HistoryRow, type HistorySubRow, type HistoryTxn, type SoldeColumn, type PlannedSoldes, type Overspend, type IgnoredBlock, uncatOverspend, uncatOverspendOf, splitExpenseSection, computeTableEstimate, rowRevenus, rowOverspend, groupsWithPending } from "@/lib/history";
@@ -418,10 +419,23 @@ function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCel
   if (!detail || !onSelect) return <TableCell data-cellkey={ck} className={cls}>{children}</TableCell>;
   // On rattache la clé de cette case au détail (cellRef), pour pouvoir la surligner
   // depuis la ligne « Total » du side panel.
+  //
+  // La case est aussi ATTRAPABLE : on la tire dans la calculatrice de brouillon, et
+  // elle y arrive avec son libellé. Le détail porte déjà les deux — « Courses ·
+  // juillet 2026 » et le montant — donc chaque case chiffrée du tableau devient une
+  // réserve sans que personne ait à décrire son contenu une seconde fois.
   return (
     <TableCell data-cellkey={ck} className={cls}>
       <button
         type="button"
+        draggable
+        onDragStart={(e) => {
+          e.dataTransfer.setData(FORMAT_MONTANT, encoderMontant({
+            libelle: detail.subtitle ? `${detail.subtitle} · ${detail.title}` : detail.title,
+            montant: detail.result,
+          }));
+          e.dataTransfer.effectAllowed = "copy";
+        }}
         onClick={() => onSelect(ck != null ? { ...detail, cellRef: ck } : detail)}
         className="cursor-pointer decoration-dotted underline-offset-2 hover:underline"
       >
