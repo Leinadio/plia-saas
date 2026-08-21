@@ -48,18 +48,19 @@ export const COL_INFO: Record<ColKey, string[]> = {
     "C'est l'argent qui est vraiment parti de ton compte ce mois-ci pour ce poste. Pas une prévision : le vrai, ce que tes achats t'ont coûté.",
     "À ne pas confondre avec le budget dépense, qui est ce que tu avais prévu de dépenser. En comparant les deux, tu vois d'un coup d'œil si tu es resté dans ton budget ou si tu l'as dépassé — c'est justement ce que t'affiche la colonne « Reste/Manque » juste après.",
     "Par exemple : si tu as payé 114 € d'abonnements et 100 € d'essence, ces montants s'additionnent dans ce que tu as dépensé sur le mois.",
-    "Si quelqu'un te rembourse, tu peux ranger son virement dans le poste qu'il rembourse : il vient en moins, et la case redescend d'autant. Des vacances à 1 200 € dont un ami te rend 200 € t'ont coûté 1 000 €, et c'est ce que la case affiche.",
+    "Cette case montre tout ce qui est sorti, sans rien retrancher. Si quelqu'un te rembourse et que tu ranges son virement dans le poste qu'il rembourse, l'argent qui revient ne s'enlève pas d'ici : il s'affiche à côté, dans « Reçu ». Des vacances à 1 200 € dont un ami te rend 200 € : la case affiche bien 1 200 €, les 200 € se lisent en face, et c'est la colonne « Reste/Manque » qui rassemble les deux et te dit ce que ça t'a vraiment coûté.",
   ],
   recu: [
     "C'est l'argent qui est vraiment arrivé sur ton compte ce mois-ci pour cette catégorie. Le vrai encaissement, pas la prévision.",
     "Ça n'a de sens que pour tes rentrées d'argent, comme ta paie ou un virement, et pour les opérations que tu n'as pas encore rangées dans une catégorie. Sur la ligne d'un poste de dépense, la case reste vide : un poste de dépense ne reçoit rien, il coûte.",
-    "Un remboursement rangé dans un poste de dépense, lui, s'affiche bien ici, sur sa propre ligne et pour son montant entier : cet argent est vraiment rentré. Ce qu'il change au poste se lit une ligne plus haut, dans « Dép. », qui a déjà baissé d'autant.",
+    "Un remboursement rangé dans un poste de dépense, lui, s'affiche bien ici, sur sa propre ligne et pour son montant entier : cet argent est vraiment rentré. La case « Dép. » d'à côté garde, elle, la dépense entière — les deux se lisent ensemble, et c'est « Reste/Manque » qui fait le compte.",
     "Par exemple : tu attends 650 €. Tant qu'ils ne sont pas là, cette case affiche 0. Dès qu'ils tombent sur le compte, elle passe à 650 €.",
   ],
   reste: [
     "Ça répond à une question toute simple : sur ce budget, est-ce qu'il me reste de la marge, ou est-ce que j'ai trop dépensé ?",
     "Si le chiffre est positif, c'est ce qu'il te reste à dépenser avant d'épuiser le budget. S'il est négatif et en rouge, c'est que tu as dépensé plus que prévu, et le chiffre te dit de combien tu as débordé.",
     "Par exemple : un budget de 250 € où tu as dépensé 144 €, il te reste 106 €. Un budget de 85 € où tu as dépensé 100 €, tu es à −15 € : tu as débordé de 15 €.",
+    "Quand de l'argent est revenu dans le poste, il compte ici aussi : le calcul est le budget, moins ce qui est sorti, plus ce qui est revenu. Un budget de 1 200 € entièrement dépensé dont un ami te rend 200 € : il te reste 200 €.",
   ],
   soldeReel: [
     "C'est l'argent que tu as vraiment sur ton compte, reconstitué étape par étape.",

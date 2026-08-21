@@ -58,7 +58,7 @@ describe("Montants affichés dans le tableau de l'historique", () => {
     const sections = hist([courses, abo], txns, ["2026-07"], "2026-07");
     // Une seule section : les deux dépenses y voisinent, dans l'ordre reçu.
     const [plate, decoupee] = sections.find((s) => s.kind === "expense")!.rows;
-    expect(plate.cells[0]).toEqual({ budgeted: 300, depense: 120, recu: 0, balance: 180, rembourse: 0 });
+    expect(plate.cells[0]).toEqual({ budgeted: 300, depense: 120, recu: 0, balance: 180, rembourse: 0, depenseBrute: 120, recuBrut: 0 });
     expect(decoupee.cells[0].budgeted).toBe(25); // 10 + 15
   });
 
@@ -75,14 +75,14 @@ describe("Montants affichés dans le tableau de l'historique", () => {
       tx({ id: "2", date: "2026-07-10", amount: -40, label: "LECLERC", groupId: 3 }),
     ];
     const sections = hist([courses, courses2], txns, ["2026-07"], "2026-07");
-    expect(sections[0].totals[0]).toEqual({ budgeted: 400, depense: 160, recu: 0, balance: 240, rembourse: 0 });
+    expect(sections[0].totals[0]).toEqual({ budgeted: 400, depense: 160, recu: 0, balance: 240, rembourse: 0, depenseBrute: 160, recuBrut: 0 });
   });
 
   it("devrait compter une rémunération comme argent reçu, jamais comme une dépense", () => {
     const income: Group = { id: 9, accountId: "a1", name: "Salaire", direction: "in", monthlyAmount: 2000, lines: [] };
     const txns = [tx({ id: "1", date: "2026-07-01", amount: 2000, label: "VIR REMU", groupId: 9 })];
     const sections = hist([income], txns, ["2026-07"], "2026-07");
-    expect(sections[0].rows[0].cells[0]).toEqual({ budgeted: 2000, depense: 0, recu: 2000, balance: 0, rembourse: 0 });
+    expect(sections[0].rows[0].cells[0]).toEqual({ budgeted: 2000, depense: 0, recu: 2000, balance: 0, rembourse: 0, depenseBrute: 0, recuBrut: 2000 });
   });
 
   it("devrait laisser un reste à zéro pour une rémunération, car l'argent reçu n'est pas un budget", () => {
@@ -153,8 +153,8 @@ describe("Montants affichés dans le tableau de l'historique", () => {
     const txns = [tx({ id: "1", date: "2026-07-10", amount: -120, label: "CARREFOUR", groupId: 1 })];
     const sections = hist([courses], txns, ["2026-07", "2026-08"], "2026-07");
     const row = sections[0].rows[0];
-    expect(row.cells[0]).toEqual({ budgeted: 300, depense: 120, recu: 0, balance: 180, rembourse: 0 }); // juillet, réel
-    expect(row.cells[1]).toEqual({ budgeted: 300, depense: 0, recu: 0, balance: 300, rembourse: 0 }); // août : rien dépensé encore
+    expect(row.cells[0]).toEqual({ budgeted: 300, depense: 120, recu: 0, balance: 180, rembourse: 0, depenseBrute: 120, recuBrut: 0 }); // juillet, réel
+    expect(row.cells[1]).toEqual({ budgeted: 300, depense: 0, recu: 0, balance: 300, rembourse: 0, depenseBrute: 0, recuBrut: 0 }); // août : rien dépensé encore
   });
 
   it("devrait garder un dépassement du mois en cours hors des cellules des mois futurs", () => {
@@ -162,8 +162,8 @@ describe("Montants affichés dans le tableau de l'historique", () => {
     const txns = [tx({ id: "1", date: "2026-07-10", amount: -450, label: "CARREFOUR", groupId: 1 })]; // 450 > 300
     const sections = hist([courses], txns, ["2026-07", "2026-08"], "2026-07");
     const row = sections[0].rows[0];
-    expect(row.cells[0]).toEqual({ budgeted: 300, depense: 450, recu: 0, balance: -150, rembourse: 0 }); // juillet, réel
-    expect(row.cells[1]).toEqual({ budgeted: 300, depense: 0, recu: 0, balance: 300, rembourse: 0 }); // août : rien dépensé encore
+    expect(row.cells[0]).toEqual({ budgeted: 300, depense: 450, recu: 0, balance: -150, rembourse: 0, depenseBrute: 450, recuBrut: 0 }); // juillet, réel
+    expect(row.cells[1]).toEqual({ budgeted: 300, depense: 0, recu: 0, balance: 300, rembourse: 0, depenseBrute: 0, recuBrut: 0 }); // août : rien dépensé encore
   });
 
   it("devrait réunir tous les blocs dans les totaux du mois, dépenses comme rémunérations", () => {
@@ -174,7 +174,7 @@ describe("Montants affichés dans le tableau de l'historique", () => {
     ];
     const sections = hist([courses, income], txns, ["2026-07"], "2026-07");
     const grand = grandTotals(sections, 1);
-    expect(grand[0]).toEqual({ budgeted: 2300, depense: 120, recu: 2000, balance: 180, rembourse: 0 });
+    expect(grand[0]).toEqual({ budgeted: 2300, depense: 120, recu: 2000, balance: 180, rembourse: 0, depenseBrute: 120, recuBrut: 2000 });
   });
 
   it("devrait ne compter que ce qui dépasse le budget chaque mois, en ignorant les groupes sous leur budget et les rémunérations", () => {
@@ -283,14 +283,14 @@ describe("Répartition des transactions sous les groupes", () => {
     const uncatOut = sections.find((s) => s.kind === "uncategorized" && s.uncatDirection === "out")!;
     // L'argent qui entre dans le bloc « in » (affiché sous les rémunérations)…
     expect(uncatIn.txns!.map((t) => t.id)).toEqual(["2"]);
-    expect(uncatIn.totals[0]).toEqual({ budgeted: 0, depense: 0, recu: 100, balance: 0 });
+    expect(uncatIn.totals[0]).toEqual({ budgeted: 0, depense: 0, recu: 100, balance: 0, depenseBrute: 0, recuBrut: 100 });
     // … et l'argent qui sort dans le bloc « out » (après les enveloppes). Sans
     // provision (aucun budget daté du groupe 0), la Balance = reçus non catégorisés
     // du bloc « in » (100) − dépensé (40) = 60. Le `recu` de CETTE section (« out »)
     // reste 0 (elle ne contient que les sorties) : c'est bien le reçu croisé du bloc
     // « in » qui alimente la Balance, comme le Reste affiché dans la grille.
     expect(uncatOut.txns!.map((t) => t.id)).toEqual(["1"]);
-    expect(uncatOut.totals[0]).toEqual({ budgeted: 0, depense: 40, recu: 0, balance: 60 });
+    expect(uncatOut.totals[0]).toEqual({ budgeted: 0, depense: 40, recu: 0, balance: 60, depenseBrute: 40, recuBrut: 0 });
     expect([...uncatIn.txns!, ...uncatOut.txns!].every((t) => t.groupId === null)).toBe(true);
     // Ordre : l'argent qui entre juste après les rémunérations (ici : en tête), l'argent qui sort en dernier.
     expect(sections.map((s) => (s.kind === "uncategorized" ? `uncat-${s.uncatDirection}` : s.kind))).toEqual([
@@ -570,9 +570,9 @@ describe("Budgets qui changent à partir d'un mois donné", () => {
     const sections = hist([courses], txns, ["2026-07", "2026-08"], "2026-07", dated);
     const row = sections[0].rows[0];
     // Juillet garde l'ancien budget (300) : le dépassement de 50 reste visible.
-    expect(row.cells[0]).toEqual({ budgeted: 300, depense: 350, recu: 0, balance: -50, rembourse: 0 });
+    expect(row.cells[0]).toEqual({ budgeted: 300, depense: 350, recu: 0, balance: -50, rembourse: 0, depenseBrute: 350, recuBrut: 0 });
     // Août applique le nouveau budget (400), rien de dépensé encore.
-    expect(row.cells[1]).toEqual({ budgeted: 400, depense: 0, recu: 0, balance: 400, rembourse: 0 });
+    expect(row.cells[1]).toEqual({ budgeted: 400, depense: 0, recu: 0, balance: 400, rembourse: 0, depenseBrute: 0, recuBrut: 0 });
   });
 
   it("devrait prendre le dernier budget daté à cette date ou avant", () => {

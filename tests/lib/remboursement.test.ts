@@ -1,8 +1,8 @@
 import { expect, describe, it } from "vitest";
 import {
-  computeHistory, computeOverspends, type HistorySection,
+  computeHistory, computeOverspends, grandTotals, type HistorySection,
 } from "../../src/lib/history";
-import { txnChildren, contreSensNodes } from "../../src/lib/history-detail";
+import { txnChildren, txnsDuSens, resteParts } from "../../src/lib/history-detail";
 import { computeForecast, type Group, type Txn } from "../../src/lib/forecast";
 import { postesPourSaisie } from "../../src/lib/group-options";
 import { seedDated, mergeDated } from "./dated-fixtures";
@@ -116,7 +116,7 @@ describe("Le remboursement rangé dans un poste de dépense", () => {
 
   it("devrait décomposer la case Remboursé sur les seuls encaissements du poste", () => {
     const r = ligne(hist([vacances], [depense, remboursement]), "expense", "Vacances Amsterdam");
-    const noeuds = contreSensNodes(r, "2026-07", "in", 0)!;
+    const noeuds = txnsDuSens(r, "2026-07", "in", 0)!;
     expect(noeuds.map((n) => n.amount)).toEqual([200]);
     expect(noeuds[0].label).toContain("Virement Léa");
     expect(noeuds[0].ref).toBe("txn:b::recu::0");
@@ -124,7 +124,7 @@ describe("Le remboursement rangé dans un poste de dépense", () => {
 
   it("ne devrait rien décomposer là où rien n'est venu à contre-sens", () => {
     const r = ligne(hist([vacances], [depense]), "expense", "Vacances Amsterdam");
-    expect(contreSensNodes(r, "2026-07", "in", 0)).toBeUndefined();
+    expect(txnsDuSens(r, "2026-07", "in", 0)).toBeUndefined();
   });
 
   it("devrait renvoyer le remboursement vers sa case de la colonne Reçu", () => {
@@ -224,5 +224,105 @@ describe("Le remboursement saisi à la main", () => {
   it("devrait garder le poste déjà choisi même s'il ne vit plus ce mois-là", () => {
     const noms = postesPourSaisie(postes, "a1", "2026-07", 2).flatMap((s) => s.groups.map((g) => g.name));
     expect(noms).toContain("Courses");
+  });
+});
+
+// --- Ce qui est vraiment sorti, et ce qui est vraiment rentré ----------------
+// La colonne Dép. affichait le dépensé NET du remboursement. Sur un poste
+// entièrement remboursé, elle disait 0,00 — alors que la transaction juste en
+// dessous montrait bien la somme partie. La colonne ne se totalisait plus sur ses
+// propres lignes, et l'argent qui avait quitté le compte n'était nulle part.
+//
+// Elle montre maintenant le BRUT : tout ce qui est sorti du poste. Le
+// remboursement se lit en face, dans Reçu, entier lui aussi, et c'est la Balance
+// qui fait la synthèse — elle seule dit ce qu'il reste, et elle ne bouge pas.
+describe("La dépense brute et le reçu brut d'un poste", () => {
+  const depense = tx({ id: "a", date: "2026-07-03", amount: -1200, label: "Hôtel", groupId: 1 });
+  const remboursement = tx({ id: "b", date: "2026-07-10", amount: 200, label: "Virement Léa", groupId: 1 });
+
+  it("montre la dépense entière du poste, remboursement non déduit", () => {
+    const r = ligne(hist([vacances], [depense, remboursement]), "expense", "Vacances Amsterdam");
+    expect(r.cells[0].depenseBrute).toBe(1200);
+    expect(r.cells[0].recuBrut).toBe(200);
+  });
+
+  it("laisse le net et la balance intacts : eux seuls comptent", () => {
+    const r = ligne(hist([vacances], [depense, remboursement]), "expense", "Vacances Amsterdam");
+    expect(r.cells[0].depense).toBe(1000);
+    expect(r.cells[0].balance).toBe(200);
+  });
+
+  it("vaut le réalisé tel quel quand rien n'est venu à contre-sens", () => {
+    const r = ligne(hist([vacances], [depense]), "expense", "Vacances Amsterdam");
+    expect(r.cells[0].depenseBrute).toBe(1200);
+    expect(r.cells[0].recuBrut).toBe(0);
+  });
+
+  it("descend jusqu'au sous-poste", () => {
+    const preleve = tx({ id: "a", date: "2026-07-03", amount: -30, label: "Spotify", groupId: 2, lineId: 21 });
+    const rendu = tx({ id: "b", date: "2026-07-20", amount: 12, label: "Geste", groupId: 2, lineId: 21 });
+    const r = ligne(hist([abos], [preleve, rendu]), "expense", "Abonnements");
+    expect(r.subRows[0].cells[0].depenseBrute).toBe(30);
+    expect(r.subRows[0].cells[0].recuBrut).toBe(12);
+  });
+
+  it("se totalise sur ses propres lignes, au sous-total comme au grand total", () => {
+    // C'est la raison d'être de ces deux montants : une colonne dont les lignes
+    // disent le brut et dont le pied dirait le net ne s'additionne plus.
+    const secs = hist([vacances, salaire], [depense, remboursement]);
+    const sortie = secs.find((s) => s.kind === "expense")!;
+    expect(sortie.totals[0].depenseBrute).toBe(1200);
+    expect(sortie.totals[0].recuBrut).toBe(200);
+    const grand = grandTotals(secs, MOIS.length);
+    expect(grand[0].depenseBrute).toBe(1200);
+    expect(grand[0].recuBrut).toBe(200);
+  });
+
+  it("joue en miroir sur un revenu dont on a rendu une part", () => {
+    const paye = tx({ id: "a", date: "2026-07-28", amount: 2000, label: "Salaire", groupId: 9 });
+    const rendu = tx({ id: "b", date: "2026-07-30", amount: -150, label: "Trop-perçu", groupId: 9 });
+    const r = ligne(hist([salaire], [paye, rendu]), "income", "Salaire");
+    expect(r.cells[0].recuBrut).toBe(2000);
+    expect(r.cells[0].depenseBrute).toBe(150);
+    expect(r.cells[0].recu).toBe(1850);
+  });
+
+  it("ne fabrique rien sur un mois de projection, où rien n'est réalisé", () => {
+    const r = ligne(hist([vacances], [depense, remboursement]), "expense", "Vacances Amsterdam");
+    expect(r.cells[1].depenseBrute).toBe(0);
+    expect(r.cells[1].recuBrut).toBe(0);
+  });
+});
+
+// --- Ce que raconte une case qu'on clique ------------------------------------
+// Chaque case chiffrée du tableau ouvre son calcul. Si la case montre le brut,
+// son calcul doit montrer le brut : une décomposition qui ne totalise pas sur le
+// montant qu'elle explique est pire que pas de décomposition du tout.
+describe("Le calcul derrière les cases d'un poste remboursé", () => {
+  const depense = tx({ id: "a", date: "2026-07-03", amount: -1200, label: "Hôtel", groupId: 1 });
+  const remboursement = tx({ id: "b", date: "2026-07-10", amount: 200, label: "Virement Léa", groupId: 1 });
+  const poste = () => ligne(hist([vacances], [depense, remboursement]), "expense", "Vacances Amsterdam");
+
+  it("décompose la case Dép. sur les seules sorties, et totalise dessus", () => {
+    const noeuds = txnsDuSens(poste(), "2026-07", "out", 0)!;
+    expect(noeuds.map((n) => n.label.includes("Hôtel"))).toEqual([true]);
+    expect(noeuds.reduce((s, n) => s + n.amount, 0)).toBe(1200);
+  });
+
+  it("décompose la case Reçu sur les seules entrées, et totalise dessus", () => {
+    const noeuds = txnsDuSens(poste(), "2026-07", "in", 0)!;
+    expect(noeuds.reduce((s, n) => s + n.amount, 0)).toBe(200);
+  });
+
+  it("explique le Reste par budget moins ce qui est sorti, plus ce qui est revenu", () => {
+    const parts = resteParts(poste().cells[0]);
+    expect(parts).toEqual({ budget: 1200, sorti: 1200, rentre: 200 });
+    // Et ça retombe sur la Balance, sinon la décomposition ment.
+    expect(parts.budget - parts.sorti + parts.rentre).toBe(poste().cells[0].balance);
+  });
+
+  it("n'invente pas de retour quand rien n'est revenu", () => {
+    const seul = ligne(hist([vacances], [depense]), "expense", "Vacances Amsterdam");
+    expect(resteParts(seul.cells[0])).toEqual({ budget: 1200, sorti: 1200, rentre: 0 });
   });
 });

@@ -62,18 +62,39 @@ export function txnChildren(r: HistoryRow, month: string, sign: 1 | -1, i: numbe
   );
 }
 
-// Les transactions d'un poste qui vont à contre-sens de lui, pour un mois : les
-// encaissements d'une dépense, les sorties d'un revenu. C'est la décomposition de la
-// case d'en face (cf. MonthCell.rembourse), donc des montants entiers et positifs :
-// cette case-là montre l'argent tel qu'il est passé, pas ce qu'il pèse dans le poste.
-// undefined quand rien n'est venu à contre-sens : la case reste vide, sans calcul.
-export function contreSensNodes(r: HistoryRow, month: string, sens: "in" | "out", i: number): DetailNode[] | undefined {
+// Les transactions d'un poste qui vont DANS un sens donné, pour un mois, à leur
+// montant entier et positif. C'est la décomposition des deux colonnes chiffrées du
+// réalisé : Dép. explique les sorties, Reçu explique les entrées — quel que soit le
+// sens du poste qui les porte.
+//
+// Elles montrent l'argent TEL QU'IL EST PASSÉ, pas ce qu'il pèse dans le poste : un
+// remboursement s'y lit en entier et en positif, du côté Reçu. Ce qu'il change au
+// poste se lit dans le Reste, qui l'ajoute (cf. resteParts).
+//
+// undefined quand rien n'est passé dans ce sens-là : la case reste vide, sans calcul.
+export function txnsDuSens(r: HistoryRow, month: string, sens: "in" | "out", i: number): DetailNode[] | undefined {
   const garde = (t: HistoryTxn) => (sens === "in" ? t.amount > 0 : t.amount < 0);
   const all = [...r.txns, ...r.subRows.flatMap((s) => s.txns)].filter((t) => t.month === month && garde(t));
   if (all.length === 0) return undefined;
   return all.map((t) =>
     txnNode(t.date, t.label, Math.abs(t.amount), cellKey(txnRow(t.id), t.amount < 0 ? "depense" : "recu", i)),
   );
+}
+
+// LA DÉCOMPOSITION DU RESTE, telle que la colonne l'affiche : budget − ce qui est
+// sorti + ce qui est revenu. Trois montants et non deux, parce que les colonnes Dép.
+// et Reçu montrent le BRUT : écrire « Budget − Dépensé » avec le brut ne retomberait
+// plus sur la Balance dès qu'un remboursement est passé par là.
+//
+// Le compte est le même qu'avant, seulement dit en entier : budget − (net + revenu)
+// + revenu = budget − net. La Balance ne bouge donc pas d'un centime, et chaque
+// terme renvoie vers une case que le tableau affiche vraiment.
+export function resteParts(c: MonthCell): { budget: number; sorti: number; rentre: number } {
+  return {
+    budget: c.budgeted,
+    sorti: c.depenseBrute ?? c.depense,
+    rentre: c.recuBrut ?? c.recu,
+  };
 }
 
 // Postes (lignes) d'un récurrent pour un mois → nœuds « Budget ». undefined si le

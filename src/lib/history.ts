@@ -33,6 +33,24 @@ export type MonthCell = {
   // Facultatif : toutes les cases fabriquées ailleurs (fixtures, sous-totaux) valent
   // zéro sans avoir à le dire.
   rembourse?: number;
+  // CE QUI EST VRAIMENT SORTI, ET CE QUI EST VRAIMENT RENTRÉ. `depense` et `recu`
+  // sont NETS du contre-sens : c'est ce qu'il faut pour les soldes, les
+  // dépassements et le Reste, où l'argent revenu ne doit pas compter deux fois.
+  // Mais ce n'est pas ce que le tableau doit montrer dans ses colonnes Dép. et
+  // Reçu : un poste de 6,40 intégralement remboursé y affichait 0,00, alors que la
+  // transaction juste en dessous montrait bien les 6,40 partis. La colonne ne se
+  // totalisait plus sur ses propres lignes, et l'argent sorti n'était nulle part.
+  //
+  // Ces deux-là portent donc le BRUT : tout ce qui est sorti, tout ce qui est
+  // rentré, quel que soit le sens du poste. Ils ne servent QU'À L'AFFICHAGE des
+  // deux colonnes — aucun calcul ne les lit — et ils s'additionnent comme les
+  // autres, pour que le pied d'une colonne dise bien la somme de ses lignes.
+  // La synthèse, elle, reste la Balance : budget − sorti + rentré.
+  //
+  // Facultatifs pour la même raison que `rembourse` : une case fabriquée ailleurs
+  // retombe sur `depense` / `recu`, qui valent alors déjà le brut.
+  depenseBrute?: number;
+  recuBrut?: number;
 };
 // Une transaction détaillée, rattachée à un groupe ou à un sous-groupe (ligne).
 // group_id / line_id portés pour alimenter le menu de (ré)assignation.
@@ -145,7 +163,7 @@ function toOwnable(g: Group): OwnableGroup {
 }
 
 function emptyCell(): MonthCell {
-  return { budgeted: 0, depense: 0, recu: 0, balance: 0, rembourse: 0 };
+  return { budgeted: 0, depense: 0, recu: 0, balance: 0, rembourse: 0, depenseBrute: 0, recuBrut: 0 };
 }
 
 // Les mois > currentMonth sont des projections, alignées sur le Prévisionnel
@@ -211,11 +229,17 @@ export function computeHistory(
     months.map((m) => {
       const budgeted = budgetedOf(m);
       const realized = m > currentMonth ? 0 : realizedOf(m);
+      const contre = m > currentMonth ? 0 : contreSensOf(m);
       return {
         budgeted,
         depense: isOut ? realized : 0,
         recu: isOut ? 0 : realized,
-        rembourse: m > currentMonth ? 0 : contreSensOf(m),
+        rembourse: contre,
+        // Le brut des deux colonnes. Dans le sens du poste, c'est le réalisé net
+        // AUGMENTÉ de ce qui est revenu — puisque le net l'avait retranché. À
+        // contre-sens, c'est ce contre-sens seul, qui est déjà entier.
+        depenseBrute: isOut ? realized + contre : contre,
+        recuBrut: isOut ? contre : realized + contre,
         // Le Reste ne concerne que les dépenses (budget − dépensé). Une entrée
         // d'argent n'a pas de budget, donc son Reste est nul : le reçu ne doit
         // jamais être soustrait d'un « reste de budget ».
@@ -283,6 +307,8 @@ export function computeHistory(
           recu: acc.recu + c.recu,
           balance: acc.balance + c.balance,
           rembourse: (acc.rembourse ?? 0) + (c.rembourse ?? 0),
+          depenseBrute: (acc.depenseBrute ?? 0) + (c.depenseBrute ?? c.depense),
+          recuBrut: (acc.recuBrut ?? 0) + (c.recuBrut ?? c.recu),
         };
       }, emptyCell()),
     );
@@ -350,11 +376,14 @@ export function computeHistory(
       // affiché (cf. resteVal dans history-grid.tsx, qui fait le même calcul).
       // Les reçus non catégorisés, eux, n'ont toujours pas de budget (0, reste à 0) :
       // l'argent reçu sans groupe n'est jamais soustrait d'un « reste ».
+      // Rien ne va à contre-sens d'une section sans poste : le brut y vaut le
+      // réalisé, et les colonnes se totalisent quand même.
+      const brut = { depenseBrute: depense, recuBrut: recu };
       if (direction === "out") {
         const budgeted = provisionInForce(dated, m);
-        return { budgeted, depense, recu, balance: budgeted + uncatInRecuOf(m) - depense };
+        return { budgeted, depense, recu, ...brut, balance: budgeted + uncatInRecuOf(m) - depense };
       }
-      return { budgeted: 0, depense, recu, balance: 0 };
+      return { budgeted: 0, depense, recu, ...brut, balance: 0 };
     });
     return { kind: "uncategorized", rows: [], totals, txns: mine.map(toHistoryTxn), uncatDirection: direction };
   };
@@ -453,6 +482,8 @@ export function sumRowCells(rows: HistoryRow[], monthCount: number): MonthCell[]
           recu: acc.recu + c.recu,
           balance: acc.balance + c.balance,
           rembourse: (acc.rembourse ?? 0) + (c.rembourse ?? 0),
+          depenseBrute: (acc.depenseBrute ?? 0) + (c.depenseBrute ?? c.depense),
+          recuBrut: (acc.recuBrut ?? 0) + (c.recuBrut ?? c.recu),
         };
       },
       emptyCell(),
@@ -472,6 +503,8 @@ export function grandTotals(sections: HistorySection[], monthCount: number): Mon
           recu: acc.recu + c.recu,
           balance: acc.balance + c.balance,
           rembourse: (acc.rembourse ?? 0) + (c.rembourse ?? 0),
+          depenseBrute: (acc.depenseBrute ?? 0) + (c.depenseBrute ?? c.depense),
+          recuBrut: (acc.recuBrut ?? 0) + (c.recuBrut ?? c.recu),
         };
       },
       emptyCell(),
