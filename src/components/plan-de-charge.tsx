@@ -1,5 +1,5 @@
 import { planDeCharge } from "@/lib/plan-de-charge";
-import { formatEur } from "@/lib/money";
+import { formatEur, formatEurCourt } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
 export type MoisDeCharge = { key: string; label: string; solde: number };
@@ -45,132 +45,137 @@ export function PlanDeCharge({ mois }: { mois: MoisDeCharge[] }) {
 
   return (
     <section aria-label="Plan de charge des prochains mois" className="plate px-3 py-4 sm:px-5 sm:py-5">
-      {/* Sur un écran étroit, la structure garde une largeur minimale et se fait
-          défiler, plutôt que d'écraser les montants en colonnes de deux lettres.
-          Cette largeur descend à 470 px sur téléphone — les annotations y passent
-          en petite chasse et les mâts se resserrent — au lieu des 620 px d'écran :
-          les six mois tiennent alors presque entiers là où on n'en voyait que
-          trois et demi. */}
-      <div className="-mx-1 overflow-x-auto px-1">
-        <div className="min-w-[470px] sm:min-w-[620px]">
-          {/* Les annotations en tête, alignées sur leur mât, chacune terminée par
-              la pastille ouverte du monde d'où tombe son fil de rappel. */}
-          <div
-            className="grid gap-1.5 sm:gap-3"
-            style={{ gridTemplateColumns: `repeat(${plan.mats.length}, minmax(0, 1fr))` }}
-          >
-            {mois.map((m, i) => (
-              <div key={m.key} className="flex flex-col items-center gap-1 text-center">
-                <span className="caption">{m.label}</span>
-                <span
-                  className={cn(
-                    "font-mono text-[11px] font-medium whitespace-nowrap sm:text-sm",
-                    plan.mats[i].brise && "text-tension-ink",
-                  )}
-                >
-                  {formatEur(m.solde)}
-                </span>
-                <span
-                  aria-hidden
-                  className={cn(
-                    "bg-card mt-0.5 size-[7px] rounded-full border",
-                    plan.mats[i].brise ? "border-tension" : "border-rule-strong",
-                  )}
-                />
-              </div>
-            ))}
-          </div>
+      {/* LE PLAN DE CHARGE TIENT TOUJOURS DANS LA LARGEUR QU'ON LUI DONNE. Il avait
+          une largeur minimale et se faisait défiler dessous : une pièce maîtresse
+          qu'il faut pousser du doigt pour voir en entier n'en est plus une, et les
+          derniers mois — ceux qui disent où l'on va — étaient justement ceux qu'on
+          ne voyait pas. Plus de largeur minimale, donc, et plus de défilement : les
+          mâts se resserrent, et ce sont les MONTANTS qui cèdent, en perdant leurs
+          centimes sous 640 px (cf. formatEurCourt). On y lit une trajectoire sur six
+          mois, pas une opération. Le padding latéral reste : il absorbe l'épaisseur
+          du câble aux deux bouts. */}
+      <div className="-mx-1 px-1">
+        {/* Les annotations en tête, alignées sur leur mât, chacune terminée par
+            la pastille ouverte du monde d'où tombe son fil de rappel. */}
+        <div
+          className="grid gap-0.5 sm:gap-3"
+          style={{ gridTemplateColumns: `repeat(${plan.mats.length}, minmax(0, 1fr))` }}
+        >
+          {mois.map((m, i) => (
+            <div key={m.key} className="flex flex-col items-center gap-1 text-center">
+              <span className="caption">{m.label}</span>
+              <span
+                className={cn(
+                  "font-mono text-[10px] font-medium whitespace-nowrap sm:text-sm",
+                  plan.mats[i].brise && "text-tension-ink",
+                )}
+              >
+                {/* Le même montant, dit court là où il n'y a pas la place. Les deux
+                    sont écrits : c'est la largeur de l'écran qui choisit, pas un
+                    calcul, donc rien ne peut se tromper au rendu. */}
+                <span className="sm:hidden">{formatEurCourt(m.solde)}</span>
+                <span className="hidden sm:inline">{formatEur(m.solde)}</span>
+              </span>
+              <span
+                aria-hidden
+                className={cn(
+                  "bg-card mt-0.5 size-[7px] rounded-full border",
+                  plan.mats[i].brise ? "border-tension" : "border-rule-strong",
+                )}
+              />
+            </div>
+          ))}
+        </div>
 
-          <div className="relative mt-2 h-44 sm:h-56">
-            {/* LE SOL. Un trait plein d'un bout à l'autre : c'est la ligne du zéro,
-                et tout le reste est posé dessus. */}
-            <div
-              className="bg-rule-strong absolute inset-x-0 h-px"
+        <div className="relative mt-2 h-44 sm:h-56">
+          {/* LE SOL. Un trait plein d'un bout à l'autre : c'est la ligne du zéro,
+              et tout le reste est posé dessus. */}
+          <div
+            className="bg-rule-strong absolute inset-x-0 h-px"
+            style={{ top: `${plan.zero}%` }}
+            aria-hidden
+          />
+          {/* Le sol est mesuré : il porte son nom aux deux bouts, comme une cote
+              sur un plan. */}
+          {["left-0", "right-0"].map((cote) => (
+            <span
+              key={cote}
+              className={cn("chip absolute -translate-y-1/2", cote)}
               style={{ top: `${plan.zero}%` }}
               aria-hidden
-            />
-            {/* Le sol est mesuré : il porte son nom aux deux bouts, comme une cote
-                sur un plan. */}
-            {["left-0", "right-0"].map((cote) => (
-              <span
-                key={cote}
-                className={cn("chip absolute -translate-y-1/2", cote)}
-                style={{ top: `${plan.zero}%` }}
-                aria-hidden
-              >
-                zéro
-              </span>
-            ))}
-
-            {/* Le câble, dessiné en coordonnées relatives : il s'étire avec la
-                plaque, et son épaisseur ne bouge pas (vector-effect). */}
-            <svg
-              className="cable-tendu absolute inset-0 h-full w-full overflow-visible"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              aria-hidden
             >
-              <path
-                d={cable}
-                fill="none"
-                stroke="var(--tension)"
-                strokeWidth={2.5}
-                strokeLinecap="round"
-                vectorEffect="non-scaling-stroke"
-              />
-            </svg>
+              zéro
+            </span>
+          ))}
 
-            {plan.mats.map((m, i) => {
-              const y = sommet(i);
-              return (
-                <div key={mois[i].key} aria-hidden>
-                  {/* Le fil de rappel : il tombe de l'annotation jusqu'au sommet
-                      du mât, pour qu'aucun montant ne flotte au-dessus de rien. */}
-                  <div
-                    className="bg-border absolute w-px"
-                    style={{ left: `${m.x}%`, top: 0, height: `${y}%` }}
-                  />
-                  {/* Le mât. Debout, il monte du sol à son sommet. Rompu, il
-                      TRAVERSE le sol : il dépasse au-dessus autant qu'il plonge
-                      en dessous, comme un poteau qui a percé sa semelle. */}
-                  <div
-                    className={cn(
-                      "mat absolute w-[3px] -translate-x-1/2",
-                      m.brise ? "bg-tension origin-top" : "bg-carbon origin-bottom dark:bg-[#d8d5d0]",
-                    )}
-                    style={{
-                      left: `${m.x}%`,
-                      top: m.brise ? `calc(${plan.zero}% - 10px)` : `${y}%`,
-                      height: m.brise
-                        ? `calc(${Math.abs(y - plan.zero)}% + 10px)`
-                        : `${Math.abs(y - plan.zero)}%`,
-                      animationDelay: `${i * 70}ms`,
-                    }}
-                  />
-                  {/* LA MARQUE DE RUPTURE. Le sol est interrompu là où le mât l'a
-                      percé, et deux traits obliques disent la cassure. C'est la
-                      seule chose de cet écran qu'on doit voir avant tout le
-                      reste. */}
-                  {m.brise && (
-                    <span
-                      className="rupture absolute -translate-x-1/2 -translate-y-1/2"
-                      style={{ left: `${m.x}%`, top: `${plan.zero}%` }}
-                    />
+          {/* Le câble, dessiné en coordonnées relatives : il s'étire avec la
+              plaque, et son épaisseur ne bouge pas (vector-effect). */}
+          <svg
+            className="cable-tendu absolute inset-0 h-full w-full overflow-visible"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            aria-hidden
+          >
+            <path
+              d={cable}
+              fill="none"
+              stroke="var(--tension)"
+              strokeWidth={2.5}
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+
+          {plan.mats.map((m, i) => {
+            const y = sommet(i);
+            return (
+              <div key={mois[i].key} aria-hidden>
+                {/* Le fil de rappel : il tombe de l'annotation jusqu'au sommet
+                    du mât, pour qu'aucun montant ne flotte au-dessus de rien. */}
+                <div
+                  className="bg-border absolute w-px"
+                  style={{ left: `${m.x}%`, top: 0, height: `${y}%` }}
+                />
+                {/* Le mât. Debout, il monte du sol à son sommet. Rompu, il
+                    TRAVERSE le sol : il dépasse au-dessus autant qu'il plonge
+                    en dessous, comme un poteau qui a percé sa semelle. */}
+                <div
+                  className={cn(
+                    "mat absolute w-[3px] -translate-x-1/2",
+                    m.brise ? "bg-tension origin-top" : "bg-carbon origin-bottom dark:bg-[#d8d5d0]",
                   )}
-                  {/* Le nœud : là où le câble prend appui. */}
-                  <div
-                    className={cn(
-                      "noeud absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full",
-                      m.brise
-                        ? "bg-tension ring-2 ring-[var(--tension)]/30"
-                        : "bg-carbon dark:bg-[#d8d5d0]",
-                    )}
-                    style={{ left: `${m.x}%`, top: `${y}%`, animationDelay: `${i * 70 + 120}ms` }}
+                  style={{
+                    left: `${m.x}%`,
+                    top: m.brise ? `calc(${plan.zero}% - 10px)` : `${y}%`,
+                    height: m.brise
+                      ? `calc(${Math.abs(y - plan.zero)}% + 10px)`
+                      : `${Math.abs(y - plan.zero)}%`,
+                    animationDelay: `${i * 70}ms`,
+                  }}
+                />
+                {/* LA MARQUE DE RUPTURE. Le sol est interrompu là où le mât l'a
+                    percé, et deux traits obliques disent la cassure. C'est la
+                    seule chose de cet écran qu'on doit voir avant tout le
+                    reste. */}
+                {m.brise && (
+                  <span
+                    className="rupture absolute -translate-x-1/2 -translate-y-1/2"
+                    style={{ left: `${m.x}%`, top: `${plan.zero}%` }}
                   />
-                </div>
-              );
-            })}
-          </div>
+                )}
+                {/* Le nœud : là où le câble prend appui. */}
+                <div
+                  className={cn(
+                    "noeud absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full",
+                    m.brise
+                      ? "bg-tension ring-2 ring-[var(--tension)]/30"
+                      : "bg-carbon dark:bg-[#d8d5d0]",
+                  )}
+                  style={{ left: `${m.x}%`, top: `${y}%`, animationDelay: `${i * 70 + 120}ms` }}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
