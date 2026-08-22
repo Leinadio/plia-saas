@@ -141,3 +141,69 @@ test("laisse remonter une panne qui n'a rien à voir avec la fenêtre", async ()
     syncAll(db, { ebGet, accountUids: ["acc1"], accountName: "CIC", userId: TEST_USER_ID }),
   ).rejects.toThrow("bank unavailable");
 });
+
+// Le CIC ne se contente pas de borner ce qu'il rend : il REFUSE la demande dès
+// qu'elle remonte plus loin que quatre-vingt-dix jours — et son refus dit où est
+// la limite. On lâchait cette phrase pour redemander sans aucune fenêtre, en
+// laissant la banque appliquer son défaut. On lui redemande maintenant exactement
+// ce qu'elle accepte, et l'aller-retour n'est plus perdu.
+test("redemande la fenêtre que la banque annonce dans son refus", async () => {
+  const db = dbFrom(await createTestDb());
+  const appels: string[] = [];
+  const ebGet = async <T>(path: string): Promise<T> => {
+    if (path.includes("/balances")) return { balances: [{ balance_amount: { amount: "0", currency: "EUR" } }] } as T;
+    if (path.includes("/details")) return { name: "CIC" } as T;
+    if (path.includes("/transactions")) {
+      appels.push(path);
+      const depuis = new URL(`https://x${path}`).searchParams.get("date_from");
+      const jours = depuis ? (Date.now() - new Date(depuis).getTime()) / 86_400_000 : 0;
+      if (jours > 90) {
+        throw new Error(
+          'Enable Banking HTTP 422: {"message":"Wrong transactions period requested","detail":{"message":"You can not request transactions more than 90 days in the past"},"error":"WRONG_TRANSACTIONS_PERIOD"}',
+        );
+      }
+      return { transactions: [op(1)] } as T;
+    }
+    return {} as T;
+  };
+
+  const res = await syncAll(db, { ebGet, accountUids: ["acc1"], accountName: "CIC", userId: TEST_USER_ID });
+
+  expect(res.imported).toBe(1);
+  expect(appels).toHaveLength(2);
+  // Le deuxième essai garde une fenêtre : celle de la banque, pas rien du tout.
+  const depuis = new URL(`https://x${appels[1]}`).searchParams.get("date_from");
+  expect(depuis).toBeTruthy();
+  const jours = (Date.now() - new Date(depuis!).getTime()) / 86_400_000;
+  expect(jours).toBeGreaterThan(80);
+  expect(jours).toBeLessThanOrEqual(90);
+});
+
+// Une banque qui refuserait ENCORE la fenêtre qu'elle vient d'annoncer ne doit pas
+// faire tourner la synchronisation en rond : on retombe sur la demande sans
+// fenêtre, et on s'arrête là.
+test("ne renégocie pas sans fin la fenêtre de dates", async () => {
+  const db = dbFrom(await createTestDb());
+  const appels: string[] = [];
+  const ebGet = async <T>(path: string): Promise<T> => {
+    if (path.includes("/balances")) return { balances: [{ balance_amount: { amount: "0", currency: "EUR" } }] } as T;
+    if (path.includes("/details")) return { name: "CIC" } as T;
+    if (path.includes("/transactions")) {
+      appels.push(path);
+      if (path.includes("date_from")) {
+        throw new Error(
+          'Enable Banking HTTP 422: {"detail":{"message":"You can not request transactions more than 90 days in the past"},"error":"WRONG_TRANSACTIONS_PERIOD"}',
+        );
+      }
+      return { transactions: [op(1)] } as T;
+    }
+    return {} as T;
+  };
+
+  const res = await syncAll(db, { ebGet, accountUids: ["acc1"], accountName: "CIC", userId: TEST_USER_ID });
+
+  expect(res.imported).toBe(1);
+  // Large refusée, resserrée refusée, puis sans fenêtre : trois essais, pas plus.
+  expect(appels).toHaveLength(3);
+  expect(appels[2]).not.toContain("date_from");
+});

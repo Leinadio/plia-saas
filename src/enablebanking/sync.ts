@@ -3,6 +3,7 @@ import { parseAmount } from "../lib/money";
 import { upsertAccount } from "../db/repositories/accounts";
 import { attachAccountToConnection } from "../db/repositories/bank-connections";
 import { upsertTransaction } from "../db/repositories/transactions";
+import { fenetreAcceptee } from "./periode";
 
 type EbGet = <T>(path: string) => Promise<T>;
 
@@ -45,18 +46,24 @@ const PAGES_MAX = 50;
 // S'arrêter à la première, c'est ce qui plafonnait des comptes à cinquante opérations
 // et donnait un historique de deux mois là où la banque en offrait davantage.
 async function fetchTransactions(ebGet: EbGet, uid: string): Promise<EbTxn[]> {
-  const depuis = new Date(Date.now() - HISTORIQUE_JOURS * 86_400_000).toISOString().slice(0, 10);
   const toutes: EbTxn[] = [];
   const clesVues = new Set<string>();
   let cle: string | undefined;
-  // Toutes les banques n'acceptent pas une fenêtre aussi large. Un refus la fait
-  // retomber, une fois, sur la demande sans fenêtre : mieux vaut les trois derniers
-  // mois que rien du tout.
-  let fenetre = true;
+  // La fenêtre demandée. Elle se RESSERRE au fil des refus, en deux temps :
+  //
+  //   1. deux ans, ce que la plupart des banques bornent d'elles-mêmes ;
+  //   2. ce que la banque annonce dans son refus — le CIC dit « pas plus de 90
+  //      jours » et on lui redemande exactement ça (cf. fenetreAcceptee) ;
+  //   3. plus de fenêtre du tout, et son défaut à elle.
+  //
+  // On ne redescend jamais deux fois par le même palier : une banque qui refuserait
+  // encore la fenêtre qu'elle vient d'annoncer ferait tourner la boucle en rond.
+  let depuis: string | null = new Date(Date.now() - HISTORIQUE_JOURS * 86_400_000).toISOString().slice(0, 10);
+  let renegociee = false;
 
   for (let page = 0; page < PAGES_MAX; page++) {
     const params = new URLSearchParams();
-    if (fenetre) params.set("date_from", depuis);
+    if (depuis) params.set("date_from", depuis);
     if (cle) params.set("continuation_key", cle);
     const q = params.toString();
 
@@ -64,9 +71,18 @@ async function fetchTransactions(ebGet: EbGet, uid: string): Promise<EbTxn[]> {
     try {
       res = await ebGet<TxnResponse>(`/accounts/${uid}/transactions${q ? `?${q}` : ""}`);
     } catch (e) {
-      if (!fenetre) throw e;
-      console.warn(`[sync] fenêtre de dates refusée pour ${uid}, nouvel essai sans :`, e);
-      fenetre = false;
+      // Plus de fenêtre à retirer : ce n'en était pas une, c'est une vraie panne.
+      if (!depuis) throw e;
+      const annoncee = renegociee ? null : fenetreAcceptee(e, new Date());
+      if (annoncee) {
+        // Une négociation attendue, pas un incident : une ligne, sans la pile.
+        console.info(`[sync] ${uid} : la banque limite l'historique, redemande depuis ${annoncee}`);
+        renegociee = true;
+        depuis = annoncee;
+      } else {
+        console.warn(`[sync] fenêtre de dates refusée pour ${uid}, nouvel essai sans :`, e);
+        depuis = null;
+      }
       page -= 1; // cette page n'a rien rapporté : elle est à refaire, pas à passer
       continue;
     }
