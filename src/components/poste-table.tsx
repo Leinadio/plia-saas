@@ -1,6 +1,5 @@
-import { formatEur } from "@/lib/money";
 import { cn } from "@/lib/utils";
-import { FORMAT_MONTANT, encoderMontant } from "@/lib/calculatrice";
+import { MontantAttrapable } from "@/components/montant-attrapable";
 
 export type LignePoste = {
   id: number;
@@ -96,20 +95,10 @@ export function PosteTable({
                     >
                       {/* Chaque montant s'attrape et se tire dans la calculatrice de
                           brouillon, avec le nom de son poste et celui de sa colonne :
-                          « Courses · Reste » se lit tout seul une fois là-bas. */}
-                      <span
-                        draggable
-                        onDragStart={(e) => {
-                          e.dataTransfer.setData(FORMAT_MONTANT, encoderMontant({
-                            libelle: `${l.nom} · ${colonnes[i]}`,
-                            montant: m,
-                          }));
-                          e.dataTransfer.effectAllowed = "copy";
-                        }}
-                        className="cursor-grab active:cursor-grabbing"
-                      >
-                        {formatEur(m)}
-                      </span>
+                          « Courses · Reste » se lit tout seul une fois là-bas. Cette
+                          table est rendue sur le serveur : le geste vit dans son
+                          propre composant client (cf. MontantAttrapable). */}
+                      <MontantAttrapable libelle={`${l.nom} · ${colonnes[i]}`} montant={m} />
                     </td>
                   ))}
                 </tr>
