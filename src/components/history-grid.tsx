@@ -2608,12 +2608,32 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             </Fragment>
           );
         })}
-        {/* Estimé fin de mois : mois courant = Total + rémunérations restant
+        {/* Le pied, en carbone plein et d'un seul bloc : ce que le mois a pesé, où
+            il finit, où il finirait, ce qu'il a débordé. C'est le tampon du relevé.
+            Le total et le solde étaient une seule ligne qui faisait les deux métiers,
+            et le solde s'y lisait comme un total de plus. */}
+        <TableRow style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
+          <TableCell className={cn(COL1_STICKY, "bg-carbon h-px p-0")}>
+            <FirstColBox>Total du mois</FirstColBox>
+          </TableCell>
+          <GrandTotalsCells part="totaux" sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} />
+        </TableRow>
+        <TableRow style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
+          <TableCell className={cn(COL1_STICKY, "bg-carbon h-px p-0")}>
+            <FirstColBox>Solde de fin de mois</FirstColBox>
+          </TableCell>
+          <GrandTotalsCells part="soldes" sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} />
+        </TableRow>
+        {/* Estimé fin de mois, DANS le pied et sous le solde : c'est la même
+            question posée un cran plus loin — le solde dit où le mois en est, l'estimé
+            où il finira si le plan tient. Les lire l'un sous l'autre, sur le même
+            carbone, fait de l'écart entre les deux la dernière chose qu'on voit.
+            Le calcul : mois courant = Total + rémunérations restant
             à recevoir − Balances vertes (le budget restant, supposé dépensé d'ici la
             fin du mois) ; autres mois = leur solde de clôture (même détail que la
             ligne « Total » pour ce mois — cf. soldeActuelDetail). */}
-        <TableRow className="text-sm">
-          <TableCell className={cn(COL1_STICKY, "bg-background h-px p-0")}>
+        <TableRow style={PIED_CARBONE} className={cn(PIED_LIGNE, "text-sm")}>
+          <TableCell className={cn(COL1_STICKY, "bg-carbon h-px p-0")}>
             <FirstColBox><span className="text-muted-foreground">Estimé fin de mois</span></FirstColBox>
           </TableCell>
           {months.map((m, i) => {
@@ -2651,22 +2671,6 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             if (m <= currentMonth) slots.soldeReel = estCell;
             return <Fragment key={i}>{renderCols(cols, slots)}</Fragment>;
           })}
-        </TableRow>
-        {/* Le pied, en carbone plein et en trois lignes contiguës : ce que le mois a
-            pesé, où il finit, ce qu'il a débordé. C'est le tampon du relevé. Le total
-            et le solde étaient une seule ligne qui faisait les deux métiers, et le
-            solde s'y lisait comme un total de plus. */}
-        <TableRow style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
-          <TableCell className={cn(COL1_STICKY, "bg-carbon h-px p-0")}>
-            <FirstColBox>Total du mois</FirstColBox>
-          </TableCell>
-          <GrandTotalsCells part="totaux" sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} />
-        </TableRow>
-        <TableRow style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
-          <TableCell className={cn(COL1_STICKY, "bg-carbon h-px p-0")}>
-            <FirstColBox>Solde de fin de mois</FirstColBox>
-          </TableCell>
-          <GrandTotalsCells part="soldes" sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} />
         </TableRow>
         {/* Dépassement final du mois : somme des montants rouges de la colonne
             Balance (groupes qui débordent + Non catégorisés), hors lignes
