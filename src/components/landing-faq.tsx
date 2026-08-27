@@ -24,7 +24,7 @@ const questions = [
   {
     question: "Quelle banque puis-je connecter ?",
     answer:
-      "La première version de Plia est conçue pour un compte CIC. La connexion passe par l’agrégateur Open Banking Enable Banking.",
+      "Plia permet de connecter vos comptes auprès de plus de 150 banques compatibles via l’agrégateur Open Banking Enable Banking.",
   },
   {
     question: "Plia peut-il déplacer mon argent ?",
@@ -36,21 +36,21 @@ const questions = [
 export function LandingFaq() {
   return (
     <section id="faq" className="border-y border-filet bg-surface">
-      <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[0.72fr_1.28fr] lg:gap-20 lg:px-10 lg:py-28">
-        <div>
+      <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+        <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs font-bold tracking-[0.14em] text-ardoise-claire uppercase">
             FAQ
           </p>
-          <h2 className="mt-5 max-w-[11ch] text-4xl leading-[1.02] font-bold tracking-[-0.035em] text-balance sm:text-5xl">
+          <h2 className="mx-auto mt-5 max-w-[15ch] text-4xl leading-[1.02] font-bold tracking-[-0.035em] text-balance sm:text-5xl">
             Avant de relier votre compte.
           </h2>
-          <p className="mt-5 max-w-[42ch] text-base leading-7 text-ardoise">
+          <p className="mx-auto mt-5 max-w-[42ch] text-base leading-7 text-ardoise">
             Ce que Plia fait, ce qu&apos;il ne fait pas, puis ce qu&apos;il faut
             savoir avant de commencer.
           </p>
         </div>
 
-        <div className="border-t border-filet">
+        <div className="mx-auto mt-12 max-w-5xl border-t border-filet">
           {questions.map((item) => (
             <details key={item.question} className="group border-b border-filet">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 font-semibold outline-none marker:hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-surface [&::-webkit-details-marker]:hidden">
