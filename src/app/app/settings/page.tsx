@@ -31,14 +31,14 @@ export default async function SettingsPage({
   }));
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
       {params.error && (
-        <div className="plate p-3 text-sm [--plate-fill:color-mix(in_oklab,var(--tension)_8%,var(--card))] [--plate-rule:var(--tension)]">
+        <div className="bandeau bandeau-tension">
           L&apos;autorisation n&apos;a pas abouti : {params.error}
         </div>
       )}
       {params.connected && (
-        <div className="plate p-3 text-sm [--plate-rule:var(--rule-strong)]">
+        <div className="creux p-3 text-sm">
           {/* L'import se lance tout seul au retour de la banque. Trois issues, et
               chacune se dit : sans le nombre, un écran vide laisse croire à une panne
               alors que la banque n'avait peut-être rien à donner. */}
@@ -65,7 +65,7 @@ export default async function SettingsPage({
             const etat = etatConnexion(cx.validUntil, new Date());
             const comptes = accounts.filter((a) => a.connection_id === cx.id);
             return (
-              <div key={cx.id} className="plate flex flex-col gap-2 p-3 [--plate-fill:var(--background)]">
+              <div key={cx.id} className="creux flex flex-col gap-2 p-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-medium">{cx.aspspName}</span>
                   {etat.etat === "valide" && (
@@ -90,7 +90,7 @@ export default async function SettingsPage({
                     pendant le parcours chez elle. Sans ce mot, la carte annonce une
                     banque connectée dont on ne verra jamais la moindre opération. */}
                 {comptes.length === 0 && (cx.accountUids === null || cx.accountUids === "[]") && (
-                  <p className="text-tension-ink text-sm">
+                  <p className="text-tension-encre text-sm">
                     Aucun compte partagé par cette banque. Refaites la connexion en
                     veillant à cocher les comptes à autoriser.
                   </p>

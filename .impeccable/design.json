@@ -1,288 +1,454 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-13T20:00:00.000Z",
+  "generatedAt": "2026-08-26T11:02:23Z",
   "title": "Design System: Plia",
   "extensions": {
     "colorMeta": {
+      "encre": {
+        "role": "neutral",
+        "displayName": "Encre bleu-ardoise",
+        "canonical": "#17222b",
+        "darkValue": "#e7edf0",
+        "tonalRamp": [
+          "oklch(15% 0.02 235)",
+          "oklch(25% 0.02 235)",
+          "oklch(35% 0.02 235)",
+          "oklch(45% 0.02 235)",
+          "oklch(55% 0.02 235)",
+          "oklch(68% 0.02 235)",
+          "oklch(82% 0.015 235)",
+          "oklch(95% 0.008 235)"
+        ]
+      },
+      "sol": {
+        "role": "neutral",
+        "displayName": "Sol cyanisé",
+        "canonical": "#edf1f2",
+        "darkValue": "#12181c",
+        "tonalRamp": [
+          "oklch(15% 0.008 210)",
+          "oklch(25% 0.008 210)",
+          "oklch(35% 0.008 210)",
+          "oklch(45% 0.008 210)",
+          "oklch(58% 0.007 210)",
+          "oklch(72% 0.006 210)",
+          "oklch(86% 0.005 210)",
+          "oklch(96% 0.004 210)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Blanc de carte",
+        "canonical": "#ffffff",
+        "darkValue": "#1b2329",
+        "tonalRamp": [
+          "oklch(15% 0.006 215)",
+          "oklch(25% 0.006 215)",
+          "oklch(35% 0.006 215)",
+          "oklch(45% 0.005 215)",
+          "oklch(58% 0.004 215)",
+          "oklch(73% 0.003 215)",
+          "oklch(88% 0.002 215)",
+          "oklch(100% 0 0)"
+        ]
+      },
+      "surface-creuse": {
+        "role": "neutral",
+        "displayName": "Surface creusée",
+        "canonical": "#f4f7f8",
+        "darkValue": "#232c33",
+        "tonalRamp": [
+          "oklch(16% 0.007 212)",
+          "oklch(26% 0.007 212)",
+          "oklch(36% 0.006 212)",
+          "oklch(46% 0.006 212)",
+          "oklch(59% 0.005 212)",
+          "oklch(74% 0.004 212)",
+          "oklch(88% 0.004 212)",
+          "oklch(97.5% 0.003 212)"
+        ]
+      },
+      "sarcelle": {
+        "role": "primary",
+        "displayName": "Sarcelle profonde",
+        "canonical": "#0b6e75",
+        "darkValue": "#3fa8ae",
+        "tonalRamp": [
+          "oklch(20% 0.045 196)",
+          "oklch(30% 0.06 196)",
+          "oklch(40% 0.07 196)",
+          "oklch(50% 0.075 196)",
+          "oklch(60% 0.075 196)",
+          "oklch(72% 0.065 196)",
+          "oklch(85% 0.04 196)",
+          "oklch(95% 0.018 196)"
+        ]
+      },
+      "portant": {
+        "role": "secondary",
+        "displayName": "Vert portant",
+        "canonical": "#1c7a4e",
+        "darkValue": "#4cb87f",
+        "tonalRamp": [
+          "oklch(20% 0.06 155)",
+          "oklch(30% 0.08 155)",
+          "oklch(40% 0.09 155)",
+          "oklch(50% 0.10 155)",
+          "oklch(62% 0.10 155)",
+          "oklch(74% 0.085 155)",
+          "oklch(86% 0.05 155)",
+          "oklch(95% 0.022 155)"
+        ]
+      },
       "tension": {
-        "role": "primary",
-        "displayName": "Rouge de tension",
-        "canonical": "oklch(0.5688 0.2099 25.4)",
-        "darkValue": "#e8434a",
-        "usage": "La couleur du trait : câble, mât rompu, marque de rupture, repère d'appui sous la destination courante et sous l'onglet actif, trait oblique de la commande pleine, filet du champ en saisie, étiquette d'un poste dépassé.",
-        "tonalRamp": ["oklch(0.15 0.2099 25.4)", "oklch(0.26 0.2099 25.4)", "oklch(0.37 0.2099 25.4)", "oklch(0.49 0.2099 25.4)", "oklch(0.60 0.2099 25.4)", "oklch(0.72 0.2099 25.4)", "oklch(0.83 0.2099 25.4)", "oklch(0.95 0.2099 25.4)"]
+        "role": "secondary",
+        "displayName": "Rouge tension",
+        "canonical": "#c0392b",
+        "darkValue": "#e4695a",
+        "tonalRamp": [
+          "oklch(20% 0.07 28)",
+          "oklch(30% 0.10 28)",
+          "oklch(40% 0.13 28)",
+          "oklch(50% 0.15 28)",
+          "oklch(60% 0.15 28)",
+          "oklch(72% 0.12 28)",
+          "oklch(86% 0.06 28)",
+          "oklch(96% 0.025 28)"
+        ]
       },
-      "tension-ink": {
-        "role": "primary",
-        "displayName": "Encre de tension",
-        "canonical": "oklch(0.4956 0.1835 25.1)",
-        "darkValue": "#f0666c",
-        "usage": "La même force en version texte, assombrie pour tenir 4.5:1 sur le béton : tout montant négatif, le solde d'un mois rompu, les liens.",
-        "tonalRamp": ["oklch(0.15 0.1835 25.1)", "oklch(0.26 0.1835 25.1)", "oklch(0.37 0.1835 25.1)", "oklch(0.49 0.1835 25.1)", "oklch(0.60 0.1835 25.1)", "oklch(0.72 0.1835 25.1)", "oklch(0.83 0.1835 25.1)", "oklch(0.95 0.1835 25.1)"]
+      "attente": {
+        "role": "tertiary",
+        "displayName": "Sable attente",
+        "canonical": "#8a6410",
+        "darkValue": "#d8a94a",
+        "tonalRamp": [
+          "oklch(20% 0.04 80)",
+          "oklch(30% 0.055 80)",
+          "oklch(40% 0.07 80)",
+          "oklch(50% 0.085 80)",
+          "oklch(62% 0.09 80)",
+          "oklch(75% 0.085 80)",
+          "oklch(87% 0.055 80)",
+          "oklch(96% 0.025 80)"
+        ]
       },
-      "ground": {
+      "ardoise": {
         "role": "neutral",
-        "displayName": "Béton coulé",
-        "canonical": "oklch(0.917 0.0063 75.4)",
-        "darkValue": "#121114",
-        "usage": "Le sol de l'application, porteur du grain photographié, et l'ingrédient de tout mélange de fond.",
-        "tonalRamp": ["oklch(0.15 0.0063 75.4)", "oklch(0.26 0.0063 75.4)", "oklch(0.37 0.0063 75.4)", "oklch(0.49 0.0063 75.4)", "oklch(0.60 0.0063 75.4)", "oklch(0.72 0.0063 75.4)", "oklch(0.83 0.0063 75.4)", "oklch(0.95 0.0063 75.4)"]
+        "displayName": "Ardoise",
+        "canonical": "#5a6b75",
+        "darkValue": "#9aabb4",
+        "tonalRamp": [
+          "oklch(18% 0.015 232)",
+          "oklch(28% 0.018 232)",
+          "oklch(38% 0.02 232)",
+          "oklch(48% 0.02 232)",
+          "oklch(58% 0.02 232)",
+          "oklch(70% 0.018 232)",
+          "oklch(84% 0.012 232)",
+          "oklch(95% 0.006 232)"
+        ]
       },
-      "plate": {
-        "role": "neutral",
-        "displayName": "Tôle peinte",
-        "canonical": "oklch(0.9435 0.0058 84.6)",
-        "darkValue": "#1a191d",
-        "usage": "La surface des plaques — cartes, panneaux, bande de relevés, panneau de détail. Lisse : le grain s'arrête au bord de la plaque.",
-        "tonalRamp": ["oklch(0.15 0.0058 84.6)", "oklch(0.26 0.0058 84.6)", "oklch(0.37 0.0058 84.6)", "oklch(0.49 0.0058 84.6)", "oklch(0.60 0.0058 84.6)", "oklch(0.72 0.0058 84.6)", "oklch(0.83 0.0058 84.6)", "oklch(0.95 0.0058 84.6)"]
-      },
-      "carbon": {
-        "role": "neutral",
-        "displayName": "Carbone",
-        "canonical": "oklch(0.1135 0.0533 324.3)",
-        "usage": "La structure : texte courant, mâts debout, pastilles gravées, fond des commandes pleines, filet fort sous un en-tête de tableau, et la couleur qu'on dilue pour teinter les familles de colonnes.",
-        "tonalRamp": ["oklch(0.15 0.0533 324.3)", "oklch(0.26 0.0533 324.3)", "oklch(0.37 0.0533 324.3)", "oklch(0.49 0.0533 324.3)", "oklch(0.60 0.0533 324.3)", "oklch(0.72 0.0533 324.3)", "oklch(0.83 0.0533 324.3)", "oklch(0.95 0.0533 324.3)"]
-      },
-      "graphite": {
-        "role": "neutral",
-        "displayName": "Graphite",
-        "canonical": "oklch(0.2903 0.0054 286.1)",
-        "usage": "Le survol de la commande pleine, en clair uniquement.",
-        "tonalRamp": ["oklch(0.15 0.0054 286.1)", "oklch(0.26 0.0054 286.1)", "oklch(0.37 0.0054 286.1)", "oklch(0.49 0.0054 286.1)", "oklch(0.60 0.0054 286.1)", "oklch(0.72 0.0054 286.1)", "oklch(0.83 0.0054 286.1)", "oklch(0.95 0.0054 286.1)"]
-      },
-      "ash": {
-        "role": "neutral",
-        "displayName": "Cendre",
-        "canonical": "oklch(0.6868 0.0029 286.3)",
-        "usage": "Le ton du dormant, prévu pour les filets et les contours. Écart connu : déclaré et exposé à Tailwind, mais employé par aucun composant à ce jour.",
-        "tonalRamp": ["oklch(0.15 0.0029 286.3)", "oklch(0.26 0.0029 286.3)", "oklch(0.37 0.0029 286.3)", "oklch(0.49 0.0029 286.3)", "oklch(0.60 0.0029 286.3)", "oklch(0.72 0.0029 286.3)", "oklch(0.83 0.0029 286.3)", "oklch(0.95 0.0029 286.3)"]
-      },
-      "muted-foreground": {
-        "role": "neutral",
-        "displayName": "Cendre assombri",
-        "canonical": "oklch(0.5216 0.0053 78.3)",
-        "darkValue": "#97948f",
-        "usage": "Texte secondaire, légendes, en-têtes de colonne, montants à zéro. Le cendre pur ne tenait pas le contraste sur le béton ; celui-ci le tient.",
-        "tonalRamp": ["oklch(0.15 0.0053 78.3)", "oklch(0.26 0.0053 78.3)", "oklch(0.37 0.0053 78.3)", "oklch(0.49 0.0053 78.3)", "oklch(0.60 0.0053 78.3)", "oklch(0.72 0.0053 78.3)", "oklch(0.83 0.0053 78.3)", "oklch(0.95 0.0053 78.3)"]
-      },
-      "void-white": {
-        "role": "neutral",
-        "displayName": "Blanc de vide",
-        "canonical": "oklch(0.9764 0.0013 286.4)",
-        "usage": "Les capitales sur carbone et les popovers en clair. Ce n'est pas un blanc pur.",
-        "tonalRamp": ["oklch(0.15 0.0013 286.4)", "oklch(0.26 0.0013 286.4)", "oklch(0.37 0.0013 286.4)", "oklch(0.49 0.0013 286.4)", "oklch(0.60 0.0013 286.4)", "oklch(0.72 0.0013 286.4)", "oklch(0.83 0.0013 286.4)", "oklch(0.95 0.0013 286.4)"]
-      },
-      "muted": {
-        "role": "neutral",
-        "displayName": "Sourdine",
-        "canonical": "oklch(0.8863 0.0075 80.7)",
-        "darkValue": "#26252a",
-        "usage": "Fonds secondaires, survols de ligne, commande secondaire.",
-        "tonalRamp": ["oklch(0.15 0.0075 80.7)", "oklch(0.26 0.0075 80.7)", "oklch(0.37 0.0075 80.7)", "oklch(0.49 0.0075 80.7)", "oklch(0.60 0.0075 80.7)", "oklch(0.72 0.0075 80.7)", "oklch(0.83 0.0075 80.7)", "oklch(0.95 0.0075 80.7)"]
-      },
-      "border": {
+      "filet": {
         "role": "neutral",
         "displayName": "Filet",
-        "canonical": "oklch(0.8187 0.0094 78.3)",
-        "darkValue": "#302f34",
-        "usage": "Bordures, séparateurs, fils de rappel du plan de charge.",
-        "tonalRamp": ["oklch(0.15 0.0094 78.3)", "oklch(0.26 0.0094 78.3)", "oklch(0.37 0.0094 78.3)", "oklch(0.49 0.0094 78.3)", "oklch(0.60 0.0094 78.3)", "oklch(0.72 0.0094 78.3)", "oklch(0.83 0.0094 78.3)", "oklch(0.95 0.0094 78.3)"]
-      },
-      "input": {
-        "role": "neutral",
-        "displayName": "Dormant",
-        "canonical": "oklch(0.7648 0.0108 81.8)",
-        "darkValue": "#3a393f",
-        "usage": "Le contour du champ au repos et celui de l'étiquette évidée.",
-        "tonalRamp": ["oklch(0.15 0.0108 81.8)", "oklch(0.26 0.0108 81.8)", "oklch(0.37 0.0108 81.8)", "oklch(0.49 0.0108 81.8)", "oklch(0.60 0.0108 81.8)", "oklch(0.72 0.0108 81.8)", "oklch(0.83 0.0108 81.8)", "oklch(0.95 0.0108 81.8)"]
-      },
-      "beam": {
-        "role": "secondary",
-        "displayName": "Poutre",
-        "canonical": "oklch(0.2031 0.008 297.1)",
-        "darkValue": "#08070a",
-        "usage": "Le fond du bandeau de navigation. En sombre elle s'enfonce d'un cran SOUS le sol : on ne distingue plus que son arête.",
-        "tonalRamp": ["oklch(0.15 0.008 297.1)", "oklch(0.26 0.008 297.1)", "oklch(0.37 0.008 297.1)", "oklch(0.49 0.008 297.1)", "oklch(0.60 0.008 297.1)", "oklch(0.72 0.008 297.1)", "oklch(0.83 0.008 297.1)", "oklch(0.95 0.008 297.1)"]
-      },
-      "beam-foreground": {
-        "role": "secondary",
-        "displayName": "Texte de poutre",
-        "canonical": "oklch(0.7773 0.0078 80.7)",
-        "darkValue": "#97948f",
-        "usage": "Les destinations au repos. La destination courante passe au brillant de la poutre.",
-        "tonalRamp": ["oklch(0.15 0.0078 80.7)", "oklch(0.26 0.0078 80.7)", "oklch(0.37 0.0078 80.7)", "oklch(0.49 0.0078 80.7)", "oklch(0.60 0.0078 80.7)", "oklch(0.72 0.0078 80.7)", "oklch(0.83 0.0078 80.7)", "oklch(0.95 0.0078 80.7)"]
-      },
-      "beam-accent": {
-        "role": "secondary",
-        "displayName": "Appui de poutre",
-        "canonical": "oklch(0.2551 0.0094 294.9)",
-        "darkValue": "#1c1b20",
-        "usage": "Le fond de survol des deux commandes posées dans la poutre : synchroniser et notifications.",
-        "tonalRamp": ["oklch(0.15 0.0094 294.9)", "oklch(0.26 0.0094 294.9)", "oklch(0.37 0.0094 294.9)", "oklch(0.49 0.0094 294.9)", "oklch(0.60 0.0094 294.9)", "oklch(0.72 0.0094 294.9)", "oklch(0.83 0.0094 294.9)", "oklch(0.95 0.0094 294.9)"]
-      },
-      "beam-rule": {
-        "role": "secondary",
-        "displayName": "Filet de poutre",
-        "canonical": "oklch(0.3002 0.009 295)",
-        "darkValue": "#242328",
-        "usage": "Le trait vertical de 24 px qui sépare le nom du produit des destinations.",
-        "tonalRamp": ["oklch(0.15 0.009 295)", "oklch(0.26 0.009 295)", "oklch(0.37 0.009 295)", "oklch(0.49 0.009 295)", "oklch(0.60 0.009 295)", "oklch(0.72 0.009 295)", "oklch(0.83 0.009 295)", "oklch(0.95 0.009 295)"]
+        "canonical": "#dce4e7",
+        "darkValue": "#2c363d",
+        "tonalRamp": [
+          "oklch(17% 0.01 218)",
+          "oklch(27% 0.01 218)",
+          "oklch(37% 0.011 218)",
+          "oklch(47% 0.011 218)",
+          "oklch(60% 0.011 218)",
+          "oklch(74% 0.01 218)",
+          "oklch(88% 0.008 218)",
+          "oklch(96% 0.005 218)"
+        ]
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Archivo resserrée à wdth 86 : le nom du produit dans la poutre et les rares titres gravés. Jamais une donnée." },
-      "title": { "displayName": "Titre de plaque", "purpose": "Azeret Mono capitales : le titre d'une plaque. Ce n'est pas une phrase, c'est une inscription." },
-      "body": { "displayName": "Interface", "purpose": "Archivo à sa chasse normale : libellés, phrases explicatives, noms de poste, états vides." },
-      "numeric": { "displayName": "Montant", "purpose": "Azeret Mono tabulaire, aligné à droite : tous les montants. Les montants de tête de la bande de relevés montent à 17 / 20 / 24 px selon la largeur." },
-      "label": { "displayName": "Étiquette gravée", "purpose": "Le texte d'un .chip : nomme un état, une colonne, une section — jamais une valeur." },
-      "caption": { "displayName": "Légende", "purpose": "La cote posée au-dessus d'un montant ou en tête de colonne. Plus ouverte que l'étiquette, et sans fond." },
-      "command": { "displayName": "Commande", "purpose": "Le texte de toute commande : boutons, onglets, destinations de la poutre." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Le titre de la landing, et lui seul. N'existe pas sous la porte de session."
+      },
+      "headline": {
+        "displayName": "Mesure de tête",
+        "purpose": "Le seul chiffre de l'écran qui réponde directement à « est-ce que je peux dépenser ? »."
+      },
+      "title": {
+        "displayName": "Titre de carte",
+        "purpose": "Une phrase en casse normale, pas une inscription gravée."
+      },
+      "body": {
+        "displayName": "Corps",
+        "purpose": "Texte courant, libellés de transaction, phrases d'explication."
+      },
+      "numeric": {
+        "displayName": "Montant",
+        "purpose": "Tout montant. Toujours à droite, tabulaire, insécable. Les trois sens ne changent que son encre."
+      },
+      "command": {
+        "displayName": "Commande",
+        "purpose": "Onglets, destinations de la barre produit, liens d'action en tête de carte."
+      },
+      "label": {
+        "displayName": "Légende",
+        "purpose": "Petites capitales posées au-dessus d'un montant ou en tête de colonne. Une cote, pas une étiquette."
+      }
     },
-    "shapes": {
-      "philosophy": "Aucun rayon. La famille de formes est la coupe à 45°, réalisée en clip-path polygon() avec un filet d'un pixel en double calque (une border CSS ignore clip-path).",
-      "notch": "9px",
-      "notch-command": "6px",
-      "plate-path": "polygon(var(--notch) 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, var(--notch) 100%, 0 calc(100% - var(--notch)), 0 var(--notch))",
-      "cut-path": "polygon(var(--notch) 0, 100% 0, 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, 0 100%, 0 var(--notch))",
-      "exceptions": "Deux formes rondes et deux seulement : le nœud du plan de charge (8 px) et la pastille ouverte d'annotation (7 px). Ce sont des points de structure, pas des surfaces."
+    "roundedMeta": {
+      "xs": {
+        "role": "small",
+        "canonical": "5px",
+        "purpose": "La case cochable."
+      },
+      "sm": {
+        "role": "small",
+        "canonical": "0.375rem",
+        "purpose": "Bouton minuscule, onglet, tuile de mois de la frise."
+      },
+      "md": {
+        "role": "medium",
+        "canonical": "0.5rem",
+        "purpose": "Commandes, champs, menus, blocs creusés."
+      },
+      "lg": {
+        "role": "large",
+        "canonical": "0.75rem",
+        "purpose": "La carte — la seule surface du produit."
+      },
+      "xl": {
+        "role": "large",
+        "canonical": "1rem",
+        "purpose": "Ce qui sort du flux : panneaux, tiroir de téléphone."
+      },
+      "full": {
+        "role": "pill",
+        "canonical": "999px",
+        "purpose": "Pastilles d'état, jauges, tirages, fil d'attente."
+      }
     },
     "shadows": [
-      { "name": "chip-slack-rule", "value": "inset 0 0 0 1px var(--input)", "purpose": "Le contour de l'étiquette évidée. Une ombre interne, pas une bordure : la pastille ne doit pas grandir." },
-      { "name": "selection-rule", "value": "inset 3px 0 0 0 var(--primary)", "purpose": "Le liseré de la ligne sélectionnée du panneau de détail. Interne, pour ne pas décaler le tableau d'un pixel à chaque clic." },
-      { "name": "elevation", "value": "none", "purpose": "Le système n'a aucune ombre portée. Le relief vient de la coupe, du filet d'un pixel et de la masse du carbone." }
+      {
+        "name": "ombre-carte",
+        "value": "0 1px 2px rgba(23, 34, 43, 0.06), 0 1px 3px rgba(23, 34, 43, 0.05)",
+        "darkValue": "0 1px 2px rgba(0, 0, 0, 0.4)",
+        "purpose": "L'état de repos de toute carte, de la barre produit et des boutons pleins."
+      },
+      {
+        "name": "ombre-levee",
+        "value": "0 2px 4px rgba(23, 34, 43, 0.06), 0 8px 20px -6px rgba(23, 34, 43, 0.14)",
+        "darkValue": "0 6px 18px -6px rgba(0, 0, 0, 0.55)",
+        "purpose": "Le survol d'une carte ouvrable, et rien d'autre. Le seul mouvement d'une carte."
+      },
+      {
+        "name": "ombre-flottante",
+        "value": "0 4px 8px rgba(23, 34, 43, 0.08), 0 18px 44px -10px rgba(23, 34, 43, 0.2)",
+        "darkValue": "0 18px 44px -10px rgba(0, 0, 0, 0.65)",
+        "purpose": "Ce qui sort du flux : menus, infobulles, panneaux latéraux, messages passagers."
+      }
     ],
     "motion": [
-      { "name": "ease-tension", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "La seule courbe du système : la mise en tension du plan de charge." },
-      { "name": "mat-lever", "value": "620ms, décalage 70ms par mât, scale 1 0 → 1 1 depuis le pied (depuis le sommet si le mât est rompu)", "purpose": "Les mâts se lèvent du sol l'un après l'autre à l'ouverture." },
-      { "name": "noeud-poser", "value": "360ms, décalage 70ms par nœud + 120ms", "purpose": "Les nœuds se posent après leur mât." },
-      { "name": "cable-tendre", "value": "900ms, délai 160ms, clip-path inset(-20% 100% -20% 0) → inset(-20% 0 -20% 0)", "purpose": "Le câble se tend de gauche à droite. Un rideau et non un stroke-dasharray : le dessin est étiré en largeur, les tirets sortiraient en morceaux." },
-      { "name": "reduced-motion", "value": "@media (prefers-reduced-motion: reduce) { animation: none }", "purpose": "Les trois animations sont coupées net. Il n'y en a aucune autre dans l'application." }
+      {
+        "name": "etat",
+        "value": "150ms linear",
+        "purpose": "Changement de couleur d'une commande au survol ou à l'ouverture."
+      },
+      {
+        "name": "carte-levee",
+        "value": "160ms ease-out",
+        "purpose": "L'ombre et le filet d'une carte ouvrable au survol. Le seul mouvement d'une carte."
+      },
+      {
+        "name": "tirage",
+        "value": "1500ms ease-in-out infinite",
+        "purpose": "Le reflet qui traverse un squelette. S'arrête sous prefers-reduced-motion."
+      },
+      {
+        "name": "fil-attente",
+        "value": "1050ms cubic-bezier(0.65, 0, 0.35, 1) infinite",
+        "purpose": "La barre sarcelle sous la barre produit pendant qu'un rendu serveur revient. S'arrête sous prefers-reduced-motion."
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "1024px" }
-    ],
-    "material": [
-      { "name": "beton", "value": "url(/matiere/beton.webp), background-size: 420px, blend multiply (clair) / soft-light (sombre), posé sur <html>", "purpose": "La seule image du produit. Elle vit derrière tout le reste : les plaques sont de la tôle peinte, lisse." }
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
     ]
   },
   "components": [
     {
-      "name": "Commande pleine",
+      "name": "Bouton principal",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "La touche de pupitre du système : carbone plein, deux angles coupés, et le trait rouge oblique qui marque ce qui engage.",
-      "html": "<button class=\"ds-btn ds-btn-primary\">Enregistrer</button>",
-      "css": ".ds-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 0 16px; border: none; cursor: pointer; font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; transition: all 0.15s ease; outline: none; } .ds-btn-primary { background: var(--carbon, #0d000f); color: var(--void-white, #f7f7f8); padding-left: 28px; clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px); } .ds-btn-primary::after { content: ''; position: absolute; left: 0.45rem; top: 50%; width: 0.85rem; height: 1px; background: var(--tension, #d7262e); transform: translateY(-50%) rotate(-45deg); } .ds-btn-primary:hover { background: var(--graphite, #2b2b2e); } .ds-btn-primary:focus-visible { box-shadow: 0 0 0 2px var(--tension, #d7262e); } .ds-btn-primary:active { background: #000; }"
+      "description": "La commande principale d'un écran. Le seul aplat de sarcelle avec la pastille de destination.",
+      "html": "<button class='ds-btn-primary'>Synchroniser</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 14px; border: none; border-radius: 0.5rem; background: var(--sarcelle, #0b6e75); color: #fff; font-family: inherit; font-size: 0.875rem; font-weight: 600; box-shadow: 0 1px 2px rgba(23,34,43,.06), 0 1px 3px rgba(23,34,43,.05); cursor: pointer; transition: background-color 150ms, box-shadow 150ms; } .ds-btn-primary:hover { background: var(--sarcelle-forte, #095b61); } .ds-btn-primary:focus-visible { outline: 2px solid var(--sarcelle, #0b6e75); outline-offset: 2px; } .ds-btn-primary:active { background: var(--sarcelle-forte, #095b61); }"
     },
     {
-      "name": "Commande à contour",
+      "name": "Bouton secondaire",
       "kind": "button",
       "refersTo": "button-outline",
-      "description": "La plaque de commande évidée : fond béton, filet d'un pixel qui suit la coupe, obtenu par deux calques superposés parce qu'une border ignore clip-path.",
-      "html": "<button class=\"ds-btn ds-btn-outline\">Annuler</button>",
-      "css": ".ds-btn-outline { position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 16px; border: none; cursor: pointer; background: transparent; color: var(--carbon, #0d000f); font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; transition: all 0.15s ease; outline: none; --ds-rule: var(--border, #c7c3bd); --ds-fill: var(--ground, #e6e3df); } .ds-btn-outline::before, .ds-btn-outline::after { content: ''; position: absolute; z-index: -1; clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px); } .ds-btn-outline::before { inset: 0; background: var(--ds-rule); } .ds-btn-outline::after { inset: 1px; background: var(--ds-fill); } .ds-btn-outline:hover { --ds-rule: var(--rule-strong, #0d000f); --ds-fill: var(--muted, #dcd9d4); } .ds-btn-outline:focus-visible { box-shadow: 0 0 0 2px var(--tension, #d7262e); }"
-    },
-    {
-      "name": "Étiquettes gravées",
-      "kind": "chip",
-      "refersTo": "chip",
-      "description": "Trois états et trois seulement : engagé (carbone plein), dormant (évidé), rompu (rouge de tension). Elle nomme un état, jamais une valeur.",
-      "html": "<span class=\"ds-chip\">engagé</span> <span class=\"ds-chip ds-chip-slack\">attendu</span> <span class=\"ds-chip ds-chip-tension\">dépassé</span>",
-      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 0.35em; background: var(--carbon, #0d000f); color: var(--void-white, #f7f7f8); font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.625rem; font-weight: 500; line-height: 1; letter-spacing: 0.09em; text-transform: uppercase; padding: 0.34em 0.55em 0.3em; white-space: nowrap; } .ds-chip-slack { background: transparent; color: var(--muted-foreground, #6b6966); box-shadow: inset 0 0 0 1px var(--input, #b6b2ab); } .ds-chip-tension { background: var(--tension, #d7262e); color: #fff; box-shadow: none; }"
+      "description": "Une carte à hauteur de bouton. Elle se distingue de la principale par sa matière, pas par une teinte plus pâle.",
+      "html": "<button class='ds-btn-outline'>Expliquer le calcul</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid var(--filet, #dce4e7); border-radius: 0.5rem; background: var(--surface, #fff); color: var(--encre, #17222b); font-family: inherit; font-size: 0.875rem; font-weight: 600; box-shadow: 0 1px 2px rgba(23,34,43,.06), 0 1px 3px rgba(23,34,43,.05); cursor: pointer; transition: background-color 150ms, border-color 150ms; } .ds-btn-outline:hover { background: var(--surface-survol, #f0f4f5); border-color: var(--filet-fort, #c3d0d5); } .ds-btn-outline:focus-visible { outline: 2px solid var(--sarcelle, #0b6e75); outline-offset: 2px; }"
     },
     {
       "name": "Champ de saisie",
       "kind": "input",
       "refersTo": "input-text",
-      "description": "Une plaque de commande évidée. À la mise au point, son filet passe au rouge de tension et un anneau l'entoure.",
-      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Montant\" />",
-      "css": ".ds-input { position: relative; isolation: isolate; height: 36px; width: 220px; padding: 4px 12px; border: none; background: transparent; color: var(--carbon, #0d000f); font-family: var(--font-sans, Archivo, ui-sans-serif, system-ui, sans-serif); font-size: 0.875rem; outline: none; transition: all 0.15s ease; --ds-rule: var(--border, #c7c3bd); } .ds-input::placeholder { color: var(--muted-foreground, #6b6966); } .ds-input::before, .ds-input::after { content: ''; position: absolute; z-index: -1; clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px); } .ds-input::before { inset: 0; background: var(--ds-rule); } .ds-input::after { inset: 1px; background: var(--ground, #e6e3df); } .ds-input:focus-visible { --ds-rule: var(--tension, #d7262e); box-shadow: 0 0 0 2px color-mix(in oklab, var(--tension, #d7262e) 60%, transparent); } .ds-input[aria-invalid='true'] { --ds-rule: var(--tension-ink, #b31d25); }"
+      "description": "Fond creusé au repos ; à la mise au point il s'éclaire en blanc et prend le filet sarcelle. Un champ actif est une surface qui s'ouvre.",
+      "html": "<input class='ds-input' type='text' placeholder='Rechercher un libellé…' />",
+      "css": ".ds-input { height: 36px; width: 100%; max-width: 280px; padding: 4px 12px; border: 1px solid var(--filet-fort, #c3d0d5); border-radius: 0.5rem; background: var(--surface-creuse, #f4f7f8); color: var(--encre, #17222b); font-family: inherit; font-size: 0.875rem; outline: none; transition: background-color 150ms, border-color 150ms, box-shadow 150ms; } .ds-input::placeholder { color: var(--ardoise-claire, #64747c); } .ds-input:focus-visible { background: var(--surface, #fff); border-color: var(--sarcelle, #0b6e75); box-shadow: 0 0 0 2px color-mix(in oklab, var(--sarcelle, #0b6e75) 25%, transparent); }"
     },
     {
-      "name": "Poutre de navigation",
-      "kind": "nav",
-      "refersTo": "beam-nav-item",
-      "description": "La seule masse de carbone d'un écran de béton : 52 px de haut, le nom en Archivo resserrée, trois destinations, et le trait de tension sous celle qui porte la charge.",
-      "html": "<header class=\"ds-beam\"><span class=\"ds-beam-name\">Plia</span><span class=\"ds-beam-rule\"></span><nav class=\"ds-beam-nav\"><a class=\"ds-beam-item ds-beam-item-active\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/></svg>Tableau de bord</a><a class=\"ds-beam-item\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m16 3 4 4-4 4\"/><path d=\"M20 7H4\"/><path d=\"m8 21-4-4 4-4\"/><path d=\"M4 17h16\"/></svg>Transactions</a><a class=\"ds-beam-item\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/><path d=\"M12 7v5l4 2\"/></svg>Historique</a></nav></header>",
-      "css": ".ds-beam { display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 16px; background: var(--beam, #17161a); color: var(--beam-foreground, #b9b6b1); } .ds-beam-name { font-family: var(--font-sans, Archivo, ui-sans-serif, system-ui, sans-serif); font-variation-settings: 'wdth' 86; letter-spacing: -0.01em; font-size: 1.25rem; font-weight: 700; line-height: 1; color: var(--void-white, #f7f7f8); } .ds-beam-rule { width: 1px; height: 24px; background: var(--beam-rule, #2e2d32); } .ds-beam-nav { display: flex; align-items: center; } .ds-beam-item { position: relative; display: flex; align-items: center; gap: 8px; height: 52px; padding: 0 14px; color: inherit; text-decoration: none; font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.6875rem; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.15s ease; } .ds-beam-item:hover, .ds-beam-item-active { color: var(--void-white, #f7f7f8); } .ds-beam-item-active::after { content: ''; position: absolute; left: 6px; right: 6px; bottom: 0; height: 2px; background: var(--tension, #d7262e); } .ds-beam-item:focus-visible { outline: 2px solid var(--tension, #d7262e); outline-offset: -2px; }"
+      "name": "Menu déroulant natif",
+      "kind": "input",
+      "refersTo": "select-native",
+      "description": "Tout menu déroulant du produit est un <select> natif habillé des jetons du champ : optgroup et ergonomie mobile.",
+      "html": "<select class='ds-select'><optgroup label='Dépenses'><option>Courses</option><option>Loyer</option></optgroup><optgroup label='Entrées'><option>Missions</option></optgroup></select>",
+      "css": ".ds-select { height: 36px; padding: 0 12px; border: 1px solid var(--filet-fort, #c3d0d5); border-radius: 0.5rem; background: var(--surface-creuse, #f4f7f8); color: var(--encre, #17222b); font-family: inherit; font-size: 0.875rem; outline: none; transition: background-color 150ms, border-color 150ms, box-shadow 150ms; } .ds-select:hover { background: var(--surface-survol, #f0f4f5); } .ds-select:focus-visible { border-color: var(--sarcelle, #0b6e75); box-shadow: 0 0 0 2px color-mix(in oklab, var(--sarcelle, #0b6e75) 25%, transparent); }"
     },
     {
-      "name": "Plaque",
+      "name": "Carte",
       "kind": "card",
-      "refersTo": "card-plate",
-      "description": "Quatre angles coupés à 9 px, un filet d'un pixel qui suit la coupe, aucune ombre. Toute surface du produit passe par là.",
-      "html": "<section class=\"ds-plate\"><h3 class=\"ds-plate-title\">Reste à vivre</h3><p class=\"ds-plate-amount\">1 284,50 €</p></section>",
-      "css": ".ds-plate { position: relative; isolation: isolate; padding: 20px; color: var(--carbon, #0d000f); } .ds-plate::before, .ds-plate::after { content: ''; position: absolute; z-index: -1; clip-path: polygon(9px 0, calc(100% - 9px) 0, 100% 9px, 100% calc(100% - 9px), calc(100% - 9px) 100%, 9px 100%, 0 calc(100% - 9px), 0 9px); } .ds-plate::before { inset: 0; background: var(--border, #c7c3bd); } .ds-plate::after { inset: 1px; background: var(--plate, #eeece8); } .ds-plate-title { margin: 0 0 12px; font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.75rem; font-weight: 500; line-height: 1; letter-spacing: 0.09em; text-transform: uppercase; } .ds-plate-amount { margin: 0; text-align: right; font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 1.5rem; font-weight: 500; font-variant-numeric: tabular-nums; }"
+      "refersTo": "card",
+      "description": "La surface du produit, et la seule. Rien ne s'imbrique : ce qui vit dedans prend la surface creusée.",
+      "html": "<div class='ds-carte'><div class='ds-carte-tete'><span class='ds-titre'>Dépenses prévues</span><span class='ds-montant'>1 240,00 €</span></div><div class='ds-carte-corps'><div class='ds-creux'>Reste 312,50 € sur 4 postes</div></div></div>",
+      "css": ".ds-carte { background: var(--surface, #fff); border: 1px solid var(--filet, #dce4e7); border-radius: 0.75rem; box-shadow: 0 1px 2px rgba(23,34,43,.06), 0 1px 3px rgba(23,34,43,.05); color: var(--encre, #17222b); font-family: inherit; max-width: 420px; overflow: hidden; } .ds-carte-tete { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--filet, #dce4e7); } .ds-titre { font-size: 0.9375rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.006em; } .ds-montant { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.9375rem; letter-spacing: -0.012em; white-space: nowrap; } .ds-carte-corps { padding: 16px; } .ds-creux { background: var(--surface-creuse, #f4f7f8); border-radius: 0.5rem; padding: 10px 12px; font-size: 0.8125rem; color: var(--ardoise, #5a6b75); }"
     },
     {
-      "name": "Relevé",
-      "kind": "custom",
-      "refersTo": "table-head",
-      "description": "La forme du produit qui ne se discute pas : en-têtes gravés sur un filet fort, lignes séparées d'un filet d'un pixel, montants à droite en mono tabulaire, négatifs à l'encre de tension.",
-      "html": "<table class=\"ds-table\"><thead><tr><th>Poste</th><th>État</th><th class=\"ds-num\">Budget</th><th class=\"ds-num\">Reste</th></tr></thead><tbody><tr><td>Courses</td><td><span class=\"ds-chip\">engagé</span></td><td class=\"ds-num\">420,00 €</td><td class=\"ds-num\">86,40 €</td></tr><tr><td>Essence</td><td><span class=\"ds-chip ds-chip-tension\">dépassé</span></td><td class=\"ds-num\">120,00 €</td><td class=\"ds-num ds-neg\">−34,10 €</td></tr></tbody></table>",
-      "css": ".ds-table { width: 100%; border-collapse: collapse; font-family: var(--font-sans, Archivo, ui-sans-serif, system-ui, sans-serif); font-size: 0.875rem; color: var(--carbon, #0d000f); font-variant-numeric: tabular-nums; } .ds-table thead tr { border-bottom: 1px solid var(--rule-strong, #0d000f); } .ds-table th { height: 32px; padding: 0 8px; text-align: left; color: var(--muted-foreground, #6b6966); font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.625rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; } .ds-table td { padding: 6px 8px; border-bottom: 1px solid var(--border, #c7c3bd); white-space: nowrap; } .ds-table tbody tr:last-child td { border-bottom: 0; } .ds-table tbody tr:hover td { background: color-mix(in oklab, var(--muted, #dcd9d4) 60%, transparent); } .ds-table .ds-num { text-align: right; font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.8125rem; } .ds-table .ds-neg { color: var(--tension-ink, #b31d25); }"
+      "name": "Pastille d'état",
+      "kind": "chip",
+      "refersTo": "badge-portant",
+      "description": "Un ovale plein en petites capitales qui nomme un état — jamais une valeur. Avec la jauge, le seul endroit où une couleur de sens sert de fond.",
+      "html": "<span class='ds-pastille'>engagé</span> <span class='ds-pastille ds-pastille-portant'>acquis</span> <span class='ds-pastille ds-pastille-attente'>attendu</span> <span class='ds-pastille ds-pastille-tension'>dépassé</span>",
+      "css": ".ds-pastille { display: inline-flex; align-items: center; gap: 0.3em; border-radius: 999px; padding: 0.2em 0.62em; font-family: inherit; font-size: 0.6875rem; font-weight: 600; line-height: 1.35; letter-spacing: 0.02em; white-space: nowrap; background: var(--surface-creuse, #f4f7f8); color: var(--ardoise, #5a6b75); box-shadow: inset 0 0 0 1px var(--filet, #dce4e7); } .ds-pastille-portant { background: var(--portant-voile, #e2f1e8); color: var(--portant, #1c7a4e); box-shadow: none; } .ds-pastille-attente { background: var(--attente-voile, #f7eedb); color: var(--attente, #8a6410); box-shadow: none; } .ds-pastille-tension { background: var(--tension-voile, #fbe7e4); color: var(--tension-encre, #a8332a); box-shadow: none; }"
     },
     {
-      "name": "Plan de charge",
+      "name": "Jauge d'enveloppe",
       "kind": "custom",
-      "refersTo": "card-plate",
-      "description": "Le composant signature : un mât par mois planté sur la ligne du zéro, un câble rouge qui pend d'un sommet à l'autre, et un mât rompu qui traverse le sol. Chaque montant est écrit au-dessus de son mât — retirez le dessin, les chiffres suffisent encore.",
-      "html": "<section class=\"ds-plan\"><div class=\"ds-plan-head\"><div><span class=\"ds-plan-cap\">Sept.</span><span class=\"ds-plan-amt\">1 830,00 €</span></div><div><span class=\"ds-plan-cap\">Oct.</span><span class=\"ds-plan-amt\">940,00 €</span></div><div><span class=\"ds-plan-cap\">Nov.</span><span class=\"ds-plan-amt ds-plan-amt-neg\">−320,00 €</span></div></div><div class=\"ds-plan-zone\"><span class=\"ds-plan-sol\"></span><span class=\"ds-chip ds-plan-zero\">zéro</span><svg class=\"ds-plan-cable\" viewBox=\"0 0 100 100\" preserveAspectRatio=\"none\"><path d=\"M 16.7 18 Q 33.3 60 50 52 Q 66.7 96 83.3 88\" fill=\"none\" stroke=\"var(--tension, #d7262e)\" stroke-width=\"2.5\" stroke-linecap=\"round\" vector-effect=\"non-scaling-stroke\"/></svg><span class=\"ds-plan-mat\" style=\"left:16.7%; top:18%; height:52%\"></span><span class=\"ds-plan-noeud\" style=\"left:16.7%; top:18%\"></span><span class=\"ds-plan-mat\" style=\"left:50%; top:52%; height:18%\"></span><span class=\"ds-plan-noeud\" style=\"left:50%; top:52%\"></span><span class=\"ds-plan-mat ds-plan-mat-brise\" style=\"left:83.3%; top:calc(70% - 10px); height:calc(18% + 10px)\"></span><span class=\"ds-plan-rupture\" style=\"left:83.3%; top:70%\"></span><span class=\"ds-plan-noeud ds-plan-noeud-brise\" style=\"left:83.3%; top:88%\"></span></div></section>",
-      "css": ".ds-plan { position: relative; isolation: isolate; padding: 20px; } .ds-plan::before, .ds-plan::after { content: ''; position: absolute; z-index: -1; clip-path: polygon(9px 0, calc(100% - 9px) 0, 100% 9px, 100% calc(100% - 9px), calc(100% - 9px) 100%, 9px 100%, 0 calc(100% - 9px), 0 9px); } .ds-plan::before { inset: 0; background: var(--border, #c7c3bd); } .ds-plan::after { inset: 1px; background: var(--plate, #eeece8); } .ds-plan-head { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; } .ds-plan-head > div { display: flex; flex-direction: column; align-items: center; gap: 4px; } .ds-plan-cap { font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.625rem; font-weight: 500; letter-spacing: 0.11em; text-transform: uppercase; color: var(--muted-foreground, #6b6966); } .ds-plan-amt { font-family: var(--font-mono, 'Azeret Mono', ui-monospace, monospace); font-size: 0.875rem; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--carbon, #0d000f); } .ds-plan-amt-neg { color: var(--tension-ink, #b31d25); } .ds-plan-zone { position: relative; height: 224px; margin-top: 8px; } .ds-plan-sol { position: absolute; left: 0; right: 0; top: 70%; height: 1px; background: var(--rule-strong, #0d000f); } .ds-plan-zero { position: absolute; left: 0; top: 70%; transform: translateY(-50%); font-size: 0.5625rem; } .ds-plan-cable { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; } .ds-plan-mat { position: absolute; width: 3px; transform: translateX(-50%); background: var(--carbon, #0d000f); animation: ds-mat 620ms cubic-bezier(0.16, 1, 0.3, 1) both; transform-origin: bottom; } .ds-plan-mat-brise { background: var(--tension, #d7262e); transform-origin: top; } .ds-plan-noeud { position: absolute; width: 8px; height: 8px; border-radius: 9999px; transform: translate(-50%, -50%); background: var(--carbon, #0d000f); animation: ds-noeud 360ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both; } .ds-plan-noeud-brise { background: var(--tension, #d7262e); box-shadow: 0 0 0 2px color-mix(in oklab, var(--tension, #d7262e) 30%, transparent); } .ds-plan-rupture { position: absolute; width: 22px; height: 14px; transform: translate(-50%, -50%); background: var(--plate, #eeece8); } .ds-plan-rupture::before, .ds-plan-rupture::after { content: ''; position: absolute; top: 0; height: 14px; width: 2px; background: var(--tension, #d7262e); transform: rotate(24deg); } .ds-plan-rupture::before { left: 5px; } .ds-plan-rupture::after { right: 5px; } @keyframes ds-mat { from { scale: 1 0; } to { scale: 1 1; } } @keyframes ds-noeud { from { scale: 0; opacity: 0; } to { scale: 1; opacity: 1; } } @media (prefers-reduced-motion: reduce) { .ds-plan-mat, .ds-plan-noeud { animation: none; } }"
+      "refersTo": "gauge-envelope",
+      "description": "La pièce signature. La largeur totale vaut la DÉPENSE, pas le budget : la piste n'occupe que la part budgétée et le débord se pose à sa droite, séparé par une encoche. Rompue, la barre passe entièrement au rouge.",
+      "html": "<div class='ds-jauge'><div class='ds-jauge-piste' style='width:62%'><div class='ds-jauge-part' style='width:100%'></div></div><div class='ds-jauge-debord' style='width:38%'></div></div><div class='ds-jauge' style='margin-top:14px'><div class='ds-jauge-piste' style='width:100%'><div class='ds-jauge-part ds-jauge-part-neutre' style='width:44%'></div></div></div>",
+      "css": ".ds-jauge { position: relative; display: flex; height: 8px; width: 100%; max-width: 320px; align-items: stretch; border-radius: 999px; background: color-mix(in oklab, var(--filet-fort, #c3d0d5) 45%, var(--surface-creuse, #f4f7f8)); overflow: visible; } .ds-jauge-piste { position: relative; height: 100%; border-radius: 999px; background: color-mix(in oklab, var(--filet-fort, #c3d0d5) 45%, var(--surface-creuse, #f4f7f8)); overflow: hidden; } .ds-jauge-part { height: 100%; border-radius: 999px; background: var(--tension-encre, #a8332a); } .ds-jauge-part-neutre { background: var(--ardoise, #5a6b75); } .ds-jauge-debord { height: 100%; min-width: 6px; border-radius: 999px; background: var(--tension, #c0392b); box-shadow: -2px 0 0 0 var(--surface, #fff); }"
+    },
+    {
+      "name": "Destination de la barre produit",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "La destination courante prend une pastille sarcelle pleine, jamais un trait sous le pied — le trait est réservé aux onglets dans une page.",
+      "html": "<nav class='ds-barre'><a class='ds-nav ds-nav-active' href='#' aria-current='page'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='7' height='9'/><rect x='14' y='3' width='7' height='5'/><rect x='14' y='12' width='7' height='9'/><rect x='3' y='16' width='7' height='5'/></svg>Tableau de bord</a><a class='ds-nav' href='#'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M8 3 4 7l4 4'/><path d='M4 7h16'/><path d='m16 21 4-4-4-4'/><path d='M20 17H4'/></svg>Transactions</a></nav>",
+      "css": ".ds-barre { display: flex; align-items: center; gap: 2px; height: 56px; padding: 0 16px; background: var(--surface, #fff); border-bottom: 1px solid var(--filet, #dce4e7); font-family: inherit; } .ds-nav { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 0.5rem; color: var(--ardoise, #5a6b75); font-size: 0.8125rem; font-weight: 600; text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-nav:hover { background: var(--surface-survol, #f0f4f5); color: var(--encre, #17222b); } .ds-nav-active { background: var(--sarcelle-voile, #e2eff0); color: var(--sarcelle-encre, #0a656c); } .ds-nav:focus-visible { outline: 2px solid var(--sarcelle, #0b6e75); outline-offset: 2px; }"
+    },
+    {
+      "name": "Bandeau de section",
+      "kind": "custom",
+      "refersTo": "bandeau",
+      "description": "Un message posé en tête d'une carte : fond voilé, filet d'un pixel à gauche, jamais plus.",
+      "html": "<div class='ds-bandeau ds-bandeau-tension'>Deux enveloppes ont dépassé leur budget ce mois-ci.</div>",
+      "css": ".ds-bandeau { display: flex; gap: 0.625rem; border-radius: 0.5rem; border-left: 1px solid currentColor; padding: 0.625rem 0.875rem; font-family: inherit; font-size: 0.8125rem; line-height: 1.45; max-width: 420px; } .ds-bandeau-tension { background: var(--tension-voile, #fbe7e4); color: var(--tension-encre, #a8332a); }"
+    },
+    {
+      "name": "Tirage (squelette)",
+      "kind": "custom",
+      "refersTo": "skeleton",
+      "description": "Tient la place d'une valeur pas encore arrivée, à l'emplacement et à la largeur exacte de ce qui la remplacera. Un des deux seuls mouvements du produit.",
+      "html": "<div class='ds-tirage' style='height:14px;width:180px'></div><div class='ds-tirage' style='height:8px;width:100%;max-width:320px;margin-top:10px'></div>",
+      "css": ".ds-tirage { position: relative; overflow: hidden; border-radius: 999px; background: var(--surface-creuse, #f4f7f8); } .ds-tirage::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--filet-fort, #c3d0d5) 55%, transparent), transparent); animation: ds-tirage-passer 1500ms ease-in-out infinite; } @keyframes ds-tirage-passer { from { transform: translateX(-100%); } to { transform: translateX(100%); } } @media (prefers-reduced-motion: reduce) { .ds-tirage::after { animation: none; background: color-mix(in oklab, var(--filet-fort, #c3d0d5) 40%, transparent); } }"
     }
   ],
   "narrative": {
-    "northStar": "La colonne en tension",
-    "overview": "Un budget n'est pas un tableau de bord : c'est une structure qui tient par deux forces opposées. Ce qui porte — le solde acquis, les revenus encaissés — est un mât de carbone planté dans le sol. Ce qui tire — les dépenses engagées, les reports, les dépassements — est un câble rouge. L'équilibre entre les deux est le sujet de l'application, et il n'a qu'une couleur.\n\nLe monde est fait de trois matières et d'un seul accent : un sol de béton coulé (une dalle photographiée posée en fond de page, à peine perceptible, la seule image du produit), une structure de carbone presque noir, du cendre pour ce qui dort, et le rouge de tension. Ni vert ni ambre n'existent dans ce système : un montant n'est pas « bon » ou « mauvais », il porte ou il tire. Aucune surface n'est arrondie — la famille de formes est la coupe à 45°, comme une plaque d'appareillage qu'on chanfreine plutôt que d'adoucir. Aucune ombre non plus : le relief vient de la découpe, du filet d'un pixel et de la masse du carbone.\n\nLes chiffres sont le sujet, tout le reste est de la charpente. Ils sont en mono technique (Azeret Mono), tabulaires, alignés à droite, partout — y compris isolés dans une phrase, parce que font-variant-numeric: tabular-nums est posé sur le corps du document et non sur les tableaux. L'interface autour d'eux est en Archivo, resserrée sur son axe de chasse pour prendre le dessin d'une capitale gravée. Rien ne bouge nulle part, sauf une seule fois : la mise en tension du plan de charge à l'ouverture.",
+    "northStar": "La pile d'enveloppes",
+    "overview": "Un budget n'est pas une grille, c'est une pile d'enveloppes. Chacune a un nom, une contenance, ce qu'on en a déjà sorti — et, quand ça a mal tourné, ce qui a débordé au-delà du bord. Le monde visuel de Plia n'a qu'un objet, la carte, et il empile ces cartes de haut en bas : les mois se descendent, ils ne se poussent plus vers la droite. La refonte a supprimé le grand tableau à colonnes de mois et son défilement horizontal ; tout ce qui ressemblerait à une carte avec une colonne par mois serait ce tableau-là avec des coins arrondis, et est refusé pour cette seule raison.\n\nLa matière est celle d'un logiciel de travail, pas d'une vitrine. Un sol clair légèrement cyan (#edf1f2), des cartes franchement blanches posées dessus, un filet d'un pixel, une ombre courte : le relief vient de la lumière, jamais d'une découpe ni d'un trait épais. Une seule fonte, Schibsted Grotesk, porte tout — titres, libellés, commandes et montants — parce qu'une chasse fixe posée sur des chiffres n'est qu'un costume de technicité, et que l'alignement des virgules s'obtient avec tabular-nums. La densité est celle d'un relevé : des lignes serrées, des montants toujours à droite, et rien qui ne soit ni un montant, ni une date, ni un libellé sans avoir à le justifier.\n\nLa couleur est rationnée, et c'est le cœur du système. Une seule teinte de marque, une sarcelle profonde, qui ne sert QU'À COMMANDER : bouton principal, lien, onglet actif, destination courante, mise au point, sélection. Elle ne qualifie jamais une valeur. Face à elle, trois sens — le vert de ce qui rentre, le rouge de ce qui a rompu, le sable de ce qui attend encore — ne teintent que des montants, des pastilles d'état et la jauge. Tout le reste est de l'encre bleu-ardoise. Ce qui est refusé, explicitement : les capitales de chasse fixe gravées en titre, les blocs à découpe oblique, le zéro-rayon zéro-ombre, la poutre noire en haut de page, les camemberts et les jauges décoratives.",
     "keyCharacteristics": [
-      "Du béton et du carbone, pas du papier ni du blanc d'écran ; un grain photographié sur <html>, jamais sur les plaques.",
-      "Un seul accent, le rouge de tension, et il ne dit qu'une chose : une force qui tire.",
-      "Aucun rayon, aucune ombre : la coupe à 45° et le filet d'un pixel font tout le relief.",
-      "Deux fontes, deux rôles étanches : Archivo pour l'interface, Azeret Mono pour tout chiffre, mesure ou état.",
-      "Quatre états de structure et rien d'autre : acquis, engagé, attendu, dépassé.",
-      "Un seul moment animé dans toute l'application."
+      "Une seule surface : la carte blanche, arrondie à 12 px, filet d'un pixel, ombre courte.",
+      "Une seule fonte, variable, servie localement ; aucun couple d'affichage.",
+      "Une seule couleur de commande, trois couleurs de sens, et rien d'autre.",
+      "Des montants tabulaires, alignés à droite, toujours écrits en toutes lettres.",
+      "Une jauge d'enveloppe qui déborde hors de sa piste au lieu de saturer à cent pour cent.",
+      "Aucun geste d'ouverture : les deux seuls mouvements du produit disent l'attente."
     ],
     "rules": [
-      { "name": "La règle du mélange au fond", "body": "Toute teinte de fond s'écrit color-mix(in oklab, <couleur> N%, var(--background)). Jamais un aplat opaque, jamais une valeur codée en dur par thème. C'est pour cette raison que le thème sombre ne redéfinit presque rien : le grand tableau entier bascule sans une seule teinte réécrite.", "section": "colors" },
-      { "name": "La règle du rouge qui tire", "body": "Le rouge ne décore jamais. Il ne se pose que sur une force qui tire : un montant qui retranche, un câble, un mât rompu, une section de dépenses, un état dépassé, la commande qui engage. S'il apparaît ailleurs, ce n'est pas une variante, c'est une faute.", "section": "colors" },
-      { "name": "La règle de la densité, pas de la teinte", "body": "Dans le grand tableau, les familles de colonnes se distinguent par la densité d'un même carbone, pas par la couleur : données à 4 %, Balance à 9 %, les trois chaînes de solde à 14 %, les lignes de totaux à 20 %. La section des revenus est du carbone dilué (6 %, total à 16 %) ; la section des dépenses est le seul endroit du tableau où le rouge entre en fond (7 %, sous-total 13 %, total 20 %).", "section": "colors" },
-      { "name": "La règle des cellules, pas des lignes", "body": "Une teinte se pose sur chaque cellule, jamais sur la ligne. Un fond de cellule recouvre celui de sa ligne : peinte sur la ligne, la teinte de colonne disparaîtrait au survol et ne resterait visible que dans les trous.", "section": "colors" },
-      { "name": "La règle des deux rôles", "body": "Archivo ne porte jamais un chiffre, un état ou une mesure. Azeret Mono ne porte jamais une phrase. Il n'y a pas de troisième fonte, et il n'y aura pas de serif : le jour où une donnée a besoin d'un caractère de titre, c'est la donnée qui a été mal classée.", "section": "typography" },
-      { "name": "La règle de la virgule alignée", "body": "font-variant-numeric: tabular-nums est posé sur le corps du document, pas sur les tableaux. Un montant isolé dans une phrase s'aligne donc avec ses voisins d'une ligne à l'autre. Et tout montant s'aligne à droite, partout.", "section": "typography" },
-      { "name": "La règle de la capitale gravée", "body": "Tout ce qui est capitales est en Azeret Mono avec un interlettrage ouvert (0.08em à 0.11em selon le rôle). Une capitale en Archivo non resserrée n'appartient pas au système.", "section": "typography" },
-      { "name": "La règle du défilement plutôt que de l'écrasement", "body": "Ce qui ne tient pas se fait défiler horizontalement dans son propre conteneur : le plan de charge garde une largeur minimale de 620 px, les tables ont leur overflow-x. Jamais on n'écrase des montants en colonnes de deux lettres pour les faire entrer.", "section": "layout" },
-      { "name": "La règle du zéro ombre", "body": "Aucune surface ne se soulève. Si un élément a besoin de se détacher, il prend une coupe et un filet, ou il change de matière — jamais une ombre.", "section": "elevation" },
-      { "name": "La règle de la coupe suivie", "body": "Toute bordure d'une surface coupée doit suivre la coupe. Si un contour reste rectangulaire aux angles, la forme est fausse — repasser par .plate.", "section": "shapes" },
-      { "name": "La règle du dessin qui ne porte rien de neuf", "body": "Chaque montant projeté est écrit en toutes lettres au-dessus de son mât. Retirez le dessin, les chiffres suffisent encore — c'est la condition pour qu'il ait le droit d'être là.", "section": "components" },
-      { "name": "La règle du seul mouvement", "body": "Nulle part ailleurs il n'y a d'animation. Une colonne de chiffres qui bouge est une colonne qu'on relit.", "section": "components" }
+      {
+        "name": "La règle de la sarcelle",
+        "body": "La sarcelle ne commande que. Bouton principal, lien, onglet actif, destination courante, anneau de mise au point, sélection : rien d'autre. Aucun montant n'est jamais sarcelle, aucune commande secondaire non plus — une commande secondaire se distingue par sa matière (fond blanc, filet, ombre courte), pas par une teinte plus pâle de la même couleur. Test : masquez tous les éléments cliquables de l'écran ; il ne doit plus rester un seul pixel sarcelle.",
+        "section": "colors"
+      },
+      {
+        "name": "La règle des trois sens",
+        "body": "Le portant, la tension et l'attente ne teintent que des montants, des pastilles — et la jauge. La jauge est la seule et unique exception à l'interdit du sens en aplat : sa piste remplie prend le vert portant ou l'encre de tension, son débord prend le rouge de tension. Elle est écrite ici plutôt que passée sous silence, parce qu'une règle qu'on prétend sans exception se fait contourner partout.",
+        "section": "colors"
+      },
+      {
+        "name": "La règle du négatif par nature",
+        "body": "Un montant négatif par nature reste à l'encre. Le « dépensé » d'une enveloppe est négatif sur chaque ligne sans exception ; le peindre en rouge rendait le rouge muet. Seuls le reste et la jauge portent la couleur — c'est-à-dire les deux endroits où le signe est une information et non une fatalité.",
+        "section": "colors"
+      },
+      {
+        "name": "La règle de la chasse tabulaire",
+        "body": "tabular-nums ne se pose que sur des chiffres : .montant, .legende, l'utilitaire tabular-nums, et rien d'autre — jamais sur body. Dans cette fonte, la fonctionnalité donne aussi à la virgule et au point la chasse d'un chiffre : posée sur le document entier, elle détachait la ponctuation de chaque phrase du produit, jusque dans le titre de la page d'accueil.",
+        "section": "typography"
+      },
+      {
+        "name": "La règle de la fonte unique",
+        "body": "Une seule famille, et pas de chasse fixe. Un montant n'a pas besoin d'être monospacé pour s'aligner ; il a besoin de tabular-nums. Toute demande de « fonte de chiffres » se règle par une variante numérique, pas par une deuxième famille.",
+        "section": "typography"
+      },
+      {
+        "name": "La règle de la lumière",
+        "body": "La profondeur vient de la lumière. Les trois ombres sont décalées vers le bas et floues : une ombre sans décalage est un halo, c'est-à-dire une décoration. Elles sont teintées de l'encre du monde, jamais du noir pur — un noir pur sur un sol cyanisé donne une ombre grise et sale. Aucune ombre dure, aucun décalage sans flou, aucun contour lumineux.",
+        "section": "elevation"
+      },
+      {
+        "name": "La règle du non-emboîtement",
+        "body": "Rien ne s'imbrique. Il y a une surface et une seule, .carte. Ce qui vit DANS une carte prend la surface creusée (.creux) : un pied de totaux, une piste de jauge, un détail replié, un champ de saisie. Jamais une deuxième carte, jamais une deuxième ombre. Test : sur n'importe quel écran, aucun rectangle blanc à filet ne doit en contenir un autre.",
+        "section": "elevation"
+      },
+      {
+        "name": "La règle du silence à l'ouverture",
+        "body": "Aucun geste d'ouverture. C'est une surface de travail : rien n'entre en scène, rien ne monte en fondu, rien ne se décale à l'apparition. Les deux seuls mouvements du produit sont les signaux d'attente — le tirage et le fil — et tous deux s'arrêtent sous prefers-reduced-motion (le tirage devient une barre pleine, le fil un câble tendu d'un bord à l'autre). Les seules autres transitions durent 150 à 160 ms et ne portent que sur la couleur, l'ombre et le filet.",
+        "section": "components"
+      },
+      {
+        "name": "La règle du select natif",
+        "body": "Un <select> natif partout. La primitive Select de shadcn a été supprimée ; chaque menu déroulant du produit est un <select> HTML habillé des jetons du champ (fond creusé, filet fort, 8 px, 36 px de haut, mise au point sarcelle). Deux raisons, toutes deux décisives ici : le regroupement par optgroup, dont les listes de postes ont besoin, et l'ergonomie du sélecteur natif sur téléphone. Un seul vocabulaire, écrit noir sur blanc pour qu'il ne se redéfausse pas.",
+        "section": "components"
+      }
     ],
     "dos": [
-      "Do écrire toute teinte de fond en color-mix(in oklab, <couleur> N%, var(--background)), pour qu'elle suive le thème sans redéfinition.",
-      "Do passer toute nouvelle surface par .plate (quatre angles) ou .plate-cut (deux angles) plutôt que de redessiner une coupe.",
-      "Do poser les teintes sur les cellules, jamais sur les lignes.",
-      "Do garder tout chiffre en Azeret Mono, tabulaire et aligné à droite, même isolé dans une phrase.",
-      "Do réserver le rouge à une force qui tire : montant négatif, câble, rupture, dépassement, section de dépenses, commande qui engage.",
-      "Do n'utiliser que les quatre états de la structure — acquis, engagé, attendu, dépassé — avec les mêmes mots partout.",
-      "Do laisser l'état d'erreur découler de aria-invalid, pas d'une classe posée à la main.",
-      "Do garder 16 px de corps sur les champs de saisie en dessous de 768 px.",
-      "Do faire défiler horizontalement ce qui ne tient pas, plutôt que d'écraser des colonnes de chiffres.",
-      "Do redire les variantes de .chip dans le thème sombre : la règle sombre est plus spécifique et leur reprendrait leur couleur.",
-      "Do laisser le barème de rayon à 0px : c'est lui qui rend carrées les primitives héritées sans qu'on ait à les réécrire.",
-      "Do marquer une sélection par une ombre interne (inset 3px 0 0 0) et jamais par une bordure, qui décalerait le tableau."
+      "Do poser tout panneau, section, relevé ou enveloppe sur .carte — blanche, 12 px, filet d'un pixel, ombre de carte — et donner à ce qui vit dedans la surface creusée .creux.",
+      "Do réserver la sarcelle aux commandes : bouton principal, lien, onglet actif, destination courante, anneau de mise au point, sélection.",
+      "Do qualifier un montant par son sens uniquement quand le sens est une information : le reste d'une enveloppe, un solde sous zéro, une entrée reçue.",
+      "Do écrire chaque montant en toutes lettres à côté du dessin qui le représente ; un écran doit rester lisible sans ses jauges et sans son horizon.",
+      "Do poser tabular-nums sur les montants et les légendes chiffrées, et là seulement.",
+      "Do faire d'un squelette la structure exacte de la page qu'il attend, aux mêmes places et aux mêmes largeurs.",
+      "Do utiliser un <select> natif pour tout menu déroulant de saisie, habillé des jetons du champ.",
+      "Do distinguer un état par une pastille ovale en petites capitales, jamais par une couleur de texte seule."
     ],
     "donts": [
-      "Don't ajouter un rayon, nulle part. Le barème vaut 0px sur ses quatre pas, et la seule exception ronde est le nœud de structure.",
-      "Don't ajouter une ombre portée. Le relief vient de la coupe, du filet et de la matière.",
-      "Don't introduire du vert ou de l'ambre. Il n'y a qu'un accent, et un montant ne se juge pas bon ou mauvais.",
-      "Don't poser le rouge sur autre chose qu'une force qui tire — pas de titre rouge, pas d'icône rouge, pas de fond rouge décoratif.",
-      "Don't ajouter une seconde animation. Le seul moment animé est la mise en tension du plan de charge.",
-      "Don't introduire une troisième fonte, et surtout pas une serif : rien ici n'est imprimé.",
-      "Don't utiliser une border CSS pour cercler une surface coupée : elle ignore clip-path et ressort rectangulaire aux angles.",
-      "Don't poser le grain de béton ailleurs que sur <html>. Les plaques sont de la tôle peinte, lisse.",
-      "Don't ajouter un graphique décoratif — camembert, jauge, dégradé, courbe de tendance. Le câble n'est pas une courbe : il pend.",
-      "Don't confondre les jetons de la poutre (--beam*) avec ceux du panneau de détail (--sidebar*) : la poutre est du carbone, le panneau est une plaque claire."
+      "Don't teinter un montant en sarcelle, ni une commande secondaire : elle se distingue par sa matière, pas par une teinte plus pâle.",
+      "Don't peindre en rouge un montant négatif par nature — le « dépensé » d'une enveloppe est négatif sur chaque ligne, et le rouge y perd tout sens.",
+      "Don't imbriquer une carte dans une carte, ni empiler deux ombres.",
+      "Don't poser tabular-nums sur body ni sur du texte courant : dans cette fonte, la virgule et le point y prennent la chasse d'un chiffre.",
+      "Don't donner un traitement particulier à une enveloppe pleine mais intacte ; sa piste remplie jusqu'au bout le dit déjà.",
+      "Don't laisser une jauge rompue plus discrète qu'une jauge pleine : ce qui a rompu est la marque la plus lourde de la carte.",
+      "Don't ajouter un geste d'entrée, un fondu d'apparition ou une animation de largeur ; les seuls mouvements du produit disent l'attente.",
+      "Don't reconstruire une carte à une colonne par mois : ce serait le tableau d'avant avec des coins arrondis.",
+      "Don't introduire une deuxième famille de caractères, ni une chasse fixe pour les chiffres.",
+      "Don't utiliser d'ombre dure, de découpe oblique, de bordure épaisse en guise d'accent, ni de camembert ou de jauge décorative."
     ]
   }
 }

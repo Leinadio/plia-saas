@@ -1,0 +1,9 @@
+{
+  "prompt": "Comp d'agencement de l'onglet Historique de Plia, rendu en HTML réel avec les composants et les jetons du produit (monde « L'enveloppe », cf. DESIGN.md), données fabriquées. Variante « Le rail des mois », 1440x900.",
+  "surface": "src/app/app/historique",
+  "kind": "composition",
+  "world": "L'enveloppe",
+  "approved": false,
+  "approvedOn": "2026-08-26",
+  "note": "Composition d'abord approuvée le 26/08/2026 puis ÉCARTÉE le même jour : l'utilisateur a demandé le retour du grand tableau, aux couleurs neuves. Gardée comme route déjà explorée, pas comme spécification."
+}

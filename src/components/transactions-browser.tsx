@@ -1,6 +1,6 @@
 "use client";
-import { Fragment, useMemo, useState } from "react";
-import { X, ChevronDown, ChevronRight } from "lucide-react";
+import { useMemo, useState } from "react";
+import { X, ChevronDown, ChevronRight, Search } from "lucide-react";
 import { resolveOwnership, type OwnableGroup } from "@/lib/ownership";
 import type { TxnView } from "@/db/repositories/transactions";
 import { formatEur } from "@/lib/money";
@@ -14,8 +14,7 @@ import {
   type TxnFilters,
 } from "@/lib/transactions-filter";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+import { Input, champClass } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { GroupSelectField } from "@/components/group-select-field";
 import { groupsForMonth } from "@/lib/group-options";
@@ -26,42 +25,16 @@ import { Badge } from "@/components/ui/badge";
 import { ManualTxnActions } from "@/components/manual-txn-actions";
 import { IgnoreTxnToggle } from "@/components/ignore-txn-toggle";
 
-// --- LE RELEVÉ SUR TÉLÉPHONE -------------------------------------------------
-// Six colonnes ne tiennent pas dans 390 pixels. Le relevé se lisait donc jusqu'au
-// libellé, et le MONTANT — la seule chose qu'on vient chercher — attendait hors de
-// l'écran, à droite, derrière un défilement que rien n'annonçait.
+// --- LE RELEVÉ, EN CARTE -----------------------------------------------------
 //
-// Sous 640 px la ligne cesse d'être une rangée de tableau et devient une grille de
-// deux étages : la date, le libellé et le montant en haut ; le rattachement et les
-// commandes en dessous. Rien ne disparaît sauf l'appartenance, que le menu de
-// rattachement dit déjà juste à côté.
+// C'était un tableau de six colonnes, replié en grille de deux étages sous 640 px
+// par une pile de sélecteurs `max-sm:` — deux mises en page dans un seul balisage,
+// et le montant qui attendait hors de l'écran dès qu'un libellé était long.
 //
-// En grille plutôt qu'en second balisage : deux listes, l'une pour le téléphone et
-// l'autre pour l'écran, doubleraient chaque menu de rattachement — et un menu, ce
-// sont autant d'options que de postes, sur chaque ligne du relevé.
-const RELEVE = [
-  "max-sm:block",
-  "max-sm:[&_thead]:hidden",
-  "max-sm:[&_tbody]:block",
-  // Seules les lignes d'opération deviennent des grilles : la bande d'un mois
-  // traverse la largeur et doit rester une rangée ordinaire, sinon elle se réduit
-  // à la largeur de ses pastilles et s'arrête avant le bord de la plaque.
-  "max-sm:[&_tbody_tr[data-txn]]:grid max-sm:[&_tbody_tr[data-txn]]:grid-cols-[auto_1fr_auto]",
-  "max-sm:[&_tbody_tr[data-txn]]:items-center max-sm:[&_tbody_tr[data-txn]]:gap-x-3 max-sm:[&_tbody_tr[data-txn]]:gap-y-1.5",
-  "max-sm:[&_tbody_tr]:px-2 max-sm:[&_tbody_tr]:py-2.5",
-  // La gouttière des cases part seulement dans les lignes d'opération : c'est la
-  // rangée qui l'y porte. La bande d'un mois garde la sienne.
-  "max-sm:[&_tr[data-txn]_td]:p-0",
-].join(" ");
-const M_DATE = "max-sm:col-start-1 max-sm:row-start-1";
-const M_LIBELLE = "max-sm:col-start-2 max-sm:row-start-1 max-sm:min-w-0";
-const M_MONTANT = "max-sm:col-start-3 max-sm:row-start-1";
-const M_GROUPE = "max-sm:col-span-2 max-sm:col-start-1 max-sm:row-start-2";
-const M_ACTIONS = "max-sm:col-start-3 max-sm:row-start-2";
-const M_HORS = "max-sm:hidden";
-// La bande d'un mois traverse les trois colonnes de la grille.
-// La bande d'un mois : rien à placer, sa rangée n'est pas une grille.
-const M_BANDE = "max-sm:block max-sm:w-full";
+// C'est maintenant une carte par compte, et une LIGNE par opération : la date et
+// le libellé à gauche, le montant à droite, et dessous ce qu'on fait de
+// l'opération — la ranger, la sortir des calculs, la commenter. La même ligne à
+// toutes les largeurs : rien à replier, rien à cacher.
 
 // Sur téléphone la date se dit en jour et mois : l'année est celle de la bande
 // juste au-dessus, et « 2026-08-02 » prenait la place du libellé.
@@ -76,6 +49,73 @@ type ClientGroup = OwnableGroup & {
   lines: { id: number; name: string }[];
 };
 
+// UNE OPÉRATION. La même ligne à toutes les largeurs : la date et le libellé à
+// gauche, le montant à droite, et dessous ce qu'on fait de l'opération.
+//
+// Déclarée au module et non dans le composant parent : une fonction de composant
+// recréée à chaque rendu remonte son sous-arbre au lieu de le mettre à jour — et
+// le champ de commentaire perdrait le curseur à chaque frappe.
+function Ligne({
+  t, compte, groupes, accounts, formGroups, statut,
+}: {
+  t: TxnView;
+  // Vrai dans la vue filtrée, qui mélange les comptes : ailleurs, l'onglet ouvert
+  // dit déjà de quel compte il s'agit.
+  compte?: boolean;
+  groupes: { id: number; name: string; direction: "in" | "out"; lines: { id: number; name: string }[] }[];
+  accounts: { id: string; label: string }[];
+  formGroups: { id: number; name: string; accountId: string; direction: "in" | "out"; startMonth?: string | null; endMonth?: string | null }[];
+  statut: string;
+}) {
+  return (
+    <li className={cn("hover:bg-survol px-4 py-3 transition-colors sm:px-5", t.ignored && "opacity-70")}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="text-ardoise-claire shrink-0 text-xs tabular-nums">
+              <span className="sm:hidden">{jourCourt(t.date)}</span>
+              <span className="hidden sm:inline">{t.date}</span>
+            </span>
+            <TruncatedText text={t.label} className="max-w-full text-sm font-medium sm:max-w-[420px]" />
+            {t.manual && <Badge variant="attente">manuel · en attente</Badge>}
+            {t.ignored && <Badge>hors calcul</Badge>}
+          </div>
+          {compte && <span className="text-ardoise-claire text-xs">{t.accountLabel}</span>}
+          {t.note && <span className="text-muted-foreground text-xs">{t.note}</span>}
+          {/* Le commentaire vient juste sous le libellé. */}
+          <TxnCommentField txnId={t.id} comment={t.comment} className="max-w-full sm:max-w-[420px]" />
+        </div>
+        {/* Un montant est une force : celui qui retranche tire, et il est rouge.
+            Celui qui ajoute porte, et il est vert. Une opération hors calcul est
+            barrée et rendue au cendre. */}
+        <span
+          className={cn(
+            "montant shrink-0 text-sm",
+            t.ignored ? "text-ardoise-claire line-through" : t.amount < 0 ? "text-tension-encre" : "text-portant",
+          )}
+        >
+          {formatEur(t.amount)}
+        </span>
+      </div>
+      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+        <GroupSelectField
+          txnId={t.id}
+          groups={groupes}
+          defaultGroupId={t.groupId}
+          defaultLineId={t.lineId}
+          disabled={t.ignored}
+          className="max-w-64"
+        />
+        <IgnoreTxnToggle txnId={t.id} ignored={t.ignored} size="icon-sm" />
+        {t.manual && <ManualTxnActions txn={t} accounts={accounts} groups={formGroups} />}
+        <span className="text-ardoise-claire ml-auto hidden text-xs sm:block">
+          <TruncatedText text={statut} className="max-w-[220px]" />
+        </span>
+      </div>
+    </li>
+  );
+}
+
 export function TransactionsBrowser({ transactions, groups, accounts }: { transactions: TxnView[]; groups: ClientGroup[]; accounts: { id: string; label: string }[] }) {
   const [filters, setFilters] = useState<TxnFilters>(EMPTY_FILTERS);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
@@ -88,30 +128,6 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
     });
   const ownable: OwnableGroup[] = groups;
   const formGroups = groups.map((g) => ({ id: g.id, name: g.name, accountId: g.accountId, direction: g.direction, startMonth: g.startMonth, endMonth: g.endMonth }));
-
-  const renderLabel = (t: TxnView) => (
-    <span className="group/txn flex flex-col gap-0.5">
-      <span className="flex items-center gap-1.5">
-        <TruncatedText text={t.label} className="max-w-full sm:max-w-[380px]" />
-        {t.manual && <Badge variant="outline">manuel · en attente</Badge>}
-        {t.ignored && <Badge variant="outline">non comptabilisée</Badge>}
-      </span>
-      {t.note && <span className="text-muted-foreground text-xs">{t.note}</span>}
-      {/* Le commentaire vient juste sous le libellé. */}
-      <TxnCommentField txnId={t.id} comment={t.comment} className="max-w-full sm:max-w-[380px]" />
-    </span>
-  );
-
-  // Une transaction non comptabilisée reste lisible mais visiblement hors-jeu.
-  const rowClass = (t: TxnView) => (t.ignored ? "text-muted-foreground" : undefined);
-  // Un montant est une force : celui qui retranche tire, et il est rouge. Celui
-  // qui ajoute porte, et il reste à l'encre. Une opération non comptabilisée est
-  // hors structure : elle est barrée et rendue au cendre.
-  const amountClass = (t: TxnView) =>
-    cn(
-      "text-right font-mono text-[0.8125rem] whitespace-nowrap",
-      t.ignored ? "text-muted-foreground line-through" : t.amount < 0 && "text-tension-ink",
-    );
 
   const groupName = (id: number) => groups.find((g) => g.id === id)?.name ?? "?";
   // Les groupes proposés à une transaction : ceux de son compte, et parmi eux ceux
@@ -177,42 +193,48 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
 
   if (transactions.length === 0) {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         <div className="flex justify-end">
           <AddTransactionSheet accounts={accounts} groups={formGroups} />
         </div>
-        <p className="text-muted-foreground text-sm">
-          Aucune transaction synchronisée. Ajoute-en une à la main ou synchronise dans Réglages.
-        </p>
+        <div className="carte px-5 py-10 text-center">
+          <p className="titre-carte">Aucune opération</p>
+          <p className="text-muted-foreground mx-auto mt-2 max-w-sm text-sm">
+            Rien n&apos;est encore arrivé de la banque. Synchronise dans Réglages, ou
+            ajoute une opération à la main.
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <div className="flex justify-end">
         <AddTransactionSheet accounts={accounts} groups={formGroups} />
       </div>
-      {/* La rangée de commandes, sur sa propre plaque : les filtres sont un
-          pupitre, pas des champs qui flottent au-dessus du relevé.
-          Sur téléphone, deux colonnes réglées plutôt qu'un retour à la ligne
-          libre : à 390 px, les six champs de largeurs différentes retombaient en
-          escalier, un « Min € » collé au menu des groupes et une date toute
-          seule sur sa ligne. */}
-      <div className="plate grid grid-cols-2 gap-2 px-3 py-3 sm:flex sm:flex-wrap sm:items-center">
-        <Input
-          placeholder="Rechercher un libellé…"
-          value={filters.text}
-          onChange={(e) => set({ text: e.target.value })}
-          className="col-span-2 w-full sm:w-56"
-        />
+
+      {/* LE PUPITRE DE FILTRES, sur sa propre carte : les filtres sont un outil, pas
+          des champs qui flottent au-dessus du relevé. Sur téléphone, deux colonnes
+          réglées plutôt qu'un retour à la ligne libre — à 390 px, six champs de
+          largeurs différentes retombent en escalier. */}
+      <div className="carte grid grid-cols-2 gap-2 px-3 py-3 sm:flex sm:flex-wrap sm:items-center sm:px-4">
+        <div className="relative col-span-2 w-full sm:w-64">
+          <Search className="text-ardoise-claire pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+          <Input
+            placeholder="Rechercher un libellé…"
+            value={filters.text}
+            onChange={(e) => set({ text: e.target.value })}
+            className="pl-9"
+          />
+        </div>
         <select
           value={filters.group === "all" ? "all" : filters.group === "none" ? "none" : String(filters.group)}
           onChange={(e) => {
             const v = e.target.value;
             set({ group: v === "all" || v === "none" ? v : Number(v) });
           }}
-          className="plate plate-cut col-span-2 h-9 w-full max-w-full px-3 text-sm sm:w-auto"
+          className={cn(champClass, "col-span-2 w-full max-w-full sm:w-auto")}
         >
           <option value="all">Tous les groupes</option>
           <option value="none">Non catégorisées</option>
@@ -257,72 +279,47 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
       </div>
 
       {active ? (
-        <div className="flex flex-col gap-2">
-          {/* Le relevé du filtre : trois mesures gravées, sur la même grammaire
-              que la bande du tableau de bord. */}
-          <div className="plate flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-            <span className="caption">
+        <div className="carte overflow-hidden">
+          {/* Ce que le filtre a trouvé, en tête de sa carte : trois mesures et un
+              compte. */}
+          <div className="border-filet bg-creuse flex flex-wrap items-center gap-x-6 gap-y-2 border-b px-4 py-3 sm:px-5">
+            <span className="legende">
               {summary.count} opération{summary.count > 1 ? "s" : ""}
             </span>
             <span className="flex items-baseline gap-2">
-              <span className="caption">Sorties</span>
-              <span className="text-tension-ink font-mono text-sm">{formatEur(-summary.out)}</span>
+              <span className="legende">Sorties</span>
+              <span className="montant text-tension-encre text-sm">{formatEur(-summary.out)}</span>
             </span>
             <span className="flex items-baseline gap-2">
-              <span className="caption">Entrées</span>
-              <span className="font-mono text-sm">{formatEur(summary.in)}</span>
+              <span className="legende">Entrées</span>
+              <span className="montant text-portant text-sm">{formatEur(summary.in)}</span>
             </span>
             <span className="flex items-baseline gap-2">
-              <span className="caption">Net</span>
-              <span className={cn("font-mono text-sm font-medium", summary.net < 0 && "text-tension-ink")}>
+              <span className="legende">Net</span>
+              <span className={cn("montant text-sm", summary.net < 0 && "text-tension-encre")}>
                 {formatEur(summary.net)}
               </span>
             </span>
           </div>
-          <Table className={RELEVE}>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Compte</TableHead>
-                <TableHead>Libellé</TableHead>
-                <TableHead>Groupe</TableHead>
-                <TableHead>Appartenance</TableHead>
-                <TableHead className="text-right">Montant</TableHead>
-                <TableHead className="text-right"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {results.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className={cn("text-muted-foreground", M_BANDE, "max-sm:px-2 max-sm:py-3")}>Aucun résultat.</TableCell>
-                </TableRow>
-              ) : (
-                results.map((t) => (
-                  <TableRow key={t.id} data-txn="" className={rowClass(t)}>
-                    <TableCell className={cn("text-muted-foreground whitespace-nowrap", M_DATE)}>
-                      <span className="sm:hidden">{jourCourt(t.date)}</span>
-                      <span className="hidden sm:inline">{t.date}</span>
-                    </TableCell>
-                    {/* Le compte : hors de la grille du téléphone, il est déjà dit par
-                        l'onglet qu'on a ouvert pour arriver ici. */}
-                    <TableCell className={cn("text-muted-foreground whitespace-nowrap", M_HORS)}>{t.accountLabel}</TableCell>
-                    <TableCell className={M_LIBELLE}>{renderLabel(t)}</TableCell>
-                    <TableCell className={M_GROUPE}>
-                      <GroupSelectField txnId={t.id} groups={groupsOfTxn(t)} defaultGroupId={t.groupId} defaultLineId={t.lineId} disabled={t.ignored} />
-                    </TableCell>
-                    <TableCell className={cn("text-muted-foreground", M_HORS)}>
-                      <TruncatedText text={statusLabel(t)} className="max-w-[130px] sm:max-w-[200px]" />
-                    </TableCell>
-                    <TableCell className={cn(amountClass(t), M_MONTANT)}>{formatEur(t.amount)}</TableCell>
-                    <TableCell className={cn("text-right whitespace-nowrap", M_ACTIONS)}>
-                      <IgnoreTxnToggle txnId={t.id} ignored={t.ignored} />
-                      {t.manual && <ManualTxnActions txn={t} accounts={accounts} groups={formGroups} />}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+          {results.length === 0 ? (
+            <p className="text-muted-foreground px-4 py-10 text-center text-sm sm:px-5">
+              Aucun résultat. Élargis les filtres, ou réinitialise-les.
+            </p>
+          ) : (
+            <ul className="divide-filet divide-y">
+              {results.map((t) => (
+                <Ligne
+                  key={t.id}
+                  t={t}
+                  compte
+                  groupes={groupsOfTxn(t)}
+                  accounts={accounts}
+                  formGroups={formGroups}
+                  statut={statusLabel(t)}
+                />
+              ))}
+            </ul>
+          )}
         </div>
       ) : (
         <Tabs defaultValue={accountTxnGroups[0]?.[0]}>
@@ -338,76 +335,69 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
             </TabsList>
           </div>
           {accountTxnGroups.map(([accountId, group]) => (
-            <TabsContent key={accountId} value={accountId}>
-              {/* Un tableau à en-têtes sans une seule ligne se lit comme un chargement
-                  qui n'a pas abouti. Une phrase dit mieux ce qui se passe. Les trois mois
-                  sont dans le texte parce que c'est la fenêtre que les banques
-                  fournissent : sans cette précision on croit à une synchro incomplète. */}
+            <TabsContent key={accountId} value={accountId} className="flex flex-col gap-3">
+              {/* Une carte à en-tête sans une seule ligne se lit comme un chargement
+                  qui n'a pas abouti. Une phrase dit mieux ce qui se passe. Les trois
+                  mois sont dans le texte parce que c'est la fenêtre que les banques
+                  fournissent : sans cette précision on croit à une synchro
+                  incomplète. */}
               {group.items.length === 0 ? (
-                <p className="text-muted-foreground py-6 text-sm">
-                  Aucune opération sur ce compte sur les trois derniers mois.
-                </p>
+                <div className="carte px-5 py-10 text-center">
+                  <p className="titre-carte">Rien sur ce compte</p>
+                  <p className="text-muted-foreground mx-auto mt-2 max-w-sm text-sm">
+                    Aucune opération sur les trois derniers mois — c&apos;est tout ce que
+                    la banque fournit.
+                  </p>
+                </div>
               ) : (
-              <Table className={RELEVE}>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Libellé</TableHead>
-                    <TableHead>Groupe</TableHead>
-                    <TableHead>Appartenance</TableHead>
-                    <TableHead className="text-right">Montant</TableHead>
-                    <TableHead className="text-right"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {groupByMonth(group.items).map((m) => {
-                    const key = `${accountId}:${m.month}`;
-                    const isCollapsed = collapsed.has(key);
-                    // Les non comptabilisées comptent dans le total du mois mais dans
-                    // aucun calcul. Replié, le mois n'en disait rien : on lisait un
-                    // nombre d'opérations dont une partie ne pesait sur rien.
-                    const nonComptees = m.items.filter((t) => t.ignored).length;
-                    return (
-                    <Fragment key={m.month}>
-                      <TableRow className="cursor-pointer hover:bg-muted/50" onClick={() => toggleMonth(key)}>
-                        <TableCell colSpan={6} className={cn("bg-muted/70 py-2", M_BANDE, "max-sm:px-2 max-sm:py-2")}>
-                          <span className="flex flex-wrap items-center gap-2">
-                            {isCollapsed ? <ChevronRight className="size-3.5" /> : <ChevronDown className="size-3.5" />}
-                            <span className="chip">{m.label}</span>
-                            <span className="caption">{m.items.length} opérations</span>
-                            {nonComptees > 0 && (
-                              <span className="chip chip-slack">
-                                {nonComptees} hors calcul
-                              </span>
-                            )}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                      {!isCollapsed && m.items.map((t) => (
-                        <TableRow key={t.id} data-txn="" className={rowClass(t)}>
-                          <TableCell className={cn("text-muted-foreground", M_DATE)}>
-                            <span className="sm:hidden">{jourCourt(t.date)}</span>
-                            <span className="hidden sm:inline">{t.date}</span>
-                          </TableCell>
-                          <TableCell className={M_LIBELLE}>{renderLabel(t)}</TableCell>
-                          <TableCell className={M_GROUPE}>
-                            <GroupSelectField txnId={t.id} groups={groupsOfTxn(t)} defaultGroupId={t.groupId} defaultLineId={t.lineId} disabled={t.ignored} />
-                          </TableCell>
-                          <TableCell className={cn("text-muted-foreground", M_HORS)}>
-                            <TruncatedText text={statusLabel(t)} className="max-w-[130px] sm:max-w-[200px]" />
-                          </TableCell>
-                          <TableCell className={cn(amountClass(t), M_MONTANT)}>{formatEur(t.amount)}</TableCell>
-                          <TableCell className={cn("text-right whitespace-nowrap", M_ACTIONS)}>
-                            <IgnoreTxnToggle txnId={t.id} ignored={t.ignored} />
-                            {t.manual && <ManualTxnActions txn={t} accounts={accounts} groups={formGroups} />}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </Fragment>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                groupByMonth(group.items).map((m) => {
+                  const key = `${accountId}:${m.month}`;
+                  const isCollapsed = collapsed.has(key);
+                  // Les non comptabilisées comptent dans le total du mois mais dans
+                  // aucun calcul. Replié, le mois n'en disait rien : on lisait un
+                  // nombre d'opérations dont une partie ne pesait sur rien.
+                  const nonComptees = m.items.filter((t) => t.ignored).length;
+                  return (
+                    <div key={m.month} className="carte overflow-hidden">
+                      <button
+                        type="button"
+                        onClick={() => toggleMonth(key)}
+                        aria-expanded={!isCollapsed}
+                        className={cn(
+                          "hover:bg-survol flex w-full flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 text-left transition-colors sm:px-5",
+                          !isCollapsed && "border-filet border-b",
+                        )}
+                      >
+                        {isCollapsed ? (
+                          <ChevronRight className="text-ardoise-claire size-4 shrink-0" />
+                        ) : (
+                          <ChevronDown className="text-ardoise-claire size-4 shrink-0" />
+                        )}
+                        <span className="titre-carte">{m.label}</span>
+                        <span className="text-ardoise-claire text-xs">
+                          {m.items.length} opération{m.items.length > 1 ? "s" : ""}
+                        </span>
+                        {nonComptees > 0 && (
+                          <span className="pastille">{nonComptees} hors calcul</span>
+                        )}
+                      </button>
+                      {!isCollapsed && (
+                        <ul className="divide-filet divide-y">
+                          {m.items.map((t) => (
+                            <Ligne
+                              key={t.id}
+                              t={t}
+                              groupes={groupsOfTxn(t)}
+                              accounts={accounts}
+                              formGroups={formGroups}
+                              statut={statusLabel(t)}
+                            />
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  );
+                })
               )}
             </TabsContent>
           ))}

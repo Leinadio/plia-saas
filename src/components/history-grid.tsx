@@ -3,7 +3,7 @@
 // Composition approuvée le 14/08/2026 : .impeccable/mocks/comp-histo-ac2.png
 //
 // L'IDÉE : le tableau annonce d'abord où l'on atterrit, puis montre comment on y
-// arrive. Un bandeau de carbone traverse le haut, une colonne par mois, trois
+// arrive. Un bandeau d'encre traverse le haut, une colonne par mois, trois
 // soldes de fin de mois chacun. Sous lui, UN seul tableau — plus un par mois — dont
 // la colonne des noms est écrite une fois et reste collée au bord gauche.
 //
@@ -36,7 +36,7 @@ import { IgnoreTxnToggle } from "@/components/ignore-txn-toggle";
 import { NewGroupInline } from "@/components/new-group-inline";
 import { NewLineInline } from "@/components/new-line-inline";
 import { type ColKey, monthType, monthColumns, COL_LABEL, COL_INFO } from "@/lib/history-columns";
-import { computeRevealKeys, computePrevDisplayed, rowOpenKey, lineOpenKey, uncatOpenKey, highlightedCells, rowKeyOf, withRevealed, openKeyIn, monthIndexOf } from "@/lib/history-nav";
+import { computeRevealKeys, computePrevDisplayed, rowOpenKey, lineOpenKey, uncatOpenKey, highlightedCells, rowKeyOf, withRevealed , openKeyIn } from "@/lib/history-nav";
 import {
   netCol,
   txnChildren,
@@ -115,7 +115,7 @@ const fmt = (n: number) => NUM.format(Math.abs(n) < 0.005 ? 0 : n).replace(/[  ]
 // Couleur d'un montant « Reste/Manque » : rouge s'il manque (négatif), vert sinon
 // (reste positif ou à zéro).
 function resteColor(v: number): string {
-  return v < -0.005 ? "text-tension-ink" : "text-foreground";
+  return v < -0.005 ? "text-tension-encre" : "text-foreground";
 }
 
 // Couleur de fond d'une case des trois colonnes de solde : rouge si le solde est
@@ -124,7 +124,7 @@ function resteColor(v: number): string {
 // case ne pouvait porter qu'une des deux informations à la fois.
 function soldeColor(v: number | null | undefined): string | undefined {
   if (v == null) return undefined;
-  return v < -0.005 ? "text-tension-ink" : undefined;
+  return v < -0.005 ? "text-tension-encre" : undefined;
 }
 
 // Étiquette posée sous un montant de Balance en dépassement. Un simple constat : la
@@ -138,7 +138,7 @@ function OverspendTag() {
   return (
     <span
       title="La dépense a dépassé le budget de ce mois."
-      className="chip chip-tension mt-0.5"
+      className="pastille pastille-tension mt-0.5"
     >
       dépassement
     </span>
@@ -183,30 +183,40 @@ const BLOC_EPINE = "sm:sticky sm:left-0 sm:z-20";
 // titre de chapitre en travers du relevé. Le nom se pose dans l'épine, la teinte
 // traverse tous les mois — c'est ce qui fait lire le tableau par bandes horizontales
 // et non par colonnes.
-const BANDE = "bg-[color-mix(in_oklab,var(--voile)_13%,var(--background))]";
-const BANDE_TENSION = "bg-[color-mix(in_oklab,var(--tension)_11%,var(--background))]";
-const BANDE_PORTANT = "bg-[color-mix(in_oklab,var(--portant)_14%,var(--background))]";
+const BANDE = "bg-[color-mix(in_oklab,var(--ardoise)_12%,var(--card))]";
+const BANDE_TENSION = "bg-tension-voile";
+const BANDE_PORTANT = "bg-portant-voile";
 
-// Le pied du tableau, en carbone plein. Les trois dernières lignes sont ce qu'on
+// Le pied du tableau, en ENCRE pleine. Les trois dernières lignes sont ce qu'on
 // vient chercher ; elles ferment le relevé comme un tampon.
 //
+// C'est la seule masse d'encre d'un écran de cartes blanches — et en lumière
+// éteinte, l'encre étant claire, le tampon s'inverse en bande pâle sur un tableau
+// sombre. Ce n'est pas un accident : dans les deux thèmes, le pied est le bloc le
+// plus contrasté de l'écran, et c'est cela qu'on veut, pas une couleur.
+//
 // Les couleurs ne sont pas réécrites case par case : on redéfinit ici les jetons que
-// les cellules utilisent déjà. Un montant négatif reste « text-tension-ink », mais
-// sur ce fond ce jeton vaut le rouge vif — sinon le rouge sombre disparaîtrait dans
-// le noir. Même chose pour l'encre et le filet de l'épine.
+// les cellules utilisent déjà. Un montant négatif reste « text-tension-encre », mais
+// sur ce fond ce jeton vaut un rouge éclairci — sinon le rouge sombre disparaîtrait
+// dans l'encre. Même chose pour le texte et le filet de l'épine.
 const PIED_CARBONE = {
-  "--foreground": "var(--beam-bright)",
-  "--muted-foreground": "color-mix(in oklab, var(--beam-bright) 72%, var(--carbon))",
-  "--tension-ink": "var(--tension)",
-  "--border": "color-mix(in oklab, var(--beam-bright) 28%, var(--carbon))",
+  "--foreground": "var(--surface)",
+  "--muted-foreground": "color-mix(in oklab, var(--surface) 70%, var(--encre))",
+  // Le rouge du pied se mélange à la SURFACE, pas à du blanc en dur. En lumière
+  // claire le pied est une masse d'encre et la surface est blanche : le rouge
+  // s'éclaircit, sinon il disparaîtrait dans le noir. En lumière éteinte l'encre
+  // est claire, le pied s'inverse en bande pâle, et la même expression assombrit
+  // le rouge au lieu de le délaver. Une seule ligne pour les deux thèmes.
+  "--tension-encre": "color-mix(in oklab, var(--tension) 75%, var(--surface))",
+  "--border": "color-mix(in oklab, var(--surface) 26%, var(--encre))",
 } as React.CSSProperties;
 // L'encre doit être posée explicitement : une cellule hérite sa couleur du corps de
 // la page, elle ne relit pas le jeton --foreground qu'on redéfinit ici. Seuls les
-// éléments qui appellent un jeton (text-muted-foreground, text-tension-ink) suivent.
+// éléments qui appellent un jeton (text-muted-foreground, text-tension-encre) suivent.
 // L'encre claire se pose sur la LIGNE, pas sur chaque cellule : posée sur les
 // cellules, elle écrasait le rouge d'un montant négatif, qui est justement ce qu'on
 // vient lire ici. Héritée, elle cède la place à toute cellule qui a son propre avis.
-const PIED_LIGNE = "text-beam-bright [&>td]:bg-carbon";
+const PIED_LIGNE = "text-[var(--surface)] [&>td]:bg-encre";
 
 
 // Le modèle de colonnes (quelles colonnes sous quel mois, leur libellé et leur
@@ -224,18 +234,18 @@ const PIED_LIGNE = "text-beam-bright [&>td]:bg-carbon";
 // y compris sous une ligne survolée.
 //
 // Les familles ne se distinguent plus par la teinte mais par la DENSITÉ : c'est
-// le même carbone, de plus en plus dense, parce que le monde n'a qu'une couleur
-// et qu'elle est réservée à ce qui tire. Le rouge n'entre dans ce tableau que
-// pour la section des dépenses et pour les montants négatifs.
-const DATA_TINT = "bg-[color-mix(in_oklab,var(--voile)_7%,var(--background))]";
-const BALANCE_TINT = "bg-[color-mix(in_oklab,var(--voile)_14%,var(--background))]";
-const SOLDE_TINT = "bg-[color-mix(in_oklab,var(--voile)_24%,var(--background))]";
+// la même ardoise, de plus en plus dense. La sarcelle de ce monde ne commande que —
+// elle n'a rien à faire dans un fond de colonne — et les deux couleurs de sens
+// n'entrent ici que pour les sections et pour les montants négatifs.
+const DATA_TINT = "bg-[color-mix(in_oklab,var(--ardoise)_5%,var(--card))]";
+const BALANCE_TINT = "bg-[color-mix(in_oklab,var(--ardoise)_11%,var(--card))]";
+const SOLDE_TINT = "bg-[color-mix(in_oklab,var(--ardoise)_18%,var(--card))]";
 // Fond des lignes de totaux (« Total revenus », « Total Dépenses », « Total »).
 // Posé sur les CELLULES et non sur la ligne : chaque cellule de données porte déjà le
 // fond de sa colonne, qui recouvrirait celui de la ligne et ne laisserait la teinte
 // visible que dans les trous. Plus soutenu que DATA_TINT, pour que l'œil trouve les
 // totaux sans avoir à lire les libellés.
-const TOTAL_TINT = "bg-[color-mix(in_oklab,var(--voile)_30%,var(--background))]";
+const TOTAL_TINT = "bg-[color-mix(in_oklab,var(--ardoise)_24%,var(--card))]";
 
 // Les deux blocs de la section des dépenses.
 type ExpenseBloc = "planned" | "unplanned";
@@ -256,34 +266,33 @@ const TITRE_BLOC: Record<ExpenseBloc, string> = {
 // vert du portant, ce qui TIRE (les deux blocs de dépenses) prend le rouge de
 // tension. Très diluées toutes les deux : elles situent une ligne, elles ne jugent
 // pas un montant.
-const INCOME_TINT = "bg-[color-mix(in_oklab,var(--portant)_10%,var(--background))]";
-const EXPENSE_TINT = "bg-[color-mix(in_oklab,var(--tension)_7%,var(--background))]";
+const INCOME_TINT = "bg-[color-mix(in_oklab,var(--portant)_7%,var(--card))]";
+const EXPENSE_TINT = "bg-[color-mix(in_oklab,var(--tension)_5%,var(--card))]";
 // Trois crans par couleur, du plus clair au plus foncé : les lignes de données, le
 // sous-total d'un bloc de dépenses, le total de la section. La hiérarchie se lit à la
 // densité, pas à la teinte — c'est la même couleur qui s'assombrit, donc l'œil relie
 // chaque total à la section qu'il ferme.
-const EXPENSE_SUBTOTAL_TINT = "bg-[color-mix(in_oklab,var(--tension)_8%,var(--background))]";
-const EXPENSE_TOTAL_TINT = "bg-[color-mix(in_oklab,var(--tension)_14%,var(--background))]";
-const INCOME_TOTAL_TINT = "bg-[color-mix(in_oklab,var(--portant)_18%,var(--background))]";
+const EXPENSE_SUBTOTAL_TINT = "bg-[color-mix(in_oklab,var(--tension)_9%,var(--card))]";
+const EXPENSE_TOTAL_TINT = "bg-[color-mix(in_oklab,var(--tension)_15%,var(--card))]";
+const INCOME_TOTAL_TINT = "bg-[color-mix(in_oklab,var(--portant)_16%,var(--card))]";
 
 // La teinte de la section où l'on se trouve, portée par le contexte plutôt que passée
 // de main en main : les lignes s'imbriquent (groupe, sous-poste, transaction) et
 // chacune aurait dû la relayer.
 const TeinteSection = createContext<string | undefined>(undefined);
 
-// Le mélange se fait avec le VOILE, un jeton qui n'existe que pour ça : du béton
-// dans l'ombre en thème clair, du béton sous une autre lumière en thème sombre.
-// Pris sur l'encre, comme avant, les gris viraient au mauve — l'encre de ce monde
-// est un noir violet, et dilué dans un béton chaud il tire la teinte hors de sa
-// famille. Le voile garde la chaleur du sol.
+// LE MÉLANGE SE FAIT AVEC LA CARTE, PAS AVEC LE SOL. Le tableau vit dans une carte
+// blanche posée sur un sol clair : une teinte mélangée au sol tomberait, d'un pour
+// cent, à côté de la surface qui la porte, et chaque colonne se décollerait de sa
+// propre carte. L'ardoise fournit le gris — c'est le gris de texte du monde, donc
+// les fonds restent de la même famille que ce qu'ils portent.
 //
 // Trois familles de colonnes, trois densités. Ce qu'on a prévu et ce
 // qu'on a fait — tout ce qui est à gauche de Balance — partagent le fond le plus
 // clair ; Balance, qui tranche entre les deux, en a un à elle ; les trois chaînes
 // de solde, qui se lisent de haut en bas comme une opération posée, partagent le
 // plus dense. La hiérarchie se lit à la DENSITÉ et non à la teinte : c'est le même
-// carbone qui s'assombrit, parce que ce monde n'a qu'un accent et qu'il est réservé
-// à ce qui tire.
+// ardoise qui s'assombrit, parce que l'accent de ce monde ne sert qu'à commander.
 const COL_TINT: Record<ColKey, string> = {
   budgetRem: DATA_TINT,
   budgetDep: DATA_TINT,
@@ -305,8 +314,8 @@ const COL_TINT: Record<ColKey, string> = {
 // tableau (colgroup, deux rangées d'en-tête, chaque constructeur de ligne, totalCols).
 // La séparation entre deux mois : un filet franc, du haut du tableau jusqu'en bas.
 // C'est lui qui fait lire trois blocs et non vingt et une colonnes.
-const MONTH_RULE = "border-l border-l-rule-strong/40";
-const MONTH_GAP = "border-l border-l-rule-strong/40 pl-4";
+const MONTH_RULE = "border-l border-l-filet-fort";
+const MONTH_GAP = "border-l border-l-filet-fort pl-4";
 
 // Les intitulés de colonnes tels que la maquette les écrit : courts. Le libellé
 // entier vit dans COL_LABEL et reste le titre de l'explication qu'un clic ouvre —
@@ -477,8 +486,8 @@ function SoldeAmount({ v, delta }: { v: number; delta?: number | null }) {
     // plus pouvoir lire ni l'une ni l'autre quand toutes deux étaient rouges.
     return (
       <>
-        <span className={cell.sign === "+" ? "text-foreground" : "text-tension-ink"}>{cell.sign} </span>
-        <span className={cell.negative ? "text-tension-ink" : "text-foreground"}>{fmt(cell.value)}</span>
+        <span className={cell.sign === "+" ? "text-foreground" : "text-tension-encre"}>{cell.sign} </span>
+        <span className={cell.negative ? "text-tension-encre" : "text-foreground"}>{fmt(cell.value)}</span>
       </>
     );
   }
@@ -490,13 +499,13 @@ function SoldeAmount({ v, delta }: { v: number; delta?: number | null }) {
           l'élargirait pour tout le tableau. */}
       <span
         className={cn(
-          "block text-[10px] leading-tight",
-          cell.delta > 0 ? "text-foreground" : "text-tension-ink",
+          "block text-[0.6875rem] leading-tight",
+          cell.delta > 0 ? "text-foreground" : "text-tension-encre",
         )}
       >
         ({cell.delta > 0 ? "+" : "−"} {fmt(Math.abs(cell.delta))})
       </span>
-      <span className={cn("block", cell.value < -0.005 ? "text-tension-ink" : "text-foreground")}>
+      <span className={cn("block", cell.value < -0.005 ? "text-tension-encre" : "text-foreground")}>
         {fmt(cell.value)}
       </span>
     </>
@@ -1507,7 +1516,7 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
           <div className="group/txn flex flex-col gap-0.5 overflow-hidden">
             {/* La date reste en chasse fixe : c'est une donnée, elle s'aligne
                 d'une ligne à l'autre comme les montants. */}
-            <span className="text-muted-foreground/80 font-mono text-xs">{txn.date}</span>
+            <span className="text-ardoise-claire text-xs tabular-nums">{txn.date}</span>
             <TruncatedText text={txn.label} className="leading-5" lines={2} />
             {/* Le commentaire vient juste sous le libellé, dans la même colonne. */}
             <TxnCommentField txnId={txn.id} comment={txn.comment} />
@@ -1813,9 +1822,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         <TableRow className={cn("group", topLevel ? "font-medium" : hasChildren && "hover:bg-muted/50")}>
           <NameCell indent={0} expandable={hasChildren} expanded={gOpen} onToggle={hasChildren ? () => toggleIn(gKey) : undefined}>
             {r.direction === "in" ? (
-              <ArrowUpRight className="hidden size-4 shrink-0 text-sky-600 sm:block" />
+              <ArrowUpRight className="text-portant hidden size-4 shrink-0 sm:block" />
             ) : (
-              <ArrowDownRight className="hidden size-4 shrink-0 text-muted-foreground sm:block" />
+              <ArrowDownRight className="text-tension-encre hidden size-4 shrink-0 sm:block" />
             )}
             {/* Le nom et la durée côte à côte quand la colonne est large, empilés
                 quand elle ne fait plus que 176 px : à cette largeur, deux textes sur
@@ -1832,7 +1841,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 mois : une étiquette, pas un contenu. */}
             <span
               title={groupPeriodLabel(sg?.startMonth, sg?.endMonth)}
-              className="text-muted-foreground/60 hidden min-w-0 text-[0.625rem] font-normal tracking-[0.12em] break-words whitespace-normal uppercase sm:block sm:truncate"
+              className="legende text-ardoise-claire hidden min-w-0 font-normal break-words whitespace-normal sm:block sm:truncate"
             >
               {groupPeriodLabel(sg?.startMonth, sg?.endMonth)}
             </span>
@@ -1938,7 +1947,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                           n'explique pourquoi l'un disparaît le mois suivant. */}
                       <span
                         title={groupPeriodLabel(sgLine?.startMonth, sgLine?.endMonth)}
-                        className="text-muted-foreground/60 hidden min-w-0 text-[0.625rem] font-normal tracking-[0.12em] break-words whitespace-normal uppercase sm:block sm:truncate"
+                        className="legende text-ardoise-claire hidden min-w-0 font-normal break-words whitespace-normal sm:block sm:truncate"
                       >
                         {groupPeriodLabel(sgLine?.startMonth, sgLine?.endMonth)}
                       </span>
@@ -2191,10 +2200,10 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 className="flex min-w-0 flex-1 cursor-pointer items-center gap-1"
               >
                 {opts.replie ? <ChevronRight className="size-3.5 shrink-0" /> : <ChevronDown className="size-3.5 shrink-0" />}
-                <span className="caption min-w-0 text-left leading-tight">{titre}</span>
+                <span className="legende min-w-0 text-left leading-tight">{titre}</span>
               </button>
             ) : (
-              <span className="caption min-w-0 leading-tight">{titre}</span>
+              <span className="legende min-w-0 leading-tight">{titre}</span>
             )}
             {opts?.action}
           </div>
@@ -2292,7 +2301,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     {/* w-max : la largeur du tableau suit son contenu, pas le conteneur. Sinon
         (w-full par defaut) les colonnes se resserrent quand la sidebar de detail
         s'ouvre et retrecit la zone : le tableau doit defiler, pas se tasser. */}
-    {/* font-mono sur TOUT le tableau : le défaut ici, c'est le chiffre. Les rares
+    {/* tabular-nums sur TOUT le tableau : le défaut ici, c'est le chiffre. Les rares
         zones de texte (première colonne, en-têtes) repassent en font-sans. 13px
         compense la chasse fixe, plus large que la proportionnelle, pour garder la
         même densité horizontale. */}
@@ -2304,7 +2313,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         étiquette, qui tiennent sur une seule ligne, ne bougent pas. */}
     <Table
       className={cn(
-        "w-max font-mono text-[13px] [&_td]:align-top",
+        "w-max text-[13px] tabular-nums [&_td]:align-top",
         // Le serrage de téléphone. Il ne touche QUE les cases de chiffres —
         // reconnaissables à leur tabular-nums — parce que l'épine, elle, porte du
         // texte : la rétrécir aussi rendrait les noms de postes illisibles. Onze
@@ -2348,16 +2357,16 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                   <span className={cn("font-display text-lg leading-none", futur && "text-muted-foreground")}>
                     {monthName(m)}
                   </span>
-                  <span className="text-muted-foreground/70 font-mono text-[11px] leading-none">
+                  <span className="text-ardoise-claire text-[11px] leading-none tabular-nums">
                     {m.slice(0, 4)}
                   </span>
                 </div>
-                {futur && <div className="caption text-muted-foreground/60 mt-1.5">projection</div>}
+                {futur && <div className="legende text-ardoise-claire mt-1.5">projection</div>}
                 {/* Ce que ce mois laisse hors des calculs. Même formulation et même
                     étiquette dormante que sur la page Transactions. */}
                 {nonComptees > 0 && (
                   <div className="mt-1.5">
-                    <span className="chip chip-slack">{nonComptees} hors calcul</span>
+                    <span className="pastille">{nonComptees} hors calcul</span>
                   </div>
                 )}
               </TableHead>
@@ -2379,7 +2388,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                     className={cn(
                       COL_TINT[col],
                       idx === 0 && mi > 0 && MONTH_RULE,
-                      "text-muted-foreground h-auto px-1 pt-1 pb-2 text-right align-bottom font-sans text-[10px] font-medium tracking-[0.09em] uppercase sm:px-2",
+                      "legende h-auto px-1 pt-1 pb-2 text-right align-bottom sm:px-2",
                     )}
                   >
                     <button
@@ -2608,18 +2617,18 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             </Fragment>
           );
         })}
-        {/* Le pied, en carbone plein et d'un seul bloc : ce que le mois a pesé, où
+        {/* Le pied, en encre pleine et d'un seul bloc : ce que le mois a pesé, où
             il finit, où il finirait, ce qu'il a débordé. C'est le tampon du relevé.
             Le total et le solde étaient une seule ligne qui faisait les deux métiers,
             et le solde s'y lisait comme un total de plus. */}
         <TableRow style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
-          <TableCell className={cn(COL1_STICKY, "bg-carbon h-px p-0")}>
+          <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
             <FirstColBox>Total du mois</FirstColBox>
           </TableCell>
           <GrandTotalsCells part="totaux" sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} />
         </TableRow>
         <TableRow style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
-          <TableCell className={cn(COL1_STICKY, "bg-carbon h-px p-0")}>
+          <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
             <FirstColBox>Solde de fin de mois</FirstColBox>
           </TableCell>
           <GrandTotalsCells part="soldes" sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} />
@@ -2627,13 +2636,13 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         {/* Estimé fin de mois, DANS le pied et sous le solde : c'est la même
             question posée un cran plus loin — le solde dit où le mois en est, l'estimé
             où il finira si le plan tient. Les lire l'un sous l'autre, sur le même
-            carbone, fait de l'écart entre les deux la dernière chose qu'on voit.
+            encre, fait de l'écart entre les deux la dernière chose qu'on voit.
             Le calcul : mois courant = Total + rémunérations restant
             à recevoir − Balances vertes (le budget restant, supposé dépensé d'ici la
             fin du mois) ; autres mois = leur solde de clôture (même détail que la
             ligne « Total » pour ce mois — cf. soldeActuelDetail). */}
         <TableRow style={PIED_CARBONE} className={cn(PIED_LIGNE, "text-sm")}>
-          <TableCell className={cn(COL1_STICKY, "bg-carbon h-px p-0")}>
+          <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
             <FirstColBox><span className="text-muted-foreground">Estimé fin de mois</span></FirstColBox>
           </TableCell>
           {months.map((m, i) => {
@@ -2676,7 +2685,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             Balance (groupes qui débordent + Non catégorisés), hors lignes
             « Balance dépenses » qui agrège déjà ces montants. */}
         <TableRow style={PIED_CARBONE} className={cn(PIED_LIGNE, "text-sm")}>
-          <TableCell className={cn(COL1_STICKY, "bg-carbon h-px p-0")}>
+          <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
             <FirstColBox><span className="text-muted-foreground">Total dépassement hors budget</span></FirstColBox>
           </TableCell>
           {months.map((m, i) => {
@@ -2698,7 +2707,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             const type = monthType(m, currentMonth);
             const cols = monthColumns(type);
             const depCell = (b: boolean) => (
-              <CellAmount key="overspend" className={cn(b && MONTH_GAP, "text-right tabular-nums", val > 0.005 && "text-tension-ink")} detail={detail} onSelect={onSelect} cellKey={cellKey("overspend", "reste", i)} selCellKey={selCellKey}>
+              <CellAmount key="overspend" className={cn(b && MONTH_GAP, "text-right tabular-nums", val > 0.005 && "text-tension-encre")} detail={detail} onSelect={onSelect} cellKey={cellKey("overspend", "reste", i)} selCellKey={selCellKey}>
                 {val > 0.005 ? fmt(val) : ""}
               </CellAmount>
             );

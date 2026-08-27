@@ -35,7 +35,7 @@ function Confirmation({
           size="sm"
           variant="ghost"
           disabled={enCours}
-          className="cursor-pointer text-tension-ink hover:text-tension"
+          className="cursor-pointer text-tension-encre hover:text-tension"
         >
           <Trash2 className="size-4" />
           {libelle}

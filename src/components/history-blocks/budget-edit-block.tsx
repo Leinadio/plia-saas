@@ -95,7 +95,7 @@ export function BudgetEditBlock({ info }: { info: BudgetEditInfo }) {
         </div>
       </div>
       {applique !== null && (
-        <div className="plate flex flex-col gap-2 p-3 text-sm">
+        <div className="creux flex flex-col gap-2 p-3 text-sm">
           <p>
             {formatEur(applique)} appliqué à {monthLabel(info.month)}. Les mois suivants
             doivent-ils prendre ce montant ?

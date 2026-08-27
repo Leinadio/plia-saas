@@ -47,7 +47,7 @@ export function LineManageBlock({ info, onClose }: { info: LineManageInfo; onClo
             <h2 className="font-semibold">{info.name}</h2>
             {/* Sa durée de vie, dite comme dans la colonne de gauche du tableau : on
                 doit lire la même chose des deux côtés. */}
-            <p className="text-muted-foreground/70 text-[10px] tracking-[0.12em] uppercase">
+            <p className="legende">
               {groupPeriodLabel(periode.startMonth, periode.endMonth)}
             </p>
           </div>
@@ -90,7 +90,7 @@ export function LineManageBlock({ info, onClose }: { info: LineManageInfo; onClo
         <div className="border-t pt-4">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button type="button" size="sm" variant="ghost" disabled={busy} className="text-tension-ink hover:text-tension">
+              <Button type="button" size="sm" variant="ghost" disabled={busy} className="text-tension-encre hover:text-tension">
                 <Trash2 className="size-4" />
                 Supprimer la ligne
               </Button>

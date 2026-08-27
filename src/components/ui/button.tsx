@@ -4,47 +4,42 @@ import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
-// Une commande n'est pas un bouton d'application : c'est une touche de pupitre.
-// Capitales en chasse fixe, angles coupés en diagonale, pas d'ombre et pas de
-// rayon. Le trait rouge oblique du monde ne se pose pas ici : il est réservé à
-// ce qui est actif ou sélectionné (navigation, ligne ouverte), sans quoi il
-// deviendrait un motif au lieu d'un repère.
+// UNE COMMANDE, DANS LE MONDE DES CARTES. Casse normale, coins arrondis à 8 px,
+// hauteur 36 px : c'est un bouton de logiciel de travail, qui doit se reconnaître
+// sans qu'on ait à l'apprendre. La sarcelle ne se pose QUE sur la commande
+// principale et sur le lien — un montant n'est jamais sarcelle, une commande
+// secondaire non plus.
 const buttonVariants = cva(
-  "relative inline-flex shrink-0 items-center justify-center gap-2 font-mono text-[0.6875rem] font-medium tracking-[0.08em] whitespace-nowrap uppercase transition-all outline-none focus-visible:ring-[2px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-40 aria-invalid:ring-[2px] aria-invalid:ring-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+  "relative inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-[background-color,box-shadow,color] duration-150 outline-none disabled:pointer-events-none disabled:opacity-45 aria-invalid:ring-2 aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          "cut cut-sm bg-primary text-primary-foreground hover:bg-graphite dark:hover:bg-primary/85",
+          "bg-primary text-primary-foreground shadow-carte hover:bg-sarcelle-forte active:bg-sarcelle-forte",
         destructive:
-          "cut cut-sm bg-tension text-white hover:brightness-110 focus-visible:ring-tension",
+          "bg-tension text-white shadow-carte hover:brightness-95 active:brightness-90",
+        // La commande secondaire est une carte à hauteur de bouton : fond blanc,
+        // filet d'un pixel, ombre courte. Elle se distingue de la principale par
+        // sa matière, pas par une teinte plus pâle de la même couleur.
         outline:
-          "plate plate-cut text-foreground hover:[--plate-fill:var(--muted)] hover:[--plate-rule:var(--rule-strong)]",
+          "bg-card text-foreground border border-filet shadow-carte hover:bg-survol hover:border-filet-fort",
         secondary:
-          "plate plate-cut text-foreground [--plate-fill:var(--muted)] hover:[--plate-rule:var(--rule-strong)]",
+          "bg-creuse text-foreground hover:bg-survol",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/60",
-        link: "text-tension-ink normal-case tracking-normal underline-offset-4 hover:underline",
+          "text-ardoise hover:bg-survol hover:text-foreground",
+        link: "text-sarcelle-encre underline-offset-[3px] hover:underline",
       },
       size: {
-        default: "h-9 px-4 has-[>svg]:px-3",
-        xs: "h-6 gap-1 px-2 text-[0.625rem] has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-8 gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-10 px-6 has-[>svg]:px-4",
+        default: "h-9 px-3.5",
+        xs: "h-6 gap-1 rounded-md px-1.5 text-xs [&_svg:not([class*='size-'])]:size-3.5",
+        sm: "h-8 rounded-md px-2.5 text-[0.8125rem]",
+        lg: "h-10 px-5",
         icon: "size-9 px-0",
-        "icon-xs": "size-6 px-0 [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm": "size-8 px-0",
+        "icon-xs": "size-6 rounded-md px-0 [&_svg:not([class*='size-'])]:size-3.5",
+        "icon-sm": "size-8 rounded-md px-0",
         "icon-lg": "size-10 px-0",
       },
     },
-    // Le trait rouge oblique du monde, posé dans l'angle gauche de la commande
-    // pleine : c'est la marque de ce qui engage. Réservé aux deux tailles qui
-    // portent du texte — dans une icône seule, il n'aurait pas la place, et sur
-    // une action de ligne il ferait un motif au lieu d'un repère.
-    compoundVariants: [
-      { variant: "default", size: "default", class: "slash pl-7" },
-      { variant: "default", size: "lg", class: "slash pl-8" },
-    ],
     defaultVariants: {
       variant: "default",
       size: "default",

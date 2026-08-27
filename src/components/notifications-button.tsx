@@ -62,14 +62,15 @@ export function NotificationsButton({ items }: { items: Notification[] }) {
             quoi elle parle, et le compte seul encore moins. */}
         <button
           type="button"
-          className="text-beam-foreground hover:text-beam-bright hover:bg-beam-accent inline-flex items-center gap-1.5 px-2 py-1.5 font-mono text-[0.6875rem] tracking-[0.08em] uppercase transition-colors"
+          className="text-barre-texte hover:bg-barre-appui hover:text-foreground relative inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-[0.8125rem] font-semibold transition-colors duration-150 sm:px-2.5"
         >
           <Bell className="size-4" />
           <span className="hidden sm:inline">Dépassements</span>
-          {/* Le compte de ce qui reste à voir : c'est une charge qui tire, donc
-              c'est rouge, carré, et posé contre le mot. */}
+          {/* Le compte de ce qui reste à voir : c'est une rupture, donc c'est
+              rouge, et posé contre le mot plutôt que perché sur l'icône — un
+              nombre qu'on doit lire ne se met pas en exposant. */}
           {restants.length > 0 && (
-            <span className="bg-tension flex min-w-4 items-center justify-center px-1 font-mono text-[0.625rem] leading-4 font-medium text-white">
+            <span className="bg-tension flex min-w-[1.125rem] items-center justify-center rounded-full px-1.5 text-[0.6875rem] leading-[1.125rem] font-bold text-white">
               {restants.length}
             </span>
           )}
@@ -124,9 +125,7 @@ export function NotificationsButton({ items }: { items: Notification[] }) {
             <div key={groupe.month} className="flex flex-col gap-2">
               {/* Le mois en tête de son groupe : un dépassement se lit d'abord par
                   « quand ». Même micro-typographie que les étiquettes du tableau. */}
-              <p className="text-muted-foreground/70 text-[10px] tracking-[0.12em] uppercase">
-                {monthLabel(groupe.month)}
-              </p>
+              <p className="legende">{monthLabel(groupe.month)}</p>
               {groupe.items.map((n) => (
                 <OverspendNotice
                   key={n.id}

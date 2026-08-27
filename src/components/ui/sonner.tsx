@@ -10,10 +10,11 @@ import { Toaster as Sonner, type ToasterProps } from "sonner";
 // système (cf. layout.tsx). « system » dit à sonner de lire la même préférence, ce qui
 // revient au même sans ajouter une dépendance pour une seule lecture.
 //
-// Le second : les couleurs. L'app n'a pas de vert — un accusé de réception se dit
-// en carbone, comme tout ce qui porte, et l'échec se dit en rouge de tension, la
-// seule couleur du système. Les deux fonds sont des color-mix avec le popover :
-// ils suivent le thème au lieu d'y plaquer une couleur d'écran.
+// Le second : les couleurs. Un accusé de réception prend le voile du portant, un
+// échec celui de la tension — les mêmes deux voiles que les pastilles d'état, pour
+// qu'un message passager se lise dans le vocabulaire de l'écran qu'il survole.
+// Aucun filet : le voile suffit à porter le sens, et l'ombre longue à décoller le
+// message du contenu.
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
@@ -30,12 +31,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-bg": "var(--popover)",
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
-          "--success-bg": "color-mix(in oklab, var(--carbon) 8%, var(--popover))",
+          "--success-bg": "var(--portant-voile)",
           "--success-text": "var(--popover-foreground)",
-          "--success-border": "var(--rule-strong)",
-          "--error-bg": "color-mix(in oklab, var(--tension) 10%, var(--popover))",
+          "--success-border": "transparent",
+          "--error-bg": "var(--tension-voile)",
           "--error-text": "var(--popover-foreground)",
-          "--error-border": "var(--tension)",
+          "--error-border": "transparent",
           "--border-radius": "var(--radius)",
         } as React.CSSProperties
       }

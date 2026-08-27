@@ -21,7 +21,7 @@ export default async function ComptePage() {
   }));
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
       <Card>
         <CardHeader>
           <CardTitle>Mon compte</CardTitle>

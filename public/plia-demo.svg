@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <rect width="1920" height="1080" fill="#edf1f2"/>
+  <rect width="1920" height="78" fill="#ffffff"/>
+  <rect y="77" width="1920" height="1" fill="#dce4e7"/>
+
+  <rect x="28" y="20" width="38" height="38" rx="11" fill="#17222b"/>
+  <text x="47" y="47" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle">P</text>
+  <text x="82" y="48" fill="#17222b" font-family="Arial, sans-serif" font-size="27" font-weight="700">Plia</text>
+  <text x="245" y="48" fill="#0a656c" font-family="Arial, sans-serif" font-size="16" font-weight="700">Tableau de bord</text>
+  <text x="410" y="48" fill="#5a6b75" font-family="Arial, sans-serif" font-size="16" font-weight="600">Transactions</text>
+  <text x="545" y="48" fill="#5a6b75" font-family="Arial, sans-serif" font-size="16" font-weight="600">Historique</text>
+  <rect x="1692" y="20" width="196" height="38" rx="9" fill="#0b6e75"/>
+  <text x="1790" y="45" fill="#ffffff" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="middle">Synchroniser</text>
+
+  <text x="56" y="135" fill="#17222b" font-family="Arial, sans-serif" font-size="30" font-weight="700">Vos prochains mois</text>
+  <text x="56" y="166" fill="#64747c" font-family="Arial, sans-serif" font-size="15">Aperçu illustratif · dernière synchronisation aujourd’hui</text>
+
+  <rect x="56" y="198" width="1808" height="382" rx="16" fill="#ffffff"/>
+  <rect x="56" y="198" width="1808" height="382" rx="16" fill="none" stroke="#dce4e7" stroke-width="2"/>
+  <text x="84" y="240" fill="#17222b" font-family="Arial, sans-serif" font-size="19" font-weight="700">Projection</text>
+  <rect x="1694" y="218" width="142" height="28" rx="14" fill="#e2f1e8"/>
+  <text x="1765" y="238" fill="#1c7a4e" font-family="Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">COMPTE RELIÉ</text>
+  <line x1="56" y1="264" x2="1864" y2="264" stroke="#dce4e7" stroke-width="2"/>
+
+  <g font-family="Arial, sans-serif">
+    <rect x="84" y="292" width="552" height="248" rx="10" fill="#f4f7f8"/>
+    <text x="112" y="330" fill="#17222b" font-size="20" font-weight="700">Août</text>
+    <text x="112" y="361" fill="#64747c" font-size="13" font-weight="700">SOLDE DE DÉBUT</text>
+    <text x="608" y="361" fill="#17222b" font-size="17" font-weight="700" text-anchor="end">2 110 €</text>
+    <text x="112" y="403" fill="#64747c" font-size="13">Entrées</text>
+    <text x="608" y="403" fill="#1c7a4e" font-size="17" font-weight="700" text-anchor="end">+ 3 240 €</text>
+    <text x="112" y="442" fill="#64747c" font-size="13">Sorties</text>
+    <text x="608" y="442" fill="#17222b" font-size="17" font-weight="700" text-anchor="end">− 2 920 €</text>
+    <line x1="112" y1="467" x2="608" y2="467" stroke="#c3d0d5"/>
+    <text x="112" y="503" fill="#64747c" font-size="13" font-weight="700">SOLDE PRÉVU</text>
+    <text x="608" y="503" fill="#17222b" font-size="24" font-weight="700" text-anchor="end">2 430 €</text>
+
+    <rect x="684" y="292" width="552" height="248" rx="10" fill="#f7eedb"/>
+    <text x="712" y="330" fill="#17222b" font-size="20" font-weight="700">Septembre</text>
+    <text x="712" y="361" fill="#8a6410" font-size="13" font-weight="700">REVENU DÉCALÉ</text>
+    <text x="1208" y="361" fill="#17222b" font-size="17" font-weight="700" text-anchor="end">2 430 €</text>
+    <text x="712" y="403" fill="#64747c" font-size="13">Entrées</text>
+    <text x="1208" y="403" fill="#1c7a4e" font-size="17" font-weight="700" text-anchor="end">+ 1 850 €</text>
+    <text x="712" y="442" fill="#64747c" font-size="13">Sorties</text>
+    <text x="1208" y="442" fill="#17222b" font-size="17" font-weight="700" text-anchor="end">− 2 900 €</text>
+    <line x1="712" y1="467" x2="1208" y2="467" stroke="#d8c99f"/>
+    <text x="712" y="503" fill="#8a6410" font-size="13" font-weight="700">SOLDE PRÉVU</text>
+    <text x="1208" y="503" fill="#8a6410" font-size="24" font-weight="700" text-anchor="end">1 380 €</text>
+
+    <rect x="1284" y="292" width="552" height="248" rx="10" fill="#f4f7f8"/>
+    <text x="1312" y="330" fill="#17222b" font-size="20" font-weight="700">Octobre</text>
+    <text x="1312" y="361" fill="#64747c" font-size="13" font-weight="700">SOLDE DE DÉBUT</text>
+    <text x="1808" y="361" fill="#17222b" font-size="17" font-weight="700" text-anchor="end">1 380 €</text>
+    <text x="1312" y="403" fill="#64747c" font-size="13">Entrées</text>
+    <text x="1808" y="403" fill="#1c7a4e" font-size="17" font-weight="700" text-anchor="end">+ 4 360 €</text>
+    <text x="1312" y="442" fill="#64747c" font-size="13">Sorties</text>
+    <text x="1808" y="442" fill="#17222b" font-size="17" font-weight="700" text-anchor="end">− 2 880 €</text>
+    <line x1="1312" y1="467" x2="1808" y2="467" stroke="#c3d0d5"/>
+    <text x="1312" y="503" fill="#64747c" font-size="13" font-weight="700">SOLDE PRÉVU</text>
+    <text x="1808" y="503" fill="#17222b" font-size="24" font-weight="700" text-anchor="end">2 860 €</text>
+  </g>
+
+  <text x="56" y="645" fill="#17222b" font-family="Arial, sans-serif" font-size="26" font-weight="700">Enveloppes de septembre</text>
+  <rect x="56" y="674" width="1808" height="330" rx="16" fill="#ffffff"/>
+  <rect x="56" y="674" width="1808" height="330" rx="16" fill="none" stroke="#dce4e7" stroke-width="2"/>
+  <g font-family="Arial, sans-serif">
+    <text x="88" y="725" fill="#17222b" font-size="18" font-weight="700">Courses</text>
+    <text x="1818" y="725" fill="#17222b" font-size="18" font-weight="700" text-anchor="end">88 € restants</text>
+    <rect x="88" y="746" width="1730" height="12" rx="6" fill="#edf1f2"/>
+    <rect x="88" y="746" width="1349" height="12" rx="6" fill="#17222b"/>
+    <line x1="88" y1="790" x2="1818" y2="790" stroke="#dce4e7"/>
+
+    <text x="88" y="837" fill="#17222b" font-size="18" font-weight="700">Transport</text>
+    <text x="1818" y="837" fill="#17222b" font-size="18" font-weight="700" text-anchor="end">54 € restants</text>
+    <rect x="88" y="858" width="1730" height="12" rx="6" fill="#edf1f2"/>
+    <rect x="88" y="858" width="1107" height="12" rx="6" fill="#17222b"/>
+    <line x1="88" y1="902" x2="1818" y2="902" stroke="#dce4e7"/>
+
+    <text x="88" y="949" fill="#17222b" font-size="18" font-weight="700">Logiciels</text>
+    <text x="1818" y="949" fill="#17222b" font-size="18" font-weight="700" text-anchor="end">26 € restants</text>
+    <rect x="88" y="970" width="1730" height="12" rx="6" fill="#edf1f2"/>
+    <rect x="88" y="970" width="1280" height="12" rx="6" fill="#17222b"/>
+  </g>
+</svg>

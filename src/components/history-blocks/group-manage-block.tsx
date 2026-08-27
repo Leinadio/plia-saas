@@ -70,7 +70,7 @@ export function GroupManageBlock({ info, onClose, inline }: { info: GroupManageI
             {/* Sa durée de vie, dite comme dans la colonne de gauche du tableau :
                 « depuis toujours », « depuis juillet 2026 », « ce mois uniquement »,
                 ou la plage. */}
-            <p className="text-muted-foreground/70 text-[10px] tracking-[0.12em] uppercase">
+            <p className="legende">
               {groupPeriodLabel(periode.startMonth, periode.endMonth)}
             </p>
           </div>
@@ -149,7 +149,7 @@ export function GroupManageBlock({ info, onClose, inline }: { info: GroupManageI
                 size="sm"
                 variant="ghost"
                 disabled={busy}
-                className="text-tension-ink hover:text-tension"
+                className="text-tension-encre hover:text-tension"
               >
                 <Trash2 className="size-4" />
                 Supprimer le groupe

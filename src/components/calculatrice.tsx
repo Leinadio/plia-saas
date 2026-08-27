@@ -117,7 +117,7 @@ export function CalculatriceProvider({ children }: { children: React.ReactNode }
   );
 }
 
-// Le bouton de la poutre. Il porte le compte de lignes du brouillon : une
+// Le bouton de la barre produit. Il porte le compte de lignes du brouillon : une
 // calculatrice fermée sur un calcul en cours doit le dire, sinon on la rouvre
 // pour rien ou, pire, on oublie qu'on avait commencé.
 export function CalculatriceButton() {
@@ -129,14 +129,18 @@ export function CalculatriceButton() {
       aria-pressed={ouverte}
       title="Calculatrice de brouillon"
       className={cn(
-        "focus-visible:ring-tension relative flex cursor-pointer items-center gap-1.5 px-1.5 py-1 font-mono text-[0.6875rem] tracking-[0.08em] uppercase transition-colors outline-none focus-visible:ring-2",
-        ouverte ? "text-beam-bright" : "hover:text-beam-bright",
+        "relative flex h-9 cursor-pointer items-center gap-1.5 rounded-lg px-2 text-[0.8125rem] font-semibold transition-colors duration-150 sm:px-2.5",
+        ouverte
+          ? "bg-sarcelle-voile text-sarcelle-encre"
+          : "text-barre-texte hover:bg-barre-appui hover:text-foreground",
       )}
     >
       <Calculator className="size-4 shrink-0" />
       <span className="hidden lg:inline">Calculatrice</span>
+      {/* Le compte des lignes en attente : sarcelle et non rouge, parce qu'un
+          brouillon en cours n'est pas une alerte. */}
       {lignes.length > 0 && (
-        <span className="bg-tension text-carbon absolute top-0 right-0 flex size-4 items-center justify-center rounded-full font-mono text-[0.625rem] leading-none font-bold">
+        <span className="bg-sarcelle flex min-w-[1.125rem] items-center justify-center rounded-full px-1.5 text-[0.6875rem] leading-[1.125rem] font-bold text-white">
           {lignes.length}
         </span>
       )}

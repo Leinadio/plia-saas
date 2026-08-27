@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, ArrowLeftRight, History, Settings, LogOut, User, ChevronDown } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
+import { initiales } from "@/lib/account";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
@@ -15,14 +16,18 @@ const NAV = [
   { href: "/app/historique", label: "Historique", court: "Historique", icon: History },
 ];
 
-// La poutre. Toute l'app repose dessus : c'est la seule masse de carbone d'un
-// écran de béton, et elle porte le nom, les trois destinations, et les deux
-// gestes qu'on fait le plus souvent.
+// LA BARRE PRODUIT. Une surface blanche posée au-dessus du sol, séparée par un
+// filet : elle surplombe, elle ne pèse pas. C'est l'inverse exact de la poutre de
+// carbone d'avant, et c'est voulu — la navigation n'est pas le sujet de l'écran,
+// les enveloppes le sont. Une masse noire en haut de chaque page prenait le
+// premier regard pour une chose qu'on ne lit jamais.
 //
-// Un bandeau et non plus une barre latérale : la structure de cette app se lit
-// horizontalement, mois après mois, et une colonne de navigation prenait 16 rem
-// à des tableaux qui en manquent. Les réglages et la déconnexion restent sous le
-// nom du compte : ce sont des choses qu'on fait à soi, pas des destinations.
+// La destination courante se marque d'une pastille sarcelle pleine, pas d'un
+// trait sous le pied : le trait est le repère des onglets DANS une page, et deux
+// repères identiques à deux niveaux ne se distinguent plus.
+//
+// Les réglages et la déconnexion restent sous le nom du compte : ce sont des
+// choses qu'on fait à soi, pas des destinations.
 export function AppTopbar({
   user,
   children,
@@ -33,17 +38,25 @@ export function AppTopbar({
   const pathname = usePathname();
   const router = useRouter();
   return (
-    <header className="bg-beam text-beam-foreground flex h-13 shrink-0 items-center gap-1 px-3 sm:gap-3 sm:px-4">
+    <header className="bg-barre border-barre-filet flex h-14 shrink-0 items-center gap-1 border-b px-3 sm:gap-2 sm:px-4">
       <Link
         href="/app"
-        className="font-display text-beam-bright mr-1 text-xl leading-none font-bold sm:mr-3"
+        className="mr-1 flex items-center gap-2 rounded-lg py-1 pr-1 sm:mr-2"
       >
-        Plia
+        {/* La marque : un carré d'encre aux coins arrondis, et le pli du nom
+            dedans. Un logotype de logiciel de travail se reconnaît petit, dans un
+            onglet de navigateur comme au coin d'une barre. */}
+        <span
+          aria-hidden
+          className="bg-encre text-[var(--surface)] flex size-7 items-center justify-center rounded-lg text-sm font-bold"
+        >
+          P
+        </span>
+        <span className="text-foreground text-lg leading-none font-bold tracking-[-0.02em]">
+          Plia
+        </span>
       </Link>
-      {/* Le filet vertical qui sépare le nom des destinations : une plaque
-          d'appareillage sépare ses zones par un trait, pas par du vide. */}
-      <span className="bg-beam-rule hidden h-6 w-px sm:block" />
-      <nav className="flex min-w-0 items-center">
+      <nav className="flex min-w-0 items-center gap-0.5">
         {NAV.map((n) => {
           const Icon = n.icon;
           const active = pathname === n.href;
@@ -54,10 +67,10 @@ export function AppTopbar({
               aria-current={active ? "page" : undefined}
               title={n.label}
               className={cn(
-                "relative flex h-13 items-center gap-2 px-2.5 font-mono text-[0.6875rem] tracking-[0.1em] uppercase transition-colors sm:px-3.5",
+                "flex h-9 items-center gap-2 rounded-lg px-2.5 text-[0.8125rem] font-semibold transition-colors duration-150 sm:px-3",
                 active
-                  ? "text-beam-bright"
-                  : "hover:text-beam-bright",
+                  ? "bg-sarcelle-voile text-sarcelle-encre"
+                  : "text-barre-texte hover:bg-barre-appui hover:text-foreground",
               )}
             >
               <Icon className="size-4 shrink-0" />
@@ -66,24 +79,30 @@ export function AppTopbar({
                   libellés ne tiennent pas, et trois icônes muettes ne disent pas
                   où l'on est. */}
               <span className={cn("hidden sm:inline lg:hidden", active && "inline")}>{n.court}</span>
-              {/* Le repère d'appui : la destination courante porte le trait de
-                  tension sous le pied, là où la charge passe. */}
-              {active && <span className="bg-tension absolute inset-x-1.5 bottom-0 h-0.5" />}
             </Link>
           );
         })}
       </nav>
-      <div className="ml-auto flex items-center gap-1 sm:gap-2">
+      <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
         {children}
         <DropdownMenu>
-          <DropdownMenuTrigger className="hover:text-beam-bright data-[state=open]:text-beam-bright flex max-w-40 cursor-pointer items-center gap-1.5 px-1.5 py-1 font-mono text-[0.6875rem] tracking-[0.08em] uppercase transition-colors outline-none focus-visible:ring-2 focus-visible:ring-tension">
-            <User className="size-4 shrink-0" />
+          <DropdownMenuTrigger className="text-barre-texte hover:bg-barre-appui hover:text-foreground data-[state=open]:bg-barre-appui data-[state=open]:text-foreground ml-0.5 flex max-w-44 cursor-pointer items-center gap-1.5 rounded-lg py-1 pr-1.5 pl-1 text-[0.8125rem] font-semibold transition-colors duration-150 sm:ml-1">
+            {/* Les initiales plutôt qu'une icône : c'est le seul endroit de l'écran
+                où quelque chose désigne une personne, et une silhouette générique
+                ne désigne personne. */}
+            <span
+              aria-hidden
+              className="bg-creuse text-foreground border-filet flex size-7 shrink-0 items-center justify-center rounded-full border text-[0.6875rem] font-bold"
+            >
+              {initiales(user.name)}
+            </span>
             <span className="hidden truncate md:inline">{user.name}</span>
-            <ChevronDown className="size-3 shrink-0" />
+            <ChevronDown className="size-3.5 shrink-0" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <div className="border-border truncate border-b px-2 pt-1 pb-2 font-mono text-[0.6875rem] tracking-[0.04em]">
-              {user.email}
+          <DropdownMenuContent align="end" className="w-60">
+            <div className="border-filet mb-1 truncate border-b px-2 pt-1 pb-2">
+              <p className="truncate text-[0.8125rem] font-semibold">{user.name}</p>
+              <p className="text-muted-foreground truncate text-xs">{user.email}</p>
             </div>
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link href="/app/compte">

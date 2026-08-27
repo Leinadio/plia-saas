@@ -1,42 +1,51 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// Une carte est une plaque : quatre angles coupés, un filet d'un pixel qui suit
-// la coupe, aucune ombre. Le relief du système ne vient pas de la lumière mais
-// de la découpe et de la masse du carbone.
+// LA CARTE. La surface du produit, et la seule : blanche, arrondie à 12 px,
+// cerclée d'un filet d'un pixel, posée sur une ombre courte. Rien ne s'imbrique —
+// ce qui vit DANS une carte prend la surface creusée, jamais une deuxième carte.
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card"
-      className={cn("plate text-card-foreground flex flex-col gap-5 py-5", className)}
+      className={cn("carte text-card-foreground flex flex-col", className)}
       {...props}
     />
   );
 }
 
+// L'en-tête d'une carte est séparé de son contenu par un filet : c'est ce qui lui
+// donne son assise quand la carte porte une liste.
 function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div data-slot="card-header" className={cn("flex flex-col gap-1.5 px-5", className)} {...props} />
+    <div
+      data-slot="card-header"
+      className={cn("flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:px-5", className)}
+      {...props}
+    />
   );
 }
 
-// Le titre d'une plaque se grave : capitales en chasse fixe, interlettrage
-// ouvert. Ce n'est pas une phrase, c'est une inscription.
+// Le titre d'une carte s'écrit, il ne se grave pas : casse normale, corps
+// lisible, encre pleine.
 function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return <div data-slot="card-title" className={cn("titre-carte", className)} {...props} />;
+}
+
+function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      data-slot="card-title"
-      className={cn(
-        "font-mono text-xs leading-none font-medium tracking-[0.09em] uppercase",
-        className
-      )}
+      data-slot="card-description"
+      className={cn("text-muted-foreground text-sm", className)}
       {...props}
     />
   );
 }
 
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
-  return <div data-slot="card-content" className={cn("px-5", className)} {...props} />;
+  return (
+    <div data-slot="card-content" className={cn("px-4 py-4 sm:px-5", className)} {...props} />
+  );
 }
 
-export { Card, CardHeader, CardTitle, CardContent };
+export { Card, CardHeader, CardTitle, CardDescription, CardContent };

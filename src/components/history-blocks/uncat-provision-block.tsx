@@ -70,7 +70,7 @@ export function UncatProvisionBlock({ info, onClose }: { info: UncatProvisionInf
             </Button>
           </div>
           {applique !== null && (
-            <div className="plate mt-2 flex flex-col gap-2 p-3 text-sm">
+            <div className="creux mt-2 flex flex-col gap-2 p-3 text-sm">
               <p>
                 {formatEur(applique)} appliqué à {monthLabel(info.month)}. Les mois suivants
                 doivent-ils prendre ce montant ?

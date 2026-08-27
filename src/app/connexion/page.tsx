@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { signIn, signUp } from "@/lib/auth-client";
@@ -42,10 +43,23 @@ export default function ConnexionPage() {
   }
 
   return (
-    <div className="flex justify-center py-10">
+    // Centré dans l'écran, et pas seulement horizontalement : posée en haut d'une
+    // page vide, la carte laissait tout l'écran désert sous elle.
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 px-4 py-10">
+      <Link href="/" className="flex items-center gap-2.5">
+        <span
+          aria-hidden
+          className="bg-encre text-[var(--surface)] flex size-9 items-center justify-center rounded-[0.625rem] text-lg font-bold"
+        >
+          P
+        </span>
+        <span className="text-2xl font-bold tracking-[-0.02em]">Plia</span>
+      </Link>
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>{inscription ? "Créer un compte" : "Se connecter"}</CardTitle>
+          {/* Le titre ne répète pas le bouton : c'est le bouton qui nomme
+              l'action, et le titre qui dit où l'on est. */}
+          <CardTitle>{inscription ? "Crée ton compte" : "Connecte-toi pour continuer"}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={submit} className="flex flex-col gap-4">
@@ -56,7 +70,7 @@ export default function ConnexionPage() {
               </div>
             )}
             <div className="flex flex-col gap-1">
-              <Label className="font-normal">Email</Label>
+              <Label className="font-normal">Adresse e-mail</Label>
               <Input
                 type="email"
                 required

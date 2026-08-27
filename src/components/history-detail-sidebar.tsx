@@ -49,7 +49,7 @@ function DetailRow({ row, selected, onToggle, onSelect }: {
     >
       <TableCell className="w-px py-1 pr-3 text-right align-top whitespace-nowrap tabular-nums">
         <span className="text-muted-foreground mr-1">{opOf(node.amount)}</span>
-        <span className={cn(node.amount < 0 && "text-tension-ink")}>{fmtAbs(node.amount)}</span>
+        <span className={cn(node.amount < 0 && "text-tension-encre")}>{fmtAbs(node.amount)}</span>
       </TableCell>
       <TableCell className="w-full py-1 align-top">
         <div className="flex items-center gap-1" style={{ paddingLeft: `${depth * 1}rem` }}>
@@ -142,7 +142,7 @@ function DetailBody({ detail, onClose, selectedPanel, onSelectRow }: {
           <div className="min-w-0">
             <h2 className="font-semibold">{detail.title}</h2>
             {detail.subtitle && <p className="text-muted-foreground text-sm">{detail.subtitle}</p>}
-            <p className={cn("mt-1 text-lg font-semibold tabular-nums", detail.result < 0 && "text-tension-ink")}>{fmtSigned(detail.result)}</p>
+            <p className={cn("mt-1 text-lg font-semibold tabular-nums", detail.result < 0 && "text-tension-encre")}>{fmtSigned(detail.result)}</p>
           </div>
           <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground shrink-0 rounded p-1" aria-label="Fermer">
             <X className="size-4" />
@@ -185,7 +185,7 @@ function DetailBody({ detail, onClose, selectedPanel, onSelectRow }: {
                 >
                   <TableCell className="w-px py-2 pr-3 text-right whitespace-nowrap tabular-nums">
                     <span className="text-muted-foreground mr-1">=</span>
-                    <span className={cn(detail.result < 0 && "text-tension-ink")}>{fmtAbs(detail.result)}</span>
+                    <span className={cn(detail.result < 0 && "text-tension-encre")}>{fmtAbs(detail.result)}</span>
                   </TableCell>
                   <TableCell className="w-full py-2">Total</TableCell>
                 </TableRow>

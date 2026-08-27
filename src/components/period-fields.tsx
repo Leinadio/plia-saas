@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { MonthField } from "@/components/month-field";
 import { minEndMonth, fitEndMonth, type PeriodDraft } from "@/lib/group-period";
 import { cn } from "@/lib/utils";
+import { champClass } from "@/components/ui/input";
 
 // La durée de vie, telle qu'on la demande à l'écran : trois choix, et un « + » pour
 // ajouter un mois de fin. Un seul composant pour les quatre endroits où la question se
@@ -36,7 +37,7 @@ export function PeriodFields({ draft, onChange, stripMin, stripMax, compact = fa
         <select
           value={choice}
           onChange={(e) => onChange({ ...draft, choice: e.target.value as PeriodDraft["choice"] })}
-          className={cn("plate plate-cut px-2 text-sm", compact ? "h-8" : "h-9")}
+          className={cn(champClass, "px-2", compact && "h-8")}
         >
           <option value="always">Depuis toujours</option>
           <option value="from">À partir d&apos;un mois, sans fin</option>

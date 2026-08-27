@@ -54,20 +54,16 @@ export function HistoryWithDetail(props: {
         <Checkbox checked={showDeltas} onCheckedChange={(v) => setShowDeltas(v === true)} />
         Détailler les mouvements de solde
       </Label>
-      {/* LA PLAQUE. Le tableau repose sur une surface aux quatre angles coupés à
-          45°, cerclée d'un filet d'un pixel qui suit la coupe — la forme de tout
-          panneau du produit.
-          Deux calques, parce qu'une bordure CSS ignore clip-path et ressortirait
-          carrée aux angles : la plaque dessine le filet, et le tableau qui défile
-          est posé un pixel à l'intérieur, coupé du même polygone. Sans ce pixel de
-          retrait, les fonds de cellules recouvraient le filet et il n'en restait
-          rien. */}
+      {/* LA CARTE. Le tableau repose sur la surface du monde : blanche, arrondie à
+          12 px, cerclée d'un filet d'un pixel et posée sur une ombre courte.
+          overflow-hidden : c'est elle qui coupe le tableau qui défile à l'intérieur,
+          sinon les fonds de cellules déborderaient de ses coins arrondis. */}
       {/* Le voile d'attente : pendant qu'une modification se propage, les chiffres
           s'éteignent d'un cran et cessent de répondre au clic. Ils restent lisibles
           — on ne cache pas un montant — mais on ne peut plus ouvrir le détail d'une
           case qui va changer dans la seconde. */}
-      <VoileDAttente className="plate [--notch:14px] p-px">
-        <CenterScroll className="[clip-path:var(--plate-path)]">
+      <VoileDAttente className="carte overflow-hidden">
+        <CenterScroll>
         <HistoryGrid
           {...props}
           onSelect={setDetail}

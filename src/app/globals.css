@@ -3,154 +3,187 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* LE PARTI PRIS : une structure en tenségrité, pas un tableau de bord.
-   Un budget tient par deux forces opposées — ce qui porte (les mâts de carbone :
-   le solde acquis, les revenus encaissés) et ce qui tire (les câbles rouges :
-   les dépenses engagées, les reports, les dépassements). L'équilibre est le
-   sujet, et il n'a qu'une couleur : le rouge de tension. Tout le reste est du
-   béton, du carbone et du cendre.
+/* LE PARTI PRIS : une pile d'enveloppes, pas une grille.
+   Un budget se tient poste par poste. Chaque poste est une carte : son nom, son
+   état, sa jauge — ce qui est entamé, ce qui reste, et ce qui a débordé au-delà
+   du bord. On descend les mois les uns sous les autres ; on ne pousse plus des
+   colonnes vers la droite.
 
-   Trois règles tiennent le système :
-   1. Le rouge ne décore jamais. Il dit une force qui tire : un montant qui
-      retranche, un câble tendu, la commande active.
-   2. Les angles sont coupés à 45°, jamais arrondis. Une plaque d'appareillage
-      se coupe, elle ne s'adoucit pas.
-   3. Les chiffres sont le sujet : mono technique, chasse fixe, tabulaires,
-      alignés à droite, partout. */
+   Quatre règles tiennent le système :
+   1. Une carte blanche sur un sol clair, un filet d'un pixel, une ombre courte.
+      Le relief vient de la lumière, pas de la découpe.
+   2. La sarcelle ne sert QU'À COMMANDER : bouton principal, lien, onglet actif,
+      mise au point. Elle ne qualifie jamais un montant.
+   3. Les montants se qualifient par leur sens : ce qui entre est vert, ce qui a
+      rompu est rouge, ce qui attend est sable. Le reste est de l'encre.
+   4. Un état se dit dans une pastille arrondie, en petites capitales — jamais
+      dans une couleur de texte seule. */
 :root {
-  /* LE SOL EST BLANC. Il a été du béton coulé — un gris chaud, avec le grain
-     d'une dalle photographiée par-dessus — et c'est encore la matière du monde
-     en lumière éteinte. En lumière claire, il est blanc : les colonnes de
-     chiffres du grand tableau tombent sur du papier, et les teintes de
-     colonnes, qui se mélangent toutes au fond, y gagnent leur pleine valeur.
-     La plaque est blanche aussi : ce qui la distingue du sol n'est plus sa
-     couleur mais sa coupe à 45° et son filet d'un pixel. */
-  --ground: #ffffff;
-  --plate: #ffffff;
-  --carbon: #0d000f;
-  --graphite: #2b2b2e;
-  --ash: #9a9a9c;
-  --void-white: #f7f7f8;
-  /* Le rouge a deux valeurs : celle du trait (câbles, repères, filets) et
-     celle du texte, plus sombre, pour tenir 4.5:1 sur le béton. */
-  --tension: #d7262e;
-  /* LE PORTANT. Contrepartie du rouge de tension : ce qui entre, ce qui porte.
-     Un vert d'atelier désaturé, pas un vert d'interface — il ne dit pas « bon »,
-     il dit « ça rentre », comme le rouge dit « ça tire ». */
-  --portant: #1f8a55;
-  --tension-ink: #b31d25;
-  /* LE VOILE. La couleur dont sont faits les fonds de colonnes du grand tableau,
-     et rien d'autre. Elle existe à part parce qu'elle était prise sur l'encre :
-     or l'encre est un noir VIOLET (--carbon), et dilué à 17 % dans un béton chaud
-     il vire au mauve. Les colonnes prenaient une teinte de gris d'interface, sans
-     rapport avec la matière du produit.
+  /* L'ENCRE ET LE SOL. Un bleu-ardoise très sombre pour l'encre, un sol clair
+     légèrement cyan : c'est le papier de bureau d'un logiciel de travail, pas
+     une page blanche. Les cartes, elles, sont franchement blanches — c'est ce
+     contraste-là qui les décolle, avec le filet et l'ombre courte. */
+  --encre: #17222b;
+  --sol: #edf1f2;
+  --surface: #ffffff;
+  /* La surface creusée : le fond d'un bloc posé DANS une carte (une jauge, une
+     ligne repliée, un pied de carte). Elle s'enfonce, elle ne monte pas. */
+  --surface-creuse: #f4f7f8;
+  --surface-survol: #f0f4f5;
 
-     Le voile est un gris NEUTRE, sans chroma — le gris d'un tirage de plan. C'est
-     un choix : les fonds de colonnes ne doivent porter aucune couleur, pour que
-     les deux seules du tableau, le portant et la tension, se voient sans effort.
-     Le sol reste chaud, les voiles ne le sont pas, et c'est ce contraste de
-     température qui fait ressortir la grille sur le béton. */
-  --voile: #383838;
+  /* LA SARCELLE. La couleur de la commande, et d'elle seule. Profonde, sans
+     éclat, elle tient le contraste sur du blanc comme sur du sombre. */
+  --sarcelle: #0b6e75;
+  --sarcelle-forte: #095b61;
+  --sarcelle-voile: #e2eff0;
+  --sarcelle-encre: #0a656c;
 
-  --radius: 0px;
-  --notch: 9px;
-  --background: var(--ground);
-  --foreground: var(--carbon);
-  --card: var(--plate);
-  --card-foreground: var(--carbon);
-  --popover: var(--void-white);
-  --popover-foreground: var(--carbon);
-  --primary: var(--carbon);
-  --primary-foreground: var(--void-white);
-  --secondary: #dcd9d4;
-  --secondary-foreground: var(--carbon);
-  --muted: #dcd9d4;
-  /* Le cendre pur ne tient pas le contraste sur le béton : le texte secondaire
-     est un cendre assombri, le #9a9a9c reste pour les filets et le dormant. */
-  --muted-foreground: #6b6966;
-  --accent: #dcd9d4;
-  --accent-foreground: var(--carbon);
-  --destructive: var(--tension-ink);
-  --border: #c7c3bd;
-  --rule-strong: #0d000f;
-  --input: #b6b2ab;
-  --ring: var(--tension);
-  /* LA POUTRE. La seule masse de carbone d'un écran de béton : le bandeau de
-     navigation, sur lequel toute l'app s'appuie. Ses jetons lui sont propres —
-     le panneau de détail, lui, reste une plaque claire. */
-  --beam: #17161a;
-  --beam-foreground: #b9b6b1;
-  --beam-bright: var(--void-white);
-  --beam-accent: #232227;
-  --beam-rule: #2e2d32;
-  --sidebar: var(--plate);
-  --sidebar-foreground: var(--carbon);
-  --sidebar-primary: var(--carbon);
-  --sidebar-primary-foreground: var(--void-white);
-  --sidebar-accent: #dcd9d4;
-  --sidebar-accent-foreground: var(--carbon);
-  --sidebar-border: #c7c3bd;
-  --sidebar-ring: var(--tension);
+  /* LES TROIS SENS D'UN MONTANT. Le vert dit que ça rentre, le rouge que ça a
+     rompu, le sable que ça attend encore. Chacun a son encre (le texte) et son
+     voile (le fond de pastille) : l'encre tient 4.5:1, le voile ne fait que
+     teinter. */
+  --portant: #1c7a4e;
+  --portant-voile: #e2f1e8;
+  --tension: #c0392b;
+  --tension-encre: #a8332a;
+  --tension-voile: #fbe7e4;
+  --attente: #8a6410;
+  --attente-voile: #f7eedb;
+
+  /* Les deux coups de feutre du titre de la landing. Leur contraste est plus
+     franc que celui des voiles fonctionnels pour rester visible sur le sol. */
+  --hero-soulignement: #c57a00;
+  --hero-surlignage: #78d6dc;
+
+  /* La section problème reste une chambre noire dans les deux thèmes. La photo
+     s'y fond au lieu de devenir une carte posée sur le fond. */
+  --landing-problem-bg: #0b1115;
+  --landing-problem-ink: #edf1f2;
+  --landing-problem-muted: #a7b5bd;
+
+  /* Les gris de l'ardoise. Le texte secondaire tient 4.5:1 sur le sol comme sur
+     la carte ; le tertiaire ne porte que des légendes en capitales. */
+  --ardoise: #5a6b75;
+  /* 4,85:1 sur une carte blanche, 4,5:1 sur la surface creusée. Il a valu
+     #7d8d96 — une valeur qui ne tenait que 3,4:1, alors qu'elle porte les dates
+     d'opération, les montants à zéro et le texte d'invite de tous les champs. Un
+     ton « clair » ne dispense pas de se lire. */
+  --ardoise-claire: #64747c;
+  --filet: #dce4e7;
+  --filet-fort: #c3d0d5;
+
+  --radius: 0.75rem;
+  --background: var(--sol);
+  --foreground: var(--encre);
+  --card: var(--surface);
+  --card-foreground: var(--encre);
+  --popover: var(--surface);
+  --popover-foreground: var(--encre);
+  --primary: var(--sarcelle);
+  --primary-foreground: #ffffff;
+  --secondary: var(--surface-creuse);
+  --secondary-foreground: var(--encre);
+  --muted: var(--surface-creuse);
+  --muted-foreground: var(--ardoise);
+  --accent: var(--surface-survol);
+  --accent-foreground: var(--encre);
+  --destructive: var(--tension-encre);
+  --border: var(--filet);
+  --input: var(--filet-fort);
+  --ring: var(--sarcelle);
+
+  /* LA BARRE PRODUIT. Une surface blanche posée au-dessus du sol, séparée par un
+     filet et une ombre très courte : elle ne pèse pas, elle surplombe. C'est
+     l'inverse exact de la poutre de carbone d'avant, et c'est voulu — la
+     navigation n'est pas le sujet de l'écran. */
+  --barre: #ffffff;
+  --barre-texte: var(--ardoise);
+  --barre-vive: var(--encre);
+  --barre-appui: var(--surface-survol);
+  --barre-filet: var(--filet);
+
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--encre);
+  --sidebar-primary: var(--sarcelle);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--surface-survol);
+  --sidebar-accent-foreground: var(--encre);
+  --sidebar-border: var(--filet);
+  --sidebar-ring: var(--sarcelle);
+
+  /* LES TROIS ÉLÉVATIONS. Toutes décalées vers le bas et floues : une ombre sans
+     décalage est un halo, c'est-à-dire une décoration. Elles sont teintées de
+     l'encre du monde, jamais du noir pur — un noir pur sur un sol cyan fait une
+     ombre grise et sale. */
+  --ombre-carte: 0 1px 2px rgba(23, 34, 43, 0.06), 0 1px 3px rgba(23, 34, 43, 0.05);
+  --ombre-levee: 0 2px 4px rgba(23, 34, 43, 0.06), 0 8px 20px -6px rgba(23, 34, 43, 0.14);
+  --ombre-flottante: 0 4px 8px rgba(23, 34, 43, 0.08), 0 18px 44px -10px rgba(23, 34, 43, 0.2);
 }
 
-/* Le pendant sombre : le même atelier, lumière éteinte. Le béton devient
-   l'ombre, le carbone devient le fond, et le câble rouge s'éclaircit juste
-   assez pour rester lisible sur du noir. */
+/* Le pendant sombre : le même bureau, la lampe éteinte. Le sol s'enfonce, les
+   cartes remontent d'un cran, et les trois sens s'éclaircissent juste assez pour
+   rester lisibles sur du sombre. Les ombres n'y font plus le relief — c'est
+   l'écart de valeur entre le sol et la carte qui le fait — donc elles se
+   contentent d'asseoir les surfaces flottantes. */
 .dark {
-  --ground: #121114;
-  --plate: #1a191d;
-  --tension: #e8434a;
-  --portant: #35a873;
-  --tension-ink: #f0666c;
-  /* Dans le noir, le voile éclaircit au lieu d'assombrir : c'est la même matière
-     vue sous une autre lumière, pas une inversion mécanique. */
-  --voile: #cccccc;
+  --encre: #e7edf0;
+  --sol: #12181c;
+  --surface: #1b2329;
+  --surface-creuse: #232c33;
+  --surface-survol: #29333a;
 
-  --background: var(--ground);
-  --foreground: #e6e3df;
-  --card: var(--plate);
-  --card-foreground: #e6e3df;
-  --popover: #212025;
-  --popover-foreground: #e6e3df;
-  --primary: #e6e3df;
-  --primary-foreground: var(--carbon);
-  --secondary: #26252a;
-  --secondary-foreground: #e6e3df;
-  --muted: #26252a;
-  --muted-foreground: #97948f;
-  --accent: #26252a;
-  --accent-foreground: #e6e3df;
-  --destructive: var(--tension-ink);
-  --border: #302f34;
-  --rule-strong: #4a484e;
-  --input: #3a393f;
-  --ring: var(--tension);
-  /* Éteinte, la poutre s'enfonce d'un cran sous le sol : c'est encore elle qui
-     porte, mais dans le noir on ne distingue plus que son arête. */
-  --beam: #08070a;
-  --beam-foreground: #97948f;
-  --beam-bright: #e6e3df;
-  --beam-accent: #1c1b20;
-  --beam-rule: #242328;
-  --sidebar: var(--plate);
-  --sidebar-foreground: #e6e3df;
-  --sidebar-accent: #26252a;
-  --sidebar-accent-foreground: #e6e3df;
-  --sidebar-border: #302f34;
+  --sarcelle: #3fa8ae;
+  --sarcelle-forte: #55bcc2;
+  --sarcelle-voile: #14313a;
+  --sarcelle-encre: #5cbfc5;
+
+  --portant: #4cb87f;
+  --portant-voile: #14301f;
+  --tension: #e4695a;
+  --tension-encre: #f08b7d;
+  --tension-voile: #351a17;
+  --attente: #d8a94a;
+  --attente-voile: #302614;
+
+  --hero-soulignement: #f2b43c;
+  --hero-surlignage: #176b74;
+
+  --ardoise: #9aabb4;
+  /* 5,71:1 sur une carte, 5,09:1 sur la surface creusée — qui est le fond des
+     champs, donc celui du texte d'invite. Il a valu #7b8b94, qui n'y tenait que
+     4,03:1 : le contraste d'un ton clair se juge sur la surface la plus claire
+     qu'il touche, pas sur la plus sombre. */
+  --ardoise-claire: #8f9da5;
+  --filet: #2c363d;
+  --filet-fort: #3d4950;
+
+  --primary-foreground: #06181a;
+  --barre: #1b2329;
+  --barre-texte: var(--ardoise);
+  --barre-vive: var(--encre);
+  --barre-appui: var(--surface-survol);
+  --barre-filet: var(--filet);
+
+  --ombre-carte: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --ombre-levee: 0 6px 18px -6px rgba(0, 0, 0, 0.55);
+  --ombre-flottante: 0 18px 44px -10px rgba(0, 0, 0, 0.65);
 }
 
 @theme inline {
-  /* Deux fontes, deux rôles. Archivo (variable, resserrée à l'axe wdth) porte
-     l'interface et les capitales gravées ; Azeret Mono porte TOUT ce qui est
-     chiffre, mesure ou état. Aucune serif : rien ici n'est imprimé. */
+  /* UNE SEULE FONTE. Schibsted Grotesk porte les titres, les libellés, les
+     commandes ET les chiffres : un logiciel de travail n'a pas besoin d'un
+     couple d'affichage, et une chasse fixe posée sur des montants n'est qu'un
+     costume de technicité. L'alignement des virgules vient de `tabular-nums`,
+     pas d'une seconde famille. */
   --font-sans: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-num), ui-monospace, "SF Mono", monospace;
+  --font-mono: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
-  /* Pas de rayon : la famille de formes est la coupe à 45°, pas l'arrondi. */
-  --radius-sm: 0px;
-  --radius-md: 0px;
-  --radius-lg: 0px;
-  --radius-xl: 0px;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -169,356 +202,333 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-beam: var(--beam);
-  --color-beam-foreground: var(--beam-foreground);
-  --color-beam-bright: var(--beam-bright);
-  --color-beam-accent: var(--beam-accent);
-  --color-beam-rule: var(--beam-rule);
-  --color-tension: var(--tension);
+
+  --color-encre: var(--encre);
+  --color-surface: var(--surface);
+  --color-creuse: var(--surface-creuse);
+  --color-survol: var(--surface-survol);
+  --color-sarcelle: var(--sarcelle);
+  --color-sarcelle-forte: var(--sarcelle-forte);
+  --color-sarcelle-voile: var(--sarcelle-voile);
+  --color-sarcelle-encre: var(--sarcelle-encre);
   --color-portant: var(--portant);
-  --color-tension-ink: var(--tension-ink);
-  --color-ash: var(--ash);
-  --color-carbon: var(--carbon);
-  --color-rule-strong: var(--rule-strong);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-portant-voile: var(--portant-voile);
+  --color-tension: var(--tension);
+  --color-tension-encre: var(--tension-encre);
+  --color-tension-voile: var(--tension-voile);
+  --color-attente: var(--attente);
+  --color-attente-voile: var(--attente-voile);
+  --color-ardoise: var(--ardoise);
+  --color-ardoise-claire: var(--ardoise-claire);
+  --color-filet: var(--filet);
+  --color-filet-fort: var(--filet-fort);
+
+  --color-barre: var(--barre);
+  --color-barre-texte: var(--barre-texte);
+  --color-barre-vive: var(--barre-vive);
+  --color-barre-appui: var(--barre-appui);
+  --color-barre-filet: var(--barre-filet);
+
   --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --shadow-carte: var(--ombre-carte);
+  --shadow-levee: var(--ombre-levee);
+  --shadow-flottante: var(--ombre-flottante);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
-  /* LE GRAIN DE BÉTON, et il ne reste qu'en lumière éteinte. Une dalle
-     photographiée posée en fond de page, à peine perceptible, qui donne à
-     l'écran sa matière. Elle vit sur <html> et non sur le corps, pour passer
-     DERRIÈRE tout le reste : les plaques, elles, sont de la tôle peinte et
-     restent lisses. C'est le seul raster de l'app.
-
-     En lumière claire, le sol est blanc, et un grain sur du blanc ne fait pas
-     de la matière : il fait du sale. Une dalle de moyenne 167 posée en lumière
-     douce sur du #ffffff le tache d'un gris irrégulier — ce n'est plus un fond
-     blanc, c'est un fond gris mal imprimé. Le grain ne se pose donc que sur le
-     noir, où il a de quoi moduler. */
   html {
     background-color: var(--background);
   }
-  .dark {
-    background-image: url("/matiere/beton.webp");
-    background-size: 420px;
-    /* En lumière douce et non en multiplication : la dalle photographiée a une
-       moyenne de 167, et la multiplier revenait à peindre le sol en gris moyen
-       — les plaques se mettaient à flotter sur un fond plus sombre qu'elles.
-       En lumière douce, le carreau module la couleur du sol au lieu de la
-       remplacer : le béton garde sa valeur et ne gagne que son grain. */
-    background-blend-mode: soft-light;
-  }
   body {
-    @apply text-foreground font-sans;
-    background: transparent;
-    /* La virgule et les milliers tombent au même endroit d'une ligne à l'autre,
-       y compris hors tableau : une colonne de montants se lit verticalement. */
-    font-variant-numeric: tabular-nums;
+    @apply bg-background text-foreground font-sans;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
-  /* Archivo est variable sur l'axe de chasse : resserrée à 88, elle prend le
-     dessin d'une capitale gravée sur plaque, sans avoir à charger une seconde
-     fonte condensée. */
-  .font-display {
-    font-variation-settings: "wdth" 86;
-    letter-spacing: -0.01em;
+  /* LA CHASSE FIXE DES CHIFFRES NE SE POSE QUE SUR DES CHIFFRES.
+     `tabular-nums` était posé sur le corps du document, pour que les virgules
+     tombent au même endroit d'une ligne à l'autre. Mais dans cette fonte, la
+     fonctionnalité donne AUSSI à la virgule et au point la chasse d'un chiffre :
+     chaque phrase du produit se lisait « à la fin du mois . », espace comprise,
+     jusque dans le titre de la page d'accueil.
+     Elle vit donc là où elle sert, et NULLE PART ailleurs : sur les montants, et
+     sur l'utilitaire de Tailwind pour les rares chiffres qui n'en portent pas la
+     classe. Les légendes en sont exclues, elles aussi : ce sont des abréviations
+     — « DÉP. », « BUDGET RÉM. » — et leur point y prenait la chasse d'un chiffre
+     exactement comme dans une phrase. */
+  .montant,
+  .tabular-nums,
+  [class*="tabular-nums"] {
+    font-variant-numeric: tabular-nums;
+  }
+  /* La mise au point clavier est la même partout : un anneau sarcelle de deux
+     pixels, détaché d'un pixel de la forme. Posée ici plutôt que composant par
+     composant, elle ne peut pas manquer quelque part. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.012em;
+    text-wrap: balance;
   }
 }
 
 @layer components {
-  /* LA PLAQUE. Une surface aux quatre angles coupés, cerclée d'un filet d'un
-     pixel qui suit la coupe. Impossible avec `border`, qui ignore clip-path :
-     deux calques superposés, le filet dessous, la plaque un pixel à l'intérieur.
-     Tout ce qui est panneau, carte ou champ passe par là. */
-  .plate {
-    position: relative;
-    isolation: isolate;
-    --plate-fill: var(--card);
-    --plate-rule: var(--border);
-    --plate-path: polygon(
-      var(--notch) 0,
-      calc(100% - var(--notch)) 0,
-      100% var(--notch),
-      100% calc(100% - var(--notch)),
-      calc(100% - var(--notch)) 100%,
-      var(--notch) 100%,
-      0 calc(100% - var(--notch)),
-      0 var(--notch)
-    );
+  /* LA CARTE. La surface du produit, et la seule. Blanche, arrondie à 12 px,
+     cerclée d'un filet d'un pixel, posée sur une ombre courte. Tout ce qui est
+     panneau, section, relevé ou enveloppe passe par là — et rien ne s'imbrique :
+     ce qui vit DANS une carte prend la surface creusée, jamais une deuxième
+     carte. */
+  .carte {
+    background: var(--card);
+    border: 1px solid var(--filet);
+    border-radius: var(--radius);
+    box-shadow: var(--ombre-carte);
   }
-  /* La plaque de commande : deux angles coupés seulement, en diagonale. C'est
-     la forme des boutons et des champs, que l'œil distingue des panneaux. */
-  .plate-cut {
-    --notch: 6px;
-    --plate-fill: var(--background);
-    --plate-path: polygon(
-      var(--notch) 0,
-      100% 0,
-      100% calc(100% - var(--notch)),
-      calc(100% - var(--notch)) 100%,
-      0 100%,
-      0 var(--notch)
-    );
+  /* La carte qu'on peut ouvrir : elle se lève d'un cran au survol, et son filet
+     se renforce. C'est le seul mouvement d'une carte. */
+  .carte-active {
+    transition:
+      box-shadow 160ms ease-out,
+      border-color 160ms ease-out;
   }
-  .plate::before,
-  .plate::after {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    clip-path: var(--plate-path);
+  .carte-active:hover {
+    border-color: var(--filet-fort);
+    box-shadow: var(--ombre-levee);
   }
-  .plate::before {
-    inset: 0;
-    background: var(--plate-rule);
-  }
-  .plate::after {
-    inset: 1px;
-    background: var(--plate-fill);
-  }
-  /* LE CHAMP, QUI NE SAIT PAS PORTER DE PSEUDO-ÉLÉMENT. Un input, un select et
-     un textarea sont des éléments REMPLACÉS : le navigateur n'y dessine ni
-     ::before ni ::after. Les deux calques de .plate — le filet dessous, la
-     plaque un pixel dedans — n'y apparaissaient donc jamais, et ces champs
-     n'étaient depuis toujours que du texte posé à même la plaque.
-     Ça ne se voyait pas tant que le sol était du béton et la plaque une tôle
-     plus claire : le champ prenait la couleur du sol et se détachait d'un cran.
-     Sur un sol blanc il n'y avait plus rien à voir du tout — la recherche, les
-     montants et les menus du pupitre de filtres avaient disparu.
-     Le filet leur est donc posé en ombre interne, qui, elle, fonctionne sur un
-     élément remplacé. Il lit --plate-rule comme le reste du système : la mise au
-     point le passe en tension et l'erreur en destructif sans rien redire ici. */
-  input.plate,
-  select.plate,
-  textarea.plate {
-    background: var(--plate-fill);
-    box-shadow: inset 0 0 0 1px var(--plate-rule);
+  /* Le bloc creusé : ce qui est posé DANS une carte et doit s'enfoncer — le pied
+     d'un total, une jauge, un détail replié. */
+  .creux {
+    background: var(--surface-creuse);
+    border-radius: var(--radius-md, 0.5rem);
   }
 
-  /* La coupe simple : deux angles opposés seulement. C'est la forme des
-     commandes — boutons, onglets, champs — que l'œil distingue ainsi des
-     panneaux. */
-  .cut {
-    clip-path: polygon(
-      var(--notch) 0,
-      100% 0,
-      100% calc(100% - var(--notch)),
-      calc(100% - var(--notch)) 100%,
-      0 100%,
-      0 var(--notch)
-    );
-  }
-  .cut-sm {
-    --notch: 6px;
-  }
-
-  /* L'ÉTIQUETTE GRAVÉE. Une pastille noire, capitales blanches, chasse fixe.
-     Elle nomme une colonne, un état, une section — jamais une valeur. */
-  .chip {
+  /* LA PASTILLE D'ÉTAT. Un ovale plein, en petites capitales : elle nomme un
+     état — reçu, engagé, attendu, dépassé — jamais une valeur. C'est le seul
+     endroit où une couleur de sens sert de FOND ; ailleurs elle ne teinte que
+     de l'encre. */
+  .pastille {
     display: inline-flex;
     align-items: center;
-    gap: 0.35em;
-    background: var(--carbon);
-    color: var(--void-white);
-    font-family: var(--font-mono);
-    font-size: 0.625rem;
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: 0.09em;
+    gap: 0.3em;
+    border-radius: 999px;
+    padding: 0.2em 0.62em;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    background: var(--surface-creuse);
+    color: var(--ardoise);
+    box-shadow: inset 0 0 0 1px var(--filet);
+  }
+  .pastille-portant {
+    background: var(--portant-voile);
+    color: var(--portant);
+    box-shadow: none;
+  }
+  .pastille-tension {
+    background: var(--tension-voile);
+    color: var(--tension-encre);
+    box-shadow: none;
+  }
+  .pastille-attente {
+    background: var(--attente-voile);
+    color: var(--attente);
+    box-shadow: none;
+  }
+  .pastille-sarcelle {
+    background: var(--sarcelle-voile);
+    color: var(--sarcelle-encre);
+    box-shadow: none;
+  }
+  .pastille-encre {
+    background: var(--encre);
+    color: var(--surface);
+    box-shadow: none;
+  }
+
+  /* LA LÉGENDE. Les petites capitales posées au-dessus d'un montant ou en tête
+     d'une colonne. Interlettrage ouvert, ardoise, jamais de fond : c'est une
+     cote, pas une étiquette. */
+  .legende {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    padding: 0.34em 0.55em 0.3em;
+    color: var(--ardoise);
+  }
+
+  /* LE TITRE DE CARTE. Une phrase, pas une inscription : casse normale, corps
+     lisible, encre pleine. L'ancien monde gravait ses titres en capitales de
+     chasse fixe ; celui-ci les écrit. */
+  .titre-carte {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.006em;
+    color: var(--encre);
+  }
+
+  /* LE MONTANT. Toujours à droite, toujours tabulaire. Les trois sens ne
+     changent que son encre. */
+  .montant {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    letter-spacing: -0.012em;
     white-space: nowrap;
   }
-  /* En lumière éteinte, la pastille de carbone disparaîtrait dans le fond : elle
-     s'éclaire d'un cran. Les deux variantes doivent être redites ici, sinon
-     cette règle — plus spécifique qu'elles — leur reprend leur couleur, et le
-     dépassement cesse d'être rouge exactement là où il compte le plus. */
-  .dark .chip {
-    /* Mélangée depuis les jetons plutôt que codée en dur : la pastille est du
-       carbone éclairci, comme tout ce qui remonte d'un cran dans le noir. */
-    background: color-mix(in oklab, var(--void-white) 12%, var(--carbon));
-    color: #e6e3df;
+
+  /* LA JAUGE D'ENVELOPPE — la pièce signature du monde.
+     Une piste creusée large de l'enveloppe entière ; dedans, ce qui est parti.
+     Quand la dépense passe le budget, le trop-plein ne comprime pas la piste :
+     il DÉBORDE à sa droite, en rouge, séparé par une encoche blanche. On voit
+     donc d'un coup d'œil non seulement qu'un poste a rompu, mais de combien.
+     C'est la seule chose de cet écran qu'on doit voir avant tout le reste. */
+  .jauge {
+    position: relative;
+    display: flex;
+    height: 8px;
+    max-width: 34rem;
+    width: 100%;
+    align-items: stretch;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--filet-fort) 45%, var(--surface-creuse));
+    overflow: visible;
   }
-  .dark .chip-slack {
-    background: transparent;
-    color: var(--muted-foreground);
+  .jauge-piste {
+    position: relative;
+    height: 100%;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--filet-fort) 45%, var(--surface-creuse));
+    overflow: hidden;
   }
-  .dark .chip-tension {
+  /* Aucune transition sur la largeur : la jauge ne change de valeur qu'au retour
+     d'un rendu serveur, où elle est reconstruite de toute façon — l'animation
+     n'aurait donc jamais lieu, et animer une propriété de mise en page pour rien
+     fait travailler le navigateur à chaque passage. */
+  .jauge-part {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--ardoise);
+  }
+  .jauge-part-portant {
+    background: var(--portant);
+  }
+  /* CE QUI A ROMPU DOIT ÊTRE LE PLUS LOURD DE LA CARTE. Une enveloppe pile pleine
+     mais intacte a porté un temps l'encre presque noire : elle devenait la marque
+     la plus forte de l'écran, plus forte qu'une enveloppe DÉBORDÉE, qui gardait
+     son gris et six pixels de rouge au bout. Exactement l'inverse de ce qu'on
+     vient lire.
+     Une enveloppe rompue passe donc entièrement au rouge : l'encre de tension
+     pour la part budgétée, le rouge vif pour le débord, séparés par l'encoche.
+     On lit d'un coup qu'elle a rompu, et de combien. Une enveloppe pleine mais
+     intacte, elle, n'a plus de traitement à part : sa piste remplie jusqu'au bout
+     le dit déjà. */
+  .jauge-part-rompue {
+    background: var(--tension-encre);
+  }
+  /* Le débord : collé à la piste, séparé par une encoche de la couleur de la
+     carte pour qu'on lise deux corps et non une barre bicolore. */
+  /* Le débord garde une largeur minimale : un dépassement de deux pour cent est
+     un dépassement, et la jauge doit le montrer. Sans ce minimum, la barre d'un
+     poste tout juste rompu était indiscernable de celle d'un poste pile plein —
+     or c'est exactement la différence qu'on vient chercher. */
+  .jauge-debord {
+    height: 100%;
+    min-width: 6px;
+    border-radius: 999px;
     background: var(--tension);
-    color: var(--void-white);
-  }
-  /* L'état dormant : ce qui n'est pas encore engagé, ou ce qui est éteint. */
-  .chip-slack {
-    background: transparent;
-    color: var(--muted-foreground);
-    box-shadow: inset 0 0 0 1px var(--input);
-  }
-  /* L'état rompu : le câble a lâché. Le seul chip rouge du système. */
-  .chip-tension {
-    background: var(--tension);
-    color: var(--void-white);
+    box-shadow: -2px 0 0 0 var(--card);
   }
 
-  /* LE FILET DE MESURE. Les capitales minuscules posées au-dessus d'un
-     montant : ce n'est pas une étiquette gravée, c'est une légende. */
-  .caption {
-    font-family: var(--font-mono);
-    font-size: 0.625rem;
-    font-weight: 500;
-    letter-spacing: 0.11em;
-    text-transform: uppercase;
-    color: var(--muted-foreground);
+  /* LE BANDEAU DE SECTION. Un message posé en tête d'une carte : un fond voilé,
+     un filet à gauche d'un pixel, jamais plus. */
+  .bandeau {
+    display: flex;
+    gap: 0.625rem;
+    border-radius: var(--radius-md, 0.5rem);
+    border-left: 1px solid currentColor;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+  .bandeau-tension {
+    background: var(--tension-voile);
+    color: var(--tension-encre);
+  }
+  .bandeau-attente {
+    background: var(--attente-voile);
+    color: var(--attente);
+  }
+  .bandeau-sarcelle {
+    background: var(--sarcelle-voile);
+    color: var(--sarcelle-encre);
   }
 
-  /* LE TRAIT OBLIQUE. La marque de la commande active, héritée du monde :
-     un trait rouge à 45° posé dans l'angle. Décoratif nulle part : il ne se
-     pose que sur ce qui est actif ou sélectionné. */
-  .slash::after {
-    content: "";
-    position: absolute;
-    left: 0.45rem;
-    top: 50%;
-    width: 0.85rem;
-    height: 1px;
-    background: var(--tension);
-    transform: translateY(-50%) rotate(-45deg);
-  }
+  /* L'ATTENTE. Deux signaux, et rien d'autre ne bouge dans le produit.
 
-  /* LA MISE EN TENSION. Le seul moment animé de l'app, et il n'arrive qu'une
-     fois : à l'ouverture, les mâts se lèvent du sol l'un après l'autre, les
-     nœuds se posent, et le câble se tend d'un bout à l'autre. C'est le geste
-     propre à une structure en tenségrité — elle se monte, elle ne surgit pas.
-     Nulle part ailleurs il n'y a d'animation : une colonne de chiffres qui
-     bouge est une colonne qu'on relit. */
-  .mat {
-    animation: mat-lever 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  .noeud {
-    animation: noeud-poser 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  /* Le câble se tend d'un bout à l'autre. Un tracé au pointillé (dasharray)
-     serait plus élégant, mais le dessin est étiré en largeur et pas en hauteur :
-     le navigateur calcule alors les tirets dans l'espace déformé et le câble
-     sort en morceaux. Un rideau de gauche à droite dit la même chose et ne
-     dépend d'aucune longueur. */
-  .cable-tendu {
-    animation: cable-tendre 900ms cubic-bezier(0.16, 1, 0.3, 1) 160ms both;
-  }
-  @keyframes mat-lever {
-    from {
-      scale: 1 0;
-    }
-    to {
-      scale: 1 1;
-    }
-  }
-  @keyframes noeud-poser {
-    from {
-      scale: 0;
-      opacity: 0;
-    }
-    to {
-      scale: 1;
-      opacity: 1;
-    }
-  }
-  @keyframes cable-tendre {
-    from {
-      clip-path: inset(-20% 100% -20% 0);
-    }
-    to {
-      clip-path: inset(-20% 0 -20% 0);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .mat,
-    .noeud,
-    .cable-tendu {
-      animation: none;
-    }
-    .cable-tendu {
-      stroke-dasharray: none;
-    }
-  }
-
-  /* LA MARQUE DE RUPTURE. Là où un mât a percé le sol : le trait du sol est
-     interrompu sur une vingtaine de pixels, et deux obliques rouges disent la
-     cassure. Dessinée et non photographiée — c'est un élément de plan, il doit
-     rester net à toutes les largeurs. */
-  .rupture {
-    width: 22px;
-    height: 14px;
-    background: var(--plate-fill, var(--card));
-  }
-  .rupture::before,
-  .rupture::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    height: 14px;
-    width: 2px;
-    background: var(--tension);
-  }
-  .rupture::before {
-    left: 5px;
-    transform: rotate(24deg);
-  }
-  .rupture::after {
-    right: 5px;
-    transform: rotate(24deg);
-  }
-
-  /* LE TIRAGE. Ce qui tient la place d'un chiffre le temps qu'il arrive : une
-     barre de voile, posée là où le montant tombera et large de ce qu'il fera.
-     Le plan est déjà tiré, l'encre n'est pas encore sèche — l'écran ne se vide
-     jamais, il se remplit.
-
-     C'est la seule chose du produit qui ait le droit de respirer en dehors de
-     la mise en tension, et pour une raison précise : une barre parfaitement
-     immobile se lit comme un écran gelé, c'est-à-dire exactement le contraire
-     de ce qu'elle doit dire. La respiration est lente et de faible amplitude —
-     elle signale, elle n'attire pas. */
+     LE TIRAGE tient la place d'un montant qui n'est pas encore arrivé : une
+     barre creusée, posée à l'emplacement et à la largeur de ce qui la
+     remplacera, qu'un reflet traverse lentement. Un écran vide dit « il n'y a
+     rien » ; celui-ci dit « ça arrive ». */
   .tirage {
-    background: color-mix(in oklab, var(--voile) 15%, var(--background));
-    animation: tirage-respirer 1600ms ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--surface-creuse);
   }
-  @keyframes tirage-respirer {
-    0%,
-    100% {
-      opacity: 1;
+  .tirage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--filet-fort) 55%, transparent),
+      transparent
+    );
+    animation: tirage-passer 1500ms ease-in-out infinite;
+  }
+  @keyframes tirage-passer {
+    from {
+      transform: translateX(-100%);
     }
-    50% {
-      opacity: 0.42;
+    to {
+      transform: translateX(100%);
     }
   }
 
-  /* LE FIL DE TENSION. Sous la poutre, un câble rouge parcourt l'écran tant que
-     le serveur recalcule. Il ne mesure rien — personne ne sait combien de temps
-     ça prendra — il dit seulement qu'une force travaille quelque part. C'est le
-     rouge dans son rôle : il ne décore pas, il dit une traction en cours.
-
-     La gouttière fait deux pixels et reste là même au repos : une barre qui
-     apparaît décalerait tout l'écran d'un cran à chaque enregistrement. */
-  .fil-tension {
+  /* LE FIL D'ATTENTE court sous la barre produit tant que le serveur recalcule.
+     Il ne mesure rien — personne ne sait combien de temps ça prendra — il dit
+     seulement qu'une machine travaille. Sa gouttière de deux pixels reste là au
+     repos, sans quoi chaque enregistrement décalerait l'écran d'un cran. */
+  .fil-attente {
     position: relative;
     overflow: hidden;
   }
-  .fil-tension::after {
+  .fil-attente::after {
     content: "";
     position: absolute;
     inset-block: 0;
     left: 0;
     width: 32%;
-    background: var(--tension);
+    border-radius: 999px;
+    background: var(--sarcelle);
     animation: fil-courir 1050ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
   }
   @keyframes fil-courir {
@@ -529,17 +539,18 @@
       transform: translateX(313%);
     }
   }
-  /* Rien ne bouge pour qui a demandé que rien ne bouge : le tirage reste une
-     barre pleine, le fil reste un câble tendu d'un bord à l'autre. Les deux
-     disent encore ce qu'ils ont à dire, sans le mouvement. */
+
+  /* Rien ne bouge pour qui a demandé que rien ne bouge : le tirage devient une
+     barre pleine et le fil un câble tendu d'un bord à l'autre. Les trois disent encore ce qu'ils ont à dire. */
   @media (prefers-reduced-motion: reduce) {
-    .tirage {
+    .tirage::after {
       animation: none;
+      background: color-mix(in oklab, var(--filet-fort) 40%, transparent);
     }
-    .fil-tension::after {
+    .fil-attente::after {
       width: 100%;
       animation: none;
-      opacity: 0.55;
+      opacity: 0.6;
     }
   }
 }

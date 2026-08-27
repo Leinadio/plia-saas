@@ -5,96 +5,108 @@ primary_target: "src/app/app"
 related_targets: []
 ---
 
+---
+version: 1
+slug: "src-app-app"
+primary_target: "src/app/app"
+related_targets: []
+---
+
 ## Portée
-Toute l'app connectée sous `/app` : la poutre de navigation, le tableau de bord,
-les transactions, l'historique (un seul grand tableau), les réglages et le
-compte. Hors portée : la landing publique et l'écran de connexion, qui héritent
-seulement des nouveaux jetons.
+Toute l'app connectée sous `/app` : la barre produit, le tableau de bord,
+les transactions, l'historique, les réglages et le compte. La landing publique et
+l'écran de connexion héritent des mêmes jetons et ont été repris avec eux.
 
 ## Mode du visiteur
 Operate. Un indépendant à revenus irréguliers ouvre l'app quelques fois par mois,
-sur ordinateur comme sur téléphone, pour savoir s'il peut dépenser. La tâche
-prime : lisibilité des colonnes de chiffres, états explicites, aucune surprise.
+sur ordinateur comme sur téléphone, pour savoir s'il peut dépenser. La tâche prime :
+lisibilité des montants, états explicites, aucune surprise.
 
 ## Direction retenue
-« La colonne en tension » — challenger de tenségrité choisi par l'utilisateur
-contre la direction tirée au sort (assignée 4/7, clé de tirage 4ed98fa0).
-Un budget est une structure : des mâts de carbone qui portent (solde acquis,
-revenus), des câbles rouges qui tirent (dépenses engagées, reports, dépassements).
-Quatre états, ceux de la source : acquis/engagé (ça porte), attendu (ça dort),
-dépassé (ça a rompu).
+« L'enveloppe » — direction épinglée par l'utilisateur (refonte complète, plus de
+tableau, des cartes, la famille des logiciels de travail sans en copier aucun).
 
-## Composition approuvée — le tableau de bord
-`.impeccable/mocks/comp-b-plan.png` (option B, « le plan de charge »), approuvée
-par l'utilisateur le 13/08/2026, sidecar `approved: true`.
-Skeleton : poutre carbone pleine largeur (nom + trois destinations + synchro,
-notifications, compte) ; plan de charge pleine largeur (un mât par mois sur la
-ligne du zéro, câble tendu entre les sommets, mât rompu sous zéro) ; bande de
-quatre relevés séparés par un filet ; deux tables denses entrées / sorties.
+Un budget est une collection d'ENVELOPPES : chaque poste est une ligne à jauge —
+pleine, entamée, ou débordée. Le tableau de bord et les transactions sont des listes
+de cartes.
 
-## Composition approuvée — le grand tableau de l'Historique
-`.impeccable/mocks/comp-histo-a.png`, « L'épine et les mois », approuvée et
-construite le 14/08/2026, sidecar `approved: true`.
+L'HISTORIQUE, LUI, RESTE UN GRAND TABLEAU à colonnes de mois. Il a été remplacé par
+une pile de mois, puis par un rail à deux colonnes, et l'utilisateur l'a rappelé :
+ce sont les couleurs qui devaient changer, pas la structure. On y compare les mois
+d'un regard, ce qu'aucune liste de cartes ne sait faire.
 
-Skeleton : une PLAQUE aux quatre angles coupés à 45°, cerclée d'un filet d'un pixel
-qui suit la coupe ; dedans, UN seul tableau pour tous les mois affichés. La colonne
-des noms de postes est écrite une fois et reste figée à gauche pendant que les mois
-défilent ; chaque mois est un bloc de colonnes séparé du suivant par un filet franc,
-coiffé du nom du mois centré, l'année en chasse fixe à côté, et des intitulés de
-colonnes COURTS en dessous (« Réel », « Prévu », « Si dép. »). L'épine de l'en-tête
-reste nue. Aucune teinte de colonne : ce qui teinte, ce sont les bandes de section,
-pleine largeur, leur nom posé dans l'épine — et le rouge n'y sert qu'aux dépenses non
-prévues. La durée d'un poste s'écrit sous son nom. Le pied tient en trois lignes de
-carbone plein à encre claire : total du mois, solde de fin de mois, total dépassement.
+## L'onglet Historique — ce qui a été essayé, et ce qui reste
+Trois compositions ont été rendues à fidélité réelle (composants et jetons du produit,
+données fabriquées) et mises devant l'utilisateur : `.impeccable/mocks/histo-a-rail-*`,
+`histo-b-tuiles-*`, `histo-c-postes-*`. Le rail a été choisi, construit — puis écarté
+avec les deux autres : L'UTILISATEUR A DEMANDÉ LE RETOUR DU GRAND TABLEAU, aux couleurs
+neuves.
 
-Les cinq propositions et leur histoire vivent dans `.impeccable/mocks/README.md`.
+Ce qui vit donc aujourd'hui : `src/components/history-grid.tsx`, la grille d'origine,
+retraduite dans le monde des cartes. Une carte qui la porte et coupe son défilement,
+une épine de noms figée à partir de 640 px, des familles de colonnes distinguées par la
+DENSITÉ d'une même ardoise (5 / 11 / 18 / 24 %) mélangée à la CARTE et non au sol, des
+bandes de section au voile du portant et de la tension, et un pied d'encre qui ferme le
+relevé — la seule masse sombre d'un écran clair, qui s'inverse en bande pâle sous la
+lumière éteinte.
+
+Les trois comps restent dans `.impeccable/mocks/` : ce sont des routes déjà explorées,
+pas des propositions ouvertes. Ne pas les rejouer sans raison neuve.
+
+## Le moment mémorable : la jauge qui déborde
+La pièce signature, et la seule chose de l'écran qu'on doit voir avant tout le reste.
+Une barre de progression ordinaire s'arrête à cent pour cent : elle sait dire qu'un
+poste a rompu, pas de combien. Ici la barre entière vaut la DÉPENSE — la piste
+(l'enveloppe) n'en occupe que la part budgétée, et le trop-plein se pose à sa droite
+en rouge, séparé par une encoche. Un poste dépensé au double de son budget montre
+une demi-piste et un demi-débord. La géométrie vit dans `src/lib/jauge.ts`, testée ;
+le composant ne fait que placer.
+
+## Ce qui a été remplacé, et ce qu'on ne refait pas
+Le grand tableau de l'Historique (2 745 lignes, une épine figée à gauche, huit
+colonnes par mois, défilement horizontal) est parti. Il comparait bien les mois entre
+eux, mais sur téléphone il ne restait que deux colonnes de chiffres et l'état d'une
+enveloppe se déduisait en comparant trois nombres alignés.
+
+C'était l'analyse au moment de la refonte. Elle s'est révélée fausse sur le point
+décisif : le tableau tient parce qu'on y compare les mois, et aucune des trois
+compositions essayées ne remplaçait cela sans perte. Le grand tableau est revenu.
+
+Ce qui restait vrai, et qui a été corrigé sans toucher à sa structure : ses teintes
+tiraient sur un béton chaud qui n'existe plus, son pied était du carbone, et ses
+chiffres étaient en chasse fixe.
+
+Tous les calculs sont intacts (`src/lib` n'a pas bougé), et toutes les modifications
+qui se faisaient depuis le tableau vivent toujours dans la pile : créer un poste, le
+gérer, le découper en sous-postes, corriger un budget daté, rattacher une
+transaction, la sortir des calculs, la commenter. Le panneau de détail à droite
+s'ouvre au clic sur n'importe quel montant, comme avant.
 
 ## Grammaire d'implémentation
-- Formes : aucun rayon. Plaque = quatre angles coupés à 45° (`.plate`), commande =
-  deux angles coupés (`.plate-cut` / `.cut`). Filets d'un pixel qui suivent la coupe.
-  Le bandeau du tableau, lui, ne se coupe pas : c'est une poutre, comme celle de la
-  navigation, et une poutre traverse l'écran de part en part.
-- Couleur : béton, carbone, cendre, et un seul accent, le rouge de tension. Le rouge
-  ne dit qu'une chose : une force qui tire. Pas de vert, pas d'ambre.
-- Type : Archivo (variable, wdth 86 pour les capitales gravées) pour l'interface ;
-  Azeret Mono pour tout chiffre, mesure ou état.
-- Étiquettes : pastille noire capitales (`.chip`), variante évidée (dormant) et
-  rouge (rompu).
-- Mouvement : un seul moment, la mise en tension du plan de charge à l'ouverture
-  (mâts, nœuds, câble). Nulle part ailleurs.
+- Surfaces : une seule, la carte (`.carte`). Rien ne s'imbrique — ce qui vit DANS une
+  carte prend la surface creusée (`.creux`), jamais une deuxième carte.
+- Couleur : la sarcelle ne sert QU'À COMMANDER (bouton principal, lien, onglet actif,
+  destination courante, mise au point). Elle ne qualifie jamais un montant. Les trois
+  sens — portant, tension, attente — ne teintent que des montants et des pastilles.
+- Un montant négatif par nature (le « dépensé » d'une enveloppe) reste à l'encre :
+  le rouge posé sur chaque ligne ne veut plus rien dire. C'est le reste qui le porte.
+- Mouvement : aucun geste d'ouverture. Les seuls signaux sont ceux de l'attente — le
+  tirage des squelettes et le fil sous la barre produit.
 
 ## Inventaire des moyens
 | Région | Moyen |
 |---|---|
-| Plan de charge (mâts, nœuds, ligne du zéro) | HTML/CSS positionné en pourcentage |
-| Câble | SVG inline, path calculé, `vector-effect` |
-| Géométrie (ligne du zéro, hauteurs) | `src/lib/plan-de-charge.ts`, testée |
-| Bandeau du grand tableau | en-tête du `<table>`, jetons `--beam*` |
-| Soldes du bandeau | `src/lib/history-bandeau.ts`, testée |
-| Colonne des noms collante | `position: sticky`, une seule zone de défilement |
-| Plaques, coupes, étiquettes | CSS `@layer components` dans globals.css |
+| Horizon (colonnes, ligne du zéro) | HTML/CSS positionné en pourcentage |
+| Géométrie de l'horizon | `src/lib/plan-de-charge.ts`, testée |
+| Jauge d'enveloppe | `src/lib/jauge.ts`, testée + `src/components/jauge.tsx` |
+| Grand tableau de l'Historique | `src/components/history-grid.tsx` |
+| Cartes, pastilles, légendes, jauge | CSS `@layer components` dans globals.css |
 | Icônes | Lucide, existant |
 | Imagerie | aucune — le produit est un relevé, pas une vitrine |
 
-## Ce qui a déjà dérivé une fois
-Un bandeau de carbone posant les trois soldes au-dessus de la grille a été construit
-puis retiré. À l'écran il éloignait le nom du mois de ses chiffres, élargissait les
-colonnes du mois pour rien, et n'existait plus dès qu'on avait défilé d'un mois. Ne
-pas y revenir sans une raison neuve.
-
-Trois pièges déjà payés : `position: sticky` est ignoré sur un enfant de cellule de
-tableau (d'où le mois courant calé à gauche plutôt que centré, cf. `center-scroll.tsx`) ;
-deux zones de défilement horizontal imbriquées empêchent toute colonne figée de
-fonctionner (celle du composant Table est neutralisée) ; et un jeton de couleur posé
-sur les cellules du pied écrasait le rouge des montants négatifs — il se pose sur la
-ligne, pour que les cellules gardent le dernier mot.
-
 ## Décisions ouvertes
-## Décisions ouvertes
-- La landing et l'écran de connexion restent à refondre.
-- La vue simple a été supprimée, avec sa bascule : le grand tableau est la seule
-  lecture de l'historique.
-- Sur le mois en cours, la ligne « Solde fin de mois » affiche dans sa colonne réelle
-  l'argent d'aujourd'hui, pas celui de la fin du mois. C'est la colonne qui le dit,
-  et la ligne « Estimé fin de mois » juste en dessous donne la fin du mois. À
-  trancher si la lecture gêne.
+- La landing reste sommaire : elle dit ce que le produit fait, sans preuve
+  fabriquée. Elle mérite une vraie conception le jour où il y aura de quoi montrer.
+- Les captures de la refonte ont été prises sur une route d'aperçu temporaire
+  (`src/app/apercu`, supprimée) avec des données fabriquées : les vrais écrans
+  demandent une session bancaire. À revoir sur les vraies données.

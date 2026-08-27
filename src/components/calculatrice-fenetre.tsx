@@ -9,13 +9,15 @@ import { formatEur } from "@/lib/money";
 import { useCalculatrice } from "@/components/calculatrice";
 import { cn } from "@/lib/utils";
 
-// LA FENÊTRE DE LA CALCULATRICE. Une plaque posée par-dessus l'écran, qu'on
+// LA FENÊTRE DE LA CALCULATRICE. Une carte posée par-dessus l'écran, qu'on
 // déplace par sa barre de titre, et dans laquelle on laisse tomber les montants
-// du tableau.
+// des cartes du dessous.
 //
-// Flottante et non ancrée : le tableau est la réserve de montants, et un panneau
-// qui le rétrécirait ferait sortir de l'écran ce qu'on est justement venu y
-// prendre. Elle se pousse à l'endroit qui gêne le moins, et elle y reste.
+// Flottante et non ancrée : les enveloppes sont la réserve de montants, et un
+// panneau qui rétrécirait la page ferait sortir de l'écran ce qu'on est justement
+// venu y prendre. Elle se pousse à l'endroit qui gêne le moins, et elle y reste.
+// Elle porte l'ombre longue du monde : c'est la seule surface qui flotte
+// vraiment, et c'est ce qui la distingue d'une carte posée dans la page.
 
 const LARGEUR = 320;
 // Hauteur retenue pour la garder attrapable, pas pour la contraindre : la fenêtre
@@ -95,9 +97,9 @@ export function CalculatriceFenetre() {
       // invisible tant que la position n'est pas posée : sinon la fenêtre
       // apparaît une fraction de seconde en haut à gauche avant de sauter.
       className={cn(
-        "plate fixed z-50 flex flex-col shadow-lg",
+        "carte shadow-flottante fixed z-50 flex flex-col overflow-hidden",
         !position && "invisible",
-        survol && "ring-tension ring-2",
+        survol && "ring-sarcelle border-sarcelle ring-2",
       )}
       onDragOver={(e) => {
         // Sans preventDefault, le navigateur refuse le dépôt : c'est ce qui dit
@@ -114,15 +116,15 @@ export function CalculatriceFenetre() {
         onPointerMove={deplacer}
         onPointerUp={lacher}
         onPointerCancel={lacher}
-        className="border-border flex cursor-grab touch-none items-center gap-2 border-b px-3 py-2 active:cursor-grabbing"
+        className="border-filet bg-creuse flex cursor-grab touch-none items-center gap-2 border-b px-3 py-2 active:cursor-grabbing"
       >
-        <GripHorizontal className="text-muted-foreground size-4 shrink-0" aria-hidden />
-        <span className="chip">Brouillon</span>
+        <GripHorizontal className="text-ardoise-claire size-4 shrink-0" aria-hidden />
+        <span className="titre-carte">Brouillon</span>
         <button
           type="button"
           onClick={fermer}
           title="Fermer la calculatrice"
-          className="hover:text-tension-ink ml-auto cursor-pointer"
+          className="text-ardoise hover:bg-survol hover:text-foreground ml-auto flex size-6 cursor-pointer items-center justify-center rounded-md transition-colors"
         >
           <X className="size-4" />
         </button>
@@ -131,7 +133,7 @@ export function CalculatriceFenetre() {
       <div className="max-h-[50vh] overflow-y-auto px-3 py-2">
         {lignes.length === 0 ? (
           <p className="text-muted-foreground py-6 text-center text-sm">
-            Attrape un montant dans le tableau et lâche-le ici.
+            Attrape un montant dans une carte et lâche-le ici.
           </p>
         ) : (
           <ul className="flex flex-col gap-1.5">
@@ -145,7 +147,7 @@ export function CalculatriceFenetre() {
                   type="button"
                   onClick={() => modifier(l.id, { operateur: suivant(l.operateur) })}
                   title="Changer l'opération"
-                  className="border-rule-strong hover:bg-muted flex size-6 shrink-0 cursor-pointer items-center justify-center border font-mono text-sm"
+                  className="border-filet-fort bg-creuse hover:bg-survol flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md border text-sm font-semibold"
                   aria-label={`Opération de la ligne ${i + 1} : ${l.operateur}`}
                 >
                   {l.operateur}
@@ -156,7 +158,7 @@ export function CalculatriceFenetre() {
                   value={l.libelle}
                   onChange={(e) => modifier(l.id, { libelle: e.target.value })}
                   aria-label={`Libellé de la ligne ${i + 1}`}
-                  className="focus:border-rule-strong min-w-0 flex-1 border-b border-transparent bg-transparent py-0.5 text-sm outline-none"
+                  className="focus:border-sarcelle min-w-0 flex-1 border-b border-transparent bg-transparent py-0.5 text-sm outline-none focus-visible:outline-none"
                 />
                 <input
                   type="number"
@@ -164,13 +166,13 @@ export function CalculatriceFenetre() {
                   value={l.montant}
                   onChange={(e) => modifier(l.id, { montant: Number(e.target.value) || 0 })}
                   aria-label={`Montant de la ligne ${i + 1}`}
-                  className="focus:border-rule-strong w-20 shrink-0 border-b border-transparent bg-transparent py-0.5 text-right font-mono text-[0.8125rem] outline-none"
+                  className="montant focus:border-sarcelle w-20 shrink-0 border-b border-transparent bg-transparent py-0.5 text-right text-[0.8125rem] outline-none focus-visible:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => retirer(l.id)}
                   title="Retirer cette ligne"
-                  className="text-muted-foreground hover:text-tension-ink shrink-0 cursor-pointer"
+                  className="text-ardoise-claire hover:text-tension-encre shrink-0 cursor-pointer"
                   aria-label={`Retirer la ligne ${i + 1}`}
                 >
                   <X className="size-3.5" />
@@ -183,11 +185,11 @@ export function CalculatriceFenetre() {
 
       {/* Une ligne vide à la main : tout ne vient pas du tableau. Un loyer à venir,
           un devis reçu par courrier, un « et si je mettais 200 de côté ». */}
-      <div className="border-border flex items-center gap-2 border-t px-3 py-2">
+      <div className="border-filet flex items-center gap-1 border-t px-2 py-1.5">
         <button
           type="button"
           onClick={() => ajouter({ libelle: "", montant: 0 })}
-          className="hover:text-tension-ink flex cursor-pointer items-center gap-1 font-mono text-[0.6875rem] tracking-[0.08em] uppercase"
+          className="text-ardoise hover:bg-survol hover:text-foreground flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-[0.8125rem] font-semibold transition-colors"
         >
           <Plus className="size-3.5" />
           Ligne
@@ -196,7 +198,7 @@ export function CalculatriceFenetre() {
           <button
             type="button"
             onClick={vider}
-            className="text-muted-foreground hover:text-tension-ink flex cursor-pointer items-center gap-1 font-mono text-[0.6875rem] tracking-[0.08em] uppercase"
+            className="text-ardoise hover:bg-survol hover:text-foreground flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-[0.8125rem] font-semibold transition-colors"
           >
             <Trash2 className="size-3.5" />
             Vider
@@ -204,15 +206,10 @@ export function CalculatriceFenetre() {
         )}
       </div>
 
-      {/* Le total, en pied de plaque : c'est pour lui qu'on ouvre la fenêtre. */}
-      <div className="border-rule-strong flex items-baseline justify-between border-t px-3 py-2.5">
-        <span className="chip">Total</span>
-        <span
-          className={cn(
-            "font-mono text-lg font-medium tabular-nums",
-            total < 0 && "text-tension-ink",
-          )}
-        >
+      {/* Le total, en pied creusé : c'est pour lui qu'on ouvre la fenêtre. */}
+      <div className="border-filet bg-creuse flex items-baseline justify-between border-t px-3 py-2.5">
+        <span className="legende">Total</span>
+        <span className={cn("montant text-lg", total < 0 && "text-tension-encre")}>
           {formatEur(total)}
         </span>
       </div>

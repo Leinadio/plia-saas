@@ -45,15 +45,15 @@ export default async function Dashboard() {
 
   if (accounts.length === 0) {
     return (
-      <div className="plate mx-auto max-w-lg px-5 py-8 text-center">
-        <p className="font-mono text-xs tracking-[0.09em] uppercase">Rien à porter</p>
-        <p className="text-muted-foreground mx-auto mt-3 max-w-sm text-sm">
-          Aucun compte n&apos;est encore relié. Connecte ta banque et le plan de charge
-          se dresse tout seul.
+      <div className="carte mx-auto max-w-lg px-6 py-10 text-center">
+        <h1 className="text-lg font-bold tracking-[-0.015em]">Aucun compte relié</h1>
+        <p className="text-muted-foreground mx-auto mt-2 max-w-sm text-sm leading-relaxed">
+          Connecte ta banque : les opérations arrivent toutes seules, et l&apos;horizon
+          des prochains mois se dessine dès la première synchronisation.
         </p>
         <Link
           href="/app/settings"
-          className="cut cut-sm bg-primary text-primary-foreground mt-5 inline-flex h-9 items-center px-4 font-mono text-[0.6875rem] tracking-[0.08em] uppercase"
+          className="bg-primary text-primary-foreground hover:bg-sarcelle-forte shadow-carte mt-6 inline-flex h-9 items-center rounded-lg px-4 text-sm font-semibold transition-colors"
         >
           Connecter une banque
         </Link>
@@ -80,14 +80,14 @@ export default async function Dashboard() {
   // fait qu'ajouter une ligne à cliquer au-dessus de la seule chose à voir.
   if (recaps.length === 1) {
     return (
-      <div className="mx-auto flex max-w-[1400px] flex-col gap-4">
+      <div className="mx-auto flex max-w-[1400px] flex-col gap-3">
         <RecapitulatifCompte recap={recaps[0].recap} />
       </div>
     );
   }
 
   return (
-    <div className="mx-auto flex max-w-[1400px] flex-col gap-4">
+    <div className="mx-auto flex max-w-[1400px] flex-col gap-3">
       <Tabs defaultValue={accounts[0].id}>
         {/* Les onglets de comptes défilent plutôt que de se tasser : sur un écran
             étroit, quatre noms de comptes ne tiennent pas côte à côte, et aucun ne
@@ -102,7 +102,7 @@ export default async function Dashboard() {
           </TabsList>
         </div>
         {recaps.map(({ compte, recap }) => (
-          <TabsContent key={compte.id} value={compte.id} className="flex flex-col gap-4">
+          <TabsContent key={compte.id} value={compte.id} className="flex flex-col gap-3">
             <RecapitulatifCompte recap={recap} />
           </TabsContent>
         ))}

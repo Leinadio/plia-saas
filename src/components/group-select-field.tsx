@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { setGroup } from "@/app/app/transactions/actions";
 import { groupSelectSections } from "@/lib/group-select-options";
 import { cn } from "@/lib/utils";
+import { champClass } from "@/components/ui/input";
 import { useMiseAJour } from "@/components/mise-a-jour";
 
 type LineOpt = { id: number; name: string };
@@ -59,7 +60,7 @@ export function GroupSelectField({
     <select
       value={value}
       disabled={disabled || isPending}
-      className={cn("plate plate-cut h-9 px-3 text-sm disabled:opacity-60", className)}
+      className={cn(champClass, className)}
       onChange={(e) => {
         const v = e.currentTarget.value;
         setValue(v);

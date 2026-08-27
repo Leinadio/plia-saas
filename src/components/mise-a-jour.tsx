@@ -83,22 +83,24 @@ export function useMiseAJour(): MiseAJour {
   return partage ?? local;
 }
 
-// LE FIL DE TENSION. Sous la poutre, un câble rouge court d'un bord à l'autre
-// tant que le serveur recalcule. Deux pixels, toujours présents : une barre qui
-// apparaîtrait décalerait tout l'écran d'un cran à chaque enregistrement.
-export function FilDeTension() {
+// LE FIL D'ATTENTE. Sous la barre produit, un segment sarcelle court d'un bord à
+// l'autre tant que le serveur recalcule. Deux pixels, toujours présents : une
+// barre qui apparaîtrait décalerait tout l'écran d'un cran à chaque
+// enregistrement. Sarcelle et non rouge : ce n'est pas une alerte, c'est une
+// machine qui travaille — la couleur de la commande, pas celle d'une rupture.
+export function FilDAttente() {
   const { enCours } = useMiseAJour();
   return (
     <div
       role="progressbar"
       aria-label="Mise à jour en cours"
       aria-hidden={!enCours}
-      className={cn("bg-beam-rule/50 h-0.5 shrink-0", enCours && "fil-tension")}
+      className={cn("bg-filet h-0.5 shrink-0", enCours && "fil-attente")}
     />
   );
 }
 
-// LE VOILE D'ATTENTE. Posé sur un tableau pendant que ses chiffres se refont :
+// LE VOILE D'ATTENTE. Posé sur une carte pendant que ses chiffres se refont :
 // ils s'éteignent d'un cran et cessent de répondre au clic, le temps que les
 // nouveaux arrivent. Ils restent lisibles — on ne cache pas un montant, on dit
 // seulement qu'il n'est plus à jour.

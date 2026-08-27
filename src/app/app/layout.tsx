@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { AppTopbar } from "@/components/app-topbar";
 import { DetailSidebarProvider } from "@/components/detail-sidebar";
-import { MiseAJourProvider, FilDeTension } from "@/components/mise-a-jour";
+import { MiseAJourProvider, FilDAttente } from "@/components/mise-a-jour";
 import { NotificationsButton } from "@/components/notifications-button";
 import { SyncButton } from "@/components/sync-button";
 import { CalculatriceProvider, CalculatriceButton } from "@/components/calculatrice";
@@ -44,12 +44,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               <CalculatriceButton />
               <NotificationsButton items={notifications} />
             </AppTopbar>
-            {/* Le fil de tension, collé sous la poutre : c'est là qu'on regarde
+            {/* Le fil d'attente, collé sous la barre : c'est là qu'on regarde
                 quand on vient de cliquer, et c'est la seule ligne de l'écran qui
                 traverse toute sa largeur. */}
-            <FilDeTension />
-            {/* Marges resserrées sur téléphone : 12 px de chaque côté, parce que tout
-                ce qu'on prendrait de plus serait pris sur des colonnes de chiffres. */}
+            <FilDAttente />
+            {/* Marges resserrées sur téléphone : 12 px de chaque côté, parce que
+                tout ce qu'on prendrait de plus serait pris sur la largeur des
+                cartes, où vivent les montants. */}
             <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-6 sm:py-6">{children}</div>
           </div>
         </CalculatriceProvider>

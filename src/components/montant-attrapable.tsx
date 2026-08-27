@@ -4,13 +4,13 @@ import { formatEur } from "@/lib/money";
 
 // UN MONTANT QU'ON PEUT ATTRAPER et tirer dans la calculatrice de brouillon.
 //
-// Un composant à lui seul, et marqué client, parce que les tables qui l'affichent
+// Un composant à lui seul, et marqué client, parce que les cartes qui l'affichent
 // sont rendues sur le SERVEUR : un gestionnaire d'événement ne traverse pas cette
-// frontière, et le poser directement dans une table serveur faisait tomber le
+// frontière, et le poser directement dans une carte serveur faisait tomber le
 // rendu à chaque passage (« Event handlers cannot be passed to Client Component
 // props »).
 //
-// Seul le montant devient client, pas la table autour : elle n'a aucune
+// Seul le montant devient client, pas la carte autour : elle n'a aucune
 // interactivité et n'a rien à faire dans le paquet envoyé au navigateur.
 export function MontantAttrapable({ libelle, montant }: { libelle: string; montant: number }) {
   return (

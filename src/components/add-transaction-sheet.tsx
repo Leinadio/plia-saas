@@ -5,7 +5,7 @@ import { addTransaction, editTransaction } from "@/app/app/transactions/actions"
 import type { ManualFormInput } from "@/lib/manual-txn";
 import { groupsForMonth, postesPourSaisie } from "@/lib/group-options";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input, champClass } from "@/components/ui/input";
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useMiseAJour } from "@/components/mise-a-jour";
 
@@ -67,7 +67,7 @@ export function AddTransactionSheet({ accounts, groups, edit }: { accounts: Acco
           <label className="flex flex-col gap-1 text-sm">
             Compte
             <select value={accountId} onChange={(e) => { setAccountId(e.target.value); setGroupId(null); }}
-              className="plate plate-cut h-9 px-3 text-sm">
+              className={champClass}>
               {accounts.map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}
             </select>
           </label>
@@ -116,7 +116,7 @@ export function AddTransactionSheet({ accounts, groups, edit }: { accounts: Acco
           <label className="flex flex-col gap-1 text-sm">
             Groupe
             <select value={groupId ?? ""} onChange={(e) => setGroupId(e.target.value ? Number(e.target.value) : null)}
-              className="plate plate-cut h-9 px-3 text-sm">
+              className={champClass}>
               <option value="">Non catégorisé</option>
               {sections.map((sec) => (
                 <optgroup key={sec.label} label={sec.label}>

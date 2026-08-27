@@ -3,16 +3,21 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-// L'étiquette gravée du monde : une pastille de carbone, capitales blanches en
-// chasse fixe. Elle nomme un état ou une famille — jamais une valeur. Trois
-// états seulement : engagé (carbone), dormant (évidé), rompu (rouge de tension).
-const badgeVariants = cva("chip w-fit shrink-0", {
+// LA PASTILLE D'ÉTAT. Un ovale plein en petites capitales, qui nomme un état —
+// reçu, engagé, attendu, dépassé — et jamais une valeur. C'est le seul endroit du
+// produit où une couleur de sens sert de FOND ; partout ailleurs elle ne teinte
+// que de l'encre.
+const badgeVariants = cva("pastille w-fit shrink-0", {
   variants: {
     variant: {
       default: "",
-      secondary: "chip-slack",
-      destructive: "chip-tension",
-      outline: "chip-slack",
+      portant: "pastille-portant",
+      attente: "pastille-attente",
+      sarcelle: "pastille-sarcelle",
+      encre: "pastille-encre",
+      secondary: "",
+      destructive: "pastille-tension",
+      outline: "",
     },
   },
   defaultVariants: { variant: "default" },

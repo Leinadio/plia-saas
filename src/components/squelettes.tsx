@@ -8,14 +8,47 @@ import { cn } from "@/lib/utils";
 // vit comme une panne — l'ancienne page reste figée, on reclique, rien ne bouge.
 //
 // La règle est la même partout : le squelette dessine la STRUCTURE réelle de la
-// page, à la bonne place et à la bonne largeur, pas une grappe de rectangles
-// génériques. Ce qui arrive ensuite ne doit rien déplacer : on remplit un plan
-// déjà tiré, on ne redessine pas l'écran.
+// page — les mêmes cartes, aux mêmes places, aux mêmes largeurs — pas une grappe
+// de rectangles génériques. Ce qui arrive ensuite ne doit rien déplacer : on
+// remplit un plan déjà tiré, on ne redessine pas l'écran.
 //
 // Ces composants n'ont ni état ni interaction : ils restent des composants
 // serveur, rendus avec la page qui les demande (les fichiers loading.tsx).
 
 const rangees = (n: number) => Array.from({ length: n }, (_, i) => i);
+
+// Les onglets de comptes, en tête de l'Historique comme des Transactions.
+function Onglets() {
+  return (
+    <div className="border-filet flex gap-3 border-b pb-2">
+      {rangees(2).map((i) => (
+        <Skeleton key={i} className="h-4 w-28" />
+      ))}
+    </div>
+  );
+}
+
+// UNE LIGNE DE POSTE : son nom, son montant à droite, sa jauge, et le détail en
+// petit dessous. Le dessin exact d'une enveloppe.
+function LignePoste({ nom }: { nom: string }) {
+  return (
+    <div className="border-filet flex flex-col gap-2.5 border-b px-4 py-3 last:border-0 sm:px-5">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Skeleton className={cn("h-3.5", nom)} />
+          <Skeleton className="h-4 w-14 rounded-full" />
+        </div>
+        <Skeleton className="h-3.5 w-20" />
+      </div>
+      <Skeleton className="h-1.5 w-full" />
+      <div className="flex gap-4">
+        <Skeleton className="h-2.5 w-24" />
+        <Skeleton className="h-2.5 w-20" />
+        <Skeleton className="h-2.5 w-20" />
+      </div>
+    </div>
+  );
+}
 
 // --- Historique ---------------------------------------------------------------
 
@@ -27,12 +60,12 @@ const COLONNES_PAR_MOIS = 8;
 
 function LigneDeTableau({ nom, fond }: { nom: string; fond?: string }) {
   return (
-    <div className={cn("border-border/70 flex items-center border-b px-3 py-2.5", fond)}>
+    <div className={cn("border-filet flex items-center border-b px-3 py-2.5", fond)}>
       <div className="w-44 shrink-0 sm:w-80">
         <Skeleton className={cn("h-3.5", nom)} />
       </div>
       {rangees(MOIS_PAR_DEFAUT).map((m) => (
-        <div key={m} className="border-border/70 flex shrink-0 gap-3 border-l pr-3 pl-4">
+        <div key={m} className="border-filet flex shrink-0 gap-3 border-l pr-3 pl-4">
           {rangees(COLONNES_PAR_MOIS).map((c) => (
             <Skeleton key={c} className="h-3 w-14" />
           ))}
@@ -46,7 +79,7 @@ function LigneDeTableau({ nom, fond }: { nom: string; fond?: string }) {
 // exactement comme dans le tableau.
 function BandeDeSection({ largeur, fond }: { largeur: string; fond: string }) {
   return (
-    <div className={cn("border-border/70 flex items-center border-b px-3 py-2", fond)}>
+    <div className={cn("border-filet flex items-center border-b px-3 py-2", fond)}>
       <div className="w-44 shrink-0 sm:w-80">
         <Skeleton className={cn("h-3", largeur)} />
       </div>
@@ -57,44 +90,39 @@ function BandeDeSection({ largeur, fond }: { largeur: string; fond: string }) {
 export function SqueletteHistorique() {
   return (
     <div aria-busy className="flex flex-col gap-4">
-      {/* Les onglets de comptes. */}
-      <div className="flex gap-1">
-        {rangees(2).map((i) => (
-          <Skeleton key={i} className="cut cut-sm h-9 w-32" />
-        ))}
-      </div>
+      <Onglets />
 
       {/* Le bouton d'explication du calcul, à droite comme sur la page. */}
       <div className="flex justify-end">
-        <Skeleton className="cut cut-sm h-9 w-40" />
+        <Skeleton className="h-9 w-44 rounded-lg" />
       </div>
 
-      {/* La frise des mois : ses deux bornes, ses flèches, ses cases.
-          min-w-0 : un élément de flex refuse par défaut de descendre sous la
-          largeur de son contenu, et la frise pousserait alors toute la page hors
-          de l'écran sur téléphone. */}
-      <div className="flex min-w-0 items-center gap-3">
-        <Skeleton className="h-10 w-24 shrink-0" />
-        <Skeleton className="size-7 shrink-0" />
-        <div className="flex min-w-0 flex-1 justify-center gap-px overflow-hidden">
-          {rangees(16).map((i) => (
-            <Skeleton key={i} className="h-7 w-10 shrink-0" />
+      {/* La frise des mois, dans sa carte : ses deux bornes, ses flèches, ses
+          cases. min-w-0 : un élément de flex refuse par défaut de descendre sous la
+          largeur de son contenu, et la frise pousserait alors toute la page hors de
+          l'écran sur téléphone. */}
+      <div className="carte flex min-w-0 items-center gap-3 px-3 py-3 sm:px-4">
+        <Skeleton className="hidden h-8 w-20 shrink-0 sm:block" />
+        <Skeleton className="size-8 shrink-0 rounded-md" />
+        <div className="flex min-w-0 flex-1 justify-center gap-0.5 overflow-hidden">
+          {rangees(14).map((i) => (
+            <Skeleton key={i} className="h-8 w-11 shrink-0 rounded-md" />
           ))}
         </div>
-        <Skeleton className="size-7 shrink-0" />
-        <Skeleton className="h-10 w-24 shrink-0" />
+        <Skeleton className="size-8 shrink-0 rounded-md" />
+        <Skeleton className="hidden h-8 w-20 shrink-0 sm:block" />
       </div>
 
       <Skeleton className="h-3.5 w-56" />
 
-      {/* LA PLAQUE. La même que celle du tableau, aux mêmes angles coupés : le
-          vrai tableau vient s'y poser sans que la page bouge d'un pixel. */}
-      <div className="plate min-w-0 [--notch:14px] overflow-hidden p-px">
+      {/* LA CARTE. La même que celle du tableau : le vrai tableau vient s'y poser
+          sans que la page bouge d'un pixel. */}
+      <div className="carte min-w-0 overflow-hidden">
         {/* L'en-tête de colonnes. */}
-        <div className="border-border flex items-end border-b px-3 py-2.5">
+        <div className="border-filet flex items-end border-b px-3 py-2.5">
           <div className="w-44 shrink-0 sm:w-80" />
           {rangees(MOIS_PAR_DEFAUT).map((m) => (
-            <div key={m} className="border-border flex shrink-0 flex-col gap-2 border-l pr-3 pl-4">
+            <div key={m} className="border-filet flex shrink-0 flex-col gap-2 border-l pr-3 pl-4">
               <Skeleton className="h-3.5 w-28" />
               <div className="flex gap-3">
                 {rangees(COLONNES_PAR_MOIS).map((c) => (
@@ -105,33 +133,33 @@ export function SqueletteHistorique() {
           ))}
         </div>
 
-        <BandeDeSection largeur="w-32" fond="bg-[color-mix(in_oklab,var(--portant)_10%,var(--background))]" />
+        <BandeDeSection largeur="w-32" fond="bg-[color-mix(in_oklab,var(--portant)_7%,var(--card))]" />
         <LigneDeTableau nom="w-28" />
         <LigneDeTableau nom="w-36" />
 
-        <BandeDeSection largeur="w-40" fond="bg-[color-mix(in_oklab,var(--tension)_7%,var(--background))]" />
+        <BandeDeSection largeur="w-40" fond="bg-[color-mix(in_oklab,var(--tension)_5%,var(--card))]" />
         <LigneDeTableau nom="w-24" />
         <LigneDeTableau nom="w-40" />
         <LigneDeTableau nom="w-32" />
         <LigneDeTableau nom="w-28" />
 
-        <BandeDeSection largeur="w-48" fond="bg-[color-mix(in_oklab,var(--tension)_7%,var(--background))]" />
+        <BandeDeSection largeur="w-48" fond="bg-[color-mix(in_oklab,var(--tension)_5%,var(--card))]" />
         <LigneDeTableau nom="w-36" />
 
-        {/* Le pied de carbone : les totaux et le solde de fin de mois. C'est la
-            masse la plus reconnaissable du tableau, elle doit être là. */}
-        <div className="bg-carbon">
+        {/* Le pied d'encre : les totaux et le solde de fin de mois. C'est la masse
+            la plus reconnaissable du tableau, elle doit être là. */}
+        <div className="bg-encre">
           {rangees(2).map((i) => (
             <div key={i} className="flex items-center px-3 py-3">
               <div className="w-44 shrink-0 sm:w-80">
-                <Skeleton className="h-3 w-32 bg-[color-mix(in_oklab,var(--void-white)_22%,var(--carbon))]" />
+                <Skeleton className="h-3 w-32 bg-[color-mix(in_oklab,var(--surface)_22%,var(--encre))]" />
               </div>
               {rangees(MOIS_PAR_DEFAUT).map((m) => (
                 <div key={m} className="flex shrink-0 gap-3 pr-3 pl-4">
                   {rangees(COLONNES_PAR_MOIS).map((c) => (
                     <Skeleton
                       key={c}
-                      className="h-3 w-14 bg-[color-mix(in_oklab,var(--void-white)_22%,var(--carbon))]"
+                      className="h-3 w-14 bg-[color-mix(in_oklab,var(--surface)_22%,var(--encre))]"
                     />
                   ))}
                 </div>
@@ -147,76 +175,80 @@ export function SqueletteHistorique() {
 // --- Tableau de bord ----------------------------------------------------------
 
 export function SqueletteTableauDeBord() {
-  // Des hauteurs de mâts fixes et volontairement inégales : six barres de la
-  // même hauteur ressembleraient à un histogramme vide, pas à une structure en
-  // cours de montage.
-  const mats = [58, 74, 46, 88, 62, 36];
+  // Des hauteurs de colonnes fixes et volontairement inégales : six barres de la
+  // même hauteur ressembleraient à un histogramme vide, pas à une trajectoire en
+  // cours d'arrivée.
+  const colonnes = [58, 74, 46, 88, 62, 36];
   return (
-    <div aria-busy className="mx-auto flex max-w-[1400px] flex-col gap-4">
-      {/* Le plan de charge. */}
-      <section className="plate px-3 py-4 sm:px-5 sm:py-5">
-        <div className="min-w-0 overflow-hidden">
-          <div className="grid grid-cols-6 gap-3">
-            {mats.map((_, i) => (
-              <div key={i} className="flex flex-col items-center gap-1.5">
-                <Skeleton className="h-2.5 w-10" />
-                <Skeleton className="h-3.5 w-20" />
-              </div>
+    <div aria-busy className="mx-auto flex max-w-[1400px] flex-col gap-3">
+      {/* L'horizon. */}
+      <section className="carte overflow-hidden">
+        <div className="border-filet flex items-center gap-3 border-b px-4 py-3 sm:px-5">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-3 w-72 max-w-[50%]" />
+        </div>
+        <div className="px-3 pt-4 pb-3 sm:px-5">
+          <div className="grid grid-cols-6 gap-1 sm:gap-3">
+            {colonnes.map((_, i) => (
+              <Skeleton key={i} className="h-3.5 w-full max-w-20 justify-self-center" />
             ))}
           </div>
-          {/* Le sol, et les mâts qui s'y appuient. La zone de dessin est bornée en
-              haut ET en bas : sans hauteur résolue, la hauteur en pourcentage des
-              mâts vaudrait zéro et il ne resterait que le trait du sol. */}
-          <div className="relative mt-4 h-44 sm:h-56">
-            <div className="absolute inset-x-0 top-0 bottom-6 grid grid-cols-6 items-end gap-3">
-              {mats.map((h, i) => (
+          {/* La zone de dessin est bornée en haut ET en bas : sans hauteur résolue,
+              la hauteur en pourcentage des colonnes vaudrait zéro et il ne resterait
+              que le trait du sol. */}
+          <div className="relative mt-3 h-36 sm:h-48">
+            <div className="absolute inset-x-0 top-0 bottom-0 grid grid-cols-6 items-end gap-1 sm:gap-3">
+              {colonnes.map((h, i) => (
                 <div key={i} className="flex h-full items-end justify-center">
-                  <Skeleton className="w-[3px]" style={{ height: `${h}%` }} />
+                  <Skeleton
+                    className="w-[min(2.25rem,70%)] rounded-t-md rounded-b-none"
+                    style={{ height: `${h}%` }}
+                  />
                 </div>
               ))}
             </div>
-            <div className="bg-rule-strong absolute inset-x-0 bottom-6 h-px" />
+            <div className="bg-filet-fort absolute inset-x-0 bottom-0 h-px" />
+          </div>
+          <div className="border-filet mt-2 grid grid-cols-6 gap-1 border-t pt-2 sm:gap-3">
+            {colonnes.map((_, i) => (
+              <Skeleton key={i} className="h-3 w-full max-w-14 justify-self-center" />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* La bande de relevés : cinq mesures séparées par un filet. */}
-      <div className="plate grid grid-cols-2 lg:grid-cols-5">
-        {rangees(5).map((i) => (
-          <div
-            key={i}
-            className={cn(
-              "border-border flex min-w-0 flex-col gap-3 px-4 py-4 sm:px-5",
-              i % 2 === 1 && "border-l",
-              i >= 2 && "border-t lg:border-t-0",
-              i >= 1 && "lg:border-l",
-              i === 4 && "col-span-2 lg:col-span-1",
-            )}
-          >
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-6 w-full max-w-32 self-end" />
+      {/* Les relevés : la mesure de tête, puis les quatre mesures d'appui. */}
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)]">
+        <section className="carte flex flex-col justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-2.5 w-24" />
+            <Skeleton className="h-4 w-14 rounded-full" />
           </div>
-        ))}
+          <Skeleton className="h-9 w-48" />
+          <Skeleton className="h-3 w-full max-w-sm" />
+        </section>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {rangees(4).map((i) => (
+            <section key={i} className="carte flex flex-col gap-2 px-3 py-3 sm:px-4">
+              <Skeleton className="h-2.5 w-20" />
+              <Skeleton className="h-4 w-24" />
+            </section>
+          ))}
+        </div>
       </div>
 
-      {/* Les deux tables du mois : ce qui porte, ce qui tire. */}
-      <div className="grid gap-4 xl:grid-cols-2">
+      {/* Les deux cartes de postes du mois : ce qui rentre, ce qui sort. */}
+      <div className="grid gap-3 xl:grid-cols-2">
         {rangees(2).map((t) => (
-          <section key={t} className="plate flex min-w-0 flex-col px-3 py-4 sm:px-5">
-            <Skeleton className="h-4 w-20" />
-            <div className="border-rule-strong mt-4 flex items-center gap-4 border-b pb-1.5">
-              <Skeleton className="h-2.5 w-16" />
-              <Skeleton className="ml-auto h-2.5 w-14" />
-              <Skeleton className="h-2.5 w-14" />
+          <div key={t} className="carte overflow-hidden">
+            <div className="border-filet flex items-center justify-between border-b px-4 py-3 sm:px-5">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-24" />
             </div>
-            {rangees(5).map((i) => (
-              <div key={i} className="border-border/70 flex items-center gap-4 border-b py-2.5">
-                <Skeleton className="h-3.5 w-32" />
-                <Skeleton className="ml-auto h-3 w-16" />
-                <Skeleton className="h-3 w-16" />
-              </div>
+            {rangees(4).map((i) => (
+              <LignePoste key={i} nom={i % 2 === 0 ? "w-32" : "w-24"} />
             ))}
-          </section>
+          </div>
         ))}
       </div>
     </div>
@@ -227,59 +259,66 @@ export function SqueletteTableauDeBord() {
 
 export function SqueletteTransactions() {
   return (
-    <div aria-busy className="flex flex-col gap-4">
+    <div aria-busy className="flex flex-col gap-3">
       <div className="flex justify-end">
-        <Skeleton className="cut cut-sm h-9 w-44" />
+        <Skeleton className="h-9 w-48 rounded-lg" />
       </div>
 
       {/* Le pupitre de filtres. */}
-      <div className="plate flex flex-wrap items-center gap-2 px-3 py-3">
-        <Skeleton className="h-9 w-full sm:w-56" />
-        <Skeleton className="h-9 w-40" />
-        <Skeleton className="h-9 w-24" />
-        <Skeleton className="h-9 w-24" />
-        <Skeleton className="h-9 w-36" />
+      <div className="carte flex flex-wrap items-center gap-2 px-3 py-3 sm:px-4">
+        <Skeleton className="h-9 w-full rounded-lg sm:w-64" />
+        <Skeleton className="h-9 w-44 rounded-lg" />
+        <Skeleton className="h-9 w-24 rounded-lg" />
+        <Skeleton className="h-9 w-24 rounded-lg" />
+        <Skeleton className="h-9 w-40 rounded-lg" />
       </div>
 
-      {/* Le relevé, groupé par mois. */}
-      <div className="plate overflow-hidden">
-        {rangees(2).map((mois) => (
-          <div key={mois}>
-            <div className="bg-muted/70 border-border flex items-center gap-2 border-b px-3 py-2.5">
-              <Skeleton className="h-4 w-28" />
-              <Skeleton className="h-2.5 w-24" />
-            </div>
-            {rangees(6).map((i) => (
-              <div key={i} className="border-border/70 flex items-center gap-4 border-b px-3 py-3">
-                <Skeleton className="h-3 w-16 shrink-0" />
-                <Skeleton className="h-3.5 w-full max-w-72 min-w-0" />
-                <Skeleton className="hidden h-3 w-32 shrink-0 sm:block" />
-                {/* Le montant est collé à droite, comme dans le relevé : c'est la
-                    colonne qu'on lit, et elle s'aligne sur le bord de la plaque. */}
-                <Skeleton className="ml-auto h-3 w-20 shrink-0" />
-              </div>
-            ))}
+      <Onglets />
+
+      {/* Le relevé, une carte par mois. */}
+      {rangees(2).map((mois) => (
+        <div key={mois} className="carte overflow-hidden">
+          <div className="border-filet flex items-center gap-3 border-b px-4 py-3 sm:px-5">
+            <Skeleton className="size-4 rounded-md" />
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-3 w-24" />
           </div>
-        ))}
-      </div>
+          {rangees(5).map((i) => (
+            <div key={i} className="border-filet flex flex-col gap-2 border-b px-4 py-3 last:border-0 sm:px-5">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2">
+                  <Skeleton className="h-3 w-12 shrink-0" />
+                  <Skeleton className="h-3.5 w-full max-w-64 min-w-0" />
+                </div>
+                <Skeleton className="h-3.5 w-20 shrink-0" />
+              </div>
+              <Skeleton className="h-8 w-52 rounded-lg" />
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
 
 // --- Écrans de réglages -------------------------------------------------------
 
-// Réglages et Mon compte : des plaques empilées, chacune avec son titre gravé et
-// quelques champs. Le même squelette suffit aux deux — ils ont la même forme.
+// Réglages et Mon compte : des cartes empilées, chacune avec son titre et quelques
+// champs. Le même squelette suffit aux deux — ils ont la même forme.
 export function SquelettePlaques({ nombre = 3 }: { nombre?: number }) {
   return (
-    <div aria-busy className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+    <div aria-busy className="mx-auto flex w-full max-w-3xl flex-col gap-3">
       {rangees(nombre).map((i) => (
-        <section key={i} className="plate flex flex-col gap-4 px-4 py-5 sm:px-5">
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-3.5 w-full max-w-md" />
-          <div className="flex flex-wrap items-end gap-2">
-            <Skeleton className="h-9 w-56" />
-            <Skeleton className="cut cut-sm h-9 w-28" />
+        <section key={i} className="carte overflow-hidden">
+          <div className="border-filet border-b px-4 py-3 sm:px-5">
+            <Skeleton className="h-4 w-40" />
+          </div>
+          <div className="flex flex-col gap-4 px-4 py-4 sm:px-5">
+            <Skeleton className="h-3.5 w-full max-w-md" />
+            <div className="flex flex-wrap items-end gap-2">
+              <Skeleton className="h-9 w-56 rounded-lg" />
+              <Skeleton className="h-9 w-32 rounded-lg" />
+            </div>
           </div>
         </section>
       ))}
