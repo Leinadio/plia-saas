@@ -13,7 +13,7 @@
 import { expect, test } from "vitest";
 import { createTestDb } from "../helpers/pg";
 
-test("le schéma pose les neuf tables du budget", async () => {
+test("le schéma pose les dix tables du budget", async () => {
   const db = await createTestDb();
   const { rows } = await db.query<{ table_name: string }>(
     `SELECT table_name FROM information_schema.tables
@@ -27,6 +27,7 @@ test("le schéma pose les neuf tables du budget", async () => {
     "group_lines",
     "groups",
     "line_amounts",
+    "onboarding_status",
     "reconcile_ignored",
     "transactions",
   ]);
@@ -112,6 +113,7 @@ const FORME: Record<string, string[]> = {
     "amount:numeric", "effective_month:text", "id:integer", "line_id:integer",
     "scope:text",
   ],
+  onboarding_status: ["completed_at:text", "user_id:text"],
   reconcile_ignored: ["manual_id:text", "synced_id:text", "user_id:text"],
   transactions: [
     "account_id:text", "amount:numeric", "comment:text", "date:text",

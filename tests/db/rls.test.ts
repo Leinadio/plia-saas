@@ -41,6 +41,10 @@ beforeEach(async () => {
       id: `${compte}-t1`, account_id: compte, date: "2026-07-05", amount: -20, label: "X",
     });
     await dismissNotification(db, user, `${compte}::g::2026-07`);
+    await db.run(
+      `INSERT INTO onboarding_status (user_id, completed_at) VALUES ($1, $2)`,
+      [user, `2026-08-28T10:00:00.000Z`],
+    );
   }
 });
 
@@ -72,6 +76,31 @@ test("avec l'annonce, une lecture sans filtre ne rend que les siennes", async ()
   expect(await db.all(`SELECT * FROM group_lines`)).toHaveLength(1);
   expect(await db.all(`SELECT * FROM budget_amounts`)).toHaveLength(1);
   expect(await db.all(`SELECT * FROM dismissed_notifications`)).toHaveLength(1);
+  expect(await db.all(`SELECT * FROM onboarding_status`)).toEqual([
+    { user_id: MOI, completed_at: "2026-08-28T10:00:00.000Z" },
+  ]);
+});
+
+test("le statut d'onboarding d'un autre reste hors d'atteinte", async () => {
+  await commeApplication(MOI);
+
+  await db.run(
+    `UPDATE onboarding_status SET completed_at = '2026-08-28T11:00:00.000Z' WHERE user_id = $1`,
+    [AUTRE],
+  );
+  await expect(
+    db.run(
+      `INSERT INTO onboarding_status (user_id, completed_at) VALUES ($1, $2)`,
+      [`${AUTRE}-nouveau`, "2026-08-28T11:00:00.000Z"],
+    ),
+  ).rejects.toThrow();
+
+  await db.run(`RESET ROLE`);
+  expect(await db.one<{ completed_at: string }>(
+    `SELECT completed_at FROM onboarding_status WHERE user_id = $1`,
+    [AUTRE],
+  )).toEqual({ completed_at: "2026-08-28T10:00:00.000Z" });
+  expect(await db.all(`SELECT * FROM onboarding_status WHERE user_id = '${AUTRE}-nouveau'`)).toEqual([]);
 });
 
 // Lire n'est que la moitié du problème. Une écriture qui vise le numéro de quelqu'un

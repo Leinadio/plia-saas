@@ -150,6 +150,11 @@ CREATE TABLE IF NOT EXISTS dismissed_notifications (
   PRIMARY KEY (user_id, id)
 );
 
+CREATE TABLE IF NOT EXISTS onboarding_status (
+  user_id TEXT PRIMARY KEY,
+  completed_at TEXT NOT NULL
+);
+
 -- --- Les index -----------------------------------------------------------------
 --
 -- La base locale n'en avait aucun, et elle avait raison : sur un seul utilisateur et
@@ -201,7 +206,7 @@ GRANT budget_app TO CURRENT_USER;
 GRANT USAGE ON SCHEMA public TO budget_app;
 GRANT SELECT, INSERT, UPDATE, DELETE ON
   accounts, bank_connections, groups, group_lines, transactions,
-  budget_amounts, line_amounts, reconcile_ignored, dismissed_notifications
+  budget_amounts, line_amounts, reconcile_ignored, dismissed_notifications, onboarding_status
   TO budget_app;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO budget_app;
 
@@ -220,6 +225,7 @@ ALTER TABLE budget_amounts         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE line_amounts           ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reconcile_ignored      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE dismissed_notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE onboarding_status      ENABLE ROW LEVEL SECURITY;
 
 -- Le retrait avant la pose rend le fichier rejouable : on doit pouvoir le repasser sur
 -- une base déjà installée sans que rien ne casse.
@@ -232,6 +238,10 @@ DROP POLICY IF EXISTS a_soi ON reconcile_ignored;
 CREATE POLICY a_soi ON reconcile_ignored      USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id());
 DROP POLICY IF EXISTS a_soi ON dismissed_notifications;
 CREATE POLICY a_soi ON dismissed_notifications USING (user_id = app_user_id()) WITH CHECK (user_id = app_user_id());
+DROP POLICY IF EXISTS a_soi ON onboarding_status;
+CREATE POLICY a_soi ON onboarding_status
+  USING (user_id = app_user_id())
+  WITH CHECK (user_id = app_user_id());
 
 -- Tout le reste du budget pend à un compte bancaire : c'est par lui qu'on remonte au
 -- propriétaire. Chaque règle refait le chemin en entier plutôt que de s'appuyer sur
