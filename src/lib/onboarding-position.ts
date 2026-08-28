@@ -12,12 +12,9 @@ export type TourRect = {
 export type TourViewport = { width: number; height: number };
 export type TourCardSize = { width: number; height: number };
 
-export type TourPlacement = {
-  mode: "anchored" | "center";
-  side: TourSide | null;
-  x: number;
-  y: number;
-};
+export type TourPlacement =
+  | { mode: "anchored" | "center"; side: TourSide | null; x: number; y: number }
+  | { mode: "needs-scroll"; side: null; x: null; y: null };
 
 export type PlaceTourCardOptions = {
   target: TourRect | null;
@@ -34,6 +31,24 @@ export function nextTourRetryDelay(now: number, deadline: number, interval = 50)
   const remaining = deadline - now;
   if (remaining <= 0) return null;
   return Math.min(interval, remaining);
+}
+
+export function mobileScrollDelta({
+  targetTop,
+  targetBottom,
+  viewportHeight,
+  panelClearance,
+}: {
+  targetTop: number;
+  targetBottom: number;
+  viewportHeight: number;
+  panelClearance: number;
+}): number {
+  const safeTop = 0;
+  const safeBottom = viewportHeight - panelClearance;
+  if (targetBottom > safeBottom) return targetBottom - safeBottom;
+  if (targetTop < safeTop) return targetTop - safeTop;
+  return 0;
 }
 
 function clamp(value: number, minimum: number, maximum: number): number {
@@ -90,16 +105,7 @@ export function placeTourCard({ target, viewport, card, preferred = "bottom" }: 
   // A viewport smaller than both the target and the card has no fully clear side.
   // Keep the preferred edge, while clamping the card to the same safe gutter.
   if (!side) {
-    const fallback = coordinates(preferred, target, viewport, card);
-    return {
-      mode: "anchored",
-      side: preferred,
-      // The preferred edge is deliberately allowed outside the viewport when no
-      // side can fit. Keeping that edge beyond the target is safer than clamping
-      // the card back over the content being explained.
-      x: fallback.x,
-      y: fallback.y,
-    };
+    return { mode: "needs-scroll", side: null, x: null, y: null };
   }
 
   return { mode: "anchored", side, ...coordinates(side, target, viewport, card) };

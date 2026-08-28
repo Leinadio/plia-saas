@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { useDemoExperience } from "./demo-experience-provider";
-import { nextTourRetryDelay, placeTourCard, type TourRect } from "../lib/onboarding-position";
+import { mobileScrollDelta, nextTourRetryDelay, placeTourCard, type TourRect } from "../lib/onboarding-position";
 
 const CARD_FALLBACK_SIZE = { width: 360, height: 250 };
 const FOCUS_RING_GAP = 4;
@@ -40,8 +40,29 @@ function focusableControls(dialog: HTMLElement): HTMLElement[] {
   ));
 }
 
+function nearestVerticalScrollAncestor(element: HTMLElement): HTMLElement | null {
+  if (typeof window === "undefined") return null;
+  let ancestor = element.parentElement;
+  while (ancestor) {
+    const style = window.getComputedStyle(ancestor);
+    if (/(auto|scroll|overlay)/.test(style.overflowY) && ancestor.scrollHeight > ancestor.clientHeight) return ancestor;
+    ancestor = ancestor.parentElement;
+  }
+  return null;
+}
+
+function scrollRootBy(root: HTMLElement | null, delta: number, behavior: ScrollBehavior): void {
+  if (delta === 0) return;
+  if (root) {
+    if (typeof root.scrollBy === "function") root.scrollBy({ top: delta, behavior });
+    else root.scrollTop += delta;
+  } else if (typeof window !== "undefined" && typeof window.scrollBy === "function") {
+    window.scrollBy({ top: delta, behavior });
+  }
+}
+
 function Veil({ target, interactive }: { target: TourRect | null; interactive: boolean }): ReactNode {
-  if (!target || !interactive) return <div aria-hidden className="onboarding-tour-veil onboarding-tour-veil-blocking" />;
+  if (!target || !interactive) return <div aria-hidden data-onboarding-scroll-clearance="target-and-scroll-root" className="onboarding-tour-veil onboarding-tour-veil-blocking onboarding-tour-scroll-clearance" />;
 
   const viewportHeight = typeof window === "undefined" ? 800 : window.innerHeight;
   const horizontal = Math.max(0, target.left - FOCUS_RING_GAP);
@@ -51,7 +72,7 @@ function Veil({ target, interactive }: { target: TourRect | null; interactive: b
   const panel = (style: CSSProperties) => <span aria-hidden className="onboarding-tour-veil-part" style={style} />;
 
   return (
-    <div aria-hidden className="onboarding-tour-veil onboarding-tour-veil-cutout">
+    <div aria-hidden data-onboarding-scroll-clearance="target-and-scroll-root" className="onboarding-tour-veil onboarding-tour-veil-cutout onboarding-tour-scroll-clearance">
       {panel({ top: 0, right: 0, left: 0, height: vertical })}
       {panel({ top: vertical, bottom: Math.max(0, viewportHeight - bottom), left: 0, width: horizontal })}
       {panel({ top: vertical, right: 0, bottom: Math.max(0, viewportHeight - bottom), left: right })}
@@ -85,6 +106,7 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
     let timer: ReturnType<typeof setTimeout> | undefined;
     let settleTimer: ReturnType<typeof setTimeout> | undefined;
     let frame: number | undefined;
+    let clearanceCleanup: (() => void) | undefined;
     const deadline = Date.now() + 1500;
     const selector = `[data-onboarding-target=${JSON.stringify(step.target)}]`;
 
@@ -96,10 +118,21 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
         Math.max(MOBILE_PANEL_CLEARANCE, Math.round(window.innerHeight * 0.6)),
         464,
       );
-      const safeBottom = window.innerHeight - panelClearance;
-      if (rect.bottom > safeBottom && typeof window.scrollBy === "function") {
-        window.scrollBy({ top: rect.bottom - safeBottom, behavior: prefersReducedMotion() ? "auto" : "smooth" });
-      }
+      const root = nearestVerticalScrollAncestor(element);
+      const previousMargin = element.style.scrollMarginBottom;
+      const previousPadding = root?.style.scrollPaddingBottom;
+      element.style.scrollMarginBottom = `${panelClearance}px`;
+      if (root) root.style.scrollPaddingBottom = `${panelClearance}px`;
+      clearanceCleanup ??= () => {
+        element.style.scrollMarginBottom = previousMargin;
+        if (root) root.style.scrollPaddingBottom = previousPadding ?? "";
+      };
+      scrollRootBy(root, mobileScrollDelta({
+        targetTop: rect.top,
+        targetBottom: rect.bottom,
+        viewportHeight: window.innerHeight,
+        panelClearance,
+      }), prefersReducedMotion() ? "auto" : "smooth");
     };
 
     const measureFreshTarget = () => {
@@ -147,6 +180,7 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
       if (timer) clearTimeout(timer);
       if (settleTimer) clearTimeout(settleTimer);
       if (frame !== undefined && typeof window !== "undefined") window.cancelAnimationFrame(frame);
+      clearanceCleanup?.();
     };
   }, [controlled, controlledTarget, step.id, step.target, tour.paused]);
 
@@ -244,6 +278,9 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
     viewport: { width: typeof window === "undefined" ? 1280 : window.innerWidth, height: typeof window === "undefined" ? 800 : window.innerHeight },
     card: cardSize,
   });
+  const cardPosition = placement.mode === "needs-scroll"
+    ? { x: 16, y: 16 }
+    : placement;
   const stepNumber = experience.step ? ["horizon", "month-projection", "envelopes", "categorize-monoprix", "adjust-transport", "month-continuity", "refresh"].indexOf(step.id) + 1 : 1;
   const isLast = step.id === "refresh";
   const titleId = "onboarding-tour-title";
@@ -267,8 +304,8 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
         aria-labelledby={titleId}
         tabIndex={-1}
         onKeyDown={onKeyDown}
-        className={`onboarding-tour-card onboarding-tour-card-mobile-panel ${placement.mode === "center" ? "onboarding-tour-card-center" : ""}`}
-        style={{ left: placement.x, top: placement.y }}
+        className={`onboarding-tour-card onboarding-tour-card-mobile-panel ${placement.mode === "center" ? "onboarding-tour-card-center" : ""} ${placement.mode === "needs-scroll" ? "onboarding-tour-card-needs-scroll" : ""}`}
+        style={{ left: cardPosition.x, top: cardPosition.y }}
       >
         <div ref={cardRef} className="onboarding-tour-card-inner">
           <p className="onboarding-tour-progress" aria-label={`Étape ${stepNumber} sur 7`}>Étape {stepNumber} sur 7</p>

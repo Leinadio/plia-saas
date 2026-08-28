@@ -598,9 +598,8 @@
     box-shadow: var(--ombre-flottante);
   }
 
-  .onboarding-tour-card-mobile-panel {
+  .onboarding-tour-scroll-clearance {
     --onboarding-tour-mobile-clearance: 17.5rem;
-    scroll-margin-bottom: var(--onboarding-tour-mobile-clearance);
   }
 
   .onboarding-tour-card-inner {

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { nextTourRetryDelay, placeTourCard, type TourRect } from "../../src/lib/onboarding-position";
+import { mobileScrollDelta, nextTourRetryDelay, placeTourCard, type TourRect } from "../../src/lib/onboarding-position";
 
 const viewport = { width: 1024, height: 768 };
 const card = { width: 280, height: 180 };
@@ -46,7 +46,11 @@ describe("placement de l'infobulle", () => {
     const target: TourRect = { top: 80, right: 300, bottom: 160, left: 20, width: 280, height: 80 };
     const placement = placeTourCard({ target, preferred: "bottom", viewport: { width: 320, height: 190 }, card: { width: 280, height: 180 } });
 
-    expect(placement.mode).toBe("anchored");
-    expect(placement.y).toBeGreaterThanOrEqual(target.bottom);
+    expect(placement).toEqual({ mode: "needs-scroll", side: null, x: null, y: null });
+  });
+
+  test("calcule la distance pour dégager une cible au-dessus du panneau mobile", () => {
+    expect(mobileScrollDelta({ targetTop: 560, targetBottom: 640, viewportHeight: 667, panelClearance: 280 })).toBe(253);
+    expect(mobileScrollDelta({ targetTop: 180, targetBottom: 260, viewportHeight: 667, panelClearance: 280 })).toBe(0);
   });
 });

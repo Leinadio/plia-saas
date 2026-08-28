@@ -81,6 +81,7 @@ describe("infobulle du guide", () => {
     expect(html).toContain("onboarding-tour-veil-blocking");
     expect(html).not.toContain("onboarding-tour-veil-cutout");
     expect(html).toContain("onboarding-tour-card-mobile-panel");
+    expect(html).toContain('data-onboarding-scroll-clearance="target-and-scroll-root"');
   });
 
   test("ne bloque que les régions autour de la cible pour une étape interactive", () => {
