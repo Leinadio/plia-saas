@@ -8,6 +8,7 @@ vi.mock("next/navigation", () => ({
 
 const { DemoExperienceProvider } = await import("../../src/components/demo-experience-provider");
 const { DemoDashboard } = await import("../../src/components/demo-dashboard");
+const { DemoTransactions } = await import("../../src/components/demo-transactions");
 
 function renderDemoDashboard(): string {
   return renderToStaticMarkup(
@@ -15,6 +16,16 @@ function renderDemoDashboard(): string {
       DemoExperienceProvider,
       { mode: "automatic-demo" } as Parameters<typeof DemoExperienceProvider>[0],
       createElement(DemoDashboard),
+    ),
+  );
+}
+
+function renderDemoTransactions(): string {
+  return renderToStaticMarkup(
+    createElement(
+      DemoExperienceProvider,
+      { mode: "automatic-demo" } as Parameters<typeof DemoExperienceProvider>[0],
+      createElement(DemoTransactions),
     ),
   );
 }
@@ -39,5 +50,18 @@ describe("DemoDashboard", () => {
     expect(html).toContain("-27,60 €");
     expect(html).toContain("Courses");
     expect(html).toContain("Transport");
+  });
+});
+
+describe("DemoTransactions", () => {
+  it("laisse ranger MONOPRIX sans afficher les commandes qui écrivent", () => {
+    const html = renderDemoTransactions();
+
+    expect(html).toContain("MONOPRIX");
+    expect(html).toContain("Courses");
+    expect(targetCount(html, "categorize-monoprix")).toBe(1);
+    expect(html).not.toContain("Ajouter une transaction");
+    expect(html).not.toContain("Commenter");
+    expect(html).not.toContain("Ne pas comptabiliser");
   });
 });

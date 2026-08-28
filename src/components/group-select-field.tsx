@@ -11,6 +11,26 @@ type LineOpt = { id: number; name: string };
 // groupSelectSections). Il ne filtre rien ici, il nomme la section.
 type GroupOpt = { id: number; name: string; direction: "in" | "out"; lines: LineOpt[] };
 
+export type GroupSelection = { groupId: number | null; lineId: number | null };
+
+// La démo garde son choix dans le navigateur : aucune action serveur n'est alors
+// nécessaire. Le rappel serveur reste injecté par l'appelant pour le chemin normal.
+export function applyGroupSelection({
+  selection,
+  onLocalChange,
+  onServerChange,
+}: {
+  selection: GroupSelection;
+  onLocalChange?: (selection: GroupSelection) => void;
+  onServerChange?: (selection: GroupSelection) => void;
+}): void {
+  if (onLocalChange) {
+    onLocalChange(selection);
+    return;
+  }
+  onServerChange?.(selection);
+}
+
 // Retrait des lignes sous leur groupe, avec des espaces insécables pour que le
 // menu déroulant ne les collapse pas.
 const INDENT = "   › ";
@@ -26,7 +46,7 @@ function stateOf(groupId: number | null, lineId: number | null): string {
 }
 
 export function GroupSelectField({
-  txnId, groups, defaultGroupId, defaultLineId, disabled = false, className,
+  txnId, groups, defaultGroupId, defaultLineId, disabled = false, className, onLocalChange, onboardingTarget,
 }: {
   txnId: string;
   groups: GroupOpt[];
@@ -36,6 +56,8 @@ export function GroupSelectField({
   // Ajusté par l'appelant quand le menu partage sa place (colonne étroite du
   // tableau de l'historique, où il doit pouvoir rétrécir).
   className?: string;
+  onLocalChange?: (selection: GroupSelection) => void;
+  onboardingTarget?: string;
 }) {
   const { pendant, enCours: isPending } = useMiseAJour();
   // ligne -> groupe parent, pour retrouver le group_id quand on choisit une ligne.
@@ -58,6 +80,7 @@ export function GroupSelectField({
 
   return (
     <select
+      data-onboarding-target={onboardingTarget}
       value={value}
       disabled={disabled || isPending}
       className={cn(champClass, className)}
@@ -72,10 +95,14 @@ export function GroupSelectField({
           lineId = Number.parseInt(v.slice(2), 10);
           groupId = parentOf.get(lineId) ?? null;
         }
-        // revalidatePath seul ne rafraîchit pas la vue courante après l'action ;
-        // la mise à jour partagée re-télécharge le rendu serveur, et allume le fil
-        // de tension sous la poutre pendant ce temps.
-        pendant(() => setGroup(txnId, groupId, lineId));
+        applyGroupSelection({
+          selection: { groupId, lineId },
+          onLocalChange,
+          // revalidatePath seul ne rafraîchit pas la vue courante après l'action ;
+          // la mise à jour partagée re-télécharge le rendu serveur, et allume le fil
+          // de tension sous la poutre pendant ce temps.
+          onServerChange: ({ groupId, lineId }) => pendant(() => setGroup(txnId, groupId, lineId)),
+        });
       }}
     >
       <option value="">Non catégorisé</option>

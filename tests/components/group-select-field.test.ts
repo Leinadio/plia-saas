@@ -11,7 +11,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => {} }) }));
 vi.mock("@/app/transactions/actions", () => ({ setGroup: async () => {} }));
 
-const { GroupSelectField } = await import("../../src/components/group-select-field");
+const { GroupSelectField, applyGroupSelection } = await import("../../src/components/group-select-field");
 
 const rendu = (groups: Parameters<typeof GroupSelectField>[0]["groups"]) =>
   renderToStaticMarkup(
@@ -26,6 +26,17 @@ const sosh = {
 const salaire = { id: 21, name: "Rémunération Principale", direction: "in" as const, lines: [] };
 
 describe("GroupSelectField", () => {
+  it("transmet un choix local sans demander de sauvegarde serveur", () => {
+    const changes: { groupId: number | null; lineId: number | null }[] = [];
+
+    applyGroupSelection({
+      selection: { groupId: 1, lineId: null },
+      onLocalChange: (selection) => changes.push(selection),
+    });
+
+    expect(changes).toEqual([{ groupId: 1, lineId: null }]);
+  });
+
   // Une seule liste de dépenses, comme le tableau : plates et découpées y voisinent,
   // et c'est le titre inerte d'une découpée qui dit qu'on vise ses sous-postes.
   it("réunit les dépenses sous un seul titre", () => {

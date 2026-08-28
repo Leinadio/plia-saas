@@ -49,6 +49,11 @@ type ClientGroup = OwnableGroup & {
   lines: { id: number; name: string }[];
 };
 
+type DemoTransactions = {
+  targetTransactionId: string;
+  onCategorize: (transactionId: string, groupId: number | null) => void;
+};
+
 // UNE OPÉRATION. La même ligne à toutes les largeurs : la date et le libellé à
 // gauche, le montant à droite, et dessous ce qu'on fait de l'opération.
 //
@@ -56,7 +61,7 @@ type ClientGroup = OwnableGroup & {
 // recréée à chaque rendu remonte son sous-arbre au lieu de le mettre à jour — et
 // le champ de commentaire perdrait le curseur à chaque frappe.
 function Ligne({
-  t, compte, groupes, accounts, formGroups, statut,
+  t, compte, groupes, accounts, formGroups, statut, demo,
 }: {
   t: TxnView;
   // Vrai dans la vue filtrée, qui mélange les comptes : ailleurs, l'onglet ouvert
@@ -66,7 +71,10 @@ function Ligne({
   accounts: { id: string; label: string }[];
   formGroups: { id: number; name: string; accountId: string; direction: "in" | "out"; startMonth?: string | null; endMonth?: string | null }[];
   statut: string;
+  demo?: DemoTransactions;
 }) {
+  const onboardingTarget = demo?.targetTransactionId === t.id ? "categorize-monoprix" : undefined;
+
   return (
     <li className={cn("hover:bg-survol px-4 py-3 transition-colors sm:px-5", t.ignored && "opacity-70")}>
       <div className="flex items-start justify-between gap-3">
@@ -83,7 +91,7 @@ function Ligne({
           {compte && <span className="text-ardoise-claire text-xs">{t.accountLabel}</span>}
           {t.note && <span className="text-muted-foreground text-xs">{t.note}</span>}
           {/* Le commentaire vient juste sous le libellé. */}
-          <TxnCommentField txnId={t.id} comment={t.comment} className="max-w-full sm:max-w-[420px]" />
+          {!demo && <TxnCommentField txnId={t.id} comment={t.comment} className="max-w-full sm:max-w-[420px]" />}
         </div>
         {/* Un montant est une force : celui qui retranche tire, et il est rouge.
             Celui qui ajoute porte, et il est vert. Une opération hors calcul est
@@ -105,9 +113,11 @@ function Ligne({
           defaultLineId={t.lineId}
           disabled={t.ignored}
           className="max-w-64"
+          onLocalChange={demo ? ({ groupId }) => demo.onCategorize(t.id, groupId) : undefined}
+          onboardingTarget={onboardingTarget}
         />
-        <IgnoreTxnToggle txnId={t.id} ignored={t.ignored} size="icon-sm" />
-        {t.manual && <ManualTxnActions txn={t} accounts={accounts} groups={formGroups} />}
+        {!demo && <IgnoreTxnToggle txnId={t.id} ignored={t.ignored} size="icon-sm" />}
+        {!demo && t.manual && <ManualTxnActions txn={t} accounts={accounts} groups={formGroups} />}
         <span className="text-ardoise-claire ml-auto hidden text-xs sm:block">
           <TruncatedText text={statut} className="max-w-[220px]" />
         </span>
@@ -116,7 +126,17 @@ function Ligne({
   );
 }
 
-export function TransactionsBrowser({ transactions, groups, accounts }: { transactions: TxnView[]; groups: ClientGroup[]; accounts: { id: string; label: string }[] }) {
+export function TransactionsBrowser({
+  transactions,
+  groups,
+  accounts,
+  demo,
+}: {
+  transactions: TxnView[];
+  groups: ClientGroup[];
+  accounts: { id: string; label: string }[];
+  demo?: DemoTransactions;
+}) {
   const [filters, setFilters] = useState<TxnFilters>(EMPTY_FILTERS);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const toggleMonth = (key: string) =>
@@ -195,7 +215,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
     return (
       <div className="flex flex-col gap-3">
         <div className="flex justify-end">
-          <AddTransactionSheet accounts={accounts} groups={formGroups} />
+          {!demo && <AddTransactionSheet accounts={accounts} groups={formGroups} />}
         </div>
         <div className="carte px-5 py-10 text-center">
           <p className="titre-carte">Aucune opération</p>
@@ -211,7 +231,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
   return (
     <div className="flex flex-col gap-3">
       <div className="flex justify-end">
-        <AddTransactionSheet accounts={accounts} groups={formGroups} />
+        {!demo && <AddTransactionSheet accounts={accounts} groups={formGroups} />}
       </div>
 
       {/* LE PUPITRE DE FILTRES, sur sa propre carte : les filtres sont un outil, pas
@@ -316,6 +336,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
                   accounts={accounts}
                   formGroups={formGroups}
                   statut={statusLabel(t)}
+                  demo={demo}
                 />
               ))}
             </ul>
@@ -391,6 +412,7 @@ export function TransactionsBrowser({ transactions, groups, accounts }: { transa
                               accounts={accounts}
                               formGroups={formGroups}
                               statut={statusLabel(t)}
+                              demo={demo}
                             />
                           ))}
                         </ul>
