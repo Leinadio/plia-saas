@@ -105,12 +105,17 @@ describe("DemoTransactions", () => {
 describe("DemoHistory", () => {
   it("rend le vrai tableau avec le budget Transport et la continuité des mois ciblés", () => {
     const html = renderDemoHistory();
-    const transportRow = html.match(/<tr[^>]*>.*?Transport.*?<\/tr>/)?.[0] ?? "";
-    const currentMonthHeader = html.match(/<th[^>]*data-onboarding-target="month-continuity"[^>]*>.*?<\/th>/)?.[0] ?? "";
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const transportBudgetCell = html.match(new RegExp(
+      `<td(?=[^>]*data-onboarding-target="adjust-transport")(?=[^>]*data-onboarding-group-id="${DEMO_IDS.transport}")(?=[^>]*data-onboarding-month="${currentMonth}")[^>]*>.*?<\\/td>`,
+    ))?.[0] ?? "";
+    const currentMonthHeader = html.match(new RegExp(
+      `<th(?=[^>]*data-onboarding-target="month-continuity")(?=[^>]*data-current-month="")(?=[^>]*data-onboarding-month="${currentMonth}")[^>]*>.*?<\\/th>`,
+    ))?.[0] ?? "";
 
     expect(targetCount(html, "adjust-transport")).toBe(1);
     expect(targetCount(html, "month-continuity")).toBe(1);
-    expect(transportRow).toMatch(/data-onboarding-target="adjust-transport"[^>]*>.*?>120,00</);
+    expect(transportBudgetCell).toContain(">120,00<");
     expect(currentMonthHeader).toContain("Août");
     expect(currentMonthHeader).toContain("2026");
     expect(html).not.toContain("Ajouter une transaction");

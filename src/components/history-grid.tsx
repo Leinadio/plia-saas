@@ -416,7 +416,7 @@ function FirstColBox({ children, indent = 0 }: { children: React.ReactNode; inde
 // Cellule de montant : cliquable (sélection → sidebar) si un détail est fourni.
 // cellKey (data-cellkey) identifie la case pour la surbrillance croisée et le
 // défilement depuis le side panel ; elle s'allume quand elle est la case sélectionnée.
-function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCellKey, onboardingTarget }: {
+function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCellKey, onboardingTarget, onboardingGroupId, onboardingMonth }: {
   children: React.ReactNode;
   className?: string;
   detail?: CellDetail | null;
@@ -424,9 +424,11 @@ function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCel
   cellKey?: string;
   selCellKey?: ReadonlySet<string>;
   onboardingTarget?: string;
+  onboardingGroupId?: number;
+  onboardingMonth?: string;
 }) {
   const cls = cn(className, ck != null && selCellKey?.has(ck) && CELL_HL);
-  if (!detail || !onSelect) return <TableCell data-cellkey={ck} data-onboarding-target={onboardingTarget} className={cls}>{children}</TableCell>;
+  if (!detail || !onSelect) return <TableCell data-cellkey={ck} data-onboarding-target={onboardingTarget} data-onboarding-group-id={onboardingGroupId} data-onboarding-month={onboardingMonth} className={cls}>{children}</TableCell>;
   // On rattache la clé de cette case au détail (cellRef), pour pouvoir la surligner
   // depuis la ligne « Total » du side panel.
   //
@@ -435,7 +437,7 @@ function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCel
   // juillet 2026 » et le montant — donc chaque case chiffrée du tableau devient une
   // réserve sans que personne ait à décrire son contenu une seconde fois.
   return (
-    <TableCell data-cellkey={ck} data-onboarding-target={onboardingTarget} className={cls}>
+    <TableCell data-cellkey={ck} data-onboarding-target={onboardingTarget} data-onboarding-group-id={onboardingGroupId} data-onboarding-month={onboardingMonth} className={cls}>
       <button
         type="button"
         draggable
@@ -806,7 +808,7 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
             ),
           budgetDep: (b) =>
             dead ? blankCol("budgetDep", b) : (
-              <CellAmount key="budgetDep" className={cn(b && MONTH_GAP, "text-right tabular-nums text-muted-foreground")} detail={budgetDepDetail} onSelect={onSelect} cellKey={ck("budget")} selCellKey={selCellKey} onboardingTarget={isOnboardingBudget ? onboarding?.budgetTarget : undefined}>
+              <CellAmount key="budgetDep" className={cn(b && MONTH_GAP, "text-right tabular-nums text-muted-foreground")} detail={budgetDepDetail} onSelect={onSelect} cellKey={ck("budget")} selCellKey={selCellKey} onboardingTarget={isOnboardingBudget ? onboarding?.budgetTarget : undefined} onboardingGroupId={isOnboardingBudget ? onboarding?.budgetGroupId : undefined} onboardingMonth={isOnboardingBudget ? onboarding?.budgetMonth : undefined}>
                 {budgetDepVal != null ? fmt(budgetDepVal) : ""}
               </CellAmount>
             ),
@@ -2369,6 +2371,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 colSpan={cols.length}
                 data-current-month={m === currentMonth ? "" : undefined}
                 data-onboarding-target={mi === months.indexOf(onboarding?.budgetMonth ?? "") ? onboarding?.monthsTarget : undefined}
+                data-onboarding-month={mi === months.indexOf(onboarding?.budgetMonth ?? "") ? onboarding?.budgetMonth : undefined}
                 className={cn(mi > 0 && MONTH_RULE, "px-2 pt-4 pb-1 text-left align-middle sm:px-4 sm:text-center")}
               >
                 {/* Le nom du mois se pose À GAUCHE de son bloc sur téléphone. Centré, il
