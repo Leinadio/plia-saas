@@ -1975,7 +1975,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                           entière (Sosh Internet n'est pas Sosh Mobile) : on la renomme
                           là où on la voit, pas en la cherchant dans une liste. Le jour
                           suit le nom ; son montant, daté, se fixe dans sa case. */}
-                      <button
+                      {!demo && <button
                         type="button"
                         aria-label="Gérer la ligne"
                         onClick={(e) => {
@@ -2001,7 +2001,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                         className="text-muted-foreground hover:text-foreground ml-1 -m-1.5 shrink-0 cursor-pointer p-1.5 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
                       >
                         <Pencil className="size-3.5" />
-                      </button>
+                      </button>}
                     </NameCell>
                     {/* Sous-ligne (poste d'un récurrent) : cellules désormais cliquables
                         (détail dérivé du poste). Les cases Solde restent vides. */}

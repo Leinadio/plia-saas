@@ -17,7 +17,8 @@ import { toastSucces } from "@/components/history-blocks/toast";
 import { useMiseAJour } from "@/components/mise-a-jour";
 import { useDemoExperienceOptional } from "@/components/demo-experience-provider";
 import { DEMO_IDS } from "@/lib/demo-finances";
-import { isDemoMode } from "@/lib/onboarding-mode";
+import { isDemoMode, type OnboardingMode } from "@/lib/onboarding-mode";
+import type { TourEvent } from "@/lib/onboarding-tour";
 
 // Bloc d'édition d'un budget, affiché sous la décomposition de sa case « Budget dép. ».
 // C'est le seul endroit d'où un montant se modifie : la case dit le mois, et un montant
@@ -32,6 +33,21 @@ import { isDemoMode } from "@/lib/onboarding-mode";
 // une fois le relevé sous les yeux. Le seul cas sans bloc du tout est la case d'un
 // groupe récurrent, où budgetEditOfGroup rend null — son budget est la somme de ses
 // lignes, il n'y a rien à écrire à son niveau.
+export async function applyBudgetEdit(
+  info: Pick<BudgetEditInfo, "id">,
+  mode: OnboardingMode | null,
+  amount: number,
+  dispatch: (event: TourEvent) => void,
+  serverContinuation: () => Promise<void>,
+): Promise<"demo" | "server"> {
+  if (mode && isDemoMode(mode) && info.id === DEMO_IDS.transport) {
+    dispatch({ type: "TRANSPORT_BUDGET_CHANGED", amount });
+    return "demo";
+  }
+  await serverContinuation();
+  return "server";
+}
+
 export function BudgetEditBlock({ info }: { info: BudgetEditInfo }) {
   const demo = useDemoExperienceOptional();
   const transportDemo = !!demo && isDemoMode(demo.mode) && info.id === DEMO_IDS.transport;
@@ -60,15 +76,18 @@ export function BudgetEditBlock({ info }: { info: BudgetEditInfo }) {
   const run = (fn: () => Promise<BudgetChange[]>) => pendant(async () => setChanges(await fn()));
   const saisi = parseFloat(amount);
   const apply = async () => {
-    if (transportDemo) {
-      demo.dispatch({ type: "TRANSPORT_BUDGET_CHANGED", amount: saisi });
-      return;
-    }
-    await run(() =>
-      info.target === "group"
-        ? setGroupAmount(info.id, info.month, saisi, "once")
-        : setGroupLineAmount(info.id, info.month, saisi, "once"),
+    const path = await applyBudgetEdit(
+      info,
+      demo?.mode ?? null,
+      saisi,
+      (event) => demo?.dispatch(event),
+      () => run(() =>
+        info.target === "group"
+          ? setGroupAmount(info.id, info.month, saisi, "once")
+          : setGroupLineAmount(info.id, info.month, saisi, "once"),
+      ),
     );
+    if (path === "demo") return;
     setApplique(saisi);
   };
   const propager = async () => {

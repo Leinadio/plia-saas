@@ -15,6 +15,7 @@ const { DetailSidebarProvider } = await import("../../src/components/detail-side
 const { DemoDashboard } = await import("../../src/components/demo-dashboard");
 const { DemoHistory } = await import("../../src/components/demo-history");
 const { DemoTransactions, eventForDemoCategorization } = await import("../../src/components/demo-transactions");
+const { applyBudgetEdit } = await import("../../src/components/history-blocks/budget-edit-block");
 
 function renderDemoDashboard(): string {
   return renderToStaticMarkup(
@@ -104,11 +105,43 @@ describe("DemoTransactions", () => {
 describe("DemoHistory", () => {
   it("rend le vrai tableau avec le budget Transport et la continuité des mois ciblés", () => {
     const html = renderDemoHistory();
+    const transportRow = html.match(/<tr[^>]*>.*?Transport.*?<\/tr>/)?.[0] ?? "";
+    const currentMonthHeader = html.match(/<th[^>]*data-onboarding-target="month-continuity"[^>]*>.*?<\/th>/)?.[0] ?? "";
 
     expect(targetCount(html, "adjust-transport")).toBe(1);
     expect(targetCount(html, "month-continuity")).toBe(1);
-    expect(html).toContain(">120,00<");
-    expect(html).toContain("Transport");
+    expect(transportRow).toMatch(/data-onboarding-target="adjust-transport"[^>]*>.*?>120,00</);
+    expect(currentMonthHeader).toContain("Août");
+    expect(currentMonthHeader).toContain("2026");
     expect(html).not.toContain("Ajouter une transaction");
+  });
+
+  it("transmet Transport à 150 au vrai reducer et à la projection, sans écriture serveur", async () => {
+    const serverContinuation = vi.fn();
+    const dispatch = vi.fn();
+    const path = await applyBudgetEdit(
+      { id: DEMO_IDS.transport },
+      "automatic-demo",
+      150,
+      dispatch,
+      serverContinuation,
+    );
+
+    expect(path).toBe("demo");
+    expect(dispatch).toHaveBeenCalledOnce();
+    const event = dispatch.mock.calls[0][0];
+    expect(event).toEqual({ type: "TRANSPORT_BUDGET_CHANGED", amount: 150 });
+    if (!event) throw new Error("Transport must create a demo event");
+    const visit = freshTourVisit();
+    const tour = reduceTour(visit.tour, event);
+    const initialProjection = buildDemoProjection("2026-08", visit.edits);
+    const projection = buildDemoProjection("2026-08", { ...visit.edits, transportBudget: event.amount });
+    const transport = projection.history.sections.flatMap((section) => section.rows)
+      .find((row) => row.id === DEMO_IDS.transport);
+
+    expect(serverContinuation).not.toHaveBeenCalled();
+    expect(tour.transportAdjusted).toBe(true);
+    expect(transport?.cells[1].budgeted).toBe(150);
+    expect(projection.history.planned.prevuClosings[2]).not.toBe(initialProjection.history.planned.prevuClosings[2]);
   });
 });
