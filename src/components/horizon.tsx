@@ -20,12 +20,16 @@ export type MoisDHorizon = { key: string; label: string; solde: number };
 //
 // La géométrie (ligne du zéro, hauteurs relatives, mois rompus) vient d'une
 // bibliothèque testée : le dessin ne calcule rien, il place.
-export function Horizon({ mois }: { mois: MoisDHorizon[] }) {
+export function Horizon({ mois, onboardingTarget }: { mois: MoisDHorizon[]; onboardingTarget?: string }) {
   const plan = planDeCharge(mois.map((m) => m.solde));
   if (plan.mats.length === 0) return null;
 
   return (
-    <section aria-label="Horizon des prochains mois" className="carte overflow-hidden">
+    <section
+      aria-label="Horizon des prochains mois"
+      className="carte overflow-hidden"
+      data-onboarding-target={onboardingTarget}
+    >
       <div className="border-filet flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b px-4 py-2.5 sm:px-5">
         <h2 className="titre-carte">Horizon</h2>
         <p className="text-muted-foreground text-[0.8125rem]">

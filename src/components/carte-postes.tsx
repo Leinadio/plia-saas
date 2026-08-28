@@ -39,6 +39,7 @@ export function CartePostes({
   lignes,
   vide,
   colonnes,
+  onboardingTarget,
 }: {
   titre: string;
   // Le sens décide du dessin de la jauge : une sortie peut déborder de son
@@ -50,6 +51,7 @@ export function CartePostes({
   // Les noms des montants, dans leur ordre. Ils servent aux légendes du détail
   // et au libellé qu'un montant emporte dans la calculatrice.
   colonnes: string[];
+  onboardingTarget?: string;
 }) {
   // Le dernier pas de l'histoire. Voir qu'une enveloppe a débordé ne sert à rien
   // si rien ne dit où l'on va la corriger : c'est dans l'Historique, poste par
@@ -58,7 +60,7 @@ export function CartePostes({
   const total = lignes.reduce((s, l) => s + l.montants[l.montants.length - 1], 0);
 
   return (
-    <section className="carte flex min-w-0 flex-col">
+    <section className="carte flex min-w-0 flex-col" data-onboarding-target={onboardingTarget}>
       <div className="border-filet flex items-baseline justify-between gap-3 border-b px-4 py-3 sm:px-5">
         <h2 className="titre-carte">{titre}</h2>
         <div className="flex items-baseline gap-4">

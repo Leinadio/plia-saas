@@ -13,12 +13,22 @@ import { CartePostes } from "@/components/carte-postes";
 //
 // Un compte, une structure : c'est le même bloc pour tous, seuls les chiffres
 // changent (cf. lib/recap-compte).
-export function RecapitulatifCompte({ recap }: { recap: RecapCompte }) {
+export function RecapitulatifCompte({
+  recap,
+  horizonOnboardingTarget,
+  monthProjectionOnboardingTarget,
+  envelopesOnboardingTarget,
+}: {
+  recap: RecapCompte;
+  horizonOnboardingTarget?: string;
+  monthProjectionOnboardingTarget?: string;
+  envelopesOnboardingTarget?: string;
+}) {
   return (
     <div className="flex flex-col gap-3">
-      <Horizon mois={recap.mois} />
+      <Horizon mois={recap.mois} onboardingTarget={horizonOnboardingTarget} />
 
-      <RelevesBand releves={recap.releves} />
+      <RelevesBand releves={recap.releves} onboardingTarget={monthProjectionOnboardingTarget} />
 
       {/* Les sorties d'abord sur téléphone : c'est là que ça déborde, et c'est
           pour ça qu'on est venu. Côte à côte dès qu'il y a la place, les entrées
@@ -37,6 +47,7 @@ export function RecapitulatifCompte({ recap }: { recap: RecapCompte }) {
           vide="Aucune enveloppe ce mois-ci. Une enveloppe, c'est un montant qu'on se donne pour un poste : la jauge dit ce qu'il en reste, et ce qui a débordé."
           colonnes={["Enveloppe", "Dépensé", "Reste"]}
           lignes={recap.sorties}
+          onboardingTarget={envelopesOnboardingTarget}
         />
       </div>
     </div>

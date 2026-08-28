@@ -15,7 +15,7 @@ export type Releve = { label: string; valeur: number };
 // La couleur ne juge rien : elle dit le sens. Ce qui est négatif prend l'encre de
 // tension, le reste reste en encre. Aucun montant n'est sarcelle — la sarcelle
 // commande, elle ne mesure pas.
-export function RelevesBand({ releves }: { releves: Releve[] }) {
+export function RelevesBand({ releves, onboardingTarget }: { releves: Releve[]; onboardingTarget?: string }) {
   if (releves.length === 0) return null;
   // La projection est la dernière du relevé (cf. lib/recap-compte). On la sort de
   // la liste plutôt que de la chercher par son nom : l'ordre est la seule chose
@@ -33,6 +33,7 @@ export function RelevesBand({ releves }: { releves: Releve[] }) {
           "carte flex flex-col justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5",
           tete.valeur < 0 && "border-[color-mix(in_oklab,var(--tension)_35%,var(--filet))]",
         )}
+        data-onboarding-target={onboardingTarget}
       >
         <div className="flex items-center gap-2">
           <span className="legende">{tete.label}</span>
