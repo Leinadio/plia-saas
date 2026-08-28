@@ -23,12 +23,13 @@ export function applyGroupSelection({
   selection: GroupSelection;
   onLocalChange?: (selection: GroupSelection) => void;
   onServerChange?: (selection: GroupSelection) => void;
-}): void {
+}): "local" | "server" {
   if (onLocalChange) {
     onLocalChange(selection);
-    return;
+    return "local";
   }
   onServerChange?.(selection);
+  return "server";
 }
 
 // Retrait des lignes sous leur groupe, avec des espaces insécables pour que le

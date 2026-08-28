@@ -27,14 +27,28 @@ const salaire = { id: 21, name: "Rémunération Principale", direction: "in" as 
 
 describe("GroupSelectField", () => {
   it("transmet un choix local sans demander de sauvegarde serveur", () => {
-    const changes: { groupId: number | null; lineId: number | null }[] = [];
+    const calls: string[] = [];
 
-    applyGroupSelection({
+    const route = applyGroupSelection({
       selection: { groupId: 1, lineId: null },
-      onLocalChange: (selection) => changes.push(selection),
+      onLocalChange: ({ groupId }) => calls.push(`local:${groupId}`),
+      onServerChange: ({ groupId }) => calls.push(`server:${groupId}`),
     });
 
-    expect(changes).toEqual([{ groupId: 1, lineId: null }]);
+    expect(route).toBe("local");
+    expect(calls).toEqual(["local:1"]);
+  });
+
+  it("transmet le choix au serveur sans rappel local", () => {
+    const calls: string[] = [];
+
+    const route = applyGroupSelection({
+      selection: { groupId: 1, lineId: null },
+      onServerChange: ({ groupId }) => calls.push(`server:${groupId}`),
+    });
+
+    expect(route).toBe("server");
+    expect(calls).toEqual(["server:1"]);
   });
 
   // Une seule liste de dépenses, comme le tableau : plates et découpées y voisinent,

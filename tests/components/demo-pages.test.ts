@@ -1,6 +1,9 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
+import { DEMO_IDS } from "../../src/lib/demo-finances";
+import { buildDemoProjection } from "../../src/lib/demo-projection";
+import { freshTourVisit, reduceTour } from "../../src/lib/onboarding-tour";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: () => {}, refresh: () => {} }),
@@ -8,7 +11,7 @@ vi.mock("next/navigation", () => ({
 
 const { DemoExperienceProvider } = await import("../../src/components/demo-experience-provider");
 const { DemoDashboard } = await import("../../src/components/demo-dashboard");
-const { DemoTransactions } = await import("../../src/components/demo-transactions");
+const { DemoTransactions, eventForDemoCategorization } = await import("../../src/components/demo-transactions");
 
 function renderDemoDashboard(): string {
   return renderToStaticMarkup(
@@ -63,5 +66,24 @@ describe("DemoTransactions", () => {
     expect(html).not.toContain("Ajouter une transaction");
     expect(html).not.toContain("Commenter");
     expect(html).not.toContain("Ne pas comptabiliser");
+    expect(html).not.toContain("Rechercher un libellé");
+    expect(html).not.toContain("Tous les groupes");
+    expect(html).not.toContain("aria-expanded");
+  });
+
+  it("range Courses dans la visite et recalcule sa projection", () => {
+    const event = eventForDemoCategorization(DEMO_IDS.monoprix, DEMO_IDS.courses);
+    if (!event) throw new Error("Courses must create a demo categorization event");
+    const visit = freshTourVisit();
+    const tour = reduceTour(visit.tour, event);
+    const projection = buildDemoProjection("2026-08", {
+      ...visit.edits,
+      monoprixGroupId: tour.monoprixCategorized ? DEMO_IDS.courses : null,
+    });
+
+    expect(event).toEqual({ type: "MONOPRIX_CATEGORIZED" });
+    expect(tour.monoprixCategorized).toBe(true);
+    expect(projection.transactions.find((transaction) => transaction.id === DEMO_IDS.monoprix)?.groupId).toBe(DEMO_IDS.courses);
+    expect(projection.dashboard.sorties.find((row) => row.id === DEMO_IDS.courses)?.montants[2]).toBeCloseTo(65.3);
   });
 });

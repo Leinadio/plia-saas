@@ -234,7 +234,9 @@ export function TransactionsBrowser({
         {!demo && <AddTransactionSheet accounts={accounts} groups={formGroups} />}
       </div>
 
-      {/* LE PUPITRE DE FILTRES, sur sa propre carte : les filtres sont un outil, pas
+      {!demo && (
+        <>
+          {/* LE PUPITRE DE FILTRES, sur sa propre carte : les filtres sont un outil, pas
           des champs qui flottent au-dessus du relevé. Sur téléphone, deux colonnes
           réglées plutôt qu'un retour à la ligne libre — à 390 px, six champs de
           largeurs différentes retombent en escalier. */}
@@ -297,8 +299,26 @@ export function TransactionsBrowser({
           </Button>
         )}
       </div>
+        </>
+      )}
 
-      {active ? (
+      {demo ? (
+        <div className="carte overflow-hidden">
+          <ul className="divide-filet divide-y">
+            {results.map((t) => (
+              <Ligne
+                key={t.id}
+                t={t}
+                groupes={groupsOfTxn(t)}
+                accounts={accounts}
+                formGroups={formGroups}
+                statut={statusLabel(t)}
+                demo={demo}
+              />
+            ))}
+          </ul>
+        </div>
+      ) : active ? (
         <div className="carte overflow-hidden">
           {/* Ce que le filtre a trouvé, en tête de sa carte : trois mesures et un
               compte. */}

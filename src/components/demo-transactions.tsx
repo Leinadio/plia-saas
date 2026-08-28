@@ -3,6 +3,14 @@
 import { TransactionsBrowser } from "@/components/transactions-browser";
 import { useDemoExperience } from "@/components/demo-experience-provider";
 import { DEMO_IDS } from "@/lib/demo-finances";
+import type { TourEvent } from "@/lib/onboarding-tour";
+
+export function eventForDemoCategorization(transactionId: string, groupId: number | null): TourEvent | null {
+  if (transactionId === DEMO_IDS.monoprix && groupId === DEMO_IDS.courses) {
+    return { type: "MONOPRIX_CATEGORIZED" };
+  }
+  return null;
+}
 
 export function DemoTransactions() {
   const { projection, dispatch } = useDemoExperience();
@@ -18,9 +26,8 @@ export function DemoTransactions() {
       demo={{
         targetTransactionId: DEMO_IDS.monoprix,
         onCategorize: (transactionId, groupId) => {
-          if (transactionId === DEMO_IDS.monoprix && groupId === DEMO_IDS.courses) {
-            dispatch({ type: "MONOPRIX_CATEGORIZED" });
-          }
+          const event = eventForDemoCategorization(transactionId, groupId);
+          if (event) dispatch(event);
         },
       }}
     />
