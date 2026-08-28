@@ -554,3 +554,148 @@
     }
   }
 }
+
+@layer components {
+  .onboarding-tour-veil {
+    position: fixed;
+    z-index: 40;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .onboarding-tour-veil-part,
+  .onboarding-tour-veil:not(:has(.onboarding-tour-veil-part)) {
+    background: color-mix(in oklab, var(--encre) 14%, transparent);
+  }
+
+  .onboarding-tour-veil-part {
+    position: fixed;
+    display: block;
+  }
+
+  .onboarding-tour-focus-ring {
+    position: fixed;
+    z-index: 41;
+    pointer-events: none;
+    border: 2px solid var(--ring);
+    border-radius: var(--radius-md, 0.5rem);
+    box-shadow: 0 0 0 2px var(--surface);
+  }
+
+  .onboarding-tour-card {
+    position: fixed;
+    z-index: 50;
+    width: min(22.5rem, calc(100vw - 2rem));
+    color: var(--card-foreground);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--ombre-flottante);
+  }
+
+  .onboarding-tour-card-inner {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .onboarding-tour-progress {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .onboarding-tour-title {
+    margin: 0;
+    color: var(--card-foreground);
+    font-size: 1rem;
+    font-weight: 650;
+    line-height: 1.3;
+  }
+
+  .onboarding-tour-copy,
+  .onboarding-tour-fallback {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+
+  .onboarding-tour-fallback {
+    padding: 0.5rem 0.625rem;
+    color: var(--muted-foreground);
+    background: var(--secondary);
+    border-left: 2px solid var(--ring);
+    border-radius: var(--radius-md, 0.5rem);
+  }
+
+  .onboarding-tour-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 0.25rem;
+  }
+
+  .onboarding-tour-button {
+    min-height: 2.25rem;
+    padding: 0.45rem 0.7rem;
+    color: var(--foreground);
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 0.5rem);
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .onboarding-tour-button:hover:not(:disabled) {
+    background: var(--accent);
+    border-color: var(--input);
+  }
+
+  .onboarding-tour-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .onboarding-tour-next {
+    margin-left: auto;
+    color: var(--primary-foreground);
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+
+  @media (max-width: 767px) {
+    .onboarding-tour-card,
+    .onboarding-tour-card-center {
+      top: auto !important;
+      right: 1rem;
+      bottom: max(1rem, env(safe-area-inset-bottom));
+      left: 1rem !important;
+      width: auto;
+      max-height: min(60vh, 28rem);
+      overflow-y: auto;
+    }
+
+    .onboarding-tour-card-inner {
+      padding: 0.875rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .onboarding-tour-card,
+    .onboarding-tour-focus-ring {
+      transition: top 160ms ease-out, left 160ms ease-out;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .onboarding-tour-card,
+    .onboarding-tour-focus-ring {
+      transition: none;
+    }
+  }
+}
