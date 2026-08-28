@@ -8,8 +8,26 @@ import { describe, it, expect, vi } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
+const effects = vi.hoisted(() => ({
+  setGroup: vi.fn(async () => {}),
+  pendant: vi.fn((work: () => Promise<unknown>) => work()),
+  setValue: vi.fn(),
+}));
+
+vi.mock("react", async (importOriginal) => {
+  const react = await importOriginal<typeof import("react")>();
+  return {
+    ...react,
+    useMemo: <T,>(create: () => T) => create(),
+    useState: <T,>(initial: T): [T, (value: T) => void] => [initial, effects.setValue as (value: T) => void],
+  };
+});
+
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => {} }) }));
-vi.mock("@/app/transactions/actions", () => ({ setGroup: async () => {} }));
+vi.mock("@/app/app/transactions/actions", () => ({ setGroup: effects.setGroup }));
+vi.mock("@/components/mise-a-jour", () => ({
+  useMiseAJour: () => ({ pendant: effects.pendant, enCours: false }),
+}));
 
 const { GroupSelectField, applyGroupSelection } = await import("../../src/components/group-select-field");
 
@@ -25,7 +43,53 @@ const sosh = {
 };
 const salaire = { id: 21, name: "Rémunération Principale", direction: "in" as const, lines: [] };
 
+function selectInteractif({
+  groups,
+  onLocalChange,
+}: {
+  groups: Parameters<typeof GroupSelectField>[0]["groups"];
+  onLocalChange?: (selection: { groupId: number | null; lineId: number | null }) => void;
+}) {
+  const element = GroupSelectField({
+    txnId: "t1",
+    groups,
+    defaultGroupId: null,
+    defaultLineId: null,
+    onLocalChange,
+  }) as unknown as {
+    props: { onChange: (event: { currentTarget: { value: string } }) => void };
+  };
+  return element.props;
+}
+
 describe("GroupSelectField", () => {
+  it("déclenche la branche locale depuis le select réel", () => {
+    const changes: { groupId: number | null; lineId: number | null }[] = [];
+    effects.setGroup.mockClear();
+    effects.pendant.mockClear();
+    effects.setValue.mockClear();
+
+    selectInteractif({ groups: [sosh], onLocalChange: (selection) => changes.push(selection) })
+      .onChange({ currentTarget: { value: "l:10" } });
+
+    expect(changes).toEqual([{ groupId: 2, lineId: 10 }]);
+    expect(effects.setValue).toHaveBeenCalledWith("l:10");
+    expect(effects.pendant).not.toHaveBeenCalled();
+    expect(effects.setGroup).not.toHaveBeenCalled();
+  });
+
+  it("déclenche la branche serveur depuis le select réel", () => {
+    effects.setGroup.mockClear();
+    effects.pendant.mockClear();
+    effects.setValue.mockClear();
+
+    selectInteractif({ groups: [courses] }).onChange({ currentTarget: { value: "g:1" } });
+
+    expect(effects.setValue).toHaveBeenCalledWith("g:1");
+    expect(effects.pendant).toHaveBeenCalledTimes(1);
+    expect(effects.setGroup).toHaveBeenCalledWith("t1", 1, null);
+  });
+
   it("transmet un choix local sans demander de sauvegarde serveur", () => {
     const calls: string[] = [];
 
