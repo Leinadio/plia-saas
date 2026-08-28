@@ -10,10 +10,11 @@ import {
   type ReactNode,
 } from "react";
 import { useDemoExperience } from "./demo-experience-provider";
-import { placeTourCard, type TourRect } from "../lib/onboarding-position";
+import { nextTourRetryDelay, placeTourCard, type TourRect } from "../lib/onboarding-position";
 
 const CARD_FALLBACK_SIZE = { width: 360, height: 250 };
 const FOCUS_RING_GAP = 4;
+const MOBILE_PANEL_CLEARANCE = 280;
 
 function rectFromElement(element: Element): TourRect {
   const rect = element.getBoundingClientRect();
@@ -39,8 +40,8 @@ function focusableControls(dialog: HTMLElement): HTMLElement[] {
   ));
 }
 
-function Veil({ target }: { target: TourRect | null }): ReactNode {
-  if (!target) return <div aria-hidden className="onboarding-tour-veil" />;
+function Veil({ target, interactive }: { target: TourRect | null; interactive: boolean }): ReactNode {
+  if (!target || !interactive) return <div aria-hidden className="onboarding-tour-veil onboarding-tour-veil-blocking" />;
 
   const viewportHeight = typeof window === "undefined" ? 800 : window.innerHeight;
   const horizontal = Math.max(0, target.left - FOCUS_RING_GAP);
@@ -50,7 +51,7 @@ function Veil({ target }: { target: TourRect | null }): ReactNode {
   const panel = (style: CSSProperties) => <span aria-hidden className="onboarding-tour-veil-part" style={style} />;
 
   return (
-    <div aria-hidden className="onboarding-tour-veil">
+    <div aria-hidden className="onboarding-tour-veil onboarding-tour-veil-cutout">
       {panel({ top: 0, right: 0, left: 0, height: vertical })}
       {panel({ top: vertical, bottom: Math.max(0, viewportHeight - bottom), left: 0, width: horizontal })}
       {panel({ top: vertical, right: 0, bottom: Math.max(0, viewportHeight - bottom), left: right })}
@@ -78,51 +79,120 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
     : discoveredTarget?.stepId === step.id ? discoveredTarget.rect : null;
 
   useEffect(() => {
-    if (controlled) return;
+    if (controlled || tour.paused) return;
 
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
-    const startedAt = Date.now();
+    let settleTimer: ReturnType<typeof setTimeout> | undefined;
+    let frame: number | undefined;
+    const deadline = Date.now() + 1500;
     const selector = `[data-onboarding-target=${JSON.stringify(step.target)}]`;
 
+    const queryTarget = () => document.querySelector<HTMLElement>(selector);
+    const mobileClearTarget = (element: HTMLElement) => {
+      if (typeof window === "undefined" || window.innerWidth >= 768) return;
+      const rect = element.getBoundingClientRect();
+      const panelClearance = Math.min(
+        Math.max(MOBILE_PANEL_CLEARANCE, Math.round(window.innerHeight * 0.6)),
+        464,
+      );
+      const safeBottom = window.innerHeight - panelClearance;
+      if (rect.bottom > safeBottom && typeof window.scrollBy === "function") {
+        window.scrollBy({ top: rect.bottom - safeBottom, behavior: prefersReducedMotion() ? "auto" : "smooth" });
+      }
+    };
+
+    const measureFreshTarget = () => {
+      if (cancelled) return;
+      const freshElement = queryTarget();
+      if (!freshElement) return;
+      mobileClearTarget(freshElement);
+      if (typeof window !== "undefined" && !prefersReducedMotion() && typeof window.requestAnimationFrame === "function") {
+        frame = window.requestAnimationFrame(() => {
+          if (!cancelled) {
+            const settledElement = queryTarget();
+            if (settledElement) setDiscoveredTarget({ stepId: step.id, rect: rectFromElement(settledElement) });
+          }
+        });
+      } else {
+        setDiscoveredTarget({ stepId: step.id, rect: rectFromElement(freshElement) });
+      }
+    };
+
     const findTarget = () => {
-      if (cancelled || typeof document === "undefined") return;
-      const element = document.querySelector<HTMLElement>(selector);
+      if (cancelled || typeof document === "undefined" || Date.now() >= deadline) return;
+      const element = queryTarget();
       if (element) {
-        element.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "center", inline: "nearest" });
-        const measure = () => {
-          if (!cancelled) setDiscoveredTarget({ stepId: step.id, rect: rectFromElement(element) });
-        };
-        if (typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(measure);
-        else measure();
+        if (typeof element.scrollIntoView === "function") {
+          element.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "center", inline: "nearest" });
+        }
+        if (prefersReducedMotion()) {
+          measureFreshTarget();
+        } else if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+          frame = window.requestAnimationFrame(() => {
+            settleTimer = setTimeout(measureFreshTarget, 180);
+          });
+        } else {
+          settleTimer = setTimeout(measureFreshTarget, 180);
+        }
         return;
       }
-      if (Date.now() - startedAt < 1500) timer = setTimeout(findTarget, 50);
+      const delay = nextTourRetryDelay(Date.now(), deadline);
+      if (delay !== null) timer = setTimeout(findTarget, delay);
     };
 
     findTarget();
     return () => {
       cancelled = true;
       if (timer) clearTimeout(timer);
+      if (settleTimer) clearTimeout(settleTimer);
+      if (frame !== undefined && typeof window !== "undefined") window.cancelAnimationFrame(frame);
     };
-  }, [controlled, controlledTarget, step.id, step.target]);
+  }, [controlled, controlledTarget, step.id, step.target, tour.paused]);
 
   useEffect(() => {
-    if (controlled || !target || typeof window === "undefined") return;
+    if (controlled || tour.paused || !target || typeof window === "undefined") return;
     const element = document.querySelector<HTMLElement>(`[data-onboarding-target=${JSON.stringify(step.target)}]`);
     if (!element) return;
-    const update = () => setDiscoveredTarget({ stepId: step.id, rect: rectFromElement(element) });
+    const update = () => {
+      const currentElement = document.querySelector<HTMLElement>(`[data-onboarding-target=${JSON.stringify(step.target)}]`);
+      if (currentElement) setDiscoveredTarget({ stepId: step.id, rect: rectFromElement(currentElement) });
+    };
     window.addEventListener("resize", update);
-    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("scroll", update, { capture: true, passive: true });
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(update);
+    observer?.observe(element);
     return () => {
       window.removeEventListener("resize", update);
-      window.removeEventListener("scroll", update);
+      window.removeEventListener("scroll", update, true);
+      observer?.disconnect();
     };
-  }, [controlled, step.id, step.target, target]);
+  }, [controlled, step.id, step.target, target, tour.paused]);
 
   useEffect(() => {
     headingRef.current?.focus();
   }, [step.id]);
+
+  useEffect(() => {
+    if (tour.paused || typeof document === "undefined") return;
+    const handleDocumentKeyDown = (event: globalThis.KeyboardEvent) => {
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        void pause();
+        return;
+      }
+      if (event.key !== "Tab" || dialog.contains(document.activeElement)) return;
+      const controls = focusableControls(dialog);
+      if (controls.length === 0) return;
+      event.preventDefault();
+      (event.shiftKey ? controls[controls.length - 1] : controls[0]).focus();
+    };
+    document.addEventListener("keydown", handleDocumentKeyDown, true);
+    return () => document.removeEventListener("keydown", handleDocumentKeyDown, true);
+  }, [pause, tour.paused]);
 
   useEffect(() => {
     const card = cardRef.current;
@@ -178,10 +248,11 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
   const isLast = step.id === "refresh";
   const titleId = "onboarding-tour-title";
   const targetMissing = !target;
+  const interactiveTarget = step.id === "categorize-monoprix" || step.id === "adjust-transport";
 
   return (
     <>
-      <Veil target={target} />
+      <Veil target={target} interactive={interactiveTarget} />
       {target && (
         <div
           aria-hidden
@@ -196,7 +267,7 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
         aria-labelledby={titleId}
         tabIndex={-1}
         onKeyDown={onKeyDown}
-        className={`onboarding-tour-card ${placement.mode === "center" ? "onboarding-tour-card-center" : ""}`}
+        className={`onboarding-tour-card onboarding-tour-card-mobile-panel ${placement.mode === "center" ? "onboarding-tour-card-center" : ""}`}
         style={{ left: placement.x, top: placement.y }}
       >
         <div ref={cardRef} className="onboarding-tour-card-inner">

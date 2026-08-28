@@ -560,17 +560,22 @@
     position: fixed;
     z-index: 40;
     inset: 0;
-    pointer-events: none;
+    pointer-events: auto;
   }
 
-  .onboarding-tour-veil-part,
-  .onboarding-tour-veil:not(:has(.onboarding-tour-veil-part)) {
+  .onboarding-tour-veil-blocking {
     background: color-mix(in oklab, var(--encre) 14%, transparent);
+  }
+
+  .onboarding-tour-veil-cutout {
+    pointer-events: none;
   }
 
   .onboarding-tour-veil-part {
     position: fixed;
     display: block;
+    pointer-events: auto;
+    background: color-mix(in oklab, var(--encre) 14%, transparent);
   }
 
   .onboarding-tour-focus-ring {
@@ -591,6 +596,11 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--ombre-flottante);
+  }
+
+  .onboarding-tour-card-mobile-panel {
+    --onboarding-tour-mobile-clearance: 17.5rem;
+    scroll-margin-bottom: var(--onboarding-tour-mobile-clearance);
   }
 
   .onboarding-tour-card-inner {

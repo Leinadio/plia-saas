@@ -72,4 +72,23 @@ describe("infobulle du guide", () => {
     expect(html).toContain(">Compris<");
     expect(html).not.toContain('disabled=""');
   });
+
+  test("bloque les clics hors cible pour une étape informative", () => {
+    experience.step = TOUR_STEPS[0];
+    experience.tour = { ...experience.tour, step: "horizon" };
+    const html = renderTour({ target: availableTarget });
+
+    expect(html).toContain("onboarding-tour-veil-blocking");
+    expect(html).not.toContain("onboarding-tour-veil-cutout");
+    expect(html).toContain("onboarding-tour-card-mobile-panel");
+  });
+
+  test("ne bloque que les régions autour de la cible pour une étape interactive", () => {
+    experience.step = TOUR_STEPS[3];
+    experience.tour = { ...experience.tour, step: "categorize-monoprix" };
+    const html = renderTour({ target: availableTarget });
+
+    expect(html).toContain("onboarding-tour-veil-cutout");
+    expect(html.match(/onboarding-tour-veil-part/g)?.length).toBe(4);
+  });
 });

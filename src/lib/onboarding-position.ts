@@ -29,6 +29,13 @@ export type PlaceTourCardOptions = {
 export const TOUR_VIEWPORT_GUTTER = 16;
 const TOUR_TARGET_GAP = 16;
 
+/** Returns the next retry delay without ever crossing an absolute deadline. */
+export function nextTourRetryDelay(now: number, deadline: number, interval = 50): number | null {
+  const remaining = deadline - now;
+  if (remaining <= 0) return null;
+  return Math.min(interval, remaining);
+}
+
 function clamp(value: number, minimum: number, maximum: number): number {
   return Math.min(Math.max(value, minimum), Math.max(minimum, maximum));
 }
@@ -87,8 +94,11 @@ export function placeTourCard({ target, viewport, card, preferred = "bottom" }: 
     return {
       mode: "anchored",
       side: preferred,
-      x: clamp(fallback.x, TOUR_VIEWPORT_GUTTER, viewport.width - card.width - TOUR_VIEWPORT_GUTTER),
-      y: clamp(fallback.y, TOUR_VIEWPORT_GUTTER, viewport.height - card.height - TOUR_VIEWPORT_GUTTER),
+      // The preferred edge is deliberately allowed outside the viewport when no
+      // side can fit. Keeping that edge beyond the target is safer than clamping
+      // the card back over the content being explained.
+      x: fallback.x,
+      y: fallback.y,
     };
   }
 

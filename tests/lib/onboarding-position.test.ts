@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { placeTourCard, type TourRect } from "../../src/lib/onboarding-position";
+import { nextTourRetryDelay, placeTourCard, type TourRect } from "../../src/lib/onboarding-position";
 
 const viewport = { width: 1024, height: 768 };
 const card = { width: 280, height: 180 };
@@ -34,5 +34,19 @@ describe("placement de l'infobulle", () => {
       x: 372,
       y: 294,
     });
+  });
+
+  test("ne programme jamais une nouvelle recherche après l'échéance absolue", () => {
+    expect(nextTourRetryDelay(1_490, 1_500)).toBe(10);
+    expect(nextTourRetryDelay(1_500, 1_500)).toBeNull();
+    expect(nextTourRetryDelay(1_501, 1_500)).toBeNull();
+  });
+
+  test("garde une carte non chevauchante même quand aucun côté ne tient dans la fenêtre", () => {
+    const target: TourRect = { top: 80, right: 300, bottom: 160, left: 20, width: 280, height: 80 };
+    const placement = placeTourCard({ target, preferred: "bottom", viewport: { width: 320, height: 190 }, card: { width: 280, height: 180 } });
+
+    expect(placement.mode).toBe("anchored");
+    expect(placement.y).toBeGreaterThanOrEqual(target.bottom);
   });
 });
