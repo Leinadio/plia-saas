@@ -7,10 +7,13 @@ import { freshTourVisit, reduceTour } from "../../src/lib/onboarding-tour";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: () => {}, refresh: () => {} }),
+  usePathname: () => "/app/historique",
 }));
 
 const { DemoExperienceProvider } = await import("../../src/components/demo-experience-provider");
+const { DetailSidebarProvider } = await import("../../src/components/detail-sidebar");
 const { DemoDashboard } = await import("../../src/components/demo-dashboard");
+const { DemoHistory } = await import("../../src/components/demo-history");
 const { DemoTransactions, eventForDemoCategorization } = await import("../../src/components/demo-transactions");
 
 function renderDemoDashboard(): string {
@@ -29,6 +32,16 @@ function renderDemoTransactions(): string {
       DemoExperienceProvider,
       { mode: "automatic-demo" } as Parameters<typeof DemoExperienceProvider>[0],
       createElement(DemoTransactions),
+    ),
+  );
+}
+
+function renderDemoHistory(): string {
+  return renderToStaticMarkup(
+    createElement(
+      DemoExperienceProvider,
+      { mode: "automatic-demo" } as Parameters<typeof DemoExperienceProvider>[0],
+      createElement(DetailSidebarProvider, undefined, createElement(DemoHistory)),
     ),
   );
 }
@@ -85,5 +98,17 @@ describe("DemoTransactions", () => {
     expect(tour.monoprixCategorized).toBe(true);
     expect(projection.transactions.find((transaction) => transaction.id === DEMO_IDS.monoprix)?.groupId).toBe(DEMO_IDS.courses);
     expect(projection.dashboard.sorties.find((row) => row.id === DEMO_IDS.courses)?.montants[2]).toBeCloseTo(65.3);
+  });
+});
+
+describe("DemoHistory", () => {
+  it("rend le vrai tableau avec le budget Transport et la continuité des mois ciblés", () => {
+    const html = renderDemoHistory();
+
+    expect(targetCount(html, "adjust-transport")).toBe(1);
+    expect(targetCount(html, "month-continuity")).toBe(1);
+    expect(html).toContain(">120,00<");
+    expect(html).toContain("Transport");
+    expect(html).not.toContain("Ajouter une transaction");
   });
 });

@@ -37,6 +37,12 @@ export function HistoryWithDetail(props: {
   // Dépassements groupés par mois : le bandeau d'alerte au-dessus du tableau, et
   // l'étiquette « dépassement » sur les cases concernées.
   overspendsByMonth?: Record<string, Overspend[]>;
+  onboarding?: {
+    budgetGroupId: number;
+    budgetMonth: string;
+    budgetTarget: string;
+    monthsTarget: string;
+  };
 }) {
   const { setDetail, selected, anchor } = useDetailSidebar();
   // Mode détaillé des colonnes de solde. Ici et non dans la grille : la case doit

@@ -416,16 +416,17 @@ function FirstColBox({ children, indent = 0 }: { children: React.ReactNode; inde
 // Cellule de montant : cliquable (sélection → sidebar) si un détail est fourni.
 // cellKey (data-cellkey) identifie la case pour la surbrillance croisée et le
 // défilement depuis le side panel ; elle s'allume quand elle est la case sélectionnée.
-function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCellKey }: {
+function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCellKey, onboardingTarget }: {
   children: React.ReactNode;
   className?: string;
   detail?: CellDetail | null;
   onSelect?: (d: CellDetail) => void;
   cellKey?: string;
   selCellKey?: ReadonlySet<string>;
+  onboardingTarget?: string;
 }) {
   const cls = cn(className, ck != null && selCellKey?.has(ck) && CELL_HL);
-  if (!detail || !onSelect) return <TableCell data-cellkey={ck} className={cls}>{children}</TableCell>;
+  if (!detail || !onSelect) return <TableCell data-cellkey={ck} data-onboarding-target={onboardingTarget} className={cls}>{children}</TableCell>;
   // On rattache la clé de cette case au détail (cellRef), pour pouvoir la surligner
   // depuis la ligne « Total » du side panel.
   //
@@ -434,7 +435,7 @@ function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCel
   // juillet 2026 » et le montant — donc chaque case chiffrée du tableau devient une
   // réserve sans que personne ait à décrire son contenu une seconde fois.
   return (
-    <TableCell data-cellkey={ck} className={cls}>
+    <TableCell data-cellkey={ck} data-onboarding-target={onboardingTarget} className={cls}>
       <button
         type="button"
         draggable
@@ -552,7 +553,7 @@ function plannedSoldeCell(
 // du panneau de détail et le défilement vers une case — tout est repéré par cet
 // index. Absent, tous les mois sont rendus (comportement d'origine).
 
-function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, subtitleOf, detailRow, months, currentMonth, rowKey, selCellKey, prevDisp, budgetEditOf, signaleDepassement, noticeOf }: {
+function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, subtitleOf, detailRow, months, currentMonth, rowKey, selCellKey, prevDisp, budgetEditOf, signaleDepassement, noticeOf, onboarding }: {
   cells: MonthCell[];
   mode: "out" | "in" | "total";
   solde?: (number | null)[];
@@ -587,6 +588,7 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
   // l'appelant, seul à savoir si la ligne est une enveloppe, un récurrent ou une de ses
   // lignes — et à disposer du montant dépassé.
   noticeOf?: (month: string) => OverspendNoticeInfo | null;
+  onboarding?: OnboardingTargets;
 }) {
   const teinteSection = useContext(TeinteSection);
   return (
@@ -595,6 +597,8 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
         const type = monthType(months[i], currentMonth);
         const cols = monthColumns(type);
         const month = months[i];
+        const isOnboardingBudget = detailRow?.id === onboarding?.budgetGroupId
+          && i === months.indexOf(onboarding?.budgetMonth ?? "");
         const subtitle = subtitleOf?.(i);
         const r = detailRow;
         const ck = (col: Col) => cellKey(rowKey, col, i);
@@ -802,7 +806,7 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
             ),
           budgetDep: (b) =>
             dead ? blankCol("budgetDep", b) : (
-              <CellAmount key="budgetDep" className={cn(b && MONTH_GAP, "text-right tabular-nums text-muted-foreground")} detail={budgetDepDetail} onSelect={onSelect} cellKey={ck("budget")} selCellKey={selCellKey}>
+              <CellAmount key="budgetDep" className={cn(b && MONTH_GAP, "text-right tabular-nums text-muted-foreground")} detail={budgetDepDetail} onSelect={onSelect} cellKey={ck("budget")} selCellKey={selCellKey} onboardingTarget={isOnboardingBudget ? onboarding?.budgetTarget : undefined}>
                 {budgetDepVal != null ? fmt(budgetDepVal) : ""}
               </CellAmount>
             ),
@@ -870,7 +874,7 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
 // donc leur somme aussi) : toujours cliquable. Pour les non catégorisés, budget et
 // balance sont toujours à 0 : l'invariant ne tient que si dépensé == 0, donc en
 // pratique non cliquable (comme documenté au Task 3 pour ce cas).
-function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, solde, planPrevu, planDepass, uncatInSec, selCellKey, prevDisp, noticeOf, total, tint }: {
+function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, solde, planPrevu, planDepass, uncatInSec, selCellKey, prevDisp, noticeOf, total, tint, onboarding }: {
   sec: HistorySection;
   // Teinte de fond des cellules, quand elle ne découle pas de `total` : les
   // sous-totaux des deux blocs de dépenses sont des sommes sans être LE total.
@@ -899,6 +903,7 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
   prevDisp?: { solde?: (string | undefined)[]; soldePrevu?: (string | undefined)[]; soldeDepass?: (string | undefined)[] };
   // Bandeau de dépassement de la section (non catégorisés) au mois donné, ou null.
   noticeOf?: (month: string) => OverspendNoticeInfo | null;
+  onboarding?: OnboardingTargets;
 }) {
   const isUncat = sec.kind === "uncategorized";
   // Sous-total d'un des deux blocs de dépenses. Il se lit comme une section à lui
@@ -1062,7 +1067,7 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
             uncatIn ? (
               <TableCell key="budgetDep" className={cn(b && MONTH_GAP, "text-right tabular-nums text-muted-foreground")}></TableCell>
             ) : (
-              <CellAmount key="budgetDep" className={cn(b && MONTH_GAP, "text-right tabular-nums text-muted-foreground")} detail={isUncat ? provisionDetail : budgetDetail} onSelect={onSelect} cellKey={ck("budget")} selCellKey={selCellKey}>
+              <CellAmount key="budgetDep" className={cn(b && MONTH_GAP, "text-right tabular-nums text-muted-foreground")} detail={isUncat && onboarding ? budgetDetail : isUncat ? provisionDetail : budgetDetail} onSelect={onSelect} cellKey={ck("budget")} selCellKey={selCellKey}>
                 {fmt(c.budgeted)}
               </CellAmount>
             ),
@@ -1490,7 +1495,7 @@ function NameCell({ children, indent, expandable, expanded, onToggle }: {
 
 // Ligne de transaction : « date · libellé » puis, en dessous, le menu de
 // (ré)assignation de groupe. Le montant tombe dans la colonne de son mois.
-function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKey, ignored = false }: {
+function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKey, ignored = false, demo = false }: {
   txn: HistoryTxn;
   months: string[];
   currentMonth: string;
@@ -1502,6 +1507,7 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
   // rattachement — sans effet tant que la transaction est hors calcul — par le
   // bouton de retour dans les calculs, avec son libellé puisque la place est libre.
   ignored?: boolean;
+  demo?: boolean;
 }) {
   return (
     <TableRow className="align-top text-sm text-muted-foreground">
@@ -1519,9 +1525,11 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
             <span className="text-ardoise-claire text-xs tabular-nums">{txn.date}</span>
             <TruncatedText text={txn.label} className="leading-5" lines={2} />
             {/* Le commentaire vient juste sous le libellé, dans la même colonne. */}
-            <TxnCommentField txnId={txn.id} comment={txn.comment} />
+            {!demo && <TxnCommentField txnId={txn.id} comment={txn.comment} />}
           </div>
-          {ignored ? (
+          {demo ? (
+            <span className="text-ardoise-claire text-xs">Disponible avec vos données</span>
+          ) : ignored ? (
             <IgnoreTxnToggle txnId={txn.id} ignored withLabel />
           ) : (
             <div className="flex min-w-0 items-center gap-1">
@@ -1569,7 +1577,14 @@ function scrollableAncestor(el: HTMLElement, axis: "x" | "y"): HTMLElement | nul
   return null;
 }
 
-export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast, sections, ignoredBlocks, overspend, grand, groups, solde, planned, onSelect, selected, anchor, accountId, overspendsByMonth, showDeltas }: {
+type OnboardingTargets = {
+  budgetGroupId: number;
+  budgetMonth: string;
+  budgetTarget: string;
+  monthsTarget: string;
+};
+
+export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast, sections, ignoredBlocks, overspend, grand, groups, solde, planned, onSelect, selected, anchor, accountId, overspendsByMonth, showDeltas, onboarding }: {
   months: string[];
   currentMonth: string;
   // Bornes de la frise : les mois que le calendrier du formulaire de création
@@ -1603,7 +1618,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
   // Dépassements groupés par mois : l'étiquette « dépassement » sur les cases, et le
   // signal porté par un groupe récurrent dont une ligne déborde.
   overspendsByMonth?: Record<string, Overspend[]>;
+  onboarding?: OnboardingTargets;
 }) {
+  const demo = onboarding !== undefined;
   // Groupes qui ont un dépassement, par mois (clé « groupe::mois ») : un récurrent
   // replié doit le montrer sur sa propre case, faute de voir ses lignes.
   const groupeEnDepassement = useMemo(() => groupsWithPending(overspendsByMonth ?? {}), [overspendsByMonth]);
@@ -1618,7 +1635,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
   }, [overspendsByMonth]);
   const noticeDe = (groupId: number, lineId: number | null) => (mois: string): OverspendNoticeInfo | null => {
     const o = depassementDeCase.get(`${groupId}::${lineId ?? 0}::${mois}`);
-    if (!o || !accountId) return null;
+    if (!o || !accountId || demo) return null;
     return { id: notificationId(accountId, o.groupId, o.lineId, mois), name: o.name, month: mois, amount: o.amount };
   };
   const [open, setOpen] = useState<Set<string>>(new Set());
@@ -1847,7 +1864,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             </span>
             </span>
             {/* Gérer le groupe : icône discrète révélée au survol de la ligne. */}
-            <button
+            {!demo && <button
               type="button"
               aria-label="Gérer le groupe"
               onClick={(e) => {
@@ -1857,12 +1874,12 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               className="text-muted-foreground hover:text-foreground ml-1 -m-1.5 shrink-0 cursor-pointer p-1.5 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
             >
               <Pencil className="size-3.5" />
-            </button>
+            </button>}
             {/* Découper en sous-postes, juste à côté : le formulaire s'ouvre sous cette
                 ligne-ci, là où le sous-poste ira. Il ne touche PAS au dépliage du
                 groupe : le chevron montre les transactions, et ouvrir un formulaire de
                 création n'a aucune raison de dérouler ce qui a déjà été dépensé. */}
-            <button
+            {!demo && <button
               type="button"
               aria-label="Ajouter un sous-poste"
               onClick={(e) => {
@@ -1872,7 +1889,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               className="text-muted-foreground hover:text-foreground shrink-0 cursor-pointer opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
             >
               <Plus className="size-3.5" />
-            </button>
+            </button>}
           </NameCell>
           <AmountCells
             cells={r.cells}
@@ -1891,12 +1908,13 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             budgetEditOf={(m) => budgetEditOfGroup(sg, m, currentMonth)}
             signaleDepassement={(m) => groupeEnDepassement.has(`${r.id}::${m}`)}
             noticeOf={noticeDe(r.id, null)}
+            onboarding={onboarding}
           />
         </TableRow>
         {/* Le formulaire du nouveau sous-poste, juste sous sa dépense. Hors du bloc
             replié ci-dessous : il ne dépend pas du dépliage, qui ne concerne que ce qui
             existe déjà (sous-postes et transactions). */}
-        {addingLineHere(r.id, moisDeTravail) && (
+        {!demo && addingLineHere(r.id, moisDeTravail) && (
           <TableRow className="hover:bg-transparent">
             <TableCell colSpan={totalCols} className="p-0">
               <div className={cn(BLOC_EPINE, "font-sans bg-background w-fit")}>
@@ -2000,16 +2018,17 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                       budgetEditOf={(m) => budgetEditOfLine(sgLine, m, currentMonth)}
                       signaleDepassement={(m) => depassementDeCase.has(`${r.id}::${sub.id}::${m}`)}
                       noticeOf={noticeDe(r.id, sub.id)}
+                      onboarding={onboarding}
                     />
                   </TableRow>
                   {lOpen && sub.txns.map((t) => (
-                    <TxnRow key={t.id} txn={t} months={months} currentMonth={currentMonth} groups={groups} indent={2} onSelect={onSelect} selCellKey={selCellKey} />
+                    <TxnRow key={t.id} txn={t} months={months} currentMonth={currentMonth} groups={groups} indent={2} onSelect={onSelect} selCellKey={selCellKey} demo={demo} />
                   ))}
                 </Fragment>
               );
             })}
             {r.txns.map((t) => (
-              <TxnRow key={t.id} txn={t} months={months} currentMonth={currentMonth} groups={groups} indent={1} onSelect={onSelect} selCellKey={selCellKey} />
+              <TxnRow key={t.id} txn={t} months={months} currentMonth={currentMonth} groups={groups} indent={1} onSelect={onSelect} selCellKey={selCellKey} demo={demo} />
             ))}
           </>
         )}
@@ -2095,10 +2114,11 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             selCellKey={selCellKey}
             prevDisp={{ solde: prevDisplayedByCol.solde.get(rowKey), soldePrevu: prevDisplayedByCol.soldePrevu.get(rowKey), soldeDepass: prevDisplayedByCol.soldeDepass.get(rowKey) }}
             noticeOf={noticeDe(0, null)}
+            onboarding={onboarding}
           />
         </TableRow>
         {uOpen && sec.txns?.map((t) => (
-          <TxnRow key={t.id} txn={t} months={months} currentMonth={currentMonth} groups={groups} indent={1} onSelect={onSelect} selCellKey={selCellKey} />
+          <TxnRow key={t.id} txn={t} months={months} currentMonth={currentMonth} groups={groups} indent={1} onSelect={onSelect} selCellKey={selCellKey} demo={demo} />
         ))}
       </>
     );
@@ -2158,6 +2178,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               onSelect={onSelect}
               selCellKey={selCellKey}
               ignored
+              demo={demo}
             />
           ))}
       </Fragment>
@@ -2233,14 +2254,14 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
           {bande(`bloc-${bloc}`, TITRE_BLOC[bloc], BANDE_TENSION, {
             replie,
             onToggle: () => toggleBloc(bloc),
-            action: (
+            action: !demo ? (
               <Button type="button" size="xs" variant="outline" className="shrink-0 cursor-pointer sm:ml-auto" onClick={() => toggleAdding("expense", moisDeTravail, bloc)}>
                 <Plus />
                 Dépense
               </Button>
-            ),
+            ) : null,
           })}
-          {addingExpenseBloc(moisDeTravail) === bloc && (
+          {!demo && addingExpenseBloc(moisDeTravail) === bloc && (
             <TableRow className="hover:bg-transparent">
               <TableCell colSpan={totalCols} className="p-0">
                 <div className={cn(BLOC_EPINE, "font-sans bg-background w-fit")}>
@@ -2270,14 +2291,14 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     const enTeteRevenu = () => (
       <>
         {bande("bloc-revenu", "Ce qui rentre", BANDE_PORTANT, {
-          action: (
+          action: !demo ? (
             <Button type="button" size="xs" variant="outline" className="shrink-0 cursor-pointer sm:ml-auto" onClick={() => toggleAdding("income", moisDeTravail)}>
               <Plus />
               Revenu
             </Button>
-          ),
+          ) : null,
         })}
-        {addingHere(moisDeTravail) === "income" && (
+        {!demo && addingHere(moisDeTravail) === "income" && (
           <TableRow className="hover:bg-transparent">
             <TableCell colSpan={totalCols} className="p-0">
               <div className={cn(BLOC_EPINE, "font-sans bg-background w-fit")}>
@@ -2347,6 +2368,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 key={m}
                 colSpan={cols.length}
                 data-current-month={m === currentMonth ? "" : undefined}
+                data-onboarding-target={mi === months.indexOf(onboarding?.budgetMonth ?? "") ? onboarding?.monthsTarget : undefined}
                 className={cn(mi > 0 && MONTH_RULE, "px-2 pt-4 pb-1 text-left align-middle sm:px-4 sm:text-center")}
               >
                 {/* Le nom du mois se pose À GAUCHE de son bloc sur téléphone. Centré, il

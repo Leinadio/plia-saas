@@ -15,6 +15,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toastSucces } from "@/components/history-blocks/toast";
 import { useMiseAJour } from "@/components/mise-a-jour";
+import { useDemoExperienceOptional } from "@/components/demo-experience-provider";
+import { DEMO_IDS } from "@/lib/demo-finances";
+import { isDemoMode } from "@/lib/onboarding-mode";
 
 // Bloc d'édition d'un budget, affiché sous la décomposition de sa case « Budget dép. ».
 // C'est le seul endroit d'où un montant se modifie : la case dit le mois, et un montant
@@ -30,6 +33,8 @@ import { useMiseAJour } from "@/components/mise-a-jour";
 // groupe récurrent, où budgetEditOfGroup rend null — son budget est la somme de ses
 // lignes, il n'y a rien à écrire à son niveau.
 export function BudgetEditBlock({ info }: { info: BudgetEditInfo }) {
+  const demo = useDemoExperienceOptional();
+  const transportDemo = !!demo && isDemoMode(demo.mode) && info.id === DEMO_IDS.transport;
   // « Occupé » ne veut pas dire « l'écriture court » mais « le tableau derrière
   // n'est pas encore à jour » : le bouton reste éteint jusqu'à ce que le nouveau
   // montant soit réellement dans la case, sinon on peut recliquer sur un écran
@@ -55,6 +60,10 @@ export function BudgetEditBlock({ info }: { info: BudgetEditInfo }) {
   const run = (fn: () => Promise<BudgetChange[]>) => pendant(async () => setChanges(await fn()));
   const saisi = parseFloat(amount);
   const apply = async () => {
+    if (transportDemo) {
+      demo.dispatch({ type: "TRANSPORT_BUDGET_CHANGED", amount: saisi });
+      return;
+    }
     await run(() =>
       info.target === "group"
         ? setGroupAmount(info.id, info.month, saisi, "once")
@@ -71,6 +80,9 @@ export function BudgetEditBlock({ info }: { info: BudgetEditInfo }) {
     setApplique(null);
     toastSucces("Montant appliqué aux mois suivants");
   };
+  if (demo && isDemoMode(demo.mode) && !transportDemo) {
+    return <p className="text-muted-foreground mt-4 border-t pt-4 text-sm">Disponible avec vos données</p>;
+  }
   return (
     <div className="mt-4 flex flex-col gap-4 border-t pt-4">
       <div className="flex flex-col gap-2">
