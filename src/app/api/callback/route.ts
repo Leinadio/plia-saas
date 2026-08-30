@@ -38,7 +38,10 @@ export async function GET(req: NextRequest) {
     }
 
     revalidatePath("/app", "layout");
-    const url = new URL("/app/settings?connected=1", req.url);
+    // Le premier retour mène à la valeur, pas à l'administration de la connexion :
+    // le tableau de bord montre immédiatement la projection que l'autorisation vient
+    // de rendre possible. Les réglages restent disponibles depuis la barre du haut.
+    const url = new URL("/app/historique?connected=1", req.url);
     if (imported !== null) url.searchParams.set("imported", String(imported));
     return NextResponse.redirect(url);
   } catch (e) {

@@ -18,7 +18,7 @@ import { chercheBanques, type Banque } from "@/lib/banques";
 // Le catalogue est demandé au serveur au premier dépliage, jamais au chargement de la
 // page : c'est un appel réseau vers la banque, inutile tant que personne ne veut
 // connecter quoi que ce soit.
-export function BankPicker() {
+export function BankPicker({ label = "Connecter une banque" }: { label?: string }) {
   const [ouvert, setOuvert] = useState(false);
   const [banques, setBanques] = useState<Banque[] | null>(null);
   // Le squelette reste au moins une seconde. Le catalogue revient parfois en quelques
@@ -91,7 +91,7 @@ export function BankPicker() {
       }}
     >
       <DrawerTrigger asChild>
-        <Button className="cursor-pointer">Connecter une banque</Button>
+        <Button className="cursor-pointer">{label}</Button>
       </DrawerTrigger>
       <DrawerContent>
         {/* Le panneau tient toute la hauteur : la liste défile à l'intérieur, l'en-tête

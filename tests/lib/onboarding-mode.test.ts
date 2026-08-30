@@ -1,79 +1,73 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { freshTourVisit } from "@/lib/onboarding-tour";
 
 const mocks = vi.hoisted(() => ({
-  onboardingRow: null as { user_id: string } | null,
-  cookieValue: undefined as string | undefined,
+  status: null as null | {
+    demoActive: boolean;
+    completedAt: string | null;
+    visit: ReturnType<typeof freshTourVisit>;
+  },
   pourMoi: vi.fn(),
   readStatus: vi.fn(),
 }));
 
-vi.mock("next/headers", () => ({
-  cookies: vi.fn(async () => ({
-    get: (name: string) => (name === "plia_onboarding_replay" && mocks.cookieValue ? { value: mocks.cookieValue } : undefined),
-  })),
-}));
+vi.mock("@/lib/current-user", () => ({ pourMoi: mocks.pourMoi }));
+vi.mock("@/db/repositories/onboarding-status", () => ({ readDemoStatus: mocks.readStatus }));
 
-vi.mock("@/lib/current-user", () => ({
-  pourMoi: mocks.pourMoi,
-}));
+import { currentDemoStatus, currentOnboardingCompletion, currentOnboardingMode } from "@/lib/current-onboarding";
+import { isDemoMode, resolveOnboardingMode } from "@/lib/onboarding-mode";
 
-import { currentOnboardingCompletion, currentOnboardingMode } from "@/lib/current-onboarding";
-import { isDemoMode, resolveOnboardingMode, wantsReplay } from "@/lib/onboarding-mode";
-
-describe("le choix du mode d'onboarding", () => {
+describe("le choix du mode de démonstration", () => {
   it.each([
-    [{ completed: false, replayCookie: false }, "automatic-demo"],
-    [{ completed: false, replayCookie: true }, "automatic-demo"],
-    [{ completed: true, replayCookie: false }, "real"],
-    [{ completed: true, replayCookie: true }, "replay-demo"],
+    [{ demoActive: true, completed: false }, "automatic-demo"],
+    [{ demoActive: true, completed: true }, "replay-demo"],
+    [{ demoActive: false, completed: false }, "real"],
+    [{ demoActive: false, completed: true }, "real"],
   ] as const)("choisit %s", (input, expected) => {
     expect(resolveOnboardingMode(input)).toBe(expected);
   });
 
-  it("accepte seulement la valeur 1 pour rejouer la démo", () => {
-    expect(wantsReplay("1")).toBe(true);
-    expect(wantsReplay(undefined)).toBe(false);
-    expect(wantsReplay("")).toBe(false);
-    expect(wantsReplay("true")).toBe(false);
-  });
-
-  it("reconnaît les deux modes de démo", () => {
+  it("reconnaît les deux états de démonstration", () => {
     expect(isDemoMode("automatic-demo")).toBe(true);
     expect(isDemoMode("replay-demo")).toBe(true);
     expect(isDemoMode("real")).toBe(false);
   });
 });
 
-describe("le mode courant d'onboarding", () => {
+describe("l’état courant de démonstration", () => {
   beforeEach(() => {
-    mocks.onboardingRow = null;
-    mocks.cookieValue = undefined;
+    mocks.status = { demoActive: true, completedAt: null, visit: freshTourVisit() };
     mocks.pourMoi.mockReset();
     mocks.readStatus.mockReset();
-    mocks.readStatus.mockImplementation(async () => mocks.onboardingRow);
-    mocks.pourMoi.mockImplementation((read) => read({ one: mocks.readStatus }, "u1"));
+    mocks.readStatus.mockImplementation(async () => mocks.status);
+    mocks.pourMoi.mockImplementation((read) => read({ db: true }, "u1"));
   });
 
-  it.each([
-    [false, undefined, "automatic-demo"],
-    [false, "1", "automatic-demo"],
-    [true, undefined, "real"],
-    [true, "1", "replay-demo"],
-  ] as const)("restitue %s avec le cookie %s", async (completed, cookieValue, expected) => {
-    mocks.onboardingRow = completed ? { user_id: "u1" } : null;
-    mocks.cookieValue = cookieValue;
-
-    await expect(currentOnboardingMode()).resolves.toBe(expected);
+  it("donne au nouvel utilisateur la démo active à l’étape 1", async () => {
+    await expect(currentDemoStatus()).resolves.toMatchObject({
+      demoActive: true,
+      completedAt: null,
+      mode: "automatic-demo",
+      visit: { tour: { step: "demo-account", finished: false } },
+    });
+    await expect(currentOnboardingMode()).resolves.toBe("automatic-demo");
+    await expect(currentOnboardingCompletion()).resolves.toBe(false);
   });
 
-  it("lit l'achèvement via l'accès utilisateur avant toute donnée financière", async () => {
-    mocks.onboardingRow = { user_id: "u1" };
+  it("garde un utilisateur terminé sur le réel quand son switch est éteint", async () => {
+    mocks.status = {
+      demoActive: false,
+      completedAt: "2026-08-30T10:00:00.000Z",
+      visit: { ...freshTourVisit(), tour: { ...freshTourVisit().tour, finished: true } },
+    };
 
+    await expect(currentDemoStatus()).resolves.toMatchObject({ mode: "real", demoActive: false });
     await expect(currentOnboardingCompletion()).resolves.toBe(true);
+  });
+
+  it("lit seulement le statut cloisonné de l’utilisateur", async () => {
+    await currentDemoStatus();
     expect(mocks.pourMoi).toHaveBeenCalledOnce();
-    expect(mocks.readStatus).toHaveBeenCalledWith(
-      "SELECT user_id FROM onboarding_status WHERE user_id = $1",
-      ["u1"],
-    );
+    expect(mocks.readStatus).toHaveBeenCalledWith({ db: true }, "u1");
   });
 });

@@ -10,7 +10,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["tests/**/*.test.ts"],
+    include: ["tests/**/*.test.{ts,tsx}"],
     // Depuis que la base de test est un vrai Postgres, chaque fichier allume son propre
     // moteur. Seul, cela prend une demi-seconde ; à dix en même temps, la machine se
     // dispute ses cœurs et le même démarrage dépasse cinq secondes. Les deux réglages

@@ -8,6 +8,12 @@ import { NotificationsButton } from "@/components/notifications-button";
 import { SyncButton } from "@/components/sync-button";
 import { CalculatriceProvider, CalculatriceButton } from "@/components/calculatrice";
 import { appNotifications } from "@/lib/app-notifications";
+import { currentDemoStatus } from "@/lib/current-onboarding";
+import { DemoExperienceProvider } from "@/components/demo-experience-provider";
+import { DemoStatusBand } from "@/components/demo-status-band";
+import { OnboardingTour } from "@/components/onboarding-tour";
+import { finishOnboarding, persistDemoVisit, restartDemoGuide } from "./onboarding-actions";
+import { serializeTourVisit } from "@/lib/onboarding-tour";
 
 // Le shell de l'application, et le seul point de passage vers elle. Tout ce qui vit
 // sous /app traverse ce fichier, donc une seule vérification suffit là où il en
@@ -22,10 +28,19 @@ export const dynamic = "force-dynamic";
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth().api.getSession({ headers: await headers() });
   if (!session) redirect("/connexion");
-  const notifications = await appNotifications();
+  const demoStatus = await currentDemoStatus();
+  const notifications = demoStatus.mode === "real" ? await appNotifications() : [];
   // Le panneau de détail (droite) englobe le shell : il occupe sa propre colonne,
   // donc la poutre et le contenu se rétrécissent à son ouverture.
   return (
+    <DemoExperienceProvider
+      key={`${demoStatus.mode}:${serializeTourVisit(demoStatus.visit)}`}
+      mode={demoStatus.mode}
+      initialVisit={demoStatus.visit}
+      onPersist={persistDemoVisit}
+      onFinish={finishOnboarding}
+      onRestart={restartDemoGuide}
+    >
     <DetailSidebarProvider>
       {/* Le fournisseur d'attente englobe tout le shell : n'importe quelle
           commande, où qu'elle soit, allume le même fil sous la poutre. */}
@@ -39,11 +54,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               panneau. overflow-hidden : c'est le contenu qui défile, pas le
               shell — la poutre reste en place. */}
           <div className="flex h-svh min-w-0 flex-1 flex-col overflow-hidden">
-            <AppTopbar user={{ name: session.user.name || session.user.email, email: session.user.email }}>
-              <SyncButton />
-              <CalculatriceButton />
-              <NotificationsButton items={notifications} />
+            <AppTopbar
+              user={{ name: session.user.name || session.user.email, email: session.user.email }}
+              localTools={<CalculatriceButton />}
+            >
+              {demoStatus.mode === "real" && <SyncButton />}
+              {demoStatus.mode === "real" && <NotificationsButton items={notifications} />}
             </AppTopbar>
+            <DemoStatusBand />
             {/* Le fil d'attente, collé sous la barre : c'est là qu'on regarde
                 quand on vient de cliquer, et c'est la seule ligne de l'écran qui
                 traverse toute sa largeur. */}
@@ -52,9 +70,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                 tout ce qu'on prendrait de plus serait pris sur la largeur des
                 cartes, où vivent les montants. */}
             <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-6 sm:py-6">{children}</div>
+            <OnboardingTour />
           </div>
         </CalculatriceProvider>
       </MiseAJourProvider>
     </DetailSidebarProvider>
+    </DemoExperienceProvider>
   );
 }

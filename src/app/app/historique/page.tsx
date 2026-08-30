@@ -21,8 +21,13 @@ import { accountLabel, effectiveBalance } from "../../../lib/account";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HistoryWithDetail } from "@/components/history-with-detail";
 import { MonthRangePicker } from "@/components/month-range-picker";
+import { FirstAccountOnboarding } from "@/components/first-account-onboarding";
+import { ConnexionReussie } from "@/components/connexion-reussie";
 
 import { pourMoi } from "@/lib/current-user";
+import { currentOnboardingMode } from "@/lib/current-onboarding";
+import { isDemoMode } from "@/lib/onboarding-mode";
+import { DemoHistory } from "@/components/demo-history";
 
 export const dynamic = "force-dynamic";
 
@@ -31,8 +36,19 @@ const MAX_MONTHS = 24; // garde-fou : nombre de colonnes affichées au maximum
 export default async function HistoriquePage({
   searchParams,
 }: {
-  searchParams: Promise<{ from?: string | string[]; to?: string | string[] }>;
+  searchParams: Promise<{
+    from?: string | string[];
+    to?: string | string[];
+    connected?: string | string[];
+    imported?: string | string[];
+  }>;
 }) {
+  const onboardingMode = await currentOnboardingMode();
+  if (isDemoMode(onboardingMode)) return <DemoHistory />;
+
+  const sp = await searchParams;
+  const connexionTerminee = sp.connected === "1";
+  const imported = typeof sp.imported === "string" ? sp.imported : undefined;
   const currentMonth = currentMonthKey(new Date());
   const toTxn = (t: TxnView): Txn => ({
     id: t.id,
@@ -67,11 +83,7 @@ export default async function HistoriquePage({
     }));
 
   if (accounts.length === 0) {
-    return (
-      <p className="text-muted-foreground text-sm">
-        Aucun compte. Synchronise d&apos;abord dans Réglages.
-      </p>
-    );
+    return <FirstAccountOnboarding connexionTerminee={connexionTerminee} />;
   }
 
   // Bornes communes : la frise monte jusqu'à 12 mois dans le futur (projections).
@@ -82,12 +94,12 @@ export default async function HistoriquePage({
 
   // Plage demandée dans l'URL (clampée par compte plus bas), sinon 3 mois à partir
   // du mois courant (le mois courant en première colonne, puis deux mois de projection).
-  const sp = await searchParams;
   const rawFrom = Array.isArray(sp.from) ? sp.from[0] : sp.from;
   const rawTo = Array.isArray(sp.to) ? sp.to[0] : sp.to;
 
   return (
     <div className="flex flex-col gap-4">
+      {connexionTerminee && <ConnexionReussie imported={imported} />}
       <Tabs defaultValue={accounts[0].id}>
         {/* Les onglets de comptes défilent plutôt que de se tasser : sur un écran
             étroit, quatre noms de comptes ne tiennent pas côte à côte, et aucun ne

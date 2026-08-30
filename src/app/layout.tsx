@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Schibsted_Grotesk } from "next/font/google";
+import Script from "next/script";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata = { title: "Plia" };
@@ -65,7 +66,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" suppressHydrationWarning className={ui.variable}>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <Script
+          id="plia-theme"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: themeScript }}
+        />
       </head>
       {/* Rien d'autre ici que l'enveloppe. Le shell de l'application (barre
           produit, notifications, panneau de détail) vit sous

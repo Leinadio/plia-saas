@@ -113,7 +113,7 @@ const FORME: Record<string, string[]> = {
     "amount:numeric", "effective_month:text", "id:integer", "line_id:integer",
     "scope:text",
   ],
-  onboarding_status: ["completed_at:text", "user_id:text"],
+  onboarding_status: ["completed_at:text", "demo_active:boolean", "demo_visit:jsonb", "user_id:text"],
   reconcile_ignored: ["manual_id:text", "synced_id:text", "user_id:text"],
   transactions: [
     "account_id:text", "amount:numeric", "comment:text", "date:text",

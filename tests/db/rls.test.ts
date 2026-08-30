@@ -77,7 +77,12 @@ test("avec l'annonce, une lecture sans filtre ne rend que les siennes", async ()
   expect(await db.all(`SELECT * FROM budget_amounts`)).toHaveLength(1);
   expect(await db.all(`SELECT * FROM dismissed_notifications`)).toHaveLength(1);
   expect(await db.all(`SELECT * FROM onboarding_status`)).toEqual([
-    { user_id: MOI, completed_at: "2026-08-28T10:00:00.000Z" },
+    {
+      user_id: MOI,
+      completed_at: "2026-08-28T10:00:00.000Z",
+      demo_active: true,
+      demo_visit: expect.objectContaining({ version: 3 }),
+    },
   ]);
 });
 

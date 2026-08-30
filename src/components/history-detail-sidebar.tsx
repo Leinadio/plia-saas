@@ -125,7 +125,7 @@ function DetailBody({ detail, onClose, selectedPanel, onSelectRow }: {
             </button>
           </div>
         </SidebarHeader>
-        <SidebarContent className="p-4">
+        <SidebarContent data-onboarding-target="amount-detail-panel" className="p-4">
           <div className="space-y-3 text-sm leading-relaxed">
             {detail.description.map((p, i) => (
               <p key={i}>{p}</p>
@@ -149,7 +149,7 @@ function DetailBody({ detail, onClose, selectedPanel, onSelectRow }: {
           </button>
         </div>
       </SidebarHeader>
-      <SidebarContent className="p-4">
+      <SidebarContent data-onboarding-target="amount-detail-panel" className="p-4">
         <Table>
           <TableBody>
             {rows.map((r) => {

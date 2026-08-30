@@ -4,6 +4,8 @@ import type { CellDetail } from "@/lib/history-explain";
 import { selectionForDetail, selectionForRow } from "@/lib/history-nav";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { HistoryDetailSidebar } from "@/components/history-detail-sidebar";
+import { useDemoExperienceOptional } from "@/components/demo-experience-provider";
+import { isDemoMode } from "@/lib/onboarding-mode";
 
 // selected : cases actives choisies dans le panneau (une ligne peut en surligner
 // plusieurs quand son montant est une somme). anchor : montant cliqué dans le
@@ -35,6 +37,11 @@ export function useDetailSidebar(): Ctx {
 // sélectionné, fermé sinon. Le SidebarTrigger de l'en-tête, rendu à l'intérieur
 // du provider de gauche, continue de piloter la navigation.
 export function DetailSidebarProvider({ children }: { children: React.ReactNode }) {
+  const experience = useDemoExperienceOptional();
+  const interactiveOnboarding = !!experience
+    && isDemoMode(experience.mode)
+    && !experience.tour.paused
+    && experience.step.requiredAction !== undefined;
   const [detail, setDetailState] = useState<CellDetail | null>(null);
   // selected : clés des cases du tableau à surligner (plusieurs quand la ligne du
   // panneau est une somme). selectedPanel : identité de la ligne active dans le
@@ -77,6 +84,7 @@ export function DetailSidebarProvider({ children }: { children: React.ReactNode 
         // 1024 et non 768 : le panneau fait 26rem, et en colonne à côté de la navigation
         // il ne laisserait qu'une centaine de pixels au tableau sur une tablette.
         mobileBreakpoint={1024}
+        mobileModal={!interactiveOnboarding}
         // Presque tout l'écran, sans jamais coller aux bords : le détail d'un calcul est
         // une pile de montants alignés, illisible dans un tiroir étroit.
         mobileWidth="min(26rem, calc(100vw - 2rem))"

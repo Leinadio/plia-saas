@@ -152,8 +152,25 @@ CREATE TABLE IF NOT EXISTS dismissed_notifications (
 
 CREATE TABLE IF NOT EXISTS onboarding_status (
   user_id TEXT PRIMARY KEY,
-  completed_at TEXT NOT NULL
+  completed_at TEXT,
+  demo_active BOOLEAN NOT NULL DEFAULT TRUE,
+  demo_visit JSONB NOT NULL DEFAULT '{"version":3,"tour":{"step":"demo-account","paused":false,"finished":false,"monoprixCategorized":false,"transportAdjusted":false,"detailOpened":false},"edits":{"monoprixGroupId":null,"transportBudget":120}}'::jsonb
 );
+
+-- Mise à niveau idempotente des installations qui ne conservaient que « Compris ».
+-- Leurs utilisateurs restent sur leurs vraies données et ne revoient pas le guide
+-- sans action volontaire. Les nouveaux utilisateurs, sans ligne, partent en démo.
+ALTER TABLE onboarding_status ALTER COLUMN completed_at DROP NOT NULL;
+ALTER TABLE onboarding_status ADD COLUMN IF NOT EXISTS demo_active BOOLEAN;
+ALTER TABLE onboarding_status ADD COLUMN IF NOT EXISTS demo_visit JSONB;
+UPDATE onboarding_status SET demo_active = FALSE WHERE demo_active IS NULL;
+UPDATE onboarding_status
+SET demo_visit = '{"version":3,"tour":{"step":"ending-balance","paused":false,"finished":true,"monoprixCategorized":false,"transportAdjusted":false,"detailOpened":false},"edits":{"monoprixGroupId":null,"transportBudget":120}}'::jsonb
+WHERE demo_visit IS NULL;
+ALTER TABLE onboarding_status ALTER COLUMN demo_active SET DEFAULT TRUE;
+ALTER TABLE onboarding_status ALTER COLUMN demo_active SET NOT NULL;
+ALTER TABLE onboarding_status ALTER COLUMN demo_visit SET DEFAULT '{"version":3,"tour":{"step":"demo-account","paused":false,"finished":false,"monoprixCategorized":false,"transportAdjusted":false,"detailOpened":false},"edits":{"monoprixGroupId":null,"transportBudget":120}}'::jsonb;
+ALTER TABLE onboarding_status ALTER COLUMN demo_visit SET NOT NULL;
 
 -- --- Les index -----------------------------------------------------------------
 --

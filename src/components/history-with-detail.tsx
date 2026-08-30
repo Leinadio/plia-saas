@@ -39,11 +39,22 @@ export function HistoryWithDetail(props: {
   overspendsByMonth?: Record<string, Overspend[]>;
   onboarding?: {
     budgetGroupId: number;
-    budgetMonth: string;
+    detailGroupId: number;
+    month: string;
+    timeTarget: string;
+    incomeTarget: string;
+    expensesTarget: string;
     budgetTarget: string;
-    monthsTarget: string;
+    detailTarget: string;
+    endingBalanceTarget: string;
+    onDetailOpened?: () => void;
   };
 }) {
+  const { onboarding, ...history } = props;
+  const onDetailOpened = onboarding?.onDetailOpened;
+  const gridOnboarding = onboarding
+    ? (({ onDetailOpened: _, ...targets }) => targets)(onboarding)
+    : undefined;
   const { setDetail, selected, anchor } = useDetailSidebar();
   // Mode détaillé des colonnes de solde. Ici et non dans la grille : la case doit
   // rester en place quand on fait défiler le tableau de gauche à droite, donc elle vit
@@ -71,11 +82,13 @@ export function HistoryWithDetail(props: {
       <VoileDAttente className="carte overflow-hidden">
         <CenterScroll>
         <HistoryGrid
-          {...props}
+          {...history}
+          onboarding={onboarding ? gridOnboarding : undefined}
           onSelect={setDetail}
           selected={selected}
           anchor={anchor}
           showDeltas={showDeltas}
+          onDetailOpened={onDetailOpened}
         />
         </CenterScroll>
       </VoileDAttente>

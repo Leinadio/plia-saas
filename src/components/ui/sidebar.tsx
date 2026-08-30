@@ -41,6 +41,7 @@ type SidebarContextProps = {
   isMobile: boolean
   // Largeur du tiroir, quand la barre s'ouvre par-dessus le contenu.
   mobileWidth?: string
+  mobileModal: boolean
   toggleSidebar: () => void
 }
 
@@ -63,6 +64,7 @@ function SidebarProvider({
   onOpenMobileChange: setOpenMobileProp,
   mobileBreakpoint,
   mobileWidth,
+  mobileModal = true,
   className,
   style,
   children,
@@ -79,6 +81,7 @@ function SidebarProvider({
   onOpenMobileChange?: (open: boolean) => void
   mobileBreakpoint?: number
   mobileWidth?: string
+  mobileModal?: boolean
 }) {
   const isMobile = useIsMobile(mobileBreakpoint)
   const [_openMobile, _setOpenMobile] = React.useState(false)
@@ -145,9 +148,10 @@ function SidebarProvider({
       openMobile,
       setOpenMobile,
       mobileWidth,
+      mobileModal,
       toggleSidebar,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, mobileWidth, toggleSidebar]
+    [state, open, setOpen, isMobile, openMobile, setOpenMobile, mobileWidth, mobileModal, toggleSidebar]
   )
 
   return (
@@ -187,7 +191,7 @@ function Sidebar({
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
 }) {
-  const { isMobile, state, openMobile, setOpenMobile, mobileWidth } = useSidebar()
+  const { isMobile, state, openMobile, setOpenMobile, mobileWidth, mobileModal } = useSidebar()
 
   if (collapsible === "none") {
     return (
@@ -206,12 +210,13 @@ function Sidebar({
 
   if (isMobile) {
     return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+      <Sheet modal={mobileModal} open={openMobile} onOpenChange={setOpenMobile} {...props}>
         <SheetContent
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+          showOverlay={mobileModal}
+          className={cn("w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden", mobileModal ? "z-50" : "z-40")}
           // Le tiroir prend la largeur que le provider lui donne, sinon la largeur
           // par défaut. Un panneau dense — le détail d'un calcul — a besoin de presque
           // tout l'écran. La largeur passe par le contexte et non par une variable CSS

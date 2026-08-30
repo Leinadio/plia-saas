@@ -12,20 +12,9 @@ vi.mock("next/navigation", () => ({
 
 const { DemoExperienceProvider } = await import("../../src/components/demo-experience-provider");
 const { DetailSidebarProvider } = await import("../../src/components/detail-sidebar");
-const { DemoDashboard } = await import("../../src/components/demo-dashboard");
 const { DemoHistory } = await import("../../src/components/demo-history");
 const { DemoTransactions, eventForDemoCategorization } = await import("../../src/components/demo-transactions");
 const { applyBudgetEdit } = await import("../../src/components/history-blocks/budget-edit-block");
-
-function renderDemoDashboard(): string {
-  return renderToStaticMarkup(
-    createElement(
-      DemoExperienceProvider,
-      { mode: "automatic-demo" } as Parameters<typeof DemoExperienceProvider>[0],
-      createElement(DemoDashboard),
-    ),
-  );
-}
 
 function renderDemoTransactions(): string {
   return renderToStaticMarkup(
@@ -50,25 +39,6 @@ function renderDemoHistory(): string {
 function targetCount(html: string, target: string): number {
   return html.split(`data-onboarding-target="${target}"`).length - 1;
 }
-
-describe("DemoDashboard", () => {
-  // Retirer une cible, remplacer le récapitulatif par une carte factice ou ne plus
-  // transmettre les données de démo rendrait cette visite guidée inutilisable.
-  it("rend le vrai récapitulatif démo avec ses trois cibles de visite", () => {
-    const html = renderDemoDashboard();
-
-    expect(targetCount(html, "horizon")).toBe(1);
-    expect(targetCount(html, "month-projection")).toBe(1);
-    expect(targetCount(html, "envelopes")).toBe(1);
-    expect(html).toContain("Horizon");
-    expect(html).toContain("Enveloppes du mois");
-    expect(html).toContain("2 840,60 €");
-    expect(html).toContain("133,70 €");
-    expect(html).toContain("-27,60 €");
-    expect(html).toContain("Courses");
-    expect(html).toContain("Transport");
-  });
-});
 
 describe("DemoTransactions", () => {
   it("laisse ranger MONOPRIX sans afficher les commandes qui écrivent", () => {
@@ -103,19 +73,40 @@ describe("DemoTransactions", () => {
 });
 
 describe("DemoHistory", () => {
-  it("rend le vrai tableau avec le budget Transport et la continuité des mois ciblés", () => {
+  it("rend une seule cible pour chaque étape initiale du guide", () => {
     const html = renderDemoHistory();
     const currentMonth = new Date().toISOString().slice(0, 7);
     const transportBudgetCell = html.match(new RegExp(
       `<td(?=[^>]*data-onboarding-target="adjust-transport")(?=[^>]*data-onboarding-group-id="${DEMO_IDS.transport}")(?=[^>]*data-onboarding-month="${currentMonth}")[^>]*>.*?<\\/td>`,
     ))?.[0] ?? "";
     const currentMonthHeader = html.match(new RegExp(
-      `<th(?=[^>]*data-onboarding-target="month-continuity")(?=[^>]*data-current-month="")(?=[^>]*data-onboarding-month="${currentMonth}")[^>]*>.*?<\\/th>`,
+      `<th(?=[^>]*data-onboarding-target="overview-time")(?=[^>]*data-current-month="")(?=[^>]*data-onboarding-month="${currentMonth}")[^>]*>.*?<\\/th>`,
+    ))?.[0] ?? "";
+    const coursesSpentCell = html.match(new RegExp(
+      `<td(?=[^>]*data-onboarding-target="open-amount-detail")(?=[^>]*data-onboarding-group-id="${DEMO_IDS.courses}")(?=[^>]*data-onboarding-month="${currentMonth}")(?=[^>]*data-cellkey="[^"]*::depense::[^"]*")[^>]*>.*?<\\/td>`,
+    ))?.[0] ?? "";
+    const endingBalanceRow = html.match(new RegExp(
+      `<tr(?=[^>]*data-onboarding-target="overview-ending-balance")[^>]*>(?:(?!<\\/tr>)[\\s\\S])*?Solde de fin de mois`,
     ))?.[0] ?? "";
 
-    expect(targetCount(html, "adjust-transport")).toBe(1);
-    expect(targetCount(html, "month-continuity")).toBe(1);
+    for (const target of [
+      "demo-account",
+      "overview-period",
+      "overview-time",
+      "overview-income",
+      "overview-expenses",
+      "adjust-transport",
+      "open-amount-detail",
+      "overview-ending-balance",
+    ]) {
+      expect(targetCount(html, target), target).toBe(1);
+    }
+    expect(html.match(/Ce qui sort/g)).toHaveLength(1);
+    expect(html).not.toContain("Dépenses prévues");
+    expect(html).not.toContain("Dépenses non prévues");
     expect(transportBudgetCell).toContain(">120,00<");
+    expect(coursesSpentCell).toContain(">216,30<");
+    expect(endingBalanceRow).toContain("Solde de fin de mois");
     expect(currentMonthHeader).toContain("Août");
     expect(currentMonthHeader).toContain("2026");
     expect(html).not.toContain("Ajouter une transaction");

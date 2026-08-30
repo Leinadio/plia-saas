@@ -5,16 +5,25 @@ import {
   useEffect,
   useRef,
   useState,
-  type CSSProperties,
   type KeyboardEvent,
   type ReactNode,
 } from "react";
 import { useDemoExperience } from "./demo-experience-provider";
+import { isDemoMode } from "../lib/onboarding-mode";
+import { activeTourTarget, TOUR_STEPS } from "../lib/onboarding-tour";
 import { mobileScrollDelta, nextTourRetryDelay, placeTourCard, type TourRect } from "../lib/onboarding-position";
 
 const CARD_FALLBACK_SIZE = { width: 360, height: 250 };
 const FOCUS_RING_GAP = 4;
 const MOBILE_PANEL_CLEARANCE = 280;
+
+type TargetDiscovery = {
+  status: "seeking" | "found" | "missing";
+  stepId: string;
+  targetName: string;
+  retry: number;
+  rect?: TourRect;
+};
 
 function rectFromElement(element: Element): TourRect {
   const rect = element.getBoundingClientRect();
@@ -61,24 +70,9 @@ function scrollRootBy(root: HTMLElement | null, delta: number, behavior: ScrollB
   }
 }
 
-function Veil({ target, interactive }: { target: TourRect | null; interactive: boolean }): ReactNode {
-  if (!target || !interactive) return <div aria-hidden data-onboarding-scroll-clearance="target-and-scroll-root" className="onboarding-tour-veil onboarding-tour-veil-blocking onboarding-tour-scroll-clearance" />;
-
-  const viewportHeight = typeof window === "undefined" ? 800 : window.innerHeight;
-  const horizontal = Math.max(0, target.left - FOCUS_RING_GAP);
-  const vertical = Math.max(0, target.top - FOCUS_RING_GAP);
-  const right = Math.max(0, target.right + FOCUS_RING_GAP);
-  const bottom = Math.max(0, target.bottom + FOCUS_RING_GAP);
-  const panel = (style: CSSProperties) => <span aria-hidden className="onboarding-tour-veil-part" style={style} />;
-
-  return (
-    <div aria-hidden data-onboarding-scroll-clearance="target-and-scroll-root" className="onboarding-tour-veil onboarding-tour-veil-cutout onboarding-tour-scroll-clearance">
-      {panel({ top: 0, right: 0, left: 0, height: vertical })}
-      {panel({ top: vertical, bottom: Math.max(0, viewportHeight - bottom), left: 0, width: horizontal })}
-      {panel({ top: vertical, right: 0, bottom: Math.max(0, viewportHeight - bottom), left: right })}
-      {panel({ right: 0, bottom: 0, left: 0, height: Math.max(0, viewportHeight - bottom) })}
-    </div>
-  );
+function Veil({ interactive }: { target: TourRect | null; interactive: boolean }): ReactNode {
+  if (interactive) return null;
+  return <div aria-hidden data-onboarding-scroll-clearance="target-and-scroll-root" className="onboarding-tour-veil onboarding-tour-veil-blocking onboarding-tour-scroll-clearance" />;
 }
 
 export type OnboardingTourProps = {
@@ -88,19 +82,31 @@ export type OnboardingTourProps = {
 
 export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps = {}): ReactNode {
   const experience = useDemoExperience();
-  const { step, tour, canAdvance, next, back, pause } = experience;
+  const { step, tour, canAdvance, next, back, pause, dispatch } = experience;
+  const demo = isDemoMode(experience.mode);
+  const interactiveTarget = step.requiredAction !== undefined;
+  const targetName = activeTourTarget(step, tour);
   const dialogRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const controlled = controlledTarget !== undefined;
-  const [discoveredTarget, setDiscoveredTarget] = useState<{ stepId: string; rect: TourRect } | null>(null);
+  const [discoveredTarget, setDiscoveredTarget] = useState<TargetDiscovery | null>(null);
+  const [targetRetry, setTargetRetry] = useState(0);
   const [cardSize, setCardSize] = useState(CARD_FALLBACK_SIZE);
-  const target = controlled
-    ? controlledTarget ?? null
-    : discoveredTarget?.stepId === step.id ? discoveredTarget.rect : null;
+  const discoveryMatches = discoveredTarget?.stepId === step.id
+    && discoveredTarget.targetName === targetName
+    && discoveredTarget.retry === targetRetry;
+  const targetStatus = controlled
+    ? (controlledTarget ? "found" : "missing")
+    : discoveryMatches ? discoveredTarget.status : "seeking";
+  const target = targetStatus === "found"
+    ? controlled ? controlledTarget ?? null : discoveredTarget?.rect ?? null
+    : null;
+  const targetAvailable = targetStatus === "found" && target !== null;
+  const targetMissing = targetStatus === "missing";
 
   useEffect(() => {
-    if (controlled || tour.paused) return;
+    if (!demo || controlled || tour.paused) return;
 
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -108,7 +114,7 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
     let frame: number | undefined;
     let clearanceCleanup: (() => void) | undefined;
     const deadline = Date.now() + 1500;
-    const selector = `[data-onboarding-target=${JSON.stringify(step.target)}]`;
+    const selector = `[data-onboarding-target=${JSON.stringify(targetName)}]`;
 
     const queryTarget = () => document.querySelector<HTMLElement>(selector);
     const mobileClearTarget = (element: HTMLElement) => {
@@ -144,16 +150,20 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
         frame = window.requestAnimationFrame(() => {
           if (!cancelled) {
             const settledElement = queryTarget();
-            if (settledElement) setDiscoveredTarget({ stepId: step.id, rect: rectFromElement(settledElement) });
+            if (settledElement) setDiscoveredTarget({ status: "found", stepId: step.id, targetName, retry: targetRetry, rect: rectFromElement(settledElement) });
           }
         });
       } else {
-        setDiscoveredTarget({ stepId: step.id, rect: rectFromElement(freshElement) });
+        setDiscoveredTarget({ status: "found", stepId: step.id, targetName, retry: targetRetry, rect: rectFromElement(freshElement) });
       }
     };
 
     const findTarget = () => {
-      if (cancelled || typeof document === "undefined" || Date.now() >= deadline) return;
+      if (cancelled || typeof document === "undefined") return;
+      if (Date.now() >= deadline) {
+        setDiscoveredTarget({ status: "missing", stepId: step.id, targetName, retry: targetRetry });
+        return;
+      }
       const element = queryTarget();
       if (element) {
         if (typeof element.scrollIntoView === "function") {
@@ -182,33 +192,40 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
       if (frame !== undefined && typeof window !== "undefined") window.cancelAnimationFrame(frame);
       clearanceCleanup?.();
     };
-  }, [controlled, controlledTarget, step.id, step.target, tour.paused]);
+  }, [controlled, controlledTarget, demo, step.id, targetName, targetRetry, tour.paused]);
 
   useEffect(() => {
-    if (controlled || tour.paused || !target || typeof window === "undefined") return;
-    const element = document.querySelector<HTMLElement>(`[data-onboarding-target=${JSON.stringify(step.target)}]`);
+    if (!demo || controlled || tour.paused || !target || typeof window === "undefined") return;
+    const element = document.querySelector<HTMLElement>(`[data-onboarding-target=${JSON.stringify(targetName)}]`);
     if (!element) return;
     const update = () => {
-      const currentElement = document.querySelector<HTMLElement>(`[data-onboarding-target=${JSON.stringify(step.target)}]`);
-      if (currentElement) setDiscoveredTarget({ stepId: step.id, rect: rectFromElement(currentElement) });
+      const currentElement = document.querySelector<HTMLElement>(`[data-onboarding-target=${JSON.stringify(targetName)}]`);
+      if (currentElement) setDiscoveredTarget({ status: "found", stepId: step.id, targetName, retry: targetRetry, rect: rectFromElement(currentElement) });
     };
     window.addEventListener("resize", update);
     window.addEventListener("scroll", update, { capture: true, passive: true });
     const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(update);
     observer?.observe(element);
+    const mutationObserver = typeof MutationObserver === "undefined" ? null : new MutationObserver(() => {
+      if (!document.querySelector(`[data-onboarding-target=${JSON.stringify(targetName)}]`)) {
+        setTargetRetry((retry) => retry + 1);
+      }
+    });
+    mutationObserver?.observe(document.body, { childList: true, subtree: true });
     return () => {
       window.removeEventListener("resize", update);
       window.removeEventListener("scroll", update, true);
       observer?.disconnect();
+      mutationObserver?.disconnect();
     };
-  }, [controlled, step.id, step.target, target, tour.paused]);
+  }, [controlled, demo, step.id, targetName, targetRetry, target, tour.paused]);
 
   useEffect(() => {
-    headingRef.current?.focus();
-  }, [step.id]);
+    if (demo && targetAvailable && !interactiveTarget) headingRef.current?.focus();
+  }, [demo, interactiveTarget, step.id, targetAvailable]);
 
   useEffect(() => {
-    if (tour.paused || typeof document === "undefined") return;
+    if (!demo || tour.paused || typeof document === "undefined") return;
     const handleDocumentKeyDown = (event: globalThis.KeyboardEvent) => {
       const dialog = dialogRef.current;
       if (!dialog) return;
@@ -218,6 +235,7 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
         void pause();
         return;
       }
+      if (interactiveTarget || targetMissing) return;
       if (event.key !== "Tab" || dialog.contains(document.activeElement)) return;
       const controls = focusableControls(dialog);
       if (controls.length === 0) return;
@@ -226,9 +244,10 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
     };
     document.addEventListener("keydown", handleDocumentKeyDown, true);
     return () => document.removeEventListener("keydown", handleDocumentKeyDown, true);
-  }, [pause, tour.paused]);
+  }, [demo, interactiveTarget, pause, targetMissing, tour.paused]);
 
   useEffect(() => {
+    if (!demo) return;
     const card = cardRef.current;
     if (!card) return;
     const update = () => {
@@ -236,7 +255,7 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
       if (rect.width > 0 && rect.height > 0) setCardSize({ width: rect.width, height: rect.height });
     };
     update();
-  }, [step.id, target]);
+  }, [demo, step.id, target]);
 
   const onKeyDown = useCallback((event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Escape") {
@@ -249,12 +268,17 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
       back();
       return;
     }
-    if (event.key === "ArrowRight" && (canAdvance || !target)) {
+    if (event.key === "ArrowRight" && targetMissing) {
+      event.preventDefault();
+      dispatch({ type: "SKIP" });
+      return;
+    }
+    if (event.key === "ArrowRight" && canAdvance) {
       event.preventDefault();
       void next();
       return;
     }
-    if (event.key !== "Tab") return;
+    if (event.key !== "Tab" || interactiveTarget || targetMissing) return;
     const dialog = dialogRef.current;
     if (!dialog) return;
     const controls = focusableControls(dialog);
@@ -268,28 +292,27 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
       event.preventDefault();
       first.focus();
     }
-  }, [back, canAdvance, next, pause, target]);
+  }, [back, canAdvance, dispatch, interactiveTarget, next, pause, targetMissing]);
 
-  if (tour.paused) return null;
+  if (!demo || tour.paused || tour.finished) return null;
+  if (targetStatus === "seeking") return null;
 
-  const placement = placeTourCard({
+  const placement = target ? placeTourCard({
     target,
     preferred: step.placement,
     viewport: { width: typeof window === "undefined" ? 1280 : window.innerWidth, height: typeof window === "undefined" ? 800 : window.innerHeight },
     card: cardSize,
-  });
-  const cardPosition = placement.mode === "needs-scroll"
+  }) : null;
+  const cardPosition = placement?.mode === "needs-scroll"
     ? { x: 16, y: 16 }
-    : placement;
-  const stepNumber = experience.step ? ["horizon", "month-projection", "envelopes", "categorize-monoprix", "adjust-transport", "month-continuity", "refresh"].indexOf(step.id) + 1 : 1;
-  const isLast = step.id === "refresh";
+    : placement ? placement : null;
+  const stepNumber = TOUR_STEPS.findIndex(({ id }) => id === step.id) + 1;
+  const isLast = stepNumber === TOUR_STEPS.length;
   const titleId = "onboarding-tour-title";
-  const targetMissing = !target;
-  const interactiveTarget = step.id === "categorize-monoprix" || step.id === "adjust-transport";
 
   return (
     <>
-      <Veil target={target} interactive={interactiveTarget} />
+      <Veil target={target} interactive={interactiveTarget || targetMissing} />
       {target && (
         <div
           aria-hidden
@@ -300,22 +323,29 @@ export function OnboardingTour({ target: controlledTarget }: OnboardingTourProps
       <div
         ref={dialogRef}
         role="dialog"
-        aria-modal="true"
+        aria-modal={interactiveTarget || targetMissing ? undefined : true}
         aria-labelledby={titleId}
         tabIndex={-1}
         onKeyDown={onKeyDown}
-        className={`onboarding-tour-card onboarding-tour-card-mobile-panel ${placement.mode === "center" ? "onboarding-tour-card-center" : ""} ${placement.mode === "needs-scroll" ? "onboarding-tour-card-needs-scroll" : ""}`}
-        style={{ left: cardPosition.x, top: cardPosition.y }}
+        className={`onboarding-tour-card onboarding-tour-card-mobile-panel ${targetMissing ? "onboarding-tour-card-missing" : ""} ${placement?.mode === "center" ? "onboarding-tour-card-center" : ""} ${placement?.mode === "needs-scroll" ? "onboarding-tour-card-needs-scroll" : ""}`}
+        style={cardPosition ? { left: cardPosition.x, top: cardPosition.y } : undefined}
       >
         <div ref={cardRef} className="onboarding-tour-card-inner">
-          <p className="onboarding-tour-progress" aria-label={`Étape ${stepNumber} sur 7`}>Étape {stepNumber} sur 7</p>
+          <p className="onboarding-tour-progress" aria-label={`Étape ${stepNumber} sur ${TOUR_STEPS.length}`}>Étape {stepNumber} sur {TOUR_STEPS.length}</p>
           <h2 ref={headingRef} id={titleId} tabIndex={-1} className="onboarding-tour-title">{step.title}</h2>
           <p className="onboarding-tour-copy">{step.text}</p>
           {targetMissing && <p className="onboarding-tour-fallback">Cette zone indisponible pour le moment. Vous pouvez continuer.</p>}
           <div className="onboarding-tour-actions">
             <button type="button" className="onboarding-tour-button onboarding-tour-back" onClick={back} disabled={stepNumber === 1}>Retour</button>
             <button type="button" className="onboarding-tour-button onboarding-tour-later" onClick={() => void pause()}>Plus tard</button>
-            <button type="button" className="onboarding-tour-button onboarding-tour-next" onClick={() => void next()} disabled={!canAdvance && !targetMissing}>{isLast ? "Compris" : "Suivant"}</button>
+            {targetMissing ? (
+              <>
+                <button type="button" className="onboarding-tour-button" onClick={() => setTargetRetry((retry) => retry + 1)}>Réessayer</button>
+                <button type="button" className="onboarding-tour-button onboarding-tour-next" onClick={() => dispatch({ type: "SKIP" })}>Passer cette étape</button>
+              </>
+            ) : (
+              <button type="button" className="onboarding-tour-button onboarding-tour-next" onClick={() => void next()} disabled={!canAdvance}>{isLast ? "Compris" : "Suivant"}</button>
+            )}
           </div>
         </div>
       </div>

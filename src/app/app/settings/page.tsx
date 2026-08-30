@@ -10,6 +10,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
+import { currentOnboardingMode } from "@/lib/current-onboarding";
+import { isDemoMode } from "@/lib/onboarding-mode";
 
 import { pourMoi } from "@/lib/current-user";
 
@@ -20,6 +23,8 @@ export default async function SettingsPage({
 }: {
   searchParams: Promise<{ error?: string; connected?: string; imported?: string }>;
 }) {
+  if (isDemoMode(await currentOnboardingMode())) redirect("/app");
+
   // Ce que le retour de la banque a rapporté. Sans cet affichage, une autorisation qui
   // échoue laisse l'écran exactement dans l'état d'avant : on croit avoir mal cliqué.
   const params = await searchParams;

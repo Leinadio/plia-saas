@@ -6,10 +6,16 @@ import { TransactionsBrowser } from "@/components/transactions-browser";
 import { ReconcileBanner } from "@/components/reconcile-banner";
 
 import { pourMoi } from "@/lib/current-user";
+import { currentOnboardingMode } from "@/lib/current-onboarding";
+import { isDemoMode } from "@/lib/onboarding-mode";
+import { DemoTransactions } from "@/components/demo-transactions";
 
 export const dynamic = "force-dynamic";
 
 export default async function TransactionsPage() {
+  const onboardingMode = await currentOnboardingMode();
+  if (isDemoMode(onboardingMode)) return <DemoTransactions />;
+
   const { transactions, accounts, groups, suggestions } = await pourMoi(async (database, userId) => ({
     // Seul écran à voir les non comptabilisées : c'est ici qu'on les réactive.
     transactions: await listTransactions(database, userId, { includeIgnored: true }),

@@ -6,6 +6,8 @@ import { listAccounts } from "../../../db/repositories/accounts";
 import { listActiveConnections } from "../../../db/repositories/bank-connections";
 import { AccountNameForm } from "@/components/account-name-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { currentOnboardingMode } from "@/lib/current-onboarding";
+import { isDemoMode } from "@/lib/onboarding-mode";
 
 // Le compte de l'utilisateur, distinct des réglages : ici c'est de LUI qu'on parle, là
 // c'est de ses banques. Le layout garde déjà la porte de session ; on relit la session
@@ -13,6 +15,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const dynamic = "force-dynamic";
 
 export default async function ComptePage() {
+  if (isDemoMode(await currentOnboardingMode())) redirect("/app");
+
   const session = await auth().api.getSession({ headers: await headers() });
   if (!session) redirect("/connexion");
   const { comptes, connexions } = await pourMoi(async (database, userId) => ({

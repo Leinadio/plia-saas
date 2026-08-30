@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 import { FORMAT_MONTANT, encoderMontant } from "@/lib/calculatrice";
 import { monthLabel } from "@/lib/transactions-view";
 import type { AccountForecast } from "@/lib/forecast";
-import { type MonthCell, type HistorySection, type HistoryRow, type HistorySubRow, type HistoryTxn, type SoldeColumn, type PlannedSoldes, type Overspend, type IgnoredBlock, uncatOverspend, uncatOverspendOf, splitExpenseSection, computeTableEstimate, rowRevenus, rowOverspend, groupsWithPending } from "@/lib/history";
+import { type MonthCell, type HistorySection, type HistoryRow, type HistorySubRow, type HistoryTxn, type SoldeColumn, type PlannedSoldes, type Overspend, type IgnoredBlock, uncatOverspend, uncatOverspendOf, computeTableEstimate, rowRevenus, rowOverspend, groupsWithPending } from "@/lib/history";
 import { sectionSlots, countIgnoredAtMonth, ligneVivante } from "@/lib/history-month-view";
 import { groupsForMonth } from "@/lib/group-options";
 import { groupPeriodLabel } from "@/lib/group-period-label";
@@ -247,13 +247,6 @@ const SOLDE_TINT = "bg-[color-mix(in_oklab,var(--ardoise)_18%,var(--card))]";
 // totaux sans avoir à lire les libellés.
 const TOTAL_TINT = "bg-[color-mix(in_oklab,var(--ardoise)_24%,var(--card))]";
 
-// Les deux blocs de la section des dépenses.
-type ExpenseBloc = "planned" | "unplanned";
-const BLOCS: ExpenseBloc[] = ["planned", "unplanned"];
-const TITRE_BLOC: Record<ExpenseBloc, string> = {
-  planned: "Dépenses prévues",
-  unplanned: "Dépenses non prévues",
-};
 // Fond des deux grandes sections. Il ne remplace QUE DATA_TINT — les colonnes de
 // données et celle du nom : Balance et Solde gardent leur ambre et leur bleu, qui
 // disent autre chose et doivent rester lisibles d'une section à l'autre.
@@ -272,7 +265,6 @@ const EXPENSE_TINT = "bg-[color-mix(in_oklab,var(--tension)_5%,var(--card))]";
 // sous-total d'un bloc de dépenses, le total de la section. La hiérarchie se lit à la
 // densité, pas à la teinte — c'est la même couleur qui s'assombrit, donc l'œil relie
 // chaque total à la section qu'il ferme.
-const EXPENSE_SUBTOTAL_TINT = "bg-[color-mix(in_oklab,var(--tension)_9%,var(--card))]";
 const EXPENSE_TOTAL_TINT = "bg-[color-mix(in_oklab,var(--tension)_15%,var(--card))]";
 const INCOME_TOTAL_TINT = "bg-[color-mix(in_oklab,var(--portant)_16%,var(--card))]";
 
@@ -416,7 +408,17 @@ function FirstColBox({ children, indent = 0 }: { children: React.ReactNode; inde
 // Cellule de montant : cliquable (sélection → sidebar) si un détail est fourni.
 // cellKey (data-cellkey) identifie la case pour la surbrillance croisée et le
 // défilement depuis le side panel ; elle s'allume quand elle est la case sélectionnée.
-function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCellKey, onboardingTarget, onboardingGroupId, onboardingMonth }: {
+function selectAmountDetail(
+  detail: CellDetail,
+  cellKey: string | undefined,
+  onSelect: (detail: CellDetail) => void,
+  onOnboardingSelect?: () => void,
+) {
+  onSelect(cellKey != null ? { ...detail, cellRef: cellKey } : detail);
+  onOnboardingSelect?.();
+}
+
+export function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCellKey, onboardingTarget, onboardingGroupId, onboardingMonth, onOnboardingSelect }: {
   children: React.ReactNode;
   className?: string;
   detail?: CellDetail | null;
@@ -426,6 +428,7 @@ function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCel
   onboardingTarget?: string;
   onboardingGroupId?: number;
   onboardingMonth?: string;
+  onOnboardingSelect?: () => void;
 }) {
   const cls = cn(className, ck != null && selCellKey?.has(ck) && CELL_HL);
   if (!detail || !onSelect) return <TableCell data-cellkey={ck} data-onboarding-target={onboardingTarget} data-onboarding-group-id={onboardingGroupId} data-onboarding-month={onboardingMonth} className={cls}>{children}</TableCell>;
@@ -448,7 +451,7 @@ function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCel
           }));
           e.dataTransfer.effectAllowed = "copy";
         }}
-        onClick={() => onSelect(ck != null ? { ...detail, cellRef: ck } : detail)}
+        onClick={() => selectAmountDetail(detail, ck, onSelect, onOnboardingSelect)}
         className="cursor-pointer decoration-dotted underline-offset-2 hover:underline"
       >
         {children}
@@ -555,7 +558,7 @@ function plannedSoldeCell(
 // du panneau de détail et le défilement vers une case — tout est repéré par cet
 // index. Absent, tous les mois sont rendus (comportement d'origine).
 
-function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, subtitleOf, detailRow, months, currentMonth, rowKey, selCellKey, prevDisp, budgetEditOf, signaleDepassement, noticeOf, onboarding }: {
+function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, subtitleOf, detailRow, months, currentMonth, rowKey, selCellKey, prevDisp, budgetEditOf, signaleDepassement, noticeOf, onboarding, onDetailOpened }: {
   cells: MonthCell[];
   mode: "out" | "in" | "total";
   solde?: (number | null)[];
@@ -591,6 +594,7 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
   // lignes — et à disposer du montant dépassé.
   noticeOf?: (month: string) => OverspendNoticeInfo | null;
   onboarding?: OnboardingTargets;
+  onDetailOpened?: () => void;
 }) {
   const teinteSection = useContext(TeinteSection);
   return (
@@ -600,7 +604,9 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
         const cols = monthColumns(type);
         const month = months[i];
         const isOnboardingBudget = detailRow?.id === onboarding?.budgetGroupId
-          && i === months.indexOf(onboarding?.budgetMonth ?? "");
+          && i === months.indexOf(onboarding?.month ?? "");
+        const isOnboardingDetail = detailRow?.id === onboarding?.detailGroupId
+          && i === months.indexOf(onboarding?.month ?? "");
         const subtitle = subtitleOf?.(i);
         const r = detailRow;
         const ck = (col: Col) => cellKey(rowKey, col, i);
@@ -808,7 +814,7 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
             ),
           budgetDep: (b) =>
             dead ? blankCol("budgetDep", b) : (
-              <CellAmount key="budgetDep" className={cn(b && MONTH_GAP, "text-right tabular-nums text-muted-foreground")} detail={budgetDepDetail} onSelect={onSelect} cellKey={ck("budget")} selCellKey={selCellKey} onboardingTarget={isOnboardingBudget ? onboarding?.budgetTarget : undefined} onboardingGroupId={isOnboardingBudget ? onboarding?.budgetGroupId : undefined} onboardingMonth={isOnboardingBudget ? onboarding?.budgetMonth : undefined}>
+              <CellAmount key="budgetDep" className={cn(b && MONTH_GAP, "text-right tabular-nums text-muted-foreground")} detail={budgetDepDetail} onSelect={onSelect} cellKey={ck("budget")} selCellKey={selCellKey} onboardingTarget={isOnboardingBudget ? onboarding?.budgetTarget : undefined} onboardingGroupId={isOnboardingBudget ? onboarding?.budgetGroupId : undefined} onboardingMonth={isOnboardingBudget ? onboarding?.month : undefined}>
                 {budgetDepVal != null ? fmt(budgetDepVal) : ""}
               </CellAmount>
             ),
@@ -824,7 +830,7 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
           // poste-là — un remboursement n'est pas un revenu.
           dep: (b) =>
             dead ? blankCol("dep", b) : (
-              <CellAmount key="dep" className={cn(b && MONTH_GAP, "text-right tabular-nums", mode === "in" && "text-muted-foreground")} detail={depDetail} onSelect={onSelect} cellKey={ck("depense")} selCellKey={selCellKey}>
+              <CellAmount key="dep" className={cn(b && MONTH_GAP, "text-right tabular-nums", mode === "in" && "text-muted-foreground")} detail={depDetail} onSelect={onSelect} cellKey={ck("depense")} selCellKey={selCellKey} onboardingTarget={isOnboardingDetail ? onboarding?.detailTarget : undefined} onboardingGroupId={isOnboardingDetail ? onboarding?.detailGroupId : undefined} onboardingMonth={isOnboardingDetail ? onboarding?.month : undefined} onOnboardingSelect={isOnboardingDetail ? onDetailOpened : undefined}>
                 {mode === "in" ? contreSens : fmt(sorti)}
               </CellAmount>
             ),
@@ -1581,12 +1587,17 @@ function scrollableAncestor(el: HTMLElement, axis: "x" | "y"): HTMLElement | nul
 
 type OnboardingTargets = {
   budgetGroupId: number;
-  budgetMonth: string;
+  detailGroupId: number;
+  month: string;
+  timeTarget: string;
+  incomeTarget: string;
+  expensesTarget: string;
   budgetTarget: string;
-  monthsTarget: string;
+  detailTarget: string;
+  endingBalanceTarget: string;
 };
 
-export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast, sections, ignoredBlocks, overspend, grand, groups, solde, planned, onSelect, selected, anchor, accountId, overspendsByMonth, showDeltas, onboarding }: {
+export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast, sections, ignoredBlocks, overspend, grand, groups, solde, planned, onSelect, selected, anchor, accountId, overspendsByMonth, showDeltas, onboarding, onDetailOpened }: {
   months: string[];
   currentMonth: string;
   // Bornes de la frise : les mois que le calendrier du formulaire de création
@@ -1621,6 +1632,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
   // signal porté par un groupe récurrent dont une ligne déborde.
   overspendsByMonth?: Record<string, Overspend[]>;
   onboarding?: OnboardingTargets;
+  onDetailOpened?: () => void;
 }) {
   const demo = onboarding !== undefined;
   // Groupes qui ont un dépassement, par mois (clé « groupe::mois ») : un récurrent
@@ -1656,47 +1668,24 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
   // d'ajout, et sans lui le même formulaire s'ouvrirait dans tous les mois à la fois.
   // « line » porte en plus la dépense qu'on découpe : son formulaire ne s'ouvre pas
   // sous un titre de section mais sous la ligne du groupe visé, là où on l'a demandé.
-  // Les dépenses s'affichant en deux blocs (prévues / non prévues), le formulaire
-  // porte aussi celui d'où le bouton « + » a été cliqué : c'est lui, et non un champ
-  // du formulaire, qui décide du bloc où la dépense va naître.
   type Adding =
-    | { kind: "expense"; month: string; bloc: ExpenseBloc }
+    | { kind: "expense"; month: string }
     | { kind: "income"; month: string }
     | { kind: "line"; groupId: number; month: string };
   const [adding, setAdding] = useState<Adding | null>(null);
   // Ouvre le formulaire de cette section dans CE tableau, ou le referme si c'est
   // déjà lui qui est ouvert.
-  const toggleAdding = (kind: "expense" | "income", month: string, bloc: ExpenseBloc = "planned") =>
+  const toggleAdding = (kind: "expense" | "income", month: string) =>
     setAdding((prev) =>
       prev && prev.kind === kind && prev.month === month
-        && (prev.kind !== "expense" || prev.bloc === bloc)
         ? null
-        : kind === "expense"
-          ? { kind, month, bloc }
-          : { kind, month },
+        : { kind, month },
     );
   // Le formulaire ouvert dans ce tableau-ci, ou null : le même état sert les N mois.
   const addingHere = (month: string) => (adding?.month === month ? adding.kind : null);
-  // Le bloc de dépenses dont le formulaire est ouvert dans ce tableau, ou null.
-  const addingExpenseBloc = (month: string): ExpenseBloc | null =>
-    adding?.kind === "expense" && adding.month === month ? adding.bloc : null;
-
-  // Blocs de dépenses repliés. Replier cache les enveloppes du bloc, jamais son
-  // sous-total : sinon replier ferait disparaître de l'argent du tableau.
-  //
-  // La clé porte son mois (openKeyIn), comme le dépliage des groupes et pour la même
-  // raison : le tableau affiche un tableau par mois, et les mêmes blocs s'y répètent.
-  // Sans le mois, replier les non prévues en août les repliait aussi en juillet, jusque
-  // dans des mois qu'on ne regardait pas. Ne survit pas au rechargement.
-  const [blocsReplies, setBlocsReplies] = useState<Set<string>>(new Set());
-  const blocReplie = (bloc: ExpenseBloc) => blocsReplies.has(openKeyIn(bloc, PARTOUT));
-  const toggleBloc = (bloc: ExpenseBloc) =>
-    setBlocsReplies((prev) => {
-      const next = new Set(prev);
-      const k = openKeyIn(bloc, PARTOUT);
-      if (!next.delete(k)) next.add(k);
-      return next;
-    });
+  // La section « Ce qui sort » se replie d'un seul geste. Les dépenses conservent
+  // leur nature en base, mais l'écran ne les sépare plus en deux blocs.
+  const [depensesRepliees, setDepensesRepliees] = useState(false);
   // Idem pour un sous-poste, mais la question porte sur une dépense précise.
   const addingLineHere = (groupId: number, month: string) =>
     adding?.kind === "line" && adding.groupId === groupId && adding.month === month;
@@ -1911,6 +1900,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             signaleDepassement={(m) => groupeEnDepassement.has(`${r.id}::${m}`)}
             noticeOf={noticeDe(r.id, null)}
             onboarding={onboarding}
+            onDetailOpened={onDetailOpened}
           />
         </TableRow>
         {/* Le formulaire du nouveau sous-poste, juste sous sa dépense. Hors du bloc
@@ -2021,6 +2011,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                       signaleDepassement={(m) => depassementDeCase.has(`${r.id}::${sub.id}::${m}`)}
                       noticeOf={noticeDe(r.id, sub.id)}
                       onboarding={onboarding}
+                      onDetailOpened={onDetailOpened}
                     />
                   </TableRow>
                   {lOpen && sub.txns.map((t) => (
@@ -2207,8 +2198,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       replie?: boolean;
       onToggle?: () => void;
       action?: React.ReactNode;
+      onboardingTarget?: string;
     }) => (
-      <TableRow key={cle} className="hover:bg-transparent">
+      <TableRow key={cle} data-onboarding-target={opts?.onboardingTarget} className="hover:bg-transparent">
         <TableCell className={cn(COL1_STICKY, tint, "h-px p-0")}>
           {/* Sur téléphone le nom du bloc et son bouton de création ne tiennent pas
               côte à côte dans 176 px : « Dépenses non prévues » passait SOUS le
@@ -2242,28 +2234,23 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       </TableRow>
     );
 
-    // En-tête d'un des deux blocs de dépenses : son nom, la flèche qui le replie, le
-    // bouton qui y crée une dépense, et le formulaire quand il est ouvert. Rendu que le
-    // bloc ait des enveloppes ou non — sans quoi un bloc vide n'aurait aucun bouton, et
-    // il faudrait déjà une dépense non prévue pour pouvoir en créer une.
-    //
-    // Le bloc où l'on clique décide du bloc où la dépense naît : le formulaire ne pose
-    // pas la question, il n'a pas à la poser.
-    const enTeteDepense = (bloc: ExpenseBloc) => {
-      const replie = blocReplie(bloc);
+    // En-tête unique de toutes les sorties : son nom, la flèche qui replie les lignes,
+    // le bouton d'ajout et le formulaire quand il est ouvert.
+    const enTeteDepense = () => {
       return (
         <>
-          {bande(`bloc-${bloc}`, TITRE_BLOC[bloc], BANDE_TENSION, {
-            replie,
-            onToggle: () => toggleBloc(bloc),
+          {bande("bloc-expenses", "Ce qui sort", BANDE_TENSION, {
+            replie: depensesRepliees,
+            onToggle: () => setDepensesRepliees((value) => !value),
+            onboardingTarget: onboarding?.expensesTarget,
             action: !demo ? (
-              <Button type="button" size="xs" variant="outline" className="shrink-0 cursor-pointer sm:ml-auto" onClick={() => toggleAdding("expense", moisDeTravail, bloc)}>
+              <Button type="button" size="xs" variant="outline" className="shrink-0 cursor-pointer sm:ml-auto" onClick={() => toggleAdding("expense", moisDeTravail)}>
                 <Plus />
                 Dépense
               </Button>
             ) : null,
           })}
-          {!demo && addingExpenseBloc(moisDeTravail) === bloc && (
+          {!demo && addingHere(moisDeTravail) === "expense" && (
             <TableRow className="hover:bg-transparent">
               <TableCell colSpan={totalCols} className="p-0">
                 <div className={cn(BLOC_EPINE, "font-sans bg-background w-fit")}>
@@ -2274,7 +2261,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                     stripMin={stripMin}
                     stripMax={stripMax}
                     defaultMonth={moisDeTravail}
-                    planned={bloc === "planned"}
+                    planned
                     onDone={() => setAdding(null)}
                   />
                 </div>
@@ -2293,6 +2280,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     const enTeteRevenu = () => (
       <>
         {bande("bloc-revenu", "Ce qui rentre", BANDE_PORTANT, {
+          onboardingTarget: onboarding?.incomeTarget,
           action: !demo ? (
             <Button type="button" size="xs" variant="outline" className="shrink-0 cursor-pointer sm:ml-auto" onClick={() => toggleAdding("income", moisDeTravail)}>
               <Plus />
@@ -2370,8 +2358,8 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 key={m}
                 colSpan={cols.length}
                 data-current-month={m === currentMonth ? "" : undefined}
-                data-onboarding-target={mi === months.indexOf(onboarding?.budgetMonth ?? "") ? onboarding?.monthsTarget : undefined}
-                data-onboarding-month={mi === months.indexOf(onboarding?.budgetMonth ?? "") ? onboarding?.budgetMonth : undefined}
+                data-onboarding-target={m === onboarding?.month ? onboarding?.timeTarget : undefined}
+                data-onboarding-month={m === onboarding?.month ? onboarding?.month : undefined}
                 className={cn(mi > 0 && MONTH_RULE, "px-2 pt-4 pb-1 text-left align-middle sm:px-4 sm:text-center")}
               >
                 {/* Le nom du mois se pose À GAUCHE de son bloc sur téléphone. Centré, il
@@ -2538,7 +2526,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 {spacer}
                 {slot.sectionKind === "income"
                   ? enTeteRevenu()
-                  : BLOCS.map((b) => <Fragment key={b}>{enTeteDepense(b)}</Fragment>)}
+                  : enTeteDepense()}
               </Fragment>
             );
           }
@@ -2589,47 +2577,18 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               </Fragment>
             );
           }
-          // Les dépenses, en deux blocs : prévues puis non prévues, chacun avec son
-          // en-tête, ses enveloppes et son sous-total. Puis le total et la Balance,
-          // qui portent TOUTES les dépenses — c'est la section entière qui les calcule,
-          // les blocs ne sont qu'une façon de la lire.
-          const blocs = splitExpenseSection(sec, months.length);
+          // Toutes les dépenses partagent désormais une seule section. Leur classement
+          // historique reste intact dans les données ; seule la séparation visuelle a
+          // disparu.
           return (
             <Fragment key={sec.kind}>
               {spacer}
-              {BLOCS.map((b) => {
-                const bloc = b === "planned" ? blocs.prevues : blocs.nonPrevues;
-                return (
-                  <Fragment key={b}>
-                    {/* Les deux blocs respirent l'un l'autre, comme deux sections. */}
-                    {b !== BLOCS[0] && <SpacerRow cols={totalCols} />}
-                    {enTeteDepense(b)}
-                    {/* Replié, les enveloppes disparaissent, jamais le sous-total :
-                        sinon replier ferait disparaître de l'argent du tableau. */}
-                    {!blocReplie(b) && (
-                      <TeinteSection.Provider value={EXPENSE_TINT}>
-                        {bloc.rows.map((r) => renderGroup(r))}
-                      </TeinteSection.Provider>
-                    )}
-                    <TableRow className="text-sm">
-                      <TableCell className={cn(EXPENSE_SUBTOTAL_TINT, COL1_STICKY, "h-px p-0")}>
-                        <FirstColBox>
-                          <span className="text-muted-foreground">{TITRE_BLOC[b]}</span>
-                        </FirstColBox>
-                      </TableCell>
-                      <TeinteSection.Provider value={EXPENSE_SUBTOTAL_TINT}>
-                      {/* Pas de soldes ici : celui du pied d'un bloc répète celui de sa
-                          dernière ligne, et le Total Dépenses juste dessous le redit une
-                          troisième fois. Le sous-total garde ses montants et sa Balance. */}
-                      <SectionTotalsCells
-                        accountId={accountId}
-                        sec={bloc}
-                        months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} />
-                      </TeinteSection.Provider>
-                    </TableRow>
-                  </Fragment>
-                );
-              })}
+              {enTeteDepense()}
+              {!depensesRepliees && (
+                <TeinteSection.Provider value={EXPENSE_TINT}>
+                  {sec.rows.map((r) => renderGroup(r))}
+                </TeinteSection.Provider>
+              )}
               <TableRow className="font-medium">
                 <TableCell className={cn(EXPENSE_TOTAL_TINT, COL1_STICKY, "h-px p-0")}>
                   <FirstColBox>Total Dépenses</FirstColBox>
@@ -2652,7 +2611,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
           </TableCell>
           <GrandTotalsCells part="totaux" sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} />
         </TableRow>
-        <TableRow style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
+        <TableRow data-onboarding-target={onboarding?.endingBalanceTarget} style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
           <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
             <FirstColBox>Solde de fin de mois</FirstColBox>
           </TableCell>
