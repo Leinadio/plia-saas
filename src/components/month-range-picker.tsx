@@ -9,15 +9,19 @@ const MONTHS_FR = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "a
 const shortLabel = (m: string) => MONTHS_FR[Number(m.slice(5, 7)) - 1];
 const yearOf = (m: string) => m.slice(0, 4);
 
-// Une borne de la plage, dite en toutes lettres à côté de la frise. Déclarée au
-// module et non dans le composant : une fonction de composant recréée à chaque
-// rendu remonte son sous-arbre au lieu de le mettre à jour.
-function Borne({ label, mois }: { label: string; mois: string }) {
+// Les deux champs reprennent le langage d'un choix de voyage : le départ se remplit
+// au premier clic, la fin au second. Ils restent visibles sur toutes les largeurs.
+function Borne({ label, mois, active = false }: { label: string; mois: string | null; active?: boolean }) {
   return (
-    <div className="hidden shrink-0 flex-col gap-0.5 sm:flex">
+    <div
+      className={cn(
+        "flex min-w-0 flex-1 flex-col gap-0.5 rounded-lg border px-3 py-2",
+        active ? "border-sarcelle ring-sarcelle/20 ring-2" : "border-border bg-background",
+      )}
+    >
       <span className="legende">{label}</span>
-      <span className="text-sm font-semibold whitespace-nowrap capitalize">
-        {shortLabel(mois)} {yearOf(mois)}
+      <span className={cn("truncate text-sm font-semibold whitespace-nowrap capitalize", !mois && "text-muted-foreground font-normal")}>
+        {mois ? `${shortLabel(mois)} ${yearOf(mois)}` : "Choisir le mois de fin"}
       </span>
     </div>
   );
@@ -30,23 +34,31 @@ function Borne({ label, mois }: { label: string; mois: string }) {
 // Elle vit dans sa propre carte, à part de la pile qu'elle commande : c'est un
 // réglage, pas une donnée. La plage est dite en toutes lettres au-dessus de la
 // frise sur téléphone, et de part et d'autre dès qu'il y a la place.
-export function MonthRangePicker({ min, max, from, to, current }: {
+export function MonthRangePicker({ min, max, from, to, current, pendingRange, onCommit, disabled = false }: {
   min: string;
   max: string;
   from: string;
   to: string;
   current: string;
+  pendingRange?: { from: string; to: string } | null;
+  onCommit?: (from: string, to: string) => void;
+  disabled?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
   const scroller = useRef<HTMLDivElement>(null);
   const midRef = useRef<HTMLButtonElement>(null);
   const [anchor, setAnchor] = useState<string | null>(null);
+  const [localPendingRange, setLocalPendingRange] = useState<{ from: string; to: string } | null>(null);
 
   const months = monthRange(min, max);
-  // Milieu de la plage sélectionnée, centré à l'ouverture.
-  const selected = monthRange(from, to);
-  const mid = selected[Math.floor((selected.length - 1) / 2)];
+  const waitingRange = pendingRange ?? localPendingRange;
+  const displayFrom = anchor ?? waitingRange?.from ?? from;
+  const displayTo = anchor ? null : waitingRange?.to ?? to;
+  // Milieu de la plage sélectionnée, centré à l'ouverture. Pendant le choix, le
+  // nouveau départ prend sa place sans modifier la période réellement affichée.
+  const selected = displayTo ? monthRange(displayFrom, displayTo) : [displayFrom];
+  const mid = anchor ?? selected[Math.floor((selected.length - 1) / 2)];
 
   // Centre la sélection à l'ouverture.
   useEffect(() => {
@@ -54,43 +66,38 @@ export function MonthRangePicker({ min, max, from, to, current }: {
   }, [mid]);
 
   const onPick = (m: string) => {
+    if (disabled) return;
     if (anchor === null) {
+      setLocalPendingRange(null);
       setAnchor(m);
       return;
     }
-    const lo = anchor <= m ? anchor : m;
-    const hi = anchor <= m ? m : anchor;
+    if (m < anchor) return;
+    const nextRange = { from: anchor, to: m };
     setAnchor(null);
-    router.push(`${pathname}?from=${lo}&to=${hi}`);
+    if (onCommit) onCommit(nextRange.from, nextRange.to);
+    else {
+      setLocalPendingRange(nextRange);
+      router.push(`${pathname}?from=${nextRange.from}&to=${nextRange.to}`);
+    }
   };
 
   const scrollBy = (dir: -1 | 1) => scroller.current?.scrollBy({ left: dir * 260, behavior: "smooth" });
 
   return (
-    <div className="carte flex flex-col gap-2 px-3 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-4">
-      {/* Sur téléphone, deux bornes en colonnes prendraient 250 des 390 pixels et il
-          ne resterait qu'UN mois cliquable entre les flèches. La plage passe donc
-          au-dessus, dite en une ligne, et la frise prend toute la largeur. */}
-      <div className="flex items-baseline gap-1.5 sm:hidden">
-        <span className="legende">de</span>
-        <span className="text-sm font-semibold whitespace-nowrap capitalize">
-          {shortLabel(from)} {yearOf(from)}
-        </span>
-        <span className="legende">à</span>
-        <span className="text-sm font-semibold whitespace-nowrap capitalize">
-          {shortLabel(to)} {yearOf(to)}
-        </span>
-        {anchor && <span className="pastille pastille-sarcelle ml-1">choisis le dernier mois</span>}
+    <div aria-busy={disabled || undefined} className={cn("carte flex flex-col gap-3 px-3 py-3 sm:px-4", disabled && "opacity-70")}>
+      <div className="mx-auto grid w-full max-w-xl grid-cols-2 gap-2">
+        <Borne label="Mois de départ" mois={displayFrom} active={anchor !== null} />
+        <Borne label="Mois de fin" mois={displayTo} active={anchor !== null} />
       </div>
-
-      <Borne label="depuis" mois={from} />
 
       <div className="flex min-w-0 flex-1 items-center gap-1">
         <button
           type="button"
           aria-label="Défiler vers la gauche"
           onClick={() => scrollBy(-1)}
-          className="text-ardoise hover:bg-survol hover:text-foreground flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors"
+          disabled={disabled}
+          className="text-ardoise hover:bg-survol hover:text-foreground flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-40"
         >
           <ChevronLeft className="size-4" />
         </button>
@@ -106,15 +113,18 @@ export function MonthRangePicker({ min, max, from, to, current }: {
               elle déborde. */}
           <div className="mx-auto flex w-fit gap-0.5 px-1 py-0.5">
             {months.map((m) => {
-              const dedans = m >= from && m <= to;
-              const debut = m === from;
-              const fin = m === to;
+              const indisponible = disabled || (anchor !== null && m < anchor);
+              const dedans = displayTo ? m >= displayFrom && m <= displayTo : m === displayFrom;
+              const debut = m === displayFrom;
+              const fin = displayTo !== null && m === displayTo;
               return (
                 <button
                   key={m}
                   ref={m === mid ? midRef : undefined}
                   type="button"
                   onClick={() => onPick(m)}
+                  disabled={indisponible}
+                  aria-pressed={dedans}
                   className={cn(
                     // py-2.5 sur téléphone : un mois est une cible qu'on vise au
                     // doigt, pas au curseur.
@@ -126,6 +136,7 @@ export function MonthRangePicker({ min, max, from, to, current }: {
                     // qu'on déplace.
                     (debut || fin) && "bg-sarcelle text-white",
                     m === anchor && "ring-sarcelle ring-2",
+                    indisponible && "cursor-not-allowed opacity-35 hover:bg-transparent hover:text-ardoise",
                   )}
                 >
                   {shortLabel(m)}
@@ -151,13 +162,12 @@ export function MonthRangePicker({ min, max, from, to, current }: {
           type="button"
           aria-label="Défiler vers la droite"
           onClick={() => scrollBy(1)}
-          className="text-ardoise hover:bg-survol hover:text-foreground flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors"
+          disabled={disabled}
+          className="text-ardoise hover:bg-survol hover:text-foreground flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-40"
         >
           <ChevronRight className="size-4" />
         </button>
       </div>
-
-      <Borne label="jusqu'à" mois={to} />
     </div>
   );
 }

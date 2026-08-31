@@ -87,6 +87,61 @@ function BandeDeSection({ largeur, fond }: { largeur: string; fond: string }) {
   );
 }
 
+// Le tableau seul. Il sert aussi quand l'utilisateur change de période : la
+// frise reste visible avec son nouveau choix, seule la zone qui recalcule attend.
+export function SqueletteGrilleHistorique() {
+  return (
+    <div data-history-table-skeleton="" aria-busy className="carte min-w-0 overflow-hidden">
+      <div className="border-filet flex items-end border-b px-3 py-2.5">
+        <div className="w-44 shrink-0 sm:w-80" />
+        {rangees(MOIS_PAR_DEFAUT).map((m) => (
+          <div key={m} className="border-filet flex shrink-0 flex-col gap-2 border-l pr-3 pl-4">
+            <Skeleton className="h-3.5 w-28" />
+            <div className="flex gap-3">
+              {rangees(COLONNES_PAR_MOIS).map((c) => (
+                <Skeleton key={c} className="h-2.5 w-14" />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <BandeDeSection largeur="w-32" fond="bg-[color-mix(in_oklab,var(--portant)_7%,var(--card))]" />
+      <LigneDeTableau nom="w-28" />
+      <LigneDeTableau nom="w-36" />
+
+      <BandeDeSection largeur="w-40" fond="bg-[color-mix(in_oklab,var(--tension)_5%,var(--card))]" />
+      <LigneDeTableau nom="w-24" />
+      <LigneDeTableau nom="w-40" />
+      <LigneDeTableau nom="w-32" />
+      <LigneDeTableau nom="w-28" />
+
+      <BandeDeSection largeur="w-48" fond="bg-[color-mix(in_oklab,var(--tension)_5%,var(--card))]" />
+      <LigneDeTableau nom="w-36" />
+
+      <div className="bg-encre">
+        {rangees(2).map((i) => (
+          <div key={i} className="flex items-center px-3 py-3">
+            <div className="w-44 shrink-0 sm:w-80">
+              <Skeleton className="h-3 w-32 bg-[color-mix(in_oklab,var(--surface)_22%,var(--encre))]" />
+            </div>
+            {rangees(MOIS_PAR_DEFAUT).map((m) => (
+              <div key={m} className="flex shrink-0 gap-3 pr-3 pl-4">
+                {rangees(COLONNES_PAR_MOIS).map((c) => (
+                  <Skeleton
+                    key={c}
+                    className="h-3 w-14 bg-[color-mix(in_oklab,var(--surface)_22%,var(--encre))]"
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function SqueletteHistorique() {
   return (
     <div aria-busy className="flex flex-col gap-4">
@@ -117,57 +172,7 @@ export function SqueletteHistorique() {
 
       {/* LA CARTE. La même que celle du tableau : le vrai tableau vient s'y poser
           sans que la page bouge d'un pixel. */}
-      <div className="carte min-w-0 overflow-hidden">
-        {/* L'en-tête de colonnes. */}
-        <div className="border-filet flex items-end border-b px-3 py-2.5">
-          <div className="w-44 shrink-0 sm:w-80" />
-          {rangees(MOIS_PAR_DEFAUT).map((m) => (
-            <div key={m} className="border-filet flex shrink-0 flex-col gap-2 border-l pr-3 pl-4">
-              <Skeleton className="h-3.5 w-28" />
-              <div className="flex gap-3">
-                {rangees(COLONNES_PAR_MOIS).map((c) => (
-                  <Skeleton key={c} className="h-2.5 w-14" />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <BandeDeSection largeur="w-32" fond="bg-[color-mix(in_oklab,var(--portant)_7%,var(--card))]" />
-        <LigneDeTableau nom="w-28" />
-        <LigneDeTableau nom="w-36" />
-
-        <BandeDeSection largeur="w-40" fond="bg-[color-mix(in_oklab,var(--tension)_5%,var(--card))]" />
-        <LigneDeTableau nom="w-24" />
-        <LigneDeTableau nom="w-40" />
-        <LigneDeTableau nom="w-32" />
-        <LigneDeTableau nom="w-28" />
-
-        <BandeDeSection largeur="w-48" fond="bg-[color-mix(in_oklab,var(--tension)_5%,var(--card))]" />
-        <LigneDeTableau nom="w-36" />
-
-        {/* Le pied d'encre : les totaux et le solde de fin de mois. C'est la masse
-            la plus reconnaissable du tableau, elle doit être là. */}
-        <div className="bg-encre">
-          {rangees(2).map((i) => (
-            <div key={i} className="flex items-center px-3 py-3">
-              <div className="w-44 shrink-0 sm:w-80">
-                <Skeleton className="h-3 w-32 bg-[color-mix(in_oklab,var(--surface)_22%,var(--encre))]" />
-              </div>
-              {rangees(MOIS_PAR_DEFAUT).map((m) => (
-                <div key={m} className="flex shrink-0 gap-3 pr-3 pl-4">
-                  {rangees(COLONNES_PAR_MOIS).map((c) => (
-                    <Skeleton
-                      key={c}
-                      className="h-3 w-14 bg-[color-mix(in_oklab,var(--surface)_22%,var(--encre))]"
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
+      <SqueletteGrilleHistorique />
     </div>
   );
 }

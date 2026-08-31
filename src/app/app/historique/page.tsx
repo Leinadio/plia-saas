@@ -20,7 +20,7 @@ import { currentMonthKey } from "../../../lib/current-month";
 import { accountLabel, effectiveBalance } from "../../../lib/account";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HistoryWithDetail } from "@/components/history-with-detail";
-import { MonthRangePicker } from "@/components/month-range-picker";
+import { HistoryPeriodFrame } from "@/components/history-period-frame";
 import { FirstAccountOnboarding } from "@/components/first-account-onboarding";
 import { ConnexionReussie } from "@/components/connexion-reussie";
 
@@ -192,29 +192,37 @@ export default async function HistoriquePage({
               <div className="flex items-center justify-end gap-3">
                 <ForecastDetailSheet label={accountLabel(a)} forecast={forecast} />
               </div>
-              <MonthRangePicker min={stripMin} max={stripMax} from={from} to={to} current={currentMonth} />
-              {/* Le tableau s'affiche même sans une seule ligne. Un compte tout neuf
-                  n'a ni transaction ni dépense, et c'est précisément là qu'on veut ses
-                  colonnes de mois et ses boutons de création : le message qui les
-                  remplaçait laissait sans aucun moyen de commencer. Les en-têtes de
-                  section sont rendus même quand la section n'existe pas encore
-                  (cf. sectionSlots). */}
-              <HistoryWithDetail
-                months={months}
-                currentMonth={currentMonth}
-                stripMin={stripMin}
-                stripMax={stripMax}
-                forecast={forecast}
-                sections={sectionsAffichees}
-                ignoredBlocks={ignoredBlocks}
-                overspend={overspend}
-                grand={grand}
-                groups={selectGroups}
-                solde={solde}
-                planned={planned}
-                accountId={a.id}
-                overspendsByMonth={overspendsByMonth}
-              />
+              <HistoryPeriodFrame
+                key={`${a.id}:${from}:${to}`}
+                min={stripMin}
+                max={stripMax}
+                from={from}
+                to={to}
+                current={currentMonth}
+              >
+                {/* Le tableau s'affiche même sans une seule ligne. Un compte tout neuf
+                    n'a ni transaction ni dépense, et c'est précisément là qu'on veut ses
+                    colonnes de mois et ses boutons de création : le message qui les
+                    remplaçait laissait sans aucun moyen de commencer. Les en-têtes de
+                    section sont rendus même quand la section n'existe pas encore
+                    (cf. sectionSlots). */}
+                <HistoryWithDetail
+                  months={months}
+                  currentMonth={currentMonth}
+                  stripMin={stripMin}
+                  stripMax={stripMax}
+                  forecast={forecast}
+                  sections={sectionsAffichees}
+                  ignoredBlocks={ignoredBlocks}
+                  overspend={overspend}
+                  grand={grand}
+                  groups={selectGroups}
+                  solde={solde}
+                  planned={planned}
+                  accountId={a.id}
+                  overspendsByMonth={overspendsByMonth}
+                />
+              </HistoryPeriodFrame>
             </TabsContent>
           );
         })}
