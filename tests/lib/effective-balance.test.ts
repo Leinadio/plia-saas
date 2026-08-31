@@ -25,4 +25,9 @@ describe("Solde d'un compte privé de ce qui est hors calcul", () => {
     // Le solde corrigé n'est pas borné à zéro : sans le virement, le compte était à découvert.
     expect(effectiveBalance(100, 300)).toBe(-200);
   });
+
+  it("devrait appliquer les transactions manuelles absentes du solde bancaire", () => {
+    // La banque contient le virement reçu, mais pas la dépense ajoutée à la main.
+    expect(effectiveBalance(751.4, undefined, -745)).toBeCloseTo(6.4, 2);
+  });
 });

@@ -92,20 +92,18 @@ describe("Dépenses prévues et non prévues", () => {
     expect(sectionLabel(depenses(secs))).toBe("Dépenses");
   });
 
-  // Le solde réel est un compteur qui descend le tableau : chaque ligne dit où en est
-  // le compte une fois cette dépense retirée. Il s'accumule dans l'ordre des lignes de
-  // la section, et la grille les affiche par blocs : si les deux ordres divergent, la
-  // colonne Solde affiche sur chaque ligne le solde d'une autre.
-  it("devrait ranger les dépenses prévues avant les non prévues, l'ordre où le solde les compte", () => {
+  // Une même durée garde l'ordre reçu — celui du nom en production. Le classement
+  // historique prévue / non prévue ne coupe plus la section « Ce qui sort ».
+  it("devrait garder l'ordre reçu entre des dépenses de même durée", () => {
     const loyer: Group = {
       id: 4, accountId: "a1", name: "Loyer", direction: "out", monthlyAmount: 700, lines: [],
     };
     // Par nom, Dentiste vient entre Courses et Loyer : c'est l'ordre que listGroups donne.
     const secs = hist([courses, dentiste, loyer, salaire], []);
-    expect(depenses(secs).rows.map((r) => r.name)).toEqual(["Courses", "Loyer", "Dentiste"]);
+    expect(depenses(secs).rows.map((r) => r.name)).toEqual(["Courses", "Dentiste", "Loyer"]);
   });
 
-  it("devrait faire descendre le solde dans l'ordre affiché, sans mêler les deux blocs", () => {
+  it("devrait faire descendre le solde dans le nouvel ordre affiché", () => {
     const loyer: Group = {
       id: 4, accountId: "a1", name: "Loyer", direction: "out", monthlyAmount: 700, lines: [],
     };
@@ -116,11 +114,10 @@ describe("Dépenses prévues et non prévues", () => {
     ];
     const secs = hist([courses, dentiste, loyer, salaire], txns);
     const { openings, rowRunning } = computeSolde(secs, MOIS, "2026-07", 0);
-    // Loyer est la dernière ligne des prévues : Dentiste, affiché plus bas, ne doit pas
-    // encore avoir été retiré de son solde.
-    expect(rowRunning[4][0]).toBeCloseTo(openings[0] - 100 - 700, 6);
-    // Dentiste ferme la marche : son solde porte les trois dépenses.
-    expect(rowRunning[2][0]).toBeCloseTo(openings[0] - 100 - 700 - 50, 6);
+    // Dentiste suit Courses dans l'ordre reçu.
+    expect(rowRunning[2][0]).toBeCloseTo(openings[0] - 100 - 50, 6);
+    // Loyer ferme la marche : son solde porte les trois dépenses.
+    expect(rowRunning[4][0]).toBeCloseTo(openings[0] - 100 - 50 - 700, 6);
   });
 
   it("devrait laisser les sous-postes attachés à leur enveloppe quand elle change de bloc", () => {
@@ -132,5 +129,31 @@ describe("Dépenses prévues et non prévues", () => {
     const sec = depenses(hist([courses, abo], []));
     const { nonPrevues } = splitExpenseSection(sec, MOIS.length);
     expect(nonPrevues.rows[0].subRows.map((s) => s.name)).toEqual(["Spotify", "Netflix"]);
+  });
+});
+
+describe("Ordre des dépenses par durée", () => {
+  it("devrait afficher toujours, depuis un mois, une plage, puis un mois unique", () => {
+    const toujours: Group = {
+      ...courses, id: 20, name: "Toujours", startMonth: "2000-01", endMonth: null,
+    };
+    const depuis: Group = {
+      ...courses, id: 21, name: "Depuis mars", startMonth: "2026-03", endMonth: null,
+    };
+    const plage: Group = {
+      ...courses, id: 22, name: "Printemps", startMonth: "2026-03", endMonth: "2026-08",
+    };
+    const ponctuelle: Group = {
+      ...courses, id: 23, name: "Juillet", startMonth: "2026-07", endMonth: "2026-07",
+    };
+
+    const secs = hist([ponctuelle, plage, depuis, toujours], []);
+
+    expect(depenses(secs).rows.map((r) => r.name)).toEqual([
+      "Toujours",
+      "Depuis mars",
+      "Printemps",
+      "Juillet",
+    ]);
   });
 });

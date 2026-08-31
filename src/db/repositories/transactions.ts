@@ -40,15 +40,26 @@ export async function upsertTransaction(db: Db, t: TxnRow): Promise<number> {
   return inserees.length;
 }
 
-// Somme des montants non comptabilisés, par compte. Le solde renvoyé par la banque
-// les contient forcément : ce sont de vraies opérations, elles ont bien été encaissées.
-// Il faut donc les retrancher AVANT d'ancrer le moindre calcul, sinon les soldes
-// reconstruits sont décalés d'autant — la chaîne rembobine des mouvements dont ces
-// opérations sont absentes, à partir d'un solde qui, lui, les contient.
+// Somme des montants bancaires non comptabilisés, par compte. Les saisies manuelles
+// sont exclues : elles ne sont jamais entrées dans le solde fourni par la banque.
 export async function sumIgnoredByAccount(db: Db): Promise<Record<string, number>> {
   const rows = await db.all<{ accountId: string; total: number }>(
     `SELECT account_id AS "accountId", COALESCE(SUM(amount), 0) AS total
-     FROM transactions WHERE ignored GROUP BY account_id`,
+     FROM transactions WHERE ignored AND NOT manual GROUP BY account_id`,
+  );
+  return Object.fromEntries(rows.map((r) => [r.accountId, r.total]));
+}
+
+// Somme des saisies manuelles que la banque ne connaît pas encore. Elles corrigent
+// son solde jusqu'à leur fusion avec la vraie opération synchronisée. Les mois futurs
+// restent hors du solde actuel, comme dans les autres calculs de la vue d'ensemble.
+export async function sumManualByAccount(db: Db, throughMonth: string): Promise<Record<string, number>> {
+  const rows = await db.all<{ accountId: string; total: number }>(
+    `SELECT account_id AS "accountId", COALESCE(SUM(amount), 0) AS total
+     FROM transactions
+     WHERE manual AND NOT ignored AND substr(date, 1, 7) <= $1
+     GROUP BY account_id`,
+    [throughMonth],
   );
   return Object.fromEntries(rows.map((r) => [r.accountId, r.total]));
 }

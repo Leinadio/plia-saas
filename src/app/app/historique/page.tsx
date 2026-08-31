@@ -1,5 +1,5 @@
 import { listAccounts } from "../../../db/repositories/accounts";
-import { listTransactions, sumIgnoredByAccount, type TxnView } from "../../../db/repositories/transactions";
+import { listTransactions, sumIgnoredByAccount, sumManualByAccount, type TxnView } from "../../../db/repositories/transactions";
 import { listGroups } from "../../../db/repositories/groups";
 import { listBudgetAmounts } from "../../../db/repositories/budget-amounts";
 import { listLineAmounts } from "../../../db/repositories/line-amounts";
@@ -62,7 +62,7 @@ export default async function HistoriquePage({
     comment: t.comment,
   });
   // Tout ce que la page lit, en une fois et au nom de la personne connectée.
-  const { accounts, allGroups, datedBudgets, datedLines, dismissed, allTxns, allIgnored, ignoredByAccount } =
+  const { accounts, allGroups, datedBudgets, datedLines, dismissed, allTxns, allIgnored, ignoredByAccount, manualByAccount } =
     await pourMoi(async (database, userId) => ({
       accounts: await listAccounts(database, userId),
       allGroups: await listGroups(database, userId),
@@ -80,6 +80,9 @@ export default async function HistoriquePage({
       // rembobine des mouvements d'où ces opérations sont absentes, en partant d'un solde
       // qui les contient — et se retrouve décalée de leur montant.
       ignoredByAccount: await sumIgnoredByAccount(database),
+      // Une saisie manuelle existe dans Plia avant d'exister à la banque. Son montant
+      // corrige donc le solde bancaire jusqu'à la synchronisation qui la remplacera.
+      manualByAccount: await sumManualByAccount(database, currentMonth),
     }));
 
   if (accounts.length === 0) {
@@ -136,7 +139,7 @@ export default async function HistoriquePage({
           const calcMonths = monthRange(w.calcFrom, w.calcTo);
           // Le solde de la banque privé de ce qui est hors calcul : c'est LUI qui
           // ancre tout ce qui suit (prévision, estimé de fin de mois, chaîne de soldes).
-          const balance = effectiveBalance(a.balance, ignoredByAccount[a.id]);
+          const balance = effectiveBalance(a.balance, ignoredByAccount[a.id], manualByAccount[a.id]);
           const forecast = computeForecast(a.id, balance, groups, txns, currentMonth, datedBudgets, datedLines);
           const sectionsFull = computeHistory(groups, txns, calcMonths, currentMonth, datedBudgets, datedLines);
           // Estimé de fin du mois courant aligné sur le tableau (Balances vertes +

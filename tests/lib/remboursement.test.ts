@@ -1,7 +1,8 @@
 import { expect, describe, it } from "vitest";
 import {
-  computeHistory, computeOverspends, grandTotals, type HistorySection,
+  computeHistory, computeOverspends, computePlannedSoldes, computeSolde, grandTotals, type HistorySection,
 } from "../../src/lib/history";
+import { effectiveBalance } from "../../src/lib/account";
 import { txnChildren, txnsDuSens, resteParts } from "../../src/lib/history-detail";
 import { computeForecast, type Group, type Txn } from "../../src/lib/forecast";
 import { postesPourSaisie } from "../../src/lib/group-options";
@@ -143,6 +144,20 @@ describe("Le remboursement rangé dans un poste de dépense", () => {
       "a1", 5000, [vacances], [depense, remboursement], "2026-07", mergeDated(dated), datedLines,
     );
     expect(f.groups.find((g) => g.name === "Vacances Amsterdam")!.spent).toBe(1000);
+  });
+
+  it("devrait appliquer une dépense manuelle au solde bancaire qui ne la contient pas", () => {
+    const voyageSansBudget = { ...vacances, monthlyAmount: 0 };
+    const versement = tx({ id: "bank:versement", amount: 745, label: "Virement reçu", groupId: 1 });
+    const sortieManuelle = tx({ id: "manual:voyage", amount: -745, label: "Voyage", groupId: 1 });
+    const sections = hist([voyageSansBudget], [versement, sortieManuelle]);
+    const balance = effectiveBalance(751.4, undefined, -745);
+    const solde = computeSolde(sections, MOIS, "2026-07", balance);
+    const planned = computePlannedSoldes(sections, MOIS, "2026-07", solde.openings);
+
+    expect(solde.closings[0]).toBeCloseTo(6.4, 2);
+    expect(planned.prevuClosings[0]).toBeCloseTo(6.4, 2);
+    expect(planned.depassClosings[0]).toBeCloseTo(6.4, 2);
   });
 });
 

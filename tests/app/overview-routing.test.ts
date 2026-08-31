@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   listAccounts: vi.fn(),
   listTransactions: vi.fn(),
   sumIgnoredByAccount: vi.fn(),
+  sumManualByAccount: vi.fn(),
   listGroups: vi.fn(),
   listBudgetAmounts: vi.fn(),
   listLineAmounts: vi.fn(),
@@ -21,6 +22,7 @@ vi.mock("@/db/repositories/accounts", () => ({ listAccounts: mocks.listAccounts 
 vi.mock("@/db/repositories/transactions", () => ({
   listTransactions: mocks.listTransactions,
   sumIgnoredByAccount: mocks.sumIgnoredByAccount,
+  sumManualByAccount: mocks.sumManualByAccount,
 }));
 vi.mock("@/db/repositories/groups", () => ({ listGroups: mocks.listGroups }));
 vi.mock("@/db/repositories/budget-amounts", () => ({ listBudgetAmounts: mocks.listBudgetAmounts }));
@@ -42,6 +44,7 @@ describe("la route /app", () => {
     mocks.listAccounts.mockResolvedValue([]);
     mocks.listTransactions.mockResolvedValue([]);
     mocks.sumIgnoredByAccount.mockResolvedValue({});
+    mocks.sumManualByAccount.mockResolvedValue({});
     mocks.listGroups.mockResolvedValue([]);
     mocks.listBudgetAmounts.mockResolvedValue([]);
     mocks.listLineAmounts.mockResolvedValue([]);

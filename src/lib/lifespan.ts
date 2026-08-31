@@ -8,6 +8,9 @@
 // Une borne à null ne borne pas de ce côté : sans aucune des deux, on vit toujours.
 export type Lifespan = { startMonth?: string | null; endMonth?: string | null };
 
+// Le début conventionnel des groupes qui valent « depuis toujours ».
+export const ORIGIN_MONTH = "2000-01";
+
 export function aliveInMonth(l: Lifespan, month: string): boolean {
   if (l.startMonth != null && month < l.startMonth) return false;
   if (l.endMonth != null && month > l.endMonth) return false;

@@ -9,6 +9,8 @@
 // La traduction en bornes de base (start_month / end_month, où null veut dire
 // « sans fin ») vit ici et pas dans le formulaire : c'est une règle, elle se teste.
 import { isMonthKey, nextMonthKey } from "./history";
+import { ORIGIN_MONTH } from "./lifespan";
+export { ORIGIN_MONTH } from "./lifespan";
 
 export type PeriodMode = "single" | "range" | "from";
 
@@ -16,8 +18,6 @@ export type PeriodMode = "single" | "range" | "from";
 // pour tous les mois, ceux d'avant aujourd'hui comme ceux d'après. C'est le seul mois
 // qui ne se choisit pas dans un calendrier, d'où cette constante plutôt qu'un littéral
 // recopié à chaque endroit qui en a besoin.
-export const ORIGIN_MONTH = "2000-01";
-
 // Le plus tôt qu'une fin de plage puisse tomber : le mois SUIVANT le début. Une
 // plage qui commence et finit le même mois décrit « un seul mois », qui a son propre
 // choix dans le formulaire — deux façons d'écrire la même chose, dont l'une passe par

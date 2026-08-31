@@ -1,5 +1,6 @@
 import { resolveOwnership, partDansLePoste, type OwnableGroup, type OwnedTxn } from "./ownership";
 import { type Group, type Txn, isGroupAlive, isLineAlive } from "./forecast";
+import { ORIGIN_MONTH } from "./lifespan";
 
 // Montants en vigueur (budgets et lignes datés) : déplacés dans budget-in-force.ts
 // pour éviter un cycle d'import avec forecast.ts (qui a aussi besoin de ces
@@ -110,6 +111,16 @@ export type HistorySection = {
   // rémunérations) et les dépenses (« out », affichées après les enveloppes).
   uncatDirection?: "in" | "out";
 };
+
+// Ordre de lecture de « Ce qui sort » : du plus durable au plus ponctuel.
+// Le tri reste stable, donc l'ordre reçu — alphabétique en production — départage
+// les dépenses qui ont la même durée.
+function expensePeriodOrder(group: Pick<Group, "startMonth" | "endMonth">): number {
+  if (!group.endMonth) {
+    return !group.startMonth || group.startMonth <= ORIGIN_MONTH ? 0 : 1;
+  }
+  return group.startMonth === group.endMonth ? 3 : 2;
+}
 
 // Mois distincts « YYYY-MM » présents dans les transactions, triés croissant.
 export function monthsWithData(txns: Txn[]): string[] {
@@ -330,21 +341,16 @@ export function computeHistory(
     return { kind: "income", rows, totals: sumRows(rows) };
   };
 
-  // La section des dépenses : tous les groupes de sortie, dans l'ordre reçu (celui
-  // du nom, déjà trié par listGroups). Les rémunérations ont leur propre section
-  // (voir incomeSection).
+  // La section des dépenses : les durées les plus longues d'abord, puis les plus
+  // ponctuelles. Les rémunérations ont leur propre section (voir incomeSection).
   const expenseSection = (): HistorySection | null => {
-    const rows = groups
+    const expenseGroups = groups
       .filter((g) => g.direction === "out")
       .filter((g) => months.some((m) => isGroupAlive(g, m)))
-      .map(rowFor);
+      .sort((a, b) => expensePeriodOrder(a) - expensePeriodOrder(b));
+    const rows = expenseGroups.map(rowFor);
     if (rows.length === 0) return null;
-    // Prévues d'abord, non prévues ensuite, chaque camp gardant l'ordre du nom. Ce
-    // n'est pas une coquetterie d'affichage : le solde réel est un compteur qui
-    // descend le tableau et s'accumule dans CET ordre (cf. computeSolde). Rangé
-    // autrement ici que dans la grille, chaque ligne afficherait le solde d'une autre.
-    const ordonnees = [...rows.filter((r) => r.planned !== false), ...rows.filter((r) => r.planned === false)];
-    return { kind: "expense", rows: ordonnees, totals: sumRows(ordonnees) };
+    return { kind: "expense", rows, totals: sumRows(rows) };
   };
 
   // Reçus non catégorisés d'un mois (section « in »), indépendamment de la

@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 import { createTestDb } from "../helpers/pg";
 import { dbFrom } from "../../src/db/pg";
 import { upsertAccount } from "../../src/db/repositories/accounts";
-import { insertManualTransaction, listTransactions, updateManualTransaction, deleteManualTransaction, upsertTransaction, findReconcileSuggestions, mergeTransactions, ignoreMatch } from "../../src/db/repositories/transactions";
+import { insertManualTransaction, listTransactions, updateManualTransaction, deleteManualTransaction, upsertTransaction, findReconcileSuggestions, mergeTransactions, ignoreMatch, setTransactionIgnored, sumIgnoredByAccount, sumManualByAccount } from "../../src/db/repositories/transactions";
 import { insertGroup } from "../../src/db/repositories/groups";
 
 async function seed() {
@@ -24,6 +24,26 @@ test("insertManualTransaction stores a manual row and lists it back", async () =
     id, amount: 652.09, label: "Rémunération juillet",
     manual: true, note: null,
   });
+});
+
+test("sumManualByAccount applique seulement les saisies actives arrivées avant la fin du mois", async () => {
+  const db = await seed();
+  const sortie = await insertManualTransaction(db, {
+    accountId: "a1", date: "2026-08-29", amount: -745, label: "Voyage",
+    groupId: null, lineId: null,
+  });
+  await insertManualTransaction(db, {
+    accountId: "a1", date: "2026-09-01", amount: -100, label: "Plus tard",
+    groupId: null, lineId: null,
+  });
+
+  expect(await sumManualByAccount(db, "2026-08")).toEqual({ a1: -745 });
+
+  await setTransactionIgnored(db, sortie, true);
+  expect(await sumManualByAccount(db, "2026-08")).toEqual({});
+  // Une saisie manuelle ignorée n'était jamais dans le solde de la banque : elle ne
+  // doit donc pas être retirée une seconde fois par la correction des éléments ignorés.
+  expect(await sumIgnoredByAccount(db)).toEqual({});
 });
 
 test("updateManualTransaction edits a manual row, ignores synced rows", async () => {
