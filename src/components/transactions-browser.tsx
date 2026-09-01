@@ -19,6 +19,8 @@ import { Button } from "@/components/ui/button";
 import { GroupSelectField } from "@/components/group-select-field";
 import { groupsForMonth } from "@/lib/group-options";
 import { TruncatedText } from "@/components/truncated-text";
+import { TxnMonthField } from "@/components/txn-month-field";
+import { moisBudget } from "@/lib/txn-mois";
 import { TxnCommentField } from "@/components/txn-comment-field";
 import { AddTransactionSheet } from "@/components/add-transaction-sheet";
 import { Badge } from "@/components/ui/badge";
@@ -116,6 +118,17 @@ function Ligne({
           onLocalChange={demo ? ({ groupId }) => demo.onCategorize(t.id, groupId) : undefined}
           onboardingTarget={onboardingTarget}
         />
+        {/* Le mois où l'opération compte, juste à côté de son poste : ce sont les
+            deux mêmes questions — dans quelle enveloppe, et dans quel mois. */}
+        {!demo && (
+          <TxnMonthField
+            txnId={t.id}
+            date={t.date}
+            budgetMonth={t.budgetMonth}
+            disabled={t.ignored}
+            className="max-w-44"
+          />
+        )}
         {!demo && <IgnoreTxnToggle txnId={t.id} ignored={t.ignored} size="icon-sm" />}
         {!demo && t.manual && <ManualTxnActions txn={t} accounts={accounts} groups={formGroups} />}
         <span className="text-ardoise-claire ml-auto hidden text-xs sm:block">
@@ -153,7 +166,7 @@ export function TransactionsBrowser({
   // Les groupes proposés à une transaction : ceux de son compte, et parmi eux ceux
   // qui vivent le mois de la transaction (cf. src/lib/group-options.ts).
   const groupsOfTxn = (t: TxnView) =>
-    groupsForMonth(groups.filter((g) => g.accountId === t.accountId), t.date.slice(0, 7), t.groupId)
+    groupsForMonth(groups.filter((g) => g.accountId === t.accountId), moisBudget(t), t.groupId)
       // lines : le sélecteur en a besoin pour ne pas proposer comme destination une
       // dépense découpée (seuls ses sous-postes le sont). direction : pour ranger les
       // rémunérations dans leur propre section plutôt qu'avec les dépenses.

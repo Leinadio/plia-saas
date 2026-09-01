@@ -1,4 +1,4 @@
-import { monthKey } from "./money";
+import { moisBudget } from "./txn-mois";
 import { resolveOwnership, partDansLePoste, type OwnableGroup, type OwnedTxn } from "./ownership";
 import { budgetInForce, lineAmountInForce, type DatedBudgets, type DatedLineAmounts } from "./budget-in-force";
 import { aliveInMonth } from "./lifespan";
@@ -44,6 +44,10 @@ export type Txn = {
   excluded?: boolean;
   // Commentaire libre de l'utilisateur, affiché sous le libellé de la banque.
   comment?: string | null;
+  // Le mois où elle compte dans le budget quand ce n'est pas celui de sa date
+  // (« YYYY-MM »). Aucun calcul ne le lit directement : ils passent tous par
+  // moisBudget (cf. src/lib/txn-mois.ts).
+  budgetMonth?: string | null;
 };
 
 // Un groupe est vivant au mois m si son mois de départ est atteint et que sa
@@ -132,8 +136,11 @@ export function computeForecast(
       return { t, ownerId };
     });
 
+  // Le mois retenu est celui du RATTACHEMENT quand il y en a un : une dépense rangée
+  // en septembre pèse sur le prévisionnel de septembre, pas sur celui d'août. Sans
+  // ça, le tableau et l'estimé du tableau de bord ne diraient pas la même chose.
   const ownedBy = (gid: number, m: string = month) =>
-    owned.filter((o) => o.ownerId === gid && monthKey(o.t.date) === m).map((o) => o.t);
+    owned.filter((o) => o.ownerId === gid && moisBudget(o.t) === m).map((o) => o.t);
   // Compté dans le sens du poste : un remboursement rangé dans une dépense la
   // diminue, et le reste à dépenser remonte d'autant (cf. partDansLePoste).
   const spentIn = (g: Group, m: string) =>

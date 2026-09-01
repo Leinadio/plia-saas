@@ -89,7 +89,12 @@ CREATE TABLE IF NOT EXISTS transactions (
   ignored BOOLEAN NOT NULL DEFAULT FALSE,   -- non comptabilisée (invisible pour tout calcul)
   manual BOOLEAN NOT NULL DEFAULT FALSE,    -- saisie manuelle
   note TEXT,                                -- libellé de la saisie manuelle, conservé après fusion
-  comment TEXT                              -- commentaire libre, affiché sous le libellé
+  comment TEXT,                             -- commentaire libre, affiché sous le libellé
+  -- Le mois où l'opération compte dans le budget, quand ce n'est pas celui de sa
+  -- date : « YYYY-MM », vide le reste du temps. Un achat du 31 août peut appartenir
+  -- au budget de septembre. La date de la banque n'est jamais réécrite pour ça — une
+  -- synchronisation la remettrait, et on perdrait ce que l'utilisateur a décidé.
+  budget_month TEXT
 );
 
 -- Les rapprochements que l'utilisateur a refusés : « cette saisie et cette opération
@@ -160,6 +165,9 @@ CREATE TABLE IF NOT EXISTS onboarding_status (
 -- Mise à niveau idempotente des installations qui ne conservaient que « Compris ».
 -- Leurs utilisateurs restent sur leurs vraies données et ne revoient pas le guide
 -- sans action volontaire. Les nouveaux utilisateurs, sans ligne, partent en démo.
+-- Le mois de rattachement, ajouté après coup sur les bases déjà en place.
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS budget_month TEXT;
+
 ALTER TABLE onboarding_status ALTER COLUMN completed_at DROP NOT NULL;
 ALTER TABLE onboarding_status ADD COLUMN IF NOT EXISTS demo_active BOOLEAN;
 ALTER TABLE onboarding_status ADD COLUMN IF NOT EXISTS demo_visit JSONB;

@@ -39,7 +39,7 @@ export async function appNotifications(): Promise<Notification[]> {
   const datedLines = toDatedLineAmounts(budgetsLignes);
   const txns: Txn[] = operations.map((t) => ({
     id: t.id, date: t.date, amount: t.amount, label: t.label, accountId: t.accountId,
-    groupId: t.groupId, lineId: t.lineId, excluded: t.excluded,
+    groupId: t.groupId, lineId: t.lineId, excluded: t.excluded, budgetMonth: t.budgetMonth,
   }));
   return overspendNotifications(
     comptes.map((a) => ({

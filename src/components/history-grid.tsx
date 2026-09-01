@@ -31,6 +31,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { TruncatedText } from "@/components/truncated-text";
 import { TxnCommentField } from "@/components/txn-comment-field";
+import { TxnMonthField } from "@/components/txn-month-field";
 import { GroupSelectField } from "@/components/group-select-field";
 import { IgnoreTxnToggle } from "@/components/ignore-txn-toggle";
 import { NewGroupInline } from "@/components/new-group-inline";
@@ -1542,16 +1543,27 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
           ) : ignored ? (
             <IgnoreTxnToggle txnId={txn.id} ignored withLabel />
           ) : (
-            <div className="flex min-w-0 items-center gap-1">
-              {/* Seuls les groupes qui vivent le mois de CETTE transaction. */}
-              <GroupSelectField
+            <div className="flex min-w-0 flex-col gap-1">
+              <div className="flex min-w-0 items-center gap-1">
+                {/* Seuls les groupes qui vivent le mois de CETTE transaction —
+                    c'est-à-dire le mois où elle COMPTE, rattachement compris. */}
+                <GroupSelectField
+                  txnId={txn.id}
+                  groups={groupsForMonth(groups, txn.month, txn.groupId)}
+                  defaultGroupId={txn.groupId}
+                  defaultLineId={txn.lineId}
+                  className="min-w-0 flex-1"
+                />
+                <IgnoreTxnToggle txnId={txn.id} ignored={false} size="icon-sm" />
+              </div>
+              {/* Sous le poste, sur sa propre ligne : la colonne fait 176 px, deux
+                  menus côte à côte n'y laisseraient lire ni l'un ni l'autre. */}
+              <TxnMonthField
                 txnId={txn.id}
-                groups={groupsForMonth(groups, txn.month, txn.groupId)}
-                defaultGroupId={txn.groupId}
-                defaultLineId={txn.lineId}
-                className="min-w-0 flex-1"
+                date={txn.date}
+                budgetMonth={txn.budgetMonth ?? null}
+                className="w-full"
               />
-              <IgnoreTxnToggle txnId={txn.id} ignored={false} size="icon-sm" />
             </div>
           )}
         </div>

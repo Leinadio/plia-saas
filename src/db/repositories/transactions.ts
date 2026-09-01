@@ -24,6 +24,9 @@ export type TxnView = {
   note: string | null;
   // Commentaire libre de l'utilisateur, affiché sous le libellé (cf. src/lib/txn-comment.ts).
   comment: string | null;
+  // Mois où l'opération compte dans le budget quand ce n'est pas celui de sa date
+  // (« YYYY-MM »), null sinon. Cf. src/lib/txn-mois.ts.
+  budgetMonth: string | null;
 };
 
 export type ReconcileSuggestion = { manual: TxnView; synced: TxnView };
@@ -57,7 +60,7 @@ export async function sumManualByAccount(db: Db, throughMonth: string): Promise<
   const rows = await db.all<{ accountId: string; total: number }>(
     `SELECT account_id AS "accountId", COALESCE(SUM(amount), 0) AS total
      FROM transactions
-     WHERE manual AND NOT ignored AND substr(date, 1, 7) <= $1
+     WHERE manual AND NOT ignored AND COALESCE(budget_month, substr(date, 1, 7)) <= $1
      GROUP BY account_id`,
     [throughMonth],
   );
@@ -87,6 +90,7 @@ export function listTransactions(
   return db.all<TxnView>(
     `SELECT t.id, t.date, t.amount, t.label, t.group_id AS "groupId", t.line_id AS "lineId",
             t.excluded, t.ignored, t.manual, t.note, t.comment,
+            t.budget_month AS "budgetMonth",
             t.account_id AS "accountId",
             COALESCE(COALESCE(a.custom_name, a.name) || ' ' || a.iban_masked, COALESCE(a.custom_name, a.name)) AS "accountLabel"
      FROM transactions t
@@ -148,8 +152,23 @@ export async function detachTransactionsInMonths(
 // quel mois elle relève avant de la rattacher à un groupe.
 export async function getTransactionDate(db: Db, id: string): Promise<string | null> {
   const row = await db.one<{ date: string }>(`SELECT date FROM transactions WHERE id = $1`, [id]);
-  return row ? row.date : null;
+  return row?.date ?? null;
 }
+
+// La date de la banque ET le mois de rattachement, ensemble : tout ce qui doit
+// décider « à quel mois cette opération appartient » a besoin des deux, et deux
+// requêtes séparées finiraient par se contredire.
+export async function getTransactionMonthInfo(
+  db: Db,
+  id: string,
+): Promise<{ date: string; budgetMonth: string | null } | null> {
+  const row = await db.one<{ date: string; budgetMonth: string | null }>(
+    `SELECT date, budget_month AS "budgetMonth" FROM transactions WHERE id = $1`,
+    [id],
+  );
+  return row ?? null;
+}
+
 
 // Pose (ou retire, avec null) le commentaire d'une transaction. Rien d'autre n'est
 // touché : le commentaire s'ajoute au libellé de la banque, il ne le remplace pas.
@@ -161,6 +180,13 @@ export async function setTransactionComment(db: Db, id: string, comment: string 
 // Son rattachement de groupe est conservé : la réactiver la remet où elle était.
 export async function setTransactionIgnored(db: Db, id: string, ignored: boolean): Promise<void> {
   await db.run("UPDATE transactions SET ignored = $1 WHERE id = $2", [ignored, id]);
+}
+
+// Rattache une opération à un autre mois de budget (ou la rend à sa date, avec null).
+// La date n'est pas touchée : c'est ce que la banque a écrit, et la prochaine
+// synchronisation la redonnerait de toute façon.
+export async function setTransactionBudgetMonth(db: Db, id: string, month: string | null): Promise<void> {
+  await db.run("UPDATE transactions SET budget_month = $1 WHERE id = $2", [month, id]);
 }
 
 export type ManualTxnInput = {

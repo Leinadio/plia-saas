@@ -138,6 +138,8 @@ export function buildDemoFinances(currentMonth: string): DemoFinances {
     lineId,
     excluded: false,
     ignored: false,
+    // La démonstration ne rattache rien : chaque opération compte au mois de sa date.
+    budgetMonth: null,
     manual: false,
     note: null,
     comment: null,

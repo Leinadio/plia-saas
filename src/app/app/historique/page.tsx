@@ -60,6 +60,7 @@ export default async function HistoriquePage({
     lineId: t.lineId,
     excluded: t.excluded,
     comment: t.comment,
+    budgetMonth: t.budgetMonth,
   });
   // Tout ce que la page lit, en une fois et au nom de la personne connectée.
   const { accounts, allGroups, datedBudgets, datedLines, dismissed, allTxns, allIgnored, ignoredByAccount, manualByAccount } =

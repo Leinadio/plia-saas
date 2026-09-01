@@ -1,5 +1,6 @@
 import { resolveOwnership, partDansLePoste, type OwnableGroup, type OwnedTxn } from "./ownership";
 import { type Group, type Txn, isGroupAlive, isLineAlive } from "./forecast";
+import { moisBudget } from "./txn-mois";
 import { ORIGIN_MONTH } from "./lifespan";
 
 // Montants en vigueur (budgets et lignes datés) : déplacés dans budget-in-force.ts
@@ -65,6 +66,9 @@ export type HistoryTxn = {
   lineId: number | null;
   // Commentaire libre de l'utilisateur, affiché sous le libellé (cf. txn-comment.ts).
   comment?: string | null;
+  // Le mois de rattachement choisi à la main, quand il y en a un : la ligne montre
+  // toujours la date de la banque, et dit à côté où elle compte.
+  budgetMonth?: string | null;
 };
 // Un sous-groupe = une ligne d'un récurrent (Spotify, Direct Assurance…).
 export type HistorySubRow = {
@@ -125,7 +129,7 @@ function expensePeriodOrder(group: Pick<Group, "startMonth" | "endMonth">): numb
 // Mois distincts « YYYY-MM » présents dans les transactions, triés croissant.
 export function monthsWithData(txns: Txn[]): string[] {
   const set = new Set<string>();
-  for (const t of txns) set.add(t.date.slice(0, 7));
+  for (const t of txns) set.add(moisBudget(t));
   return [...set].sort();
 }
 
@@ -193,7 +197,7 @@ export function computeHistory(
   const owned = txns.map((t) => {
     const o: OwnedTxn = { id: t.id, date: t.date, amount: t.amount, label: t.label, accountId: t.accountId, groupId: t.groupId, excluded: t.excluded };
     const res = resolveOwnership(o, ownable);
-    const month = t.date.slice(0, 7);
+    const month = moisBudget(t);
     const g = res.status === "manual" ? groups.find((x) => x.id === res.groupId) : undefined;
     const ownerId = g && isGroupAlive(g, month) ? g.id : null;
     return { t, ownerId, month };
@@ -211,7 +215,7 @@ export function computeHistory(
   // ne sert qu'à l'affichage (cf. MonthCell.rembourse).
   const contreSens = (txns: Txn[], direction: "in" | "out", m: string) =>
     txns
-      .filter((t) => t.date.slice(0, 7) === m && partDansLePoste(t.amount, direction) < 0)
+      .filter((t) => moisBudget(t) === m && partDansLePoste(t.amount, direction) < 0)
       .reduce((s, t) => s + Math.abs(t.amount), 0);
 
   // Rattache une transaction d'un récurrent à une de ses lignes uniquement via
@@ -220,12 +224,13 @@ export function computeHistory(
     t.lineId != null && g.lines.some((l) => l.id === t.lineId) ? t.lineId : null;
 
   const toHistoryTxn = (t: Txn): HistoryTxn => ({
-    id: t.id, date: t.date, label: t.label, amount: t.amount, month: t.date.slice(0, 7),
+    id: t.id, date: t.date, label: t.label, amount: t.amount, month: moisBudget(t),
     groupId: t.groupId, lineId: t.lineId ?? null, comment: t.comment ?? null,
+    budgetMonth: t.budgetMonth ?? null,
   });
 
   // On ne liste que les transactions des mois affichés.
-  const inRange = (t: Txn) => months.includes(t.date.slice(0, 7));
+  const inRange = (t: Txn) => months.includes(moisBudget(t));
 
   // Mois futurs : rien n'est encore réalisé (dépensé / reçu à 0, Balance = budget
   // entier). Les projections vivent dans les chaînes de plan (Solde prévu / si
@@ -278,7 +283,7 @@ export function computeHistory(
     const subRows: HistorySubRow[] = g.lines.map((l) => {
       const lineTxns = mine.filter((t) => lineOf(g, t) === l.id);
       const realizedOf = (m: string) =>
-        lineTxns.filter((t) => t.date.slice(0, 7) === m).reduce((s, t) => s + partDansLePoste(t.amount, g.direction), 0);
+        lineTxns.filter((t) => moisBudget(t) === m).reduce((s, t) => s + partDansLePoste(t.amount, g.direction), 0);
       return {
         id: l.id,
         name: l.name,
@@ -359,7 +364,7 @@ export function computeHistory(
   // Reste recomposé et affiché dans la grille (history-grid.tsx, resteVal).
   const uncatInRecuOf = (m: string): number =>
     owned
-      .filter((o) => o.ownerId === null && o.t.amount > 0 && o.t.date.slice(0, 7) === m)
+      .filter((o) => o.ownerId === null && o.t.amount > 0 && o.month === m)
       .reduce((s, o) => s + o.t.amount, 0);
 
   // Transactions sans groupe, scindées par sens : les reçus (« in », affichés sous
@@ -371,7 +376,7 @@ export function computeHistory(
       .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
     if (mine.length === 0) return null;
     const totals = months.map((m) => {
-      const monthTxns = mine.filter((t) => t.date.slice(0, 7) === m);
+      const monthTxns = mine.filter((t) => moisBudget(t) === m);
       const depense = monthTxns.filter((t) => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
       const recu = monthTxns.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
       // Les dépenses non catégorisées reçoivent la provision (budget daté du groupe 0)
@@ -415,13 +420,13 @@ export type IgnoredBlock = {
 export function computeIgnoredBlocks(txns: Txn[], months: string[]): IgnoredBlock[] {
   const blockFor = (direction: "in" | "out"): IgnoredBlock | null => {
     const mine = txns
-      .filter((t) => months.includes(t.date.slice(0, 7)))
+      .filter((t) => months.includes(moisBudget(t)))
       .filter((t) => (direction === "in" ? t.amount > 0 : t.amount < 0))
       .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
     if (mine.length === 0) return null;
     const totals = months.map((m) => {
       const sum = mine
-        .filter((t) => t.date.slice(0, 7) === m)
+        .filter((t) => moisBudget(t) === m)
         .reduce((s, t) => s + Math.abs(t.amount), 0);
       return { depense: direction === "out" ? sum : 0, recu: direction === "in" ? sum : 0 };
     });
@@ -430,7 +435,7 @@ export function computeIgnoredBlocks(txns: Txn[], months: string[]): IgnoredBloc
       totals,
       txns: mine.map((t) => ({
         id: t.id, date: t.date, label: t.label, amount: t.amount,
-        month: t.date.slice(0, 7), groupId: t.groupId, lineId: t.lineId ?? null,
+        month: moisBudget(t), budgetMonth: t.budgetMonth ?? null, groupId: t.groupId, lineId: t.lineId ?? null,
       })),
     };
   };
@@ -788,7 +793,7 @@ export function computeOverspends(
   const owned = txns.map((t) => {
     const o: OwnedTxn = { id: t.id, date: t.date, amount: t.amount, label: t.label, accountId: t.accountId, groupId: t.groupId, excluded: t.excluded };
     const res = resolveOwnership(o, ownable);
-    const month = t.date.slice(0, 7);
+    const month = moisBudget(t);
     const g = res.status === "manual" ? groups.find((x) => x.id === res.groupId) : undefined;
     return { t, ownerId: g && isGroupAlive(g, month) ? g.id : null, month };
   });

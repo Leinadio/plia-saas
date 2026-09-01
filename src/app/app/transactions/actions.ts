@@ -6,7 +6,8 @@ import {
   setTransactionGroup,
   setTransactionIgnored,
   setTransactionComment,
-  getTransactionDate,
+  setTransactionBudgetMonth,
+  getTransactionMonthInfo,
   insertManualTransaction,
   updateManualTransaction,
   deleteManualTransaction,
@@ -15,6 +16,7 @@ import {
 } from "../../../db/repositories/transactions";
 import { isValidManualForm, toManualInput, type ManualFormInput } from "@/lib/manual-txn";
 import { normalizeComment } from "@/lib/txn-comment";
+import { moisBudget, rattachementUtile } from "@/lib/txn-mois";
 import { canAttachToGroup } from "@/lib/ownership";
 import { isGroupAlive } from "@/lib/forecast";
 import { countGroupLines, getLineGroupId, getGroupLifespan } from "../../../db/repositories/groups";
@@ -61,9 +63,13 @@ export async function setGroup(
       // nulle part — computeHistory ne reconnaît un propriétaire que s'il est vivant
       // ce mois-là — et la transaction disparaîtrait dans les non catégorisés sans
       // qu'on comprenne pourquoi.
-      const date = await getTransactionDate(database, txnId);
+      //
+      // Le mois retenu est celui où la transaction COMPTE, rattachement compris : une
+      // dépense du 31 août rangée en septembre doit trouver un poste vivant en
+      // septembre, pas en août.
+      const op = await getTransactionMonthInfo(database, txnId);
       const bornes = await getGroupLifespan(database, gid);
-      if (date === null || bornes === null || !isGroupAlive(bornes, date.slice(0, 7))) return;
+      if (op === null || bornes === null || !isGroupAlive(bornes, moisBudget(op))) return;
     }
     await setTransactionGroup(database, txnId, gid, false, lid);
     revalidateAll();
@@ -77,6 +83,27 @@ export async function setComment(txnId: string, comment: string) {
   return pourMoi(async (base, moi) => {
     if (!(await ownsTransaction(base, moi, txnId))) return;
     await setTransactionComment(base, txnId, normalizeComment(comment));
+    revalidateAll();
+  });
+}
+
+// Range une opération dans un autre mois de budget — ou la rend à sa date, avec null.
+//
+// La date de la banque n'est jamais réécrite : c'est ce que la banque a enregistré,
+// et la prochaine synchronisation la redonnerait de toute façon. Seul le mois où
+// l'opération COMPTE change, et il change partout à la fois : enveloppes, totaux,
+// chaîne de soldes, dépassements (cf. src/lib/txn-mois.ts).
+//
+// Le rattachement de groupe n'est pas touché. Si le poste ne vit pas le mois choisi,
+// l'opération se lira dans « Pas encore rangé » de ce mois-là — exactement comme une
+// dépense dont on a raccourci l'enveloppe après coup. Le menu de rattachement de sa
+// ligne proposera alors les postes qui vivent ce mois-ci.
+export async function setBudgetMonth(txnId: string, month: string | null) {
+  return pourMoi(async (base, moi) => {
+    if (!(await ownsTransaction(base, moi, txnId))) return;
+    const op = await getTransactionMonthInfo(base, txnId);
+    if (op === null) return;
+    await setTransactionBudgetMonth(base, txnId, rattachementUtile(op.date, month));
     revalidateAll();
   });
 }

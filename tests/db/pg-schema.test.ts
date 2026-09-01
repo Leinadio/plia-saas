@@ -116,9 +116,10 @@ const FORME: Record<string, string[]> = {
   onboarding_status: ["completed_at:text", "demo_active:boolean", "demo_visit:jsonb", "user_id:text"],
   reconcile_ignored: ["manual_id:text", "synced_id:text", "user_id:text"],
   transactions: [
-    "account_id:text", "amount:numeric", "comment:text", "date:text",
-    "excluded:boolean", "group_id:integer", "id:text", "ignored:boolean",
-    "label:text", "line_id:integer", "manual:boolean", "note:text",
+    "account_id:text", "amount:numeric", "budget_month:text", "comment:text",
+    "date:text", "excluded:boolean", "group_id:integer", "id:text",
+    "ignored:boolean", "label:text", "line_id:integer", "manual:boolean",
+    "note:text",
   ],
 };
 
