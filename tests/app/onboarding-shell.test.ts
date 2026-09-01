@@ -22,7 +22,10 @@ vi.mock("@/lib/app-notifications", () => ({ appNotifications: mocks.notification
 vi.mock("@/components/detail-sidebar", () => ({ DetailSidebarProvider: ({ children }: { children: React.ReactNode }) => children }));
 vi.mock("@/components/mise-a-jour", () => ({ MiseAJourProvider: ({ children }: { children: React.ReactNode }) => children, FilDAttente: () => null }));
 vi.mock("@/components/calculatrice", () => ({ CalculatriceProvider: ({ children }: { children: React.ReactNode }) => children, CalculatriceButton: () => null }));
-vi.mock("@/components/notifications-button", () => ({ NotificationsButton: () => null }));
+vi.mock("@/components/notifications-button", () => ({
+  NotificationsButton: () => null,
+  NotificationsProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
 vi.mock("@/components/sync-button", () => ({ SyncButton: () => null }));
 
 const { default: AppLayout } = await import("@/app/app/layout");

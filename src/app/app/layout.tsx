@@ -4,9 +4,10 @@ import { auth } from "@/lib/auth";
 import { AppTopbar } from "@/components/app-topbar";
 import { DetailSidebarProvider } from "@/components/detail-sidebar";
 import { MiseAJourProvider, FilDAttente } from "@/components/mise-a-jour";
-import { NotificationsButton } from "@/components/notifications-button";
+import { NotificationsButton, NotificationsProvider } from "@/components/notifications-button";
 import { SyncButton } from "@/components/sync-button";
 import { CalculatriceProvider, CalculatriceButton } from "@/components/calculatrice";
+import { OutilsFlottants } from "@/components/outils-flottants";
 import { appNotifications } from "@/lib/app-notifications";
 import { currentDemoStatus } from "@/lib/current-onboarding";
 import { DemoExperienceProvider } from "@/components/demo-experience-provider";
@@ -49,6 +50,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             passage d'un écran à l'autre — c'est justement d'un écran à l'autre
             qu'on compare des montants. */}
         <CalculatriceProvider>
+          {/* Les dépassements englobent le shell : le même panneau s'ouvre depuis
+              la barre sur grand écran et depuis la roue flottante sur téléphone,
+              et ce qu'on y marque comme vu ne dépend pas de par où l'on entre.
+              En démonstration il n'y en a pas — d'où le null. */}
+          <NotificationsProvider items={demoStatus.mode === "real" ? notifications : null}>
           {/* min-w-0 : sans lui, un contenu large (le grand tableau) empêche la
               colonne de rétrécir sous sa taille min-content et déborde sous le
               panneau. overflow-hidden : c'est le contenu qui défile, pas le
@@ -56,11 +62,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="flex h-svh min-w-0 flex-1 flex-col overflow-hidden">
             <AppTopbar
               user={{ name: session.user.name || session.user.email, email: session.user.email }}
-              localTools={<CalculatriceButton />}
-            >
-              {demoStatus.mode === "real" && <SyncButton />}
-              {demoStatus.mode === "real" && <NotificationsButton items={notifications} />}
-            </AppTopbar>
+              outils={<CalculatriceButton />}
+              rafraichir={demoStatus.mode === "real" ? <SyncButton /> : undefined}
+              alertes={<NotificationsButton />}
+            />
             <DemoStatusBand />
             {/* Le fil d'attente, collé sous la barre : c'est là qu'on regarde
                 quand on vient de cliquer, et c'est la seule ligne de l'écran qui
@@ -71,7 +76,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                 cartes, où vivent les montants. */}
             <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-6 sm:py-6">{children}</div>
             <OnboardingTour />
+            {/* La roue des outils, en bas à droite et sur téléphone seulement :
+                démo, guide et calculatrice y descendent pour rendre la barre du
+                haut au repérage. */}
+            <OutilsFlottants />
           </div>
+          </NotificationsProvider>
         </CalculatriceProvider>
       </MiseAJourProvider>
     </DetailSidebarProvider>

@@ -38,6 +38,15 @@ vi.mock("@/app/app/onboarding-actions", () => ({
   toggleDemo: mocks.toggle,
 }));
 vi.mock("@/lib/auth-client", () => ({ signOut: vi.fn() }));
+vi.mock("@/components/ui/sheet", () => ({
+  Sheet: ({ children }: { children: ReactNode }) => createElement("div", null, children),
+  SheetTrigger: ({ children, ...props }: { children: ReactNode }) => createElement("button", props, children),
+  SheetContent: ({ children }: { children: ReactNode }) => createElement("div", null, children),
+  SheetClose: ({ children, asChild }: { children: ReactNode; asChild?: boolean }) => asChild ? children : createElement("div", null, children),
+  SheetHeader: ({ children }: { children: ReactNode }) => createElement("div", null, children),
+  SheetTitle: ({ children }: { children: ReactNode }) => createElement("h2", null, children),
+  SheetDescription: ({ children }: { children: ReactNode }) => createElement("p", null, children),
+}));
 vi.mock("@/components/ui/dropdown-menu", () => ({
   DropdownMenu: ({ children }: { children: ReactNode }) => createElement("div", null, children),
   DropdownMenuTrigger: ({ children, ...props }: { children: ReactNode }) => createElement("button", props, children),
@@ -49,11 +58,12 @@ vi.mock("@/components/ui/dropdown-menu", () => ({
 const { AppTopbar } = await import("@/components/app-topbar");
 
 function topbar() {
-  return createElement(
-    AppTopbar,
-    { user: { name: "Daniel", email: "d@example.com" }, localTools: createElement("button", null, "Calculatrice") },
-    createElement("button", null, "Rafraîchir"),
-  );
+  return createElement(AppTopbar, {
+    user: { name: "Daniel", email: "d@example.com" },
+    outils: createElement("button", null, "Calculatrice"),
+    rafraichir: createElement("button", null, "Rafraîchir"),
+    alertes: createElement("button", null, "Dépassements"),
+  });
 }
 
 async function renderTopbar() {
@@ -85,15 +95,39 @@ describe("la barre de l'application", () => {
     expect(html).toContain('aria-label="Activer la démonstration"');
     expect(html).toContain("Démo");
     expect(html).toContain("Guide");
-    expect(html).toContain("Actions");
   });
 
-  it("affiche Rafraîchir parmi les actions desktop sans l'enfermer dans le menu mobile", async () => {
+  it("sort Rafraîchir des outils du grand écran et le pose juste avant le compte", async () => {
     const rendered = await renderTopbar();
     try {
-      const desktopActions = rendered.container.querySelector<HTMLElement>("[data-header-actions-desktop]");
-      expect(desktopActions?.textContent).toContain("Rafraîchir");
-      expect(desktopActions?.closest("details")).toBeNull();
+      const outilsDesktop = rendered.container.querySelector<HTMLElement>("[data-header-actions-desktop]");
+      // Démo, Guide et la calculatrice ne se voient que sur grand écran.
+      expect(outilsDesktop?.textContent).toContain("Démo");
+      expect(outilsDesktop?.textContent).toContain("Guide");
+      expect(outilsDesktop?.textContent).toContain("Calculatrice");
+      // Rafraîchir reste visible sur téléphone : il n'est pas dans cette zone.
+      expect(outilsDesktop?.textContent).not.toContain("Rafraîchir");
+
+      const rafraichir = Array.from(rendered.container.querySelectorAll("button")).find((b) => b.textContent === "Rafraîchir");
+      const compte = rendered.container.querySelector<HTMLElement>('[aria-label="Ouvrir le menu du compte"]');
+      expect(rafraichir).toBeTruthy();
+      expect(compte).toBeTruthy();
+      // « Juste à gauche du compte » : le bouton du compte suit Rafraîchir.
+      expect(rafraichir!.compareDocumentPosition(compte!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    } finally {
+      await rendered.unmount();
+    }
+  });
+
+  it("laisse les dépassements au grand écran : le panneau du compte n'en porte pas", async () => {
+    const rendered = await renderTopbar();
+    try {
+      const outilsDesktop = rendered.container.querySelector<HTMLElement>("[data-header-actions-desktop]");
+      expect(outilsDesktop?.textContent).toContain("Dépassements");
+      // Un seul exemplaire : sur téléphone c'est la roue flottante qui ouvre le
+      // même panneau, la barre n'en garde pas de double.
+      const tous = Array.from(rendered.container.querySelectorAll("button")).filter((b) => b.textContent === "Dépassements");
+      expect(tous).toHaveLength(1);
     } finally {
       await rendered.unmount();
     }
