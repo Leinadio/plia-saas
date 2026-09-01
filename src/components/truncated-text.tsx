@@ -10,7 +10,23 @@ import { cn } from "@/lib/utils";
 // `lines` fixe le nombre de lignes avant l'ellipse. Deux lignes valent mieux pour un
 // libellé bancaire, où l'essentiel arrive tard : « PAIEMENT PSC 0408 ISSOIRE… » ne dit
 // rien, le marchand est plus loin. Les colonnes étroites gardent une seule ligne.
-export function TruncatedText({ text, className, lines = 1 }: { text: string; className?: string; lines?: 1 | 2 }) {
+//
+// `depliable` peut être coupé là où le clic appartient déjà à autre chose : dans le
+// panneau de détail, cliquer une ligne désigne son montant dans le grand tableau, et
+// un libellé qui avalerait ce clic pour se déplier volerait le seul geste de l'écran.
+// Le survol y suffit — le texte entier est dans le tooltip.
+//
+// `cote` dit de quel côté la bulle sort. Au-dessus par défaut ; à gauche dans le
+// panneau de détail, qui est collé au bord droit de l'écran : une bulle sortant
+// vers le haut y couvrait la ligne du dessus, c'est-à-dire un autre montant du
+// même calcul.
+export function TruncatedText({ text, className, lines = 1, depliable = true, cote = "top" }: {
+  text: string;
+  className?: string;
+  lines?: 1 | 2;
+  depliable?: boolean;
+  cote?: "top" | "right" | "bottom" | "left";
+}) {
   const ref = useRef<HTMLSpanElement>(null);
   const [truncated, setTruncated] = useState(false);
   // Déplié par un clic. Le survol ne veut rien dire sur un écran tactile : sans ce
@@ -37,7 +53,7 @@ export function TruncatedText({ text, className, lines = 1 }: { text: string; cl
       // (replier un mois, ouvrir le détail d'une case). Lire un texte coupé ne doit
       // pas déclencher ce qui l'entoure.
       onClick={
-        truncated || deplie
+        depliable && (truncated || deplie)
           ? (e) => {
               e.stopPropagation();
               setDeplie((v) => !v);
@@ -50,7 +66,7 @@ export function TruncatedText({ text, className, lines = 1 }: { text: string; cl
           : lines === 2
             ? "line-clamp-2 break-words whitespace-normal"
             : "block truncate",
-        (truncated || deplie) && "cursor-pointer",
+        depliable && (truncated || deplie) && "cursor-pointer",
         className,
       )}
     >
@@ -63,7 +79,7 @@ export function TruncatedText({ text, className, lines = 1 }: { text: string; cl
   return (
     <Tooltip delayDuration={700}>
       <TooltipTrigger asChild>{span}</TooltipTrigger>
-      <TooltipContent className="max-w-sm break-words">{text}</TooltipContent>
+      <TooltipContent side={cote} className="max-w-sm break-words">{text}</TooltipContent>
     </Tooltip>
   );
 }

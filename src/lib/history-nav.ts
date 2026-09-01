@@ -21,13 +21,29 @@ export const uncatOpenKey = (direction: "in" | "out") => (direction === "in" ? "
 // dans des mois qu'on ne regardait pas.
 export const openKeyIn = (key: string, month: string) => `${key}@${month}`;
 
-// Index de mois d'une case du tableau (`ligne::colonne::index`, cf. cellKey). Sert à
-// savoir dans QUEL tableau de mois révéler une ligne choisie depuis le side panel.
+// UNE CLÉ DE CASE SE LIT PAR LA DROITE. Sa forme est « ligne::colonne::index »
+// (cf. cellKey), mais la LIGNE peut elle-même contenir le séparateur : une
+// transaction synchronisée s'identifie « compte::référence » (TXN_ID_SEP), donc sa
+// case s'écrit « txn:compte::référence::recu::0 ». Découpée par la gauche, la ligne
+// se réduisait à « txn:compte » — un nom qui n'existe nulle part. Plus rien ne se
+// dépliait quand on cliquait une transaction dans le panneau, et la case n'était
+// jamais montrée. Invisible en démonstration, dont les identifiants n'ont pas de
+// « :: ». La colonne et l'index, eux, n'en contiennent jamais : les deux derniers
+// morceaux sont donc toujours les bons.
+function coupures(cell: string): { ligne: number; colonne: number } | null {
+  const colonne = cell.lastIndexOf("::");
+  if (colonne <= 0) return null;
+  const ligne = cell.lastIndexOf("::", colonne - 1);
+  return ligne > 0 ? { ligne, colonne } : null;
+}
+
+// Index de mois d'une case du tableau. Sert à savoir dans QUEL tableau de mois
+// révéler une ligne choisie depuis le side panel.
 export function monthIndexOf(cell: string | null): number | null {
   if (!cell) return null;
-  const parts = cell.split("::");
-  if (parts.length < 3) return null;
-  const i = Number(parts[2]);
+  const c = coupures(cell);
+  if (!c) return null;
+  const i = Number(cell.slice(c.colonne + 2));
   return Number.isInteger(i) ? i : null;
 }
 
@@ -185,18 +201,30 @@ export function cellsForTotal(detail: CellDetail): string[] | null {
   return detail.cellRef ? [detail.cellRef] : null;
 }
 
+// Le symbole devant un terme de l'opération posée. Le premier terme n'en porte
+// pas : on n'écrit pas « + » en tête d'une addition, on pose le nombre et on
+// ajoute les suivants. S'il est négatif il garde son moins — sans lui le nombre
+// affiché ne serait pas celui qu'on additionne.
+//
+// Le seuil du demi-centime est celui de l'affichage : un montant qui se lit
+// « 0,00 » ne doit pas traîner un moins devant lui.
+export function symbolePose(montant: number, premier: boolean): "+" | "−" | "" {
+  if (montant <= -0.005) return "−";
+  return premier ? "" : "+";
+}
+
 // Cases allumées dans le tableau : l'ancre (le montant cliqué dans le tableau, qui
 // reste allumé tant que le panneau est ouvert) ET les cases choisies dans le panneau.
 export function highlightedCells(anchor: string | null, selected: string[] | null): Set<string> {
   return new Set([anchor, ...(selected ?? [])].filter((k): k is string => k != null));
 }
 
-// Ligne porteuse d'une case : préfixe de la clé « <ligne>::colonne::mois ».
+// Ligne porteuse d'une case : tout ce qui précède la colonne et l'index.
 // null si aucune case active, ou si la clé n'en est pas une.
 export function rowKeyOf(cell: string | null): string | null {
   if (!cell) return null;
-  const i = cell.indexOf("::");
-  return i > 0 ? cell.slice(0, i) : null;
+  const c = coupures(cell);
+  return c ? cell.slice(0, c.ligne) : null;
 }
 
 // Dépliage effectif = celui de l'utilisateur, plus les ancêtres de la ligne

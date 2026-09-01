@@ -37,6 +37,7 @@ import { NewGroupInline } from "@/components/new-group-inline";
 import { NewLineInline } from "@/components/new-line-inline";
 import { type ColKey, monthType, monthColumns, COL_LABEL, COL_INFO } from "@/lib/history-columns";
 import { computeRevealKeys, computePrevDisplayed, rowOpenKey, lineOpenKey, uncatOpenKey, highlightedCells, rowKeyOf, withRevealed , openKeyIn } from "@/lib/history-nav";
+import { DUREE_GLISSEMENT, deplacement, positionA } from "@/lib/defilement";
 import {
   netCol,
   txnChildren,
@@ -92,10 +93,11 @@ export type SelectGroup = {
   // elle qu'affiche la colonne de gauche à côté du nom du poste.
   lines: { id: number; name: string; amount: number; startMonth?: string | null; endMonth?: string | null; changes: BudgetChange[] }[];
 };
-// Surbrillance de la case sélectionnée depuis le side panel : un anneau seul. Le fond
-// teinté qui l'accompagnait est parti avec les autres couleurs de fond — l'anneau
-// désigne la case aussi bien, et c'est un état, pas une couleur de tableau.
-const CELL_HL = "ring-1 ring-inset ring-primary/60";
+// Surbrillance de la case désignée depuis le side panel : la surface nue et un
+// anneau, qui restent tant que la case est choisie. Le dessin vit dans globals.css
+// (.case-active) : il doit passer devant le fond de famille de la colonne, ce qu'une
+// classe utilitaire d'ici ne pourrait pas faire.
+const CELL_HL = "case-active";
 
 // Portée d'un dépliage. Il y a eu un tableau par mois, et un dépliage valait pour
 // son mois seulement. Il n'y en a plus qu'un : une ligne n'existe qu'une fois et se
@@ -1585,6 +1587,31 @@ function scrollableAncestor(el: HTMLElement, axis: "x" | "y"): HTMLElement | nul
   return null;
 }
 
+// Fait glisser un conteneur de `delta` pixels sur un axe, image par image. Rend
+// la fonction qui interrompt le mouvement : un second clic dans le panneau ne doit
+// pas laisser deux glissements se disputer le même conteneur.
+function glisser(el: HTMLElement, axe: "x" | "y", delta: number, duree: number): () => void {
+  if (delta === 0) return () => {};
+  const depart = axe === "x" ? el.scrollLeft : el.scrollTop;
+  const poser = (v: number) => {
+    if (axe === "x") el.scrollLeft = v;
+    else el.scrollTop = v;
+  };
+  if (duree <= 0) {
+    poser(depart + delta);
+    return () => {};
+  }
+  let image = 0;
+  const debut = performance.now();
+  const pas = (maintenant: number) => {
+    const ecoule = maintenant - debut;
+    poser(positionA(depart, delta, ecoule, duree));
+    if (ecoule < duree) image = requestAnimationFrame(pas);
+  };
+  image = requestAnimationFrame(pas);
+  return () => cancelAnimationFrame(image);
+}
+
 type OnboardingTargets = {
   budgetGroupId: number;
   detailGroupId: number;
@@ -1764,16 +1791,29 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     "--history-table-width-desktop": `${20 + dataCols * 6}rem`,
   } as React.CSSProperties;
 
-  // Faire défiler la case sélectionnée dans la vue (après dépliage éventuel : la
-  // dépendance sur effectiveOpen relance l'effet une fois la ligne montée). On
+  // Amener la case choisie dans le panneau sous les yeux (après dépliage éventuel :
+  // la dépendance sur effectiveOpen relance l'effet une fois la ligne montée). On
   // défile explicitement le conteneur horizontal (CenterScroll) et le conteneur
   // vertical, plutôt que scrollIntoView, pour tenir compte de la première colonne
   // collante (sinon la case reste cachée derrière) et défiler le bon conteneur.
+  //
+  // Le tableau GLISSE, il ne saute pas : cliquer un montant dans le panneau, c'est
+  // demander « où est-il ? », et un tableau qui se téléporte ne répond pas — on ne
+  // sait plus d'où l'on vient. Le glissement se fait à la main, image par image,
+  // parce que le « smooth » du navigateur est ignoré sur un conteneur à colonne
+  // collante (c'était le sens du saut d'avant).
   useEffect(() => {
     if (!activeCell) return;
     const el = gridRef.current?.querySelector<HTMLElement>(`[data-cellkey="${activeCell}"]`);
     if (!el) return;
-    const pad = 12;
+    const marge = 12;
+    // Qui a demandé que rien ne bouge est posé directement à destination.
+    const doux = !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const duree = doux ? DUREE_GLISSEMENT : 0;
+    const arrets: Array<() => void> = [];
+
+    // Rien à allumer ici : la case désignée porte déjà son fond clair (case-active)
+    // tant qu'elle est choisie. Le glissement est le seul mouvement.
 
     // Horizontal : révéler la case à droite de la colonne collante de gauche.
     const hx = scrollableAncestor(el, "x");
@@ -1782,11 +1822,12 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       const eRect = el.getBoundingClientRect();
       const sticky = hx.querySelector<HTMLElement>("thead th.sticky, tbody td.sticky");
       const stickyW = sticky ? sticky.getBoundingClientRect().width : 0;
-      const visLeft = cRect.left + stickyW;
-      // behavior "auto" (instantané) : le défilement "smooth" est ignoré sur ce
-      // conteneur (colonne collante), la case n'était alors jamais révélée.
-      if (eRect.left < visLeft) hx.scrollBy({ left: eRect.left - visLeft - pad, behavior: "auto" });
-      else if (eRect.right > cRect.right) hx.scrollBy({ left: eRect.right - cRect.right + pad, behavior: "auto" });
+      const delta = deplacement(
+        { debut: cRect.left + stickyW, fin: cRect.right },
+        { debut: eRect.left, fin: eRect.right },
+        marge,
+      );
+      arrets.push(glisser(hx, "x", delta, duree));
     }
 
     // Vertical : révéler la ligne dans le conteneur qui défile en hauteur.
@@ -1794,9 +1835,15 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     if (vy) {
       const cRect = vy.getBoundingClientRect();
       const eRect = el.getBoundingClientRect();
-      if (eRect.top < cRect.top) vy.scrollBy({ top: eRect.top - cRect.top - pad, behavior: "auto" });
-      else if (eRect.bottom > cRect.bottom) vy.scrollBy({ top: eRect.bottom - cRect.bottom + pad, behavior: "auto" });
+      const delta = deplacement(
+        { debut: cRect.top, fin: cRect.bottom },
+        { debut: eRect.top, fin: eRect.bottom },
+        marge,
+      );
+      arrets.push(glisser(vy, "y", delta, duree));
     }
+
+    return () => arrets.forEach((arret) => arret());
   }, [activeCell, effectiveOpen]);
 
   // topLevel : ligne au niveau des sections (rémunérations), bande grise comme

@@ -1,6 +1,6 @@
 import { expect, describe, it } from "vitest";
 import type { HistorySection, HistoryRow, HistoryTxn, MonthCell, SoldeColumn, PlannedSoldes } from "../../src/lib/history";
-import { computeRevealKeys, computePrevDisplayed, rowOpenKey, lineOpenKey, uncatOpenKey, flattenNodes, cellsForNode, cellsForTotal, highlightedCells, rowKeyOf, withRevealed, openKeyIn, monthIndexOf, selectionForDetail, selectionForRow, TOTAL_ROW } from "../../src/lib/history-nav";
+import { computeRevealKeys, computePrevDisplayed, rowOpenKey, lineOpenKey, uncatOpenKey, flattenNodes, cellsForNode, cellsForTotal, highlightedCells, rowKeyOf, withRevealed, openKeyIn, monthIndexOf, selectionForDetail, selectionForRow, symbolePose, TOTAL_ROW } from "../../src/lib/history-nav";
 import type { DetailNode } from "../../src/lib/history-explain";
 
 function cell(p: Partial<MonthCell> = {}): MonthCell {
@@ -359,5 +359,62 @@ describe("Ce que devient la sélection quand on ouvre un nouveau calcul", () => 
     const second = selectionForRow(first, ["b::reste::0"], "1");
     expect(second.selected).toEqual(["b::reste::0"]);
     expect(second.panel).toBe("1");
+  });
+});
+
+describe("le symbole devant un terme de l'opération posée", () => {
+  it("ne met rien devant le premier terme : on n'écrit pas « + » en tête d'une addition", () => {
+    expect(symbolePose(129.93, true)).toBe("");
+  });
+
+  it("garde le moins du premier terme : sans lui le nombre serait faux", () => {
+    expect(symbolePose(-209.44, true)).toBe("−");
+  });
+
+  it("met le signe devant tous les termes suivants", () => {
+    expect(symbolePose(790, false)).toBe("+");
+    expect(symbolePose(-85.2, false)).toBe("−");
+  });
+
+  it("traite un montant quasi nul comme positif : il s'affiche 0,00, pas −0,00", () => {
+    expect(symbolePose(-0.001, false)).toBe("+");
+    expect(symbolePose(-0.001, true)).toBe("");
+    expect(symbolePose(0, false)).toBe("+");
+  });
+});
+
+describe("retrouver la ligne d'une case dont l'identité contient le séparateur", () => {
+  // Une transaction synchronisée s'identifie « compte::référence » (TXN_ID_SEP), donc
+  // sa clé de case en contient trois fois : « txn:compte::ref::recu::0 ». Découpée par
+  // la gauche, la ligne se réduisait à « txn:compte » — un nom qui n'existe nulle
+  // part. Rien ne se dépliait, et cliquer une transaction dans le panneau ne montrait
+  // jamais sa case. Invisible en démonstration, où les identifiants n'ont pas de « :: ».
+  const ID = "abc-compte::2026082100112233";
+
+  it("garde l'identifiant entier de la transaction", () => {
+    expect(rowKeyOf(`txn:${ID}::recu::0`)).toBe(`txn:${ID}`);
+  });
+
+  it("déplie le groupe d'une transaction synchronisée", () => {
+    const sec: HistorySection = {
+      kind: "income",
+      rows: [row({ id: 7, direction: "in", txns: [{ ...txn("x"), id: ID }] })],
+      totals: [cell()],
+    };
+    const keys = computeRevealKeys([sec]);
+    const selRowKey = rowKeyOf(`txn:${ID}::recu::0`);
+    expect(withRevealed(new Set<string>(), selRowKey, keys, "*")).toEqual(
+      new Set([openKeyIn(rowOpenKey(7), "*")]),
+    );
+  });
+
+  it("lit le bon mois sur une case dont la ligne contient le séparateur", () => {
+    expect(monthIndexOf(`txn:${ID}::recu::3`)).toBe(3);
+  });
+
+  it("ne se laisse pas prendre par une clé qui n'en est pas une", () => {
+    expect(rowKeyOf("sansSeparateur")).toBeNull();
+    expect(rowKeyOf("txn:abc::recu")).toBeNull();
+    expect(rowKeyOf("::recu::0")).toBeNull();
   });
 });

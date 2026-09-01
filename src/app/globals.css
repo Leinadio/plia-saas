@@ -45,7 +45,12 @@
   --portant: #1c7a4e;
   --portant-voile: #e2f1e8;
   --tension: #c0392b;
-  --tension-encre: #a8332a;
+  /* Le rouge de texte, gardé sous deux noms. Le pied du tableau redéfinit
+     --tension-encre pour s'éclaircir sur son fond d'encre ; une case allumée dans
+     ce pied redevient claire et doit retrouver l'original — d'où ce jeton-là, que
+     personne ne réécrit. */
+  --tension-encre-base: #a8332a;
+  --tension-encre: var(--tension-encre-base);
   --tension-voile: #fbe7e4;
   --attente: #8a6410;
   --attente-voile: #f7eedb;
@@ -140,7 +145,8 @@
   --portant: #4cb87f;
   --portant-voile: #14301f;
   --tension: #e4695a;
-  --tension-encre: #f08b7d;
+  --tension-encre-base: #f08b7d;
+  --tension-encre: var(--tension-encre-base);
   --tension-voile: #351a17;
   --attente: #d8a94a;
   --attente-voile: #302614;
@@ -799,5 +805,46 @@
     .speed-dial-trigger-icon {
       transition: none;
     }
+  }
+}
+
+/* LA CASE DÉSIGNÉE. Le montant choisi dans le panneau de détail s'éclaircit dans
+   le grand tableau, et il y reste tant qu'il est choisi. Sarcelle franche, cerné
+   d'un trait de deux pixels et le chiffre en gras : c'est la seule case de tout
+   l'écran qui porte la couleur de la commande, et il faut la retrouver d'un coup
+   d'œil au milieu de plusieurs centaines de chiffres. Une nuance de blanc, essayée
+   avant, se noyait dans les fonds de famille des colonnes. On l'a aussi fait
+   clignoter puis s'éteindre — c'était pire : le fond partait d'un coup et il
+   fallait rouvrir le panneau pour retrouver ce qu'on venait d'y cliquer. Il ne se
+   passe plus rien après : ça s'allume, ça reste.
+
+   HORS COUCHE, volontairement. Le fond de famille de la colonne est une utilitaire
+   Tailwind posée sur la même cellule ; une règle rangée dans @layer components
+   perdrait contre elle quelle que soit sa précision, parce que la couche des
+   utilitaires passe après. Une règle sans couche passe devant toutes. */
+.case-active {
+  background-color: color-mix(in oklab, var(--sarcelle) 22%, var(--card));
+  box-shadow: inset 0 0 0 2px var(--sarcelle);
+  font-weight: 600;
+  /* Le pied du tableau (Total du mois, Solde de fin de mois, dépassements) écrit en
+     blanc sur une masse d'encre, et retourne ses jetons pour ça. Une case allumée y
+     redevient une case claire : elle doit reprendre l'encre du monde et ses couleurs
+     de sens, sinon le même montant serait blanc sur pâle en bas du tableau et lisible
+     partout ailleurs. Une surbrillance ne veut dire qu'une chose, elle se dessine
+     donc pareil partout. */
+  --foreground: var(--encre);
+  --muted-foreground: var(--ardoise);
+  --tension-encre: var(--tension-encre-base);
+  --border: var(--filet);
+}
+
+/* L'encre du texte, elle, se pose DANS la couche des composants : les classes de
+   couleur du tableau (un montant rouge, un montant gris) vivent dans celle des
+   utilitaires, qui passe après — elles gardent donc le dernier mot. Ce qui est
+   corrigé ici, c'est le blanc HÉRITÉ de la ligne de pied, qu'aucune classe ne
+   porte sur la case elle-même. */
+@layer components {
+  .case-active {
+    color: var(--encre);
   }
 }

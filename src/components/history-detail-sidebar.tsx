@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 import type { CellDetail } from "@/lib/history-explain";
 import { detailKey } from "@/lib/history-detail";
 import { OverspendNotice } from "@/components/overspend-notice";
-import { flattenNodes, cellsForNode, cellsForTotal, TOTAL_ROW, type PanelRow } from "@/lib/history-nav";
+import { TruncatedText } from "@/components/truncated-text";
+import { flattenNodes, cellsForNode, cellsForTotal, symbolePose, TOTAL_ROW, type PanelRow } from "@/lib/history-nav";
 // Les cinq blocs d'édition vivent à part : le panneau n'est plus leur seul lecteur,
 // ces blocs se rendent aussi sur place ailleurs (voir src/components/history-blocks/).
 import { BudgetEditBlock } from "@/components/history-blocks/budget-edit-block";
@@ -18,7 +19,6 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 const NUM = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmtAbs = (n: number) => NUM.format(Math.abs(n) < 0.005 ? 0 : Math.abs(n)).replace(/[  ]/g, " ");
 const fmtSigned = (n: number) => NUM.format(Math.abs(n) < 0.005 ? 0 : n).replace(/[  ]/g, " ");
-const opOf = (n: number) => (n < 0 ? "−" : "+");
 
 // Surbrillance d'une ligne sélectionnée : fond foncé + liseré d'accent à gauche
 // rendu par une ombre interne (pas une bordure) pour ne pas décaler le tableau.
@@ -27,12 +27,35 @@ const opOf = (n: number) => (n < 0 ? "−" : "+");
 const HL =
   "bg-[color-mix(in_oklab,var(--primary)_18%,var(--background))] hover:bg-[color-mix(in_oklab,var(--primary)_18%,var(--background))] shadow-[inset_3px_0_0_0_var(--primary)]";
 
-// Une ligne du tableau de détail : montant signé (opérateur + valeur absolue) à
-// gauche, libellé (avec retrait et chevron dépliable) à droite. Cliquer la ligne
-// la sélectionne (surbrillance ici et dans le grand tableau) si elle porte un ref ;
-// sinon, si elle a des enfants, le clic la déplie.
-function DetailRow({ row, selected, onToggle, onSelect }: {
+// L'OPÉRATION POSÉE. Le calcul se lit comme sur du papier : les libellés à gauche,
+// les opérateurs alignés dans leur propre colonne, les montants alignés sur leur
+// virgule à droite, un trait, et la somme dessous.
+//
+// L'ordre a changé — le montant était à gauche du libellé. Une addition dont les
+// termes sont à gauche et les mots à droite n'est pas une opération, c'est une
+// liste ; on ne peut pas la vérifier du regard. Posée, on descend la colonne des
+// chiffres et le total tombe sous le trait.
+//
+// Trois colonnes plutôt qu'une chaîne « + 120,00 » : l'opérateur doit rester à sa
+// place quand le montant grandit d'un chiffre, sinon la colonne se décale d'une
+// ligne à l'autre et l'alignement, qui est tout l'intérêt, disparaît.
+const COL_OP = "w-px py-1 pr-1 pl-4 text-center align-top select-none whitespace-nowrap";
+const COL_MONTANT = "w-px py-1 pl-0 text-right align-top whitespace-nowrap tabular-nums";
+// La colonne des libellés absorbe toute la place qui reste, et rien de plus :
+// `max-w-0` avec `w-full` est ce qui force une colonne de tableau à céder devant
+// ses voisines au lieu de pousser la table hors du panneau. Sans lui, un libellé
+// long élargissait la table et les montants finissaient hors de vue, à chercher
+// en faisant défiler de côté — dans un calcul, c'est le chiffre qu'on vient lire.
+const COL_LIBELLE = "w-full max-w-0 py-1 align-top";
+
+// Une ligne de l'opération : libellé (avec retrait et chevron dépliable), son
+// opérateur, son montant. Cliquer la ligne la sélectionne (surbrillance ici et
+// dans le grand tableau, qui glisse jusqu'à elle) si elle porte un ref ; sinon, si
+// elle a des enfants, le clic la déplie.
+function DetailRow({ row, premiere, selected, onToggle, onSelect }: {
   row: PanelRow;
+  // Le premier terme de l'opération : il se pose sans symbole devant.
+  premiere: boolean;
   selected: boolean;
   onToggle: () => void;
   onSelect?: () => void;
@@ -47,12 +70,8 @@ function DetailRow({ row, selected, onToggle, onSelect }: {
       className={cn(selected && HL, rowClick && "cursor-pointer")}
       onClick={rowClick}
     >
-      <TableCell className="w-px py-1 pr-3 text-right align-top whitespace-nowrap tabular-nums">
-        <span className="text-muted-foreground mr-1">{opOf(node.amount)}</span>
-        <span className={cn(node.amount < 0 && "text-tension-encre")}>{fmtAbs(node.amount)}</span>
-      </TableCell>
-      <TableCell className="w-full py-1 align-top">
-        <div className="flex items-center gap-1" style={{ paddingLeft: `${depth * 1}rem` }}>
+      <TableCell className={COL_LIBELLE}>
+        <div className="flex items-start gap-1" style={{ paddingLeft: `${depth * 1}rem` }}>
           {hasChildren ? (
             <button
               type="button"
@@ -60,16 +79,29 @@ function DetailRow({ row, selected, onToggle, onSelect }: {
                 e.stopPropagation();
                 onToggle();
               }}
-              className="text-muted-foreground shrink-0"
+              className="text-muted-foreground mt-1 shrink-0"
               aria-label={expanded ? "Replier" : "Déplier"}
             >
               {expanded ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
             </button>
           ) : (
-            <span className="inline-block size-3 shrink-0" />
+            <span className="mt-1 inline-block size-3 shrink-0" />
           )}
-          <span className="min-w-0 flex-1 truncate">{node.label}</span>
+          {/* Le libellé se coupe et le survol le rend entier. Un libellé bancaire
+              n'a pas de longueur : « PRLV SEPA PAYPAL EUROPE S.A.R.L.-385261903… »
+              poussait la colonne des chiffres hors du panneau, et un calcul dont on
+              ne voit plus les montants ne sert à rien. Pas de clic pour déplier ici :
+              le clic sur la ligne désigne déjà le montant dans le grand tableau. */}
+          <div className="min-w-0 flex-1">
+            <TruncatedText text={node.label} depliable={false} cote="left" />
+          </div>
         </div>
+      </TableCell>
+      <TableCell className={cn(COL_OP, "text-muted-foreground")}>
+        {symbolePose(node.amount, premiere)}
+      </TableCell>
+      <TableCell className={cn(COL_MONTANT, node.amount < 0 && "text-tension-encre")}>
+        {fmtAbs(node.amount)}
       </TableCell>
     </TableRow>
   );
@@ -152,7 +184,7 @@ function DetailBody({ detail, onClose, selectedPanel, onSelectRow }: {
       <SidebarContent data-onboarding-target="amount-detail-panel" className="p-4">
         <Table>
           <TableBody>
-            {rows.map((r) => {
+            {rows.map((r, i) => {
               // Toute ligne est cliquable et surligne une ou plusieurs cases du
               // tableau : ses cases dédiées (refs) si son montant est une somme
               // éclatée dans le tableau, sinon sa case (ref), sinon la case d'origine
@@ -165,6 +197,7 @@ function DetailBody({ detail, onClose, selectedPanel, onSelectRow }: {
                 <DetailRow
                   key={r.path}
                   row={r}
+                  premiere={i === 0}
                   selected={selectedPanel === r.path}
                   onToggle={() => toggle(r.path)}
                   onSelect={onSelectRow ? () => onSelectRow(cells, r.path) : undefined}
@@ -177,17 +210,25 @@ function DetailBody({ detail, onClose, selectedPanel, onSelectRow }: {
               // pour n'activer que cette ligne.
               const onTotal = onSelectRow ? () => onSelectRow(cellsForTotal(detail), TOTAL_ROW) : undefined;
               const totalSelected = selectedPanel === TOTAL_ROW;
+              // Le trait de l'opération ne court que sous les chiffres, pas sous
+              // les libellés : c'est le trait qu'on tire à la règle avant d'écrire
+              // la somme, et il ne concerne que la colonne qu'on additionne.
+              const TRAIT = "border-foreground/45 border-t";
               return (
                 <TableRow
                   data-selectable={onTotal ? "" : undefined}
-                  className={cn("border-t font-semibold", totalSelected ? HL : "hover:bg-transparent", onTotal && "cursor-pointer")}
+                  className={cn("font-semibold", totalSelected ? HL : "hover:bg-transparent", onTotal && "cursor-pointer")}
                   onClick={onTotal}
                 >
-                  <TableCell className="w-px py-2 pr-3 text-right whitespace-nowrap tabular-nums">
-                    <span className="text-muted-foreground mr-1">=</span>
-                    <span className={cn(detail.result < 0 && "text-tension-encre")}>{fmtAbs(detail.result)}</span>
+                  <TableCell className={cn(COL_LIBELLE, "py-2")}>Total</TableCell>
+                  <TableCell className={cn(COL_OP, TRAIT, "text-muted-foreground py-2")}>=</TableCell>
+                  {/* La somme porte son signe COLLÉ au nombre, là où les termes le
+                      portent dans leur colonne : c'est un résultat, pas un terme
+                      qu'on ajoute. Sans lui, le panneau annonçait « 19,18 » sous un
+                      titre à −19,18 — deux nombres pour la même chose. */}
+                  <TableCell className={cn(COL_MONTANT, TRAIT, "py-2", detail.result < 0 && "text-tension-encre")}>
+                    {`${symbolePose(detail.result, true)}${fmtAbs(detail.result)}`}
                   </TableCell>
-                  <TableCell className="w-full py-2">Total</TableCell>
                 </TableRow>
               );
             })()}
