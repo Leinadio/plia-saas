@@ -1755,6 +1755,14 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
   // Nombre total de colonnes du tableau (Catégorie + les colonnes de chaque mois),
   // pour l'attribut colSpan des lignes d'espacement et des formulaires en ligne.
   const totalCols = 1 + months.reduce((n, m) => n + monthColumns(monthType(m, currentMonth)).length, 0);
+  const dataCols = totalCols - 1;
+  // Une cellule de chiffres occupe toujours 6 rem. La largeur totale est donc
+  // déterminée par le NOMBRE de colonnes, jamais par leur contenu : ouvrir un
+  // détail ou afficher « dépassement » ne peut plus étirer puis rétrécir la grille.
+  const tableWidths = {
+    "--history-table-width": `${11 + dataCols * 6}rem`,
+    "--history-table-width-desktop": `${20 + dataCols * 6}rem`,
+  } as React.CSSProperties;
 
   // Faire défiler la case sélectionnée dans la vue (après dépliage éventuel : la
   // dépendance sur effectiveOpen relance l'effet une fois la ligne montée). On
@@ -2309,9 +2317,8 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
 
     return (
     <>
-    {/* w-max : la largeur du tableau suit son contenu, pas le conteneur. Sinon
-        (w-full par defaut) les colonnes se resserrent quand la sidebar de detail
-        s'ouvre et retrecit la zone : le tableau doit defiler, pas se tasser. */}
+    {/* La largeur du tableau suit uniquement son nombre de colonnes. Le contenu
+        n'a jamais le droit de l'étirer : la grille défile, elle ne se déforme pas. */}
     {/* tabular-nums sur TOUT le tableau : le défaut ici, c'est le chiffre. Les rares
         zones de texte (première colonne, en-têtes) repassent en font-sans. 13px
         compense la chasse fixe, plus large que la proportionnelle, pour garder la
@@ -2323,8 +2330,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         d'une même ligne restent sur la même ligne de base ; les lignes sans
         étiquette, qui tiennent sur une seule ligne, ne bougent pas. */}
     <Table
+      style={tableWidths}
       className={cn(
-        "w-max text-[13px] tabular-nums [&_td]:align-top",
+        "table-fixed w-[var(--history-table-width)] text-[13px] tabular-nums sm:w-[var(--history-table-width-desktop)] [&_td]:overflow-hidden [&_td]:align-top [&_th]:overflow-hidden",
         // Le serrage de téléphone. Il ne touche QUE les cases de chiffres —
         // reconnaissables à leur tabular-nums — parce que l'épine, elle, porte du
         // texte : la rétrécir aussi rendrait les noms de postes illisibles. Onze
@@ -2337,9 +2345,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       {/* Le colgroup ne porte plus de teinte : il ne reste que la structure des
           colonnes, qui sert au calage des largeurs. */}
       <colgroup>
-        <col />
+        <col className="w-44 sm:w-80" />
         {months.flatMap((m) =>
-          monthColumns(monthType(m, currentMonth)).map((col) => <col key={`${m}-${col}`} />),
+          monthColumns(monthType(m, currentMonth)).map((col) => <col key={`${m}-${col}`} className="w-24" />),
         )}
       </colgroup>
       <TableHeader>
@@ -2360,28 +2368,28 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 data-current-month={m === currentMonth ? "" : undefined}
                 data-onboarding-target={m === onboarding?.month ? onboarding?.timeTarget : undefined}
                 data-onboarding-month={m === onboarding?.month ? onboarding?.month : undefined}
-                className={cn(mi > 0 && MONTH_RULE, "px-2 pt-4 pb-1 text-left align-middle sm:px-4 sm:text-center")}
+                className={cn(mi > 0 && MONTH_RULE, "h-[4.5rem] px-2 py-2 text-left align-middle sm:px-4 sm:text-center")}
               >
                 {/* Le nom du mois se pose À GAUCHE de son bloc sur téléphone. Centré, il
                     tombait au milieu de six cents pixels de colonnes : on arrivait sur
                     le tableau sans savoir quel mois on regardait, le titre étant hors
                     de l'écran à droite. */}
-                <div className="flex items-baseline justify-start gap-2 whitespace-nowrap sm:justify-center">
-                  <span className={cn("font-display text-lg leading-none", futur && "text-muted-foreground")}>
-                    {monthName(m)}
-                  </span>
-                  <span className="text-ardoise-claire text-[11px] leading-none tabular-nums">
-                    {m.slice(0, 4)}
-                  </span>
-                </div>
-                {futur && <div className="legende text-ardoise-claire mt-1.5">projection</div>}
-                {/* Ce que ce mois laisse hors des calculs. Même formulation et même
-                    étiquette dormante que sur la page Transactions. */}
-                {nonComptees > 0 && (
-                  <div className="mt-1.5">
-                    <span className="pastille">{nonComptees} hors calcul</span>
+                <div className="flex h-full flex-col justify-center overflow-hidden">
+                  <div className="flex items-baseline justify-start gap-2 whitespace-nowrap sm:justify-center">
+                    <span className={cn("font-display text-lg leading-none", futur && "text-muted-foreground")}>
+                      {monthName(m)}
+                    </span>
+                    <span className="text-ardoise-claire text-[11px] leading-none tabular-nums">
+                      {m.slice(0, 4)}
+                    </span>
                   </div>
-                )}
+                  {/* Cette ligne est toujours réservée. Un badge qui apparaît ou
+                      disparaît ne change donc jamais la hauteur de l'en-tête. */}
+                  <div className="mt-1.5 flex h-5 items-center justify-start gap-2 overflow-hidden sm:justify-center">
+                    {futur && <span className="legende text-ardoise-claire">projection</span>}
+                    {nonComptees > 0 && <span className="pastille">{nonComptees} hors calcul</span>}
+                  </div>
+                </div>
               </TableHead>
             );
           })}

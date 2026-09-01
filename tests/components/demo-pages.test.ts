@@ -76,6 +76,8 @@ describe("DemoHistory", () => {
   it("rend une seule cible pour chaque étape initiale du guide", () => {
     const html = renderDemoHistory();
     const currentMonth = new Date().toISOString().slice(0, 7);
+    const currentMonthName = new Intl.DateTimeFormat("fr-FR", { month: "long", timeZone: "UTC" })
+      .format(new Date(`${currentMonth}-01T00:00:00Z`));
     const transportBudgetCell = html.match(new RegExp(
       `<td(?=[^>]*data-onboarding-target="adjust-transport")(?=[^>]*data-onboarding-group-id="${DEMO_IDS.transport}")(?=[^>]*data-onboarding-month="${currentMonth}")[^>]*>.*?<\\/td>`,
     ))?.[0] ?? "";
@@ -107,8 +109,8 @@ describe("DemoHistory", () => {
     expect(transportBudgetCell).toContain(">120,00<");
     expect(coursesSpentCell).toContain(">216,30<");
     expect(endingBalanceRow).toContain("Solde de fin de mois");
-    expect(currentMonthHeader).toContain("Août");
-    expect(currentMonthHeader).toContain("2026");
+    expect(currentMonthHeader.toLocaleLowerCase("fr-FR")).toContain(currentMonthName);
+    expect(currentMonthHeader).toContain(currentMonth.slice(0, 4));
     expect(html).not.toContain("Ajouter une transaction");
   });
 
