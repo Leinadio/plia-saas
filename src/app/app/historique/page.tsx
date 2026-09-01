@@ -20,6 +20,7 @@ import { currentMonthKey } from "../../../lib/current-month";
 import { accountLabel, effectiveBalance } from "../../../lib/account";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HistoryWithDetail } from "@/components/history-with-detail";
+import { SoldeDetailleProvider, SoldeDetailleToggle } from "@/components/solde-detaille";
 import { HistoryPeriodFrame } from "@/components/history-period-frame";
 import { FirstAccountOnboarding } from "@/components/first-account-onboarding";
 import { ConnexionReussie } from "@/components/connexion-reussie";
@@ -187,10 +188,14 @@ export default async function HistoriquePage({
 
           return (
             <TabsContent key={a.id} value={a.id} className="flex flex-col gap-4">
+            {/* Le fournisseur englobe la barre d'outils ET le tableau : le bouton est
+                au-dessus de la frise, le tableau qui obéit en dessous. */}
+            <SoldeDetailleProvider>
               {/* Au-dessus de la frise, pas en dessous : la frise et le tableau
                   qu'elle commande restent collés, et le bouton d'explication du
                   calcul se lit comme un outil de la page, à l'écart de ce couple. */}
-              <div className="flex items-center justify-end gap-3">
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <SoldeDetailleToggle />
                 <ForecastDetailSheet label={accountLabel(a)} forecast={forecast} />
               </div>
               <HistoryPeriodFrame
@@ -224,6 +229,7 @@ export default async function HistoriquePage({
                   overspendsByMonth={overspendsByMonth}
                 />
               </HistoryPeriodFrame>
+            </SoldeDetailleProvider>
             </TabsContent>
           );
         })}

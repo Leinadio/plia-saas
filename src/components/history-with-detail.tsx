@@ -1,13 +1,11 @@
 "use client";
-import { useState } from "react";
 import type { AccountForecast } from "@/lib/forecast";
 import type { MonthCell, HistorySection, SoldeColumn, PlannedSoldes, Overspend, IgnoredBlock } from "@/lib/history";
 import { CenterScroll } from "@/components/center-scroll";
 import { HistoryGrid, type SelectGroup } from "@/components/history-grid";
 import { useDetailSidebar } from "@/components/detail-sidebar";
+import { useSoldeDetailleOptional } from "@/components/solde-detaille";
 import { VoileDAttente } from "@/components/mise-a-jour";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 
 // SelectGroup vient de HistoryGrid, à qui ce composant ne fait que passer la main.
 // Le redéclarer ici l'avait déjà laissé dériver : il lui manquait les bornes de mois,
@@ -59,18 +57,14 @@ export function HistoryWithDetail(props: {
   // Mode détaillé des colonnes de solde. Ici et non dans la grille : la case doit
   // rester en place quand on fait défiler le tableau de gauche à droite, donc elle vit
   // en dehors du conteneur de défilement.
-  const [showDeltas, setShowDeltas] = useState(false);
+  // Le réglage vient de la barre d'outils, au-dessus de la frise (cf.
+  // solde-detaille.tsx). Sans fournisseur — la démonstration, une page d'essai — le
+  // tableau reste au mode simple : il n'y aurait de toute façon aucun bouton pour en
+  // sortir.
+  const soldeDetaille = useSoldeDetailleOptional();
+  const showDeltas = soldeDetaille?.detaille ?? false;
   return (
     <div className="flex flex-col gap-3">
-      {/* Ce que la case répare : dans les colonnes de solde, une case rouge veut dire
-          soit « cette ligne retranche », soit « le solde est négatif », et rien ne
-          distingue les deux quand ils tombent ensemble. Cochée, elle sépare les deux —
-          le mouvement au-dessus, le solde signé en dessous. Le tableau y gagne en
-          hauteur, ce qui est le prix à payer, d'où le choix plutôt que l'imposition. */}
-      <Label className="text-muted-foreground w-fit gap-2 font-normal">
-        <Checkbox checked={showDeltas} onCheckedChange={(v) => setShowDeltas(v === true)} />
-        Détailler les mouvements de solde
-      </Label>
       {/* LA CARTE. Le tableau repose sur la surface du monde : blanche, arrondie à
           12 px, cerclée d'un filet d'un pixel et posée sur une ombre courte.
           overflow-hidden : c'est elle qui coupe le tableau qui défile à l'intérieur,

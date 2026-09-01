@@ -1643,8 +1643,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
   // inline d'un groupe accepte, passé compris.
   stripMin: string;
   stripMax: string;
-  // Mode détaillé des colonnes de solde : la case à cocher vit au-dessus du tableau,
-  // hors du défilement horizontal, donc son état arrive d'au-dessus (cf. SoldeDetaille).
+  // Mode détaillé des colonnes de solde : le bouton vit dans la barre d'outils de la
+  // page, au-dessus de la frise et hors du défilement horizontal, donc son état
+  // arrive d'au-dessus (cf. solde-detaille.tsx).
   showDeltas?: boolean;
   forecast: AccountForecast;
   sections: HistorySection[];
