@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import { setGroup } from "@/app/app/transactions/actions";
 import { groupSelectSections } from "@/lib/group-select-options";
+import { sensDuMontant } from "@/lib/ownership";
 import { cn } from "@/lib/utils";
 import { champClass } from "@/components/ui/input";
 import { useMiseAJour } from "@/components/mise-a-jour";
@@ -47,9 +48,13 @@ function stateOf(groupId: number | null, lineId: number | null): string {
 }
 
 export function GroupSelectField({
-  txnId, groups, defaultGroupId, defaultLineId, disabled = false, className, onLocalChange, onboardingTarget,
+  txnId, montant, groups, defaultGroupId, defaultLineId, disabled = false, className, onLocalChange, onboardingTarget,
 }: {
   txnId: string;
+  // Le montant de l'opération, pour son SENS : une dépense ne voit pas les revenus,
+  // une recette voit tout — c'est ainsi qu'un remboursement va sur l'enveloppe qu'il
+  // rembourse (cf. peutRecevoir). Omis, le menu montre tout.
+  montant?: number;
   groups: GroupOpt[];
   defaultGroupId: number | null;
   defaultLineId: number | null;
@@ -67,7 +72,10 @@ export function GroupSelectField({
     for (const g of groups) for (const l of g.lines) m.set(l.id, g.id);
     return m;
   }, [groups]);
-  const sections = useMemo(() => groupSelectSections(groups), [groups]);
+  const sections = useMemo(
+    () => groupSelectSections(groups, montant === undefined ? undefined : sensDuMontant(montant)),
+    [groups, montant],
+  );
 
   // Affiche tout de suite le choix (valeur optimiste), puis suit la vérité
   // serveur : quand l'état serveur change après le refresh, on se resynchronise.

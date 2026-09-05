@@ -65,3 +65,26 @@ export function partDansLePoste(amount: number, direction: Direction): number {
 export function canAttachToGroup(hasLines: boolean, lineId: number | null): boolean {
   return !hasLines || lineId !== null;
 }
+
+// --- Quels postes peuvent accueillir une opération ---------------------------
+// La règle n'est pas symétrique, et c'est voulu.
+//
+// Une DÉPENSE ne va que dans une dépense. Rangée dans une rémunération, elle
+// viendrait diminuer ce qu'on a reçu ce mois-ci (cf. partDansLePoste) : le poste
+// dirait qu'on a gagné moins, ce qui n'a pas eu lieu. Le menu de rattachement en
+// proposait la moitié pour rien.
+//
+// Une RECETTE, elle, va dans les deux. Dans un revenu, évidemment ; mais aussi dans
+// une dépense, et c'est là tout l'intérêt : les 200 € qu'un ami rend sur « Vacances »
+// allègent l'enveloppe qu'ils remboursent. Sans ce chemin-là, un remboursement
+// n'aurait nulle part où se ranger, et le poste resterait en dépassement pour un
+// argent qui est revenu.
+export function peutRecevoir(sensTransaction: Direction, sensGroupe: Direction): boolean {
+  return sensTransaction === "in" || sensGroupe === "out";
+}
+
+// Le sens d'un montant. Un zéro n'est une sortie pour personne : on ne lui ferme
+// aucune porte.
+export function sensDuMontant(amount: number): Direction {
+  return amount < 0 ? "out" : "in";
+}

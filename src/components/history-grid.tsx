@@ -1559,6 +1559,7 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
                     c'est-à-dire le mois où elle COMPTE, rattachement compris. */}
                 <GroupSelectField
                   txnId={txn.id}
+                  montant={txn.amount}
                   groups={groupsForMonth(groups, txn.month, txn.groupId)}
                   defaultGroupId={txn.groupId}
                   defaultLineId={txn.lineId}

@@ -110,6 +110,7 @@ function Ligne({
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
         <GroupSelectField
           txnId={t.id}
+          montant={t.amount}
           groups={groupes}
           defaultGroupId={t.groupId}
           defaultLineId={t.lineId}

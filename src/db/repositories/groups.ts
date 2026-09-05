@@ -51,6 +51,17 @@ export async function getGroupLifespan(
   return row ?? null;
 }
 
+// Le sens d'un groupe (« in » = rentrée, « out » = sortie), null s'il n'existe pas.
+// Sert à refuser d'y ranger une opération qui ne peut pas y aller : une dépense dans
+// une rémunération (cf. peutRecevoir).
+export async function getGroupDirection(db: Db, id: number): Promise<"in" | "out" | null> {
+  const row = await db.one<{ direction: "in" | "out" }>(
+    `SELECT direction FROM groups WHERE id = $1`,
+    [id],
+  );
+  return row?.direction ?? null;
+}
+
 // Durée de vie d'une ligne de récurrent, ou null si la ligne n'existe pas. Sert à
 // juger un changement de bornes : ce qu'on retire se lit par rapport à ce qui est.
 export async function getLineLifespan(

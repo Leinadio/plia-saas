@@ -143,3 +143,42 @@ test("une transaction saisie à la main ne part pas dans un groupe qui ne vit pa
   const row = await db.one(`SELECT group_id AS "groupId" FROM transactions WHERE label = 'BOULANGERIE'`);
   expect(row).toEqual({ groupId: null });
 });
+
+// LE SENS. Une dépense rangée dans une rémunération viendrait diminuer ce qu'on a
+// reçu ce mois-ci (partDansLePoste) : le poste dirait qu'on a gagné moins, ce qui
+// n'a pas eu lieu. Le menu ne le propose plus, mais le menu n'est pas une serrure.
+test("refuse de ranger une dépense dans une rémunération", async () => {
+  const gid = await insertGroup(db, "a1", "Salaire", "in", 2000, "2026-01", null);
+  const id = await nouvelleTxn();
+
+  await setGroup(id, gid, null);
+
+  expect(await rattachement(id)).toEqual({ groupId: null, lineId: null });
+});
+
+// L'inverse est permis, et c'est tout l'intérêt : les 200 € qu'un ami rend sur
+// « Vacances » allègent l'enveloppe qu'ils remboursent. Sans ce chemin-là, le poste
+// resterait en dépassement pour un argent qui est revenu.
+test("accepte de ranger un remboursement dans la dépense qu'il rembourse", async () => {
+  const gid = await insertGroup(db, "a1", "Vacances", "out", 1200, "2026-01", null);
+  const id = await insertManualTransaction(db, {
+    accountId: "a1", date: "2026-07-23", amount: 200, label: "VIREMENT AMI",
+    groupId: null, lineId: null,
+  });
+
+  await setGroup(id, gid, null);
+
+  expect(await rattachement(id)).toEqual({ groupId: gid, lineId: null });
+});
+
+test("accepte une recette dans une rémunération", async () => {
+  const gid = await insertGroup(db, "a1", "Salaire", "in", 2000, "2026-01", null);
+  const id = await insertManualTransaction(db, {
+    accountId: "a1", date: "2026-07-23", amount: 2000, label: "VIR SEPA PAIE",
+    groupId: null, lineId: null,
+  });
+
+  await setGroup(id, gid, null);
+
+  expect(await rattachement(id)).toEqual({ groupId: gid, lineId: null });
+});

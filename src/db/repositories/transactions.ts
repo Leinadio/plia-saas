@@ -155,15 +155,15 @@ export async function getTransactionDate(db: Db, id: string): Promise<string | n
   return row?.date ?? null;
 }
 
-// La date de la banque ET le mois de rattachement, ensemble : tout ce qui doit
-// décider « à quel mois cette opération appartient » a besoin des deux, et deux
-// requêtes séparées finiraient par se contredire.
-export async function getTransactionMonthInfo(
+// Ce qu'il faut savoir d'une opération pour juger où elle peut aller : sa date, son
+// mois de rattachement, son montant. Ensemble, et en une seule requête — trois
+// lectures séparées finiraient par se contredire.
+export async function getTransactionFacts(
   db: Db,
   id: string,
-): Promise<{ date: string; budgetMonth: string | null } | null> {
-  const row = await db.one<{ date: string; budgetMonth: string | null }>(
-    `SELECT date, budget_month AS "budgetMonth" FROM transactions WHERE id = $1`,
+): Promise<{ date: string; budgetMonth: string | null; amount: number } | null> {
+  const row = await db.one<{ date: string; budgetMonth: string | null; amount: number }>(
+    `SELECT date, budget_month AS "budgetMonth", amount FROM transactions WHERE id = $1`,
     [id],
   );
   return row ?? null;

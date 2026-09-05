@@ -7,7 +7,7 @@ import {
   setTransactionIgnored,
   setTransactionComment,
   setTransactionBudgetMonth,
-  getTransactionMonthInfo,
+  getTransactionFacts,
   insertManualTransaction,
   updateManualTransaction,
   deleteManualTransaction,
@@ -17,9 +17,9 @@ import {
 import { isValidManualForm, toManualInput, type ManualFormInput } from "@/lib/manual-txn";
 import { normalizeComment } from "@/lib/txn-comment";
 import { moisBudget, rattachementUtile } from "@/lib/txn-mois";
-import { canAttachToGroup } from "@/lib/ownership";
+import { canAttachToGroup, peutRecevoir, sensDuMontant } from "@/lib/ownership";
 import { isGroupAlive } from "@/lib/forecast";
-import { countGroupLines, getLineGroupId, getGroupLifespan } from "../../../db/repositories/groups";
+import { countGroupLines, getLineGroupId, getGroupLifespan, getGroupDirection } from "../../../db/repositories/groups";
 import { revalidatePath } from "next/cache";
 
 function revalidateAll() {
@@ -67,9 +67,15 @@ export async function setGroup(
       // Le mois retenu est celui où la transaction COMPTE, rattachement compris : une
       // dépense du 31 août rangée en septembre doit trouver un poste vivant en
       // septembre, pas en août.
-      const op = await getTransactionMonthInfo(database, txnId);
+      const op = await getTransactionFacts(database, txnId);
       const bornes = await getGroupLifespan(database, gid);
       if (op === null || bornes === null || !isGroupAlive(bornes, moisBudget(op))) return;
+      // Le SENS, enfin : une dépense n'a rien à faire dans une rémunération, où elle
+      // viendrait diminuer ce qu'on a reçu. Une recette, elle, va dans les deux — un
+      // remboursement allège l'enveloppe qu'il rembourse. Le menu ne le propose plus,
+      // mais le menu n'est pas une serrure.
+      const sensGroupe = await getGroupDirection(database, gid);
+      if (sensGroupe === null || !peutRecevoir(sensDuMontant(op.amount), sensGroupe)) return;
     }
     await setTransactionGroup(database, txnId, gid, false, lid);
     revalidateAll();
@@ -101,7 +107,7 @@ export async function setComment(txnId: string, comment: string) {
 export async function setBudgetMonth(txnId: string, month: string | null) {
   return pourMoi(async (base, moi) => {
     if (!(await ownsTransaction(base, moi, txnId))) return;
-    const op = await getTransactionMonthInfo(base, txnId);
+    const op = await getTransactionFacts(base, txnId);
     if (op === null) return;
     await setTransactionBudgetMonth(base, txnId, rattachementUtile(op.date, month));
     revalidateAll();

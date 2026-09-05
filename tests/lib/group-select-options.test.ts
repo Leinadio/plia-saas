@@ -89,3 +89,27 @@ describe("groupSelectSections", () => {
     expect(sec.items.map((i) => i.id)).toEqual([3, 1]);
   });
 });
+
+describe("le menu suit le sens de l'opération", () => {
+  const postes = [rem(9, "Salaire"), env(1, "Courses")];
+
+  it("cache les revenus à une dépense", () => {
+    // Un achat n'a rien à faire dans une rémunération, et la moitié du menu ne
+    // proposait que des destinations impossibles.
+    expect(groupSelectSections(postes, "out").map((s) => s.label)).toEqual(["Dépenses"]);
+  });
+
+  it("montre tout à une recette", () => {
+    // Une recette peut aller dans un revenu, mais aussi dans une dépense : c'est
+    // ainsi qu'un remboursement allège l'enveloppe qu'il rembourse.
+    expect(groupSelectSections(postes, "in").map((s) => s.label)).toEqual(["Revenus", "Dépenses"]);
+  });
+
+  it("montre tout quand le sens n'est pas dit", () => {
+    expect(groupSelectSections(postes).map((s) => s.label)).toEqual(["Revenus", "Dépenses"]);
+  });
+
+  it("ne rend aucune section quand une dépense n'a que des revenus sous la main", () => {
+    expect(groupSelectSections([rem(9, "Salaire")], "out")).toEqual([]);
+  });
+});

@@ -1,5 +1,5 @@
 import { expect, test, describe, it } from "vitest";
-import { resolveOwnership, canAttachToGroup, type OwnableGroup, type OwnedTxn } from "../../src/lib/ownership";
+import { resolveOwnership, canAttachToGroup, peutRecevoir, sensDuMontant, type OwnableGroup, type OwnedTxn } from "../../src/lib/ownership";
 
 const courses: OwnableGroup = { id: 1, accountId: "a1", direction: "out" };
 const abo: OwnableGroup = { id: 2, accountId: "a1", direction: "out" };
@@ -61,5 +61,36 @@ describe("ce à quoi une transaction peut être rattachée", () => {
 
   it("accepte une dépense à sous-postes dès qu'un sous-poste est visé", () => {
     expect(canAttachToGroup(true, 3)).toBe(true);
+  });
+});
+
+describe("quels postes peuvent accueillir une opération", () => {
+  it("refuse une dépense dans un revenu", () => {
+    // Une sortie d'argent rangée dans une rémunération viendrait diminuer ce qu'on
+    // a reçu ce mois-ci : le poste dirait qu'on a gagné moins, ce qui n'a pas eu lieu.
+    expect(peutRecevoir("out", "in")).toBe(false);
+  });
+
+  it("accepte une dépense dans une dépense", () => {
+    expect(peutRecevoir("out", "out")).toBe(true);
+  });
+
+  it("accepte une recette dans une dépense : c'est un remboursement", () => {
+    // Les 200 € qu'un ami rend sur « Vacances » allègent l'enveloppe qu'ils
+    // remboursent. C'est le seul moyen de rendre son compte juste à un poste.
+    expect(peutRecevoir("in", "out")).toBe(true);
+  });
+
+  it("accepte une recette dans un revenu", () => {
+    expect(peutRecevoir("in", "in")).toBe(true);
+  });
+});
+
+describe("le sens d'un montant", () => {
+  it("appelle sortie ce qui est négatif, entrée le reste", () => {
+    expect(sensDuMontant(-12.5)).toBe("out");
+    expect(sensDuMontant(12.5)).toBe("in");
+    // Un zéro n'est une sortie pour personne : on ne lui ferme aucune porte.
+    expect(sensDuMontant(0)).toBe("in");
   });
 });

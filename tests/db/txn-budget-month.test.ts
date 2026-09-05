@@ -5,7 +5,7 @@ import { dbFrom } from "../../src/db/pg";
 import { upsertAccount } from "../../src/db/repositories/accounts";
 import {
   insertManualTransaction, listTransactions, setTransactionBudgetMonth,
-  getTransactionMonthInfo, sumManualByAccount, upsertTransaction,
+  getTransactionFacts, sumManualByAccount, upsertTransaction,
 } from "../../src/db/repositories/transactions";
 
 // LE MOIS DE RATTACHEMENT, EN BASE. La date de la banque reste ce qu'elle est ; à
@@ -30,16 +30,16 @@ test("on la range dans un autre mois sans toucher à sa date", async () => {
   await upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-08-31", amount: -40, label: "MONOPRIX" });
 
   await setTransactionBudgetMonth(db, "t1", "2026-09");
-  expect(await getTransactionMonthInfo(db, "t1")).toEqual({ date: "2026-08-31", budgetMonth: "2026-09" });
+  expect(await getTransactionFacts(db, "t1")).toEqual({ date: "2026-08-31", budgetMonth: "2026-09", amount: -40 });
   expect((await listTransactions(db, TEST_USER))[0]).toMatchObject({ date: "2026-08-31", budgetMonth: "2026-09" });
 
   // Une synchronisation qui repasse ne défait rien : l'insertion ne touche pas une
   // ligne déjà là, donc la décision de l'utilisateur survit.
   await upsertTransaction(db, { id: "t1", account_id: "a1", date: "2026-08-31", amount: -40, label: "MONOPRIX" });
-  expect(await getTransactionMonthInfo(db, "t1")).toEqual({ date: "2026-08-31", budgetMonth: "2026-09" });
+  expect(await getTransactionFacts(db, "t1")).toEqual({ date: "2026-08-31", budgetMonth: "2026-09", amount: -40 });
 
   await setTransactionBudgetMonth(db, "t1", null);
-  expect(await getTransactionMonthInfo(db, "t1")).toEqual({ date: "2026-08-31", budgetMonth: null });
+  expect(await getTransactionFacts(db, "t1")).toEqual({ date: "2026-08-31", budgetMonth: null, amount: -40 });
 });
 
 test("une saisie manuelle rattachée corrige le solde du mois où on la range", async () => {

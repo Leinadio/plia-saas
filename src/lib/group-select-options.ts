@@ -1,3 +1,5 @@
+import { peutRecevoir, type Direction } from "./ownership";
+
 // --- La forme du menu de rattachement d'une transaction ---------------------
 // Le menu mélangeait des destinations de nature et de sens différents sans le dire :
 // une enveloppe se choisit elle-même, un récurrent ne se choisit jamais (seules ses
@@ -38,9 +40,14 @@ function itemsOf(g: GroupLike): ChoiceItem[] {
   return [groupe, ...g.lines.map((l): ChoiceItem => ({ type: "line", id: l.id, name: l.name }))];
 }
 
-export function groupSelectSections(groups: GroupLike[]): ChoiceSection[] {
+// `sens` est celui de l'opération qu'on range. Il retire du menu les postes qui ne
+// peuvent pas l'accueillir (cf. peutRecevoir) : une dépense n'y voit plus la section
+// des revenus, une recette continue de voir les deux. Omis, le menu montre tout —
+// c'est le cas des écrans qui ne parlent pas d'une opération précise.
+export function groupSelectSections(groups: GroupLike[], sens?: Direction): ChoiceSection[] {
+  const accueillants = sens ? groups.filter((g) => peutRecevoir(sens, g.direction)) : groups;
   const section = (label: string, retient: (g: GroupLike) => boolean): ChoiceSection | null => {
-    const dedans = groups.filter(retient);
+    const dedans = accueillants.filter(retient);
     return dedans.length === 0 ? null : { label, items: dedans.flatMap(itemsOf) };
   };
   // Les entrants d'abord, quelle que soit leur nature : le tableau les met en haut,
