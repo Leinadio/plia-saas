@@ -37,6 +37,7 @@ import { IgnoreTxnToggle } from "@/components/ignore-txn-toggle";
 import { NewGroupInline } from "@/components/new-group-inline";
 import { NewLineInline } from "@/components/new-line-inline";
 import { type ColKey, monthType, monthColumns, COL_LABEL, COL_INFO } from "@/lib/history-columns";
+import { soldeDuMois, type NatureDuSolde } from "@/lib/solde-du-mois";
 import { computeRevealKeys, computePrevDisplayed, rowOpenKey, lineOpenKey, uncatOpenKey, highlightedCells, rowKeyOf, withRevealed , openKeyIn } from "@/lib/history-nav";
 import { DUREE_GLISSEMENT, deplacement, positionA } from "@/lib/defilement";
 import {
@@ -125,6 +126,15 @@ function resteColor(v: number): string {
 // négatif, noir sinon. Rien d'autre — le sens du mouvement se dit sur l'opérateur, et
 // c'est SoldeAmount qui le pose, morceau par morceau. Une couleur unique pour toute la
 // case ne pouvait porter qu'une des deux informations à la fois.
+// Le mot qui précède le solde en tête de mois. Il dit de quelle nature est le
+// chiffre : un relevé pour ce qui a eu lieu, la banque pour aujourd'hui, un engagement
+// pour ce qui vient.
+const LEGENDE_SOLDE: Record<NatureDuSolde, string> = {
+  passe: "solde de fin",
+  actuel: "solde aujourd'hui",
+  prevu: "solde prévu",
+};
+
 function soldeColor(v: number | null | undefined): string | undefined {
   if (v == null) return undefined;
   return v < -0.005 ? "text-tension-encre" : undefined;
@@ -1795,6 +1805,11 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
   // Nombre total de colonnes du tableau (Catégorie + les colonnes de chaque mois),
   // pour l'attribut colSpan des lignes d'espacement et des formulaires en ligne.
   const totalCols = 1 + months.reduce((n, m) => n + monthColumns(monthType(m, currentMonth)).length, 0);
+  // Le solde annoncé sous le nom de chaque mois. Les trois colonnes de solde disent
+  // déjà tout, mais elles se lisent tout en bas, après des dizaines de postes : en
+  // arrivant sur un mois, on veut d'abord savoir combien il y a (cf. solde-du-mois.ts).
+  const soldeEnTete = (m: string, i: number) =>
+    soldeDuMois(m, currentMonth, i, solde.closings, planned.prevuClosings);
   const dataCols = totalCols - 1;
   // Une cellule de chiffres occupe toujours 6 rem. La largeur totale est donc
   // déterminée par le NOMBRE de colonnes, jamais par leur contenu : ouvrir un
@@ -2428,7 +2443,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 data-current-month={m === currentMonth ? "" : undefined}
                 data-onboarding-target={m === onboarding?.month ? onboarding?.timeTarget : undefined}
                 data-onboarding-month={m === onboarding?.month ? onboarding?.month : undefined}
-                className={cn(mi > 0 && MONTH_RULE, "h-[4.5rem] px-2 py-2 text-left align-middle sm:px-4 sm:text-center")}
+                className={cn(mi > 0 && MONTH_RULE, "h-[5.75rem] px-2 py-2 text-left align-middle sm:px-4 sm:text-center")}
               >
                 {/* Le nom du mois se pose À GAUCHE de son bloc sur téléphone. Centré, il
                     tombait au milieu de six cents pixels de colonnes : on arrivait sur
@@ -2443,6 +2458,21 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                       {m.slice(0, 4)}
                     </span>
                   </div>
+                  {/* LE SOLDE DU MOIS, sous son nom. Ce qu'il restait, ce qu'il
+                      reste, ce qu'il restera : le mot change avec le temps, sans quoi
+                      un relevé et une promesse s'écriraient pareil. */}
+                  {(() => {
+                    const { valeur, nature } = soldeEnTete(m, mi);
+                    if (valeur === null) return null;
+                    return (
+                      <div className="mt-1 flex items-baseline justify-start gap-1.5 whitespace-nowrap sm:justify-center">
+                        <span className="legende text-ardoise-claire">{LEGENDE_SOLDE[nature]}</span>
+                        <span className={cn("text-sm font-semibold tabular-nums", soldeColor(valeur))}>
+                          {fmt(valeur)}
+                        </span>
+                      </div>
+                    );
+                  })()}
                   {/* Cette ligne est toujours réservée. Un badge qui apparaît ou
                       disparaît ne change donc jamais la hauteur de l'en-tête. */}
                   <div className="mt-1.5 flex h-5 items-center justify-start gap-2 overflow-hidden sm:justify-center">
