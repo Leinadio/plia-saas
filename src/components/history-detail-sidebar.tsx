@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { X, ChevronRight, ChevronDown } from "lucide-react";
+import { X, ChevronRight, ChevronDown, ArrowLeft, Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { CellDetail } from "@/lib/history-explain";
 import { detailKey } from "@/lib/history-detail";
@@ -15,6 +15,8 @@ import { LineManageBlock } from "@/components/history-blocks/line-manage-block";
 import { UncatProvisionBlock } from "@/components/history-blocks/uncat-provision-block";
 import { Sidebar, SidebarHeader, SidebarContent } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { useCalculatriceOptional } from "@/components/calculatrice";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const NUM = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmtAbs = (n: number) => NUM.format(Math.abs(n) < 0.005 ? 0 : Math.abs(n)).replace(/[  ]/g, " ");
@@ -120,6 +122,8 @@ function DetailBody({ detail, onClose, selectedPanel, onSelectRow }: {
   onSelectRow?: (cells: string[] | null, panel: string) => void;
 }) {
   const [open, setOpen] = useState<Set<string>>(new Set());
+  const calculator = useCalculatriceOptional();
+  const isPhone = useIsMobile(640);
   const toggle = (p: string) =>
     setOpen((prev) => {
       const next = new Set(prev);
@@ -182,6 +186,22 @@ function DetailBody({ detail, onClose, selectedPanel, onSelectRow }: {
         </div>
       </SidebarHeader>
       <SidebarContent data-onboarding-target="amount-detail-panel" className="p-4">
+        {isPhone && calculator && (
+          <button
+            type="button"
+            className="border-filet hover:bg-accent mb-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium"
+            onClick={() => {
+              onClose();
+              calculator.ajouter({
+                montant: detail.result,
+                libelle: [detail.title, detail.subtitle].filter(Boolean).join(" · "),
+              });
+            }}
+          >
+            <Calculator className="size-4" />
+            Ajouter à la calculatrice
+          </button>
+        )}
         <Table>
           <TableBody>
             {rows.map((r, i) => {
@@ -261,8 +281,17 @@ export function HistoryDetailSidebar({ detail, onClose, selectedPanel, onSelectR
   selectedPanel?: string | null;
   onSelectRow?: (cells: string[] | null, panel: string) => void;
 }) {
+  const isPhone = useIsMobile(640);
   return (
     <Sidebar side="right" variant="inset" collapsible="offcanvas">
+      {detail && isPhone && (
+        <SidebarHeader className="border-b px-4 py-2">
+          <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground flex min-h-11 items-center gap-2 text-sm font-medium">
+            <ArrowLeft className="size-4" />
+            Retour au relevé
+          </button>
+        </SidebarHeader>
+      )}
       {detail && (
         <DetailBody
           key={detailKey(detail)}

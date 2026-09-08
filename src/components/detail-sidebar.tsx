@@ -1,18 +1,20 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import type { CellDetail } from "@/lib/history-explain";
 import { selectionForDetail, selectionForRow } from "@/lib/history-nav";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { HistoryDetailSidebar } from "@/components/history-detail-sidebar";
 import { useDemoExperienceOptional } from "@/components/demo-experience-provider";
 import { isDemoMode } from "@/lib/onboarding-mode";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // selected : cases actives choisies dans le panneau (une ligne peut en surligner
 // plusieurs quand son montant est une somme). anchor : montant cliqué dans le
 // tableau, surligné tant que le panneau est ouvert (les deux peuvent l'être à la fois).
 type Ctx = {
   detail: CellDetail | null;
-  setDetail: (d: CellDetail | null) => void;
+  setDetail: (d: CellDetail | null, scope?: string) => void;
+  selectionScope: string | null;
   selected: string[] | null;
   setSelected: (r: string[] | null) => void;
   anchor: string | null;
@@ -37,12 +39,14 @@ export function useDetailSidebar(): Ctx {
 // sélectionné, fermé sinon. Le SidebarTrigger de l'en-tête, rendu à l'intérieur
 // du provider de gauche, continue de piloter la navigation.
 export function DetailSidebarProvider({ children }: { children: React.ReactNode }) {
+  const isPhone = useIsMobile(640);
   const experience = useDemoExperienceOptional();
   const interactiveOnboarding = !!experience
     && isDemoMode(experience.mode)
     && !experience.tour.paused
     && experience.step.requiredAction !== undefined;
   const [detail, setDetailState] = useState<CellDetail | null>(null);
+  const [selectionScope, setSelectionScope] = useState<string | null>(null);
   // selected : clés des cases du tableau à surligner (plusieurs quand la ligne du
   // panneau est une somme). selectedPanel : identité de la ligne active dans le
   // panneau. Découplés : une ligne intermédiaire surligne sa case sans aussi
@@ -55,20 +59,28 @@ export function DetailSidebarProvider({ children }: { children: React.ReactNode 
   // Cliquer un montant dans le tableau ouvre son détail : ce montant devient l'ancre
   // (surligné jusqu'à la fermeture) et la case active est réinitialisée. Fermer le
   // panneau (d = null) efface tout.
-  const setDetail = (d: CellDetail | null) => {
+  const setDetail = useCallback((d: CellDetail | null, scope?: string) => {
     const next = selectionForDetail(d);
     setDetailState(d);
     setAnchor(next.anchor);
     setSelected(next.selected);
     setSelectedPanel(next.panel);
-  };
+    setSelectionScope(d ? scope ?? null : null);
+  }, []);
   const select = (cells: string[] | null, panel: string) => {
     const next = selectionForRow({ anchor, selected, panel: selectedPanel }, cells, panel);
     setSelected(next.selected);
     setSelectedPanel(next.panel);
+    // Sur téléphone, la destination se trouve derrière le panneau : le fermer
+    // sans passer par setDetail(null), qui effacerait la sélection à révéler.
+    if (isPhone && cells?.length) {
+      setDetailState(null);
+      setAnchor(null);
+      setSelectedPanel(null);
+    }
   };
   return (
-    <DetailSidebarContext.Provider value={{ detail, setDetail, selected, setSelected, anchor }}>
+    <DetailSidebarContext.Provider value={{ detail, setDetail, selected, setSelected, anchor, selectionScope }}>
       <SidebarProvider
         open={detail !== null}
         onOpenChange={(open) => {
@@ -85,9 +97,8 @@ export function DetailSidebarProvider({ children }: { children: React.ReactNode 
         // il ne laisserait qu'une centaine de pixels au tableau sur une tablette.
         mobileBreakpoint={1024}
         mobileModal={!interactiveOnboarding}
-        // Presque tout l'écran, sans jamais coller aux bords : le détail d'un calcul est
-        // une pile de montants alignés, illisible dans un tiroir étroit.
-        mobileWidth="min(26rem, calc(100vw - 2rem))"
+        // Tout l'écran sur téléphone pour lire le calcul ; largeur de tablette conservée.
+        mobileWidth={isPhone ? "100vw" : "min(26rem, calc(100vw - 2rem))"}
         // group/detail + data-detail : le contenu (SidebarInset) doit coller a la
         // sidebar de detail quand elle est ouverte (son p-2 fait deja l'ecart).
         // shadcn ne gere ce reglage que pour une sidebar de gauche, via un

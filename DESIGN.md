@@ -581,6 +581,19 @@ La pièce la plus dense du produit, et la seule qui ne soit pas une liste de car
   `--border`), et l'encre claire se pose sur la LIGNE et non sur les cellules, sans quoi
   elle écraserait le rouge d'un montant négatif.
 
+### Vue d’ensemble mobile
+
+Sous 640 px, le tableau devient un relevé vertical dans une seule carte. Les
+soldes et l’estimation ouvrent la lecture ; les noms des postes occupent toute
+la largeur, puis les montants libellés se répartissent sur deux colonnes (une
+sur les écrans de moins de 360 px). Les soldes intermédiaires restent sous le
+contrôle du bouton de détail. Les commandes de gestion ne dépendent pas du survol.
+
+La comparaison conserve une période et un indicateur ; les mois se lisent de
+haut en bas pour chaque poste. Les jetons, les couleurs de section et le tableau
+sur ordinateur restent identiques. Le panneau de calcul occupe toute la largeur
+du téléphone et propose un retour explicite au relevé.
+
 ## Do's and Don'ts
 
 ### Do:

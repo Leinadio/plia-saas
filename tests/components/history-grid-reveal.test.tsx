@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
-import { createElement } from "react";
+import { act, createElement } from "react";
+import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
@@ -105,8 +106,8 @@ function caseDeLaTransaction(sec: HistorySection, label: string): string[] {
   return cells;
 }
 
-function grille(selected: string[], sections: HistorySection[] = [revenus, depenses]) {
-  return renderToStaticMarkup(
+function elementGrille(selected: string[], sections: HistorySection[] = [revenus, depenses], overrides: Partial<React.ComponentProps<typeof HistoryGrid>> = {}) {
+  return (
     createElement(TooltipProvider, undefined, createElement(HistoryGrid, {
       months: MOIS,
       currentMonth: "2026-08",
@@ -123,8 +124,13 @@ function grille(selected: string[], sections: HistorySection[] = [revenus, depen
       selected,
       anchor: null,
       accountId: "a1",
-    })),
+      ...overrides,
+    }))
   );
+}
+
+function grille(...args: Parameters<typeof elementGrille>) {
+  return renderToStaticMarkup(elementGrille(...args));
 }
 
 describe("désigner une transaction depuis le panneau", () => {
@@ -144,5 +150,120 @@ describe("désigner une transaction depuis le panneau", () => {
   it("désigne bien la case de la transaction, pas celle du total", () => {
     expect(caseDeLaTransaction(revenus, "REEQUILIBRAGE")).toEqual([`txn:${recette.id}::recu::0`]);
     expect(caseDeLaTransaction(revenusAPostes, "VIREMENT INSTANTANE")).toEqual([`txn:${recetteDePoste.id}::recu::0`]);
+  });
+});
+
+describe("le relevé mobile conserve les montants et leurs références", () => {
+  const months = ["2026-08", "2026-09"];
+  const expense: HistorySection = {
+    ...depenses,
+    rows: [row({ id: 8, name: "Courses", cells: [cell({ depense: 12.5 }), cell({ depense: 22.5 })], aliveMonths: [true, true], txns: [sortie] })],
+    totals: [cell({ depense: 12.5 }), cell({ depense: 22.5 })],
+  };
+  const multiMonth = {
+    months,
+    grand: expense.totals,
+    solde: { openings: [100, 87.5], closings: [87.5, 65], rowRunning: { 8: [87.5, 65] }, uncategorizedRunning: null },
+    planned: { ...planned, prevuClosings: [100, 100], depassClosings: [87.5, 65] },
+    overspend: [0, 0],
+  };
+
+  function documentMobile(metric: "dep" | null, selected: string[] = []) {
+    const el = document.createElement("div");
+    el.innerHTML = grille(selected, [expense], {
+      ...multiMonth,
+      mobile: { month: "2026-09", metric, onMonthChange: () => {} },
+    });
+    return el;
+  }
+
+  it("affiche septembre sans transformer ses références en celles d’août", () => {
+    const el = documentMobile(null);
+    expect(el.querySelector('[data-cellkey="group:8::depense::1"]')?.textContent).toContain("22,50");
+    expect(el.querySelector('[data-cellkey="group:8::depense::0"]')).toBeNull();
+    expect(el.querySelector('[data-cellkey="group:8::depense::1"]')?.textContent).toContain("Dépensé");
+    expect(el.querySelector('[data-cellkey="grand::solde::1"]')).not.toBeNull();
+  });
+
+  it("compare les dépenses de chaque mois avec leurs propres références", () => {
+    const el = documentMobile("dep");
+    expect(el.querySelector('[data-cellkey="group:8::depense::0"]')?.textContent).toContain("12,50");
+    expect(el.querySelector('[data-cellkey="group:8::depense::1"]')?.textContent).toContain("22,50");
+    expect(el.querySelector('[data-cellkey="group:8::depense::0"]')?.textContent).toContain("Août 2026");
+    expect(el.querySelector('[data-cellkey="group:8::depense::1"]')?.textContent).toContain("Septembre 2026");
+    expect(el.querySelector('[data-cellkey="group:8::recu::1"]')).toBeNull();
+  });
+
+  it("ne montre pas les opérations d’août dans le relevé de septembre", () => {
+    const el = documentMobile(null, [`txn:${sortie.id}::depense::0`]);
+    expect(el.querySelector('[data-cellkey="txn:cpt-1::2026081200998877::depense::0"]')).toBeNull();
+  });
+
+  it("garde un poste terminé portant une opération dans le mois affiché", () => {
+    const lateTxn = { ...sortie, id: "late", month: "2026-09", date: "2026-09-01" };
+    const ended = { ...expense, rows: [{ ...expense.rows[0], aliveMonths: [true, false], txns: [lateTxn] }] };
+    const html = grille(["txn:late::depense::1"], [ended], {
+      ...multiMonth, mobile: { month: "2026-09", metric: null, onMonthChange: () => {} },
+    });
+    expect(html).toContain('data-cellkey="txn:late::depense::1"');
+  });
+
+  it("garde le mois futur dans la comparaison quand son indicateur est indisponible", () => {
+    const html = grille([], [expense], {
+      ...multiMonth, mobile: { month: "2026-09", metric: "soldeDepass", onMonthChange: () => {} },
+    });
+    expect(html).toContain('data-mobile-month="2026-09"');
+    expect(html).toContain("Non applicable");
+  });
+
+  it("révèle une opération hors calcul désignée depuis son détail", () => {
+    const html = grille([`txn:${sortie.id}::depense::0`], [], {
+      ignoredBlocks: [{ direction: "out", txns: [sortie], totals: [cell({ depense: 12.5 })] }],
+      mobile: { month: "2026-08", metric: null, onMonthChange: () => {} },
+    });
+    expect(html).toContain(`data-cellkey="txn:${sortie.id}::depense::0"`);
+  });
+
+  it.each(["grand::revenus::0", "grand::budget::0", "estime::solde::0"])("révèle %s même hors indicateur comparé", (reference) => {
+    const el = document.createElement("div");
+    el.innerHTML = grille([reference], [expense], {
+      ...multiMonth, mobile: { month: "2026-08", metric: "soldePrevu", onMonthChange: () => {} },
+    });
+    expect(el.querySelector(`[data-cellkey="${reference}"]`)).not.toBeNull();
+  });
+
+  it("retire un poste terminé sans opération même s’il était déplié le mois précédent", async () => {
+    (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    const ended = { ...expense, rows: [{ ...expense.rows[0], aliveMonths: [true, false], cells: [cell({ depense: 12.5 }), cell()] }] };
+    try {
+      await act(async () => root.render(elementGrille([], [ended], { ...multiMonth, mobile: { month: "2026-08", metric: null, onMonthChange: () => {} } })));
+      await act(async () => container.querySelector<HTMLButtonElement>('[aria-label="Déplier le poste"]')!.click());
+      await act(async () => root.render(elementGrille([], [ended], { ...multiMonth, mobile: { month: "2026-09", metric: null, onMonthChange: () => {} } })));
+      expect(container.textContent).not.toContain("Courses");
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+    }
+  });
+
+  it("rouvre les dépenses repliées pour montrer l’opération désignée", async () => {
+    (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    const mobile = { month: "2026-08", metric: null, onMonthChange: () => {} };
+    try {
+      await act(async () => root.render(elementGrille([], [depenses], { mobile })));
+      const fold = Array.from(container.querySelectorAll("button")).find(button => button.textContent === "Ce qui sort")!;
+      await act(async () => fold.click());
+      await act(async () => root.render(elementGrille([`txn:${sortie.id}::depense::0`], [depenses], { mobile })));
+      expect(container.querySelector(`[data-cellkey="txn:${sortie.id}::depense::0"]`)).not.toBeNull();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+    }
   });
 });

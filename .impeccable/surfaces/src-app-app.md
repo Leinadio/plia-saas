@@ -83,6 +83,25 @@ transaction, la sortir des calculs, la commenter. Le panneau de détail à droit
 s'ouvre au clic sur n'importe quel montant, comme avant.
 
 ## Grammaire d'implémentation
+
+### Vue d’ensemble sur téléphone — décision du 7 septembre 2026
+
+La proposition mobile a été approuvée explicitement : sous 640 px, le relevé
+présente un mois verticalement, avec soldes et estimation en tête, postes
+dépliables, montants libellés et commandes tactiles visibles. « Comparer » garde
+la période et les huit indicateurs : chaque poste aligne ses mois verticalement.
+Les mois sans indicateur applicable sont nommés, sans montant inventé.
+
+Le grand tableau reste la présentation sur ordinateur. Les mêmes cellules et
+actions servent les deux dispositions ; leurs index ne sont pas recalculés au
+changement du mois consulté. Les références sont liées au compte et à la période.
+Le détail remplit la largeur du téléphone ; sélectionner un terme referme le
+panneau et révèle sa destination. L’ajout à la calculatrice dispose d’un bouton.
+
+Vérification : serveur local avec données fictives, largeurs 320/390/1440 px,
+navigation, huit indicateurs, détail, opérations, budget de démonstration et
+formulaire d’ajout. Aucun débordement horizontal du relevé mobile constaté.
+
 - Surfaces : une seule, la carte (`.carte`). Rien ne s'imbrique — ce qui vit DANS une
   carte prend la surface creusée (`.creux`), jamais une deuxième carte.
 - Couleur : la sarcelle ne sert QU'À COMMANDER (bouton principal, lien, onglet actif,

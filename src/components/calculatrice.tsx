@@ -70,8 +70,12 @@ type Ctx = {
 
 const CalculatriceContext = createContext<Ctx | null>(null);
 
+export function useCalculatriceOptional(): Ctx | null {
+  return useContext(CalculatriceContext);
+}
+
 export function useCalculatrice(): Ctx {
-  const ctx = useContext(CalculatriceContext);
+  const ctx = useCalculatriceOptional();
   if (!ctx) throw new Error("useCalculatrice doit être utilisé dans <CalculatriceProvider>");
   return ctx;
 }

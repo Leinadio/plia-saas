@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import type { AccountForecast } from "@/lib/forecast";
 import type { MonthCell, HistorySection, SoldeColumn, PlannedSoldes, Overspend, IgnoredBlock } from "@/lib/history";
 import { CenterScroll } from "@/components/center-scroll";
@@ -6,6 +7,8 @@ import { HistoryGrid, type SelectGroup } from "@/components/history-grid";
 import { useDetailSidebar } from "@/components/detail-sidebar";
 import { useSoldeDetailleOptional } from "@/components/solde-detaille";
 import { VoileDAttente } from "@/components/mise-a-jour";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { HistoryMobileControls, useHistoryMobileNavigation, useHistoryMobileState } from "@/components/history-mobile-navigation";
 
 // SelectGroup vient de HistoryGrid, à qui ce composant ne fait que passer la main.
 // Le redéclarer ici l'avait déjà laissé dériver : il lui manquait les bornes de mois,
@@ -50,10 +53,20 @@ export function HistoryWithDetail(props: {
 }) {
   const { onboarding, ...history } = props;
   const onDetailOpened = onboarding?.onDetailOpened;
-  const gridOnboarding = onboarding
-    ? (({ onDetailOpened: _, ...targets }) => targets)(onboarding)
-    : undefined;
-  const { setDetail, selected, anchor } = useDetailSidebar();
+  const { setDetail, selected, anchor, selectionScope } = useDetailSidebar();
+  // Une clé de case contient un index de mois. Après changement de compte ou de
+  // plage, l'ancien index ne désigne plus le même montant : ne jamais le donner
+  // au nouveau relevé, même au premier rendu précédant la fermeture du panneau.
+  const viewScope = `${props.accountId}:${props.months.join(",")}`;
+  const sameScope = selectionScope === viewScope;
+  useEffect(() => {
+    if (selectionScope !== null && !sameScope) setDetail(null);
+  }, [selectionScope, sameScope, setDetail]);
+  const isMobile = useIsMobile(640);
+  const frameNavigation = useHistoryMobileNavigation();
+  const localNavigation = useHistoryMobileState({ from: props.months[0] ?? props.currentMonth,
+    to: props.months.at(-1) ?? props.currentMonth, current: props.currentMonth });
+  const mobile = frameNavigation ?? localNavigation;
   // Mode détaillé des colonnes de solde. Ici et non dans la grille : la case doit
   // rester en place quand on fait défiler le tableau de gauche à droite, donc elle vit
   // en dehors du conteneur de défilement.
@@ -65,6 +78,8 @@ export function HistoryWithDetail(props: {
   const showDeltas = soldeDetaille?.detaille ?? false;
   return (
     <div className="flex flex-col gap-3">
+      {isMobile && !frameNavigation && <HistoryMobileControls navigation={mobile}
+        min={props.months[0] ?? props.currentMonth} max={props.months.at(-1) ?? props.currentMonth} />}
       {/* LA CARTE. Le tableau repose sur la surface du monde : blanche, arrondie à
           12 px, cerclée d'un filet d'un pixel et posée sur une ombre courte.
           overflow-hidden : c'est elle qui coupe le tableau qui défile à l'intérieur,
@@ -77,12 +92,13 @@ export function HistoryWithDetail(props: {
         <CenterScroll>
         <HistoryGrid
           {...history}
-          onboarding={onboarding ? gridOnboarding : undefined}
-          onSelect={setDetail}
-          selected={selected}
-          anchor={anchor}
+          onboarding={onboarding}
+          onSelect={(detail) => setDetail(detail, viewScope)}
+          selected={sameScope ? selected : null}
+          anchor={sameScope ? anchor : null}
           showDeltas={showDeltas}
           onDetailOpened={onDetailOpened}
+          mobile={isMobile ? { month: mobile.month, metric: mobile.metric, onMonthChange: mobile.onMonthChange } : undefined}
         />
         </CenterScroll>
       </VoileDAttente>

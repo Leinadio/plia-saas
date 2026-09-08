@@ -42,14 +42,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       onFinish={finishOnboarding}
       onRestart={restartDemoGuide}
     >
+    {/* La calculatrice englobe aussi le panneau de détail : un montant peut y
+        être ajouté au toucher, et le brouillon survit aux changements d'écran. */}
+    <CalculatriceProvider>
     <DetailSidebarProvider>
       {/* Le fournisseur d'attente englobe tout le shell : n'importe quelle
           commande, où qu'elle soit, allume le même fil sous la poutre. */}
       <MiseAJourProvider>
-        {/* La calculatrice englobe tout le shell : son brouillon doit survivre au
-            passage d'un écran à l'autre — c'est justement d'un écran à l'autre
-            qu'on compare des montants. */}
-        <CalculatriceProvider>
           {/* Les dépassements englobent le shell : le même panneau s'ouvre depuis
               la barre sur grand écran et depuis la roue flottante sur téléphone,
               et ce qu'on y marque comme vu ne dépend pas de par où l'on entre.
@@ -82,9 +81,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <OutilsFlottants />
           </div>
           </NotificationsProvider>
-        </CalculatriceProvider>
       </MiseAJourProvider>
     </DetailSidebarProvider>
+    </CalculatriceProvider>
     </DemoExperienceProvider>
   );
 }

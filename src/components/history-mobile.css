@@ -1,0 +1,140 @@
+/* Le même relevé devient une liste verticale. Ces règles ne s'appliquent qu'au
+   rendu mobile, jamais au grand tableau ni aux tableaux du panneau de détail. */
+.history-mobile table,
+.history-mobile tbody {
+  display: block;
+  width: 100%;
+}
+
+.history-mobile colgroup { display: none; }
+
+.history-mobile tr {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+}
+
+.history-mobile td {
+  display: block;
+  position: static;
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  border-left: 0;
+  white-space: normal;
+  font-size: 0.875rem;
+}
+
+.history-mobile td:not([data-mobile-column]) {
+  grid-column: 1 / -1;
+}
+
+.history-mobile td:not([data-mobile-column]) > div {
+  width: 100%;
+  height: auto;
+  min-height: 2.75rem;
+  border-right: 0;
+  padding: 0.625rem 0.75rem;
+}
+
+.history-mobile td:not([data-mobile-column]) > div > span.flex {
+  flex: 1;
+}
+
+.history-mobile td:not([data-mobile-column]) .legende {
+  display: block;
+  white-space: normal;
+}
+
+.history-mobile td:not([data-mobile-column]) button {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  opacity: 1;
+  margin: 0;
+}
+
+.history-mobile [data-history-band] > td:first-child > div {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.history-mobile [data-history-band] [data-mobile-column] { display: none; }
+
+.history-mobile [data-mobile-column] {
+  padding: 0 0.75rem;
+  font-size: 1rem;
+}
+
+.history-mobile-value {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.375rem;
+}
+
+.history-mobile-label {
+  min-height: 2.75rem;
+  text-align: left;
+  color: var(--muted-foreground);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  line-height: 1.25;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.history-mobile-label:hover { text-decoration: underline dotted; }
+
+.history-mobile-number {
+  min-width: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.history-mobile-number > button {
+  display: block;
+  min-height: 2.75rem;
+  width: 100%;
+  text-align: right;
+}
+
+.history-mobile button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
+}
+
+.history-mobile [data-mobile-column^="solde"],
+.history-mobile[data-history-mobile="compare"] [data-mobile-column] {
+  grid-column: 1 / -1;
+}
+
+.history-mobile [data-history-transaction] td:first-child > div {
+  gap: 0.5rem;
+}
+
+.history-mobile [data-history-transaction] select,
+.history-mobile [data-history-transaction] input,
+.history-mobile form select,
+.history-mobile form input {
+  min-height: 2.75rem;
+  font-size: 1rem;
+}
+
+.history-mobile form { padding-left: 0; }
+
+.history-mobile [data-history-transaction] [data-mobile-column] {
+  grid-column: 1 / -1;
+}
+
+.history-mobile [data-history-summary] {
+  background: var(--encre);
+}
+
+@media (max-width: 359px) {
+  .history-mobile [data-mobile-column] { grid-column: 1 / -1; }
+}
