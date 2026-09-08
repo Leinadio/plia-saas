@@ -89,7 +89,7 @@ export function OutilsFlottants() {
       direction="up"
       triggerLabel="Ouvrir les outils"
       actionButtons={actions}
-      className="fixed right-4 bottom-4 z-40 sm:hidden"
+      className="fixed right-4 bottom-[calc(3rem+env(safe-area-inset-bottom))] z-40 sm:hidden"
     />
   );
 }

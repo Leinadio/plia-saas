@@ -15,7 +15,7 @@
 // CE QU'ON REFUSE : réécrire les noms de postes à chaque mois (on lisait trois fois
 // « Courses »), et une ligne de pied qui totalise le mois et donne le solde en même
 // temps — ce sont deux choses, elles ont deux lignes.
-import { HistoryMobileColumns, MobileHistoryContext, MobileColumnContext, MobileCellContents, type MobileHistoryView } from "@/components/history-mobile-columns";
+import { HistoryExpandableRows, HistoryMobileColumns, MobileHistoryContext, MobileColumnContext, MobileCellContents, type MobileHistoryView } from "@/components/history-mobile-columns";
 import "@/components/history-mobile.css";
 import { Fragment, cloneElement, createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, ArrowDownRight, ChevronDown, ChevronRight, Plus, Pencil } from "lucide-react";
@@ -1964,8 +1964,8 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       },
     };
     return (
-      <Fragment key={r.id}>
-        <TableRow className={cn("group", topLevel ? "font-medium" : hasChildren && "hover:bg-muted/50")}>
+      <HistoryExpandableRows key={r.id} expanded={gOpen} className={cn("group", topLevel ? "font-medium" : hasChildren && "hover:bg-muted/50")}
+        heading={
           <NameCell indent={0} expandable={hasChildren} expanded={gOpen} onToggle={hasChildren ? () => toggleIn(gKey) : undefined}>
             {r.direction === "in" ? (
               <ArrowUpRight className="text-portant hidden size-4 shrink-0 sm:block" />
@@ -2020,6 +2020,8 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               <Plus className="size-3.5" />
             </button>}
           </NameCell>
+        }
+        amounts={<>
           <AmountCells
             cells={r.cells}
             mode={r.direction}
@@ -2040,7 +2042,8 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             onboarding={onboarding}
             onDetailOpened={onDetailOpened}
           />
-        </TableRow>
+        </>}
+      >
         {/* Le formulaire du nouveau sous-poste, juste sous sa dépense. Hors du bloc
             replié ci-dessous : il ne dépend pas du dépliage, qui ne concerne que ce qui
             existe déjà (sous-postes et transactions). */}
@@ -2084,8 +2087,8 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               };
               const sgLine = sg?.lines.find((l) => l.id === sub.id);
               return (
-                <Fragment key={sub.id}>
-                  <TableRow className={cn("group text-sm", subHasTxns && "hover:bg-muted/50")}>
+                <HistoryExpandableRows key={sub.id} expanded={lOpen} className={cn("group text-sm", subHasTxns && "hover:bg-muted/50")}
+                  heading={
                     <NameCell indent={1} expandable={subHasTxns} expanded={lOpen} onToggle={subHasTxns ? () => toggleIn(lKey) : undefined}>
                       {/* Même empilement que sur la ligne du groupe au-dessus. */}
                       <span className="flex min-w-0 flex-col">
@@ -2134,6 +2137,8 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                         <Pencil className="size-3.5" />{mobile && <span className="text-xs">Gérer</span>}
                       </button>}
                     </NameCell>
+                  }
+                  amounts={<>
                     {/* Sous-ligne (poste d'un récurrent) : cellules désormais cliquables
                         (détail dérivé du poste). Les cases Solde restent vides. */}
                     <AmountCells
@@ -2152,11 +2157,12 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                       onboarding={onboarding}
                       onDetailOpened={onDetailOpened}
                     />
-                  </TableRow>
+                  </>}
+                >
                   {lOpen && sub.txns.map((t) => (
                     <TxnRow key={t.id} txn={t} months={months} currentMonth={currentMonth} groups={groups} indent={2} onSelect={onSelect} selCellKey={selCellKey} demo={demo} />
                   ))}
-                </Fragment>
+                </HistoryExpandableRows>
               );
             })}
             {r.txns.map((t) => (
@@ -2164,7 +2170,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             ))}
           </>
         )}
-      </Fragment>
+      </HistoryExpandableRows>
     );
   };
 
@@ -2224,8 +2230,8 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     const planPrevu = planned.uncatPrevuRunning[dir];
     const planDepass = planned.uncatDepassRunning[dir];
     return (
-      <>
-        <TableRow className="font-medium">
+      <HistoryExpandableRows expanded={uOpen} className="font-medium"
+        heading={
           <NameCell indent={0} expandable={hasTxns} expanded={uOpen} onToggle={hasTxns ? () => toggleIn(uKey) : undefined}>
             {/* Le sens dans le nom. Les deux lignes s'appelaient « Non catégorisés »
                 et rien ne les distinguait : celle des encaissements se lit tout en
@@ -2236,6 +2242,8 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               {dir === "in" ? "Reçus non catégorisés" : "Dépenses non catégorisées"}
             </span>
           </NameCell>
+        }
+        amounts={<>
           <SectionTotalsCells accountId={accountId}             sec={sec}
             months={months}
             currentMonth={currentMonth}
@@ -2249,11 +2257,12 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             noticeOf={noticeDe(0, null)}
             onboarding={onboarding}
           />
-        </TableRow>
+        </>}
+      >
         {uOpen && sec.txns?.map((t) => (
           <TxnRow key={t.id} txn={t} months={months} currentMonth={currentMonth} groups={groups} indent={1} onSelect={onSelect} selCellKey={selCellKey} demo={demo} />
         ))}
-      </>
+      </HistoryExpandableRows>
     );
   };
 
@@ -2268,11 +2277,13 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     const title = isIn ? "Non comptabilisées — Reçus" : "Non comptabilisées — Dépenses";
     const rowId = sectionRow(`ignored-${block.direction}`);
     return (
-      <Fragment key={key}>
-        <TableRow className="font-medium">
+      <HistoryExpandableRows key={key} expanded={opened} className="font-medium"
+        heading={
           <NameCell indent={0} expandable expanded={opened} onToggle={() => toggleIn(key)}>
             <span className="min-w-0 break-words whitespace-normal [hyphens:auto] sm:truncate sm:[hyphens:none]">{title}</span>
           </NameCell>
+        }
+        amounts={<>
           {months.map((m, i) => {
             const val = isIn ? block.totals[i].recu : block.totals[i].depense;
             const nodes = block.txns
@@ -2297,8 +2308,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             else slots.dep = cell;
             const cols = monthColumns(monthType(m, currentMonth));
             return <Fragment key={i}>{renderCols(months[i], cols, slots)}</Fragment>;
-          })}
-        </TableRow>
+        })}
+        </>}
+      >
         {opened &&
           block.txns.map((t) => (
             <TxnRow
@@ -2314,7 +2326,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               demo={demo}
             />
           ))}
-      </Fragment>
+      </HistoryExpandableRows>
     );
   };
 
@@ -2818,7 +2830,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             il finit, où il finirait, ce qu'il a débordé. C'est le tampon du relevé.
             Le total et le solde étaient une seule ligne qui faisait les deux métiers,
             et le solde s'y lisait comme un total de plus. */}
-        {(!mobile?.metric || ["budgetRem", "budgetDep", "dep", "recu"].includes(mobile.metric) || selectedRows.has("grand")) && <TableRow style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
+        {(!mobile?.metric || ["budgetRem", "budgetDep", "dep", "recu"].includes(mobile.metric) || selectedRows.has("grand")) && <TableRow data-history-summary="" style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
           <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
             <FirstColBox>Total du mois</FirstColBox>
           </TableCell>
@@ -2828,7 +2840,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         {/* Dépassement final du mois : somme des montants rouges de la colonne
             Balance (groupes qui débordent + Non catégorisés), hors lignes
             « Balance dépenses » qui agrège déjà ces montants. */}
-        {(!mobile?.metric || mobile.metric === "reste" || selectedRows.has("overspend")) && <TableRow style={PIED_CARBONE} className={cn(PIED_LIGNE, "text-sm")}>
+        {(!mobile?.metric || mobile.metric === "reste" || selectedRows.has("overspend")) && <TableRow data-history-summary="" style={PIED_CARBONE} className={cn(PIED_LIGNE, "text-sm")}>
           <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
             <FirstColBox><span className="text-muted-foreground">Total dépassement hors budget</span></FirstColBox>
           </TableCell>

@@ -151,9 +151,51 @@ describe("désigner une transaction depuis le panneau", () => {
     expect(caseDeLaTransaction(revenus, "REEQUILIBRAGE")).toEqual([`txn:${recette.id}::recu::0`]);
     expect(caseDeLaTransaction(revenusAPostes, "VIREMENT INSTANTANE")).toEqual([`txn:${recetteDePoste.id}::recu::0`]);
   });
+
+  it("garde les montants à côté du nom et avant les transactions sur ordinateur", () => {
+    const el = document.createElement("div");
+    el.innerHTML = grille([`txn:${sortie.id}::depense::0`], [depenses]);
+    const amount = el.querySelector('[data-cellkey="group:8::depense::0"]')!;
+    const headingRow = amount.closest("tr")!;
+    expect(headingRow.firstElementChild?.textContent).toContain("Courses");
+    expect(headingRow.nextElementSibling?.hasAttribute("data-history-transaction")).toBe(true);
+  });
 });
 
 describe("le relevé mobile conserve les montants et leurs références", () => {
+  it.each([
+    { name: "enveloppe", sections: [depenses], title: "Courses", txn: sortie, total: "group:8::depense::0" },
+    { name: "sous-poste", sections: [revenusAPostes], title: "Virements", txn: recetteDePoste, total: "subrow:91::recu::0" },
+    { name: "non catégorisés", sections: [{ kind: "uncategorized", uncatDirection: "out", rows: [], totals: [cell({ depense: 12.5 })], txns: [{ ...sortie, groupId: null }] } as HistorySection], title: "Dépenses non catégorisées", txn: sortie, total: "section:uncategorized::depense::0" },
+  ])("place les transactions juste sous le nom : $name", async ({ sections, title, txn, total }) => {
+    (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+    const container = document.createElement("div");
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(elementGrille([], sections, {
+        mobile: { month: "2026-08", metric: null, onMonthChange: () => {} },
+      })));
+      // Le sous-poste demande d'abord l'ouverture de son enveloppe.
+      if (title === "Virements") {
+        await act(async () => container.querySelector<HTMLButtonElement>('[aria-label="Déplier le poste"]')!.click());
+      }
+      const heading = Array.from(container.querySelectorAll("td")).find(td => td.textContent?.includes(title) && td.querySelector('[aria-label="Déplier le poste"]'))!;
+      await act(async () => heading.querySelector<HTMLButtonElement>("button")!.click());
+      const headingRow = heading.closest("tr")!;
+      expect(headingRow.nextElementSibling?.hasAttribute("data-history-transaction")).toBe(true);
+      expect(headingRow.nextElementSibling?.textContent).toContain(txn.label);
+      const amount = container.querySelector(`[data-cellkey="${total}"]`)!;
+      expect(amount).not.toBeNull();
+      expect(headingRow.nextElementSibling!.compareDocumentPosition(amount) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(container.querySelectorAll(`[data-cellkey="${total}"]`)).toHaveLength(1);
+      await act(async () => heading.querySelector<HTMLButtonElement>("button")!.click());
+      expect(container.querySelector("[data-history-transaction]")).toBeNull();
+      expect(container.querySelector(`[data-cellkey="${total}"]`)).not.toBeNull();
+    } finally {
+      await act(async () => root.unmount());
+    }
+  });
+
   const months = ["2026-08", "2026-09"];
   const expense: HistorySection = {
     ...depenses,
@@ -222,6 +264,12 @@ describe("le relevé mobile conserve les montants et leurs références", () => 
       mobile: { month: "2026-08", metric: null, onMonthChange: () => {} },
     });
     expect(html).toContain(`data-cellkey="txn:${sortie.id}::depense::0"`);
+    const el = document.createElement("div");
+    el.innerHTML = html;
+    const transaction = el.querySelector("[data-history-transaction]")!;
+    const amount = el.querySelector('[data-cellkey="section:ignored-out::depense::0"]')!;
+    expect(transaction.previousElementSibling?.textContent).toContain("Non comptabilisées — Dépenses");
+    expect(transaction.compareDocumentPosition(amount) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it.each(["grand::revenus::0", "grand::budget::0", "estime::solde::0"])("révèle %s même hors indicateur comparé", (reference) => {

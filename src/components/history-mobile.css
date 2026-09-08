@@ -53,6 +53,10 @@
   margin: 0;
 }
 
+.history-mobile [data-history-band] {
+  margin-top: 1rem;
+}
+
 .history-mobile [data-history-band] > td:first-child > div {
   flex-direction: row;
   align-items: center;
@@ -133,6 +137,24 @@
 
 .history-mobile [data-history-summary] {
   background: var(--encre);
+}
+
+/* Sur téléphone, le résumé reste une surface sombre dans le thème sombre.
+   Les cellules reprennent les couleurs du thème après l'inversion du pied. */
+.dark .history-mobile [data-history-summary] {
+  background: var(--sol);
+  color: var(--encre);
+}
+
+.dark .history-mobile [data-history-summary] > td {
+  --foreground: var(--encre);
+  --muted-foreground: var(--ardoise);
+  --tension-encre: var(--tension-encre-base);
+  --border: var(--filet);
+}
+
+.dark .history-mobile [data-history-summary] > td:not(.case-active) {
+  background: var(--sol);
 }
 
 @media (max-width: 359px) {

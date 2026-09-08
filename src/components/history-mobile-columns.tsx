@@ -1,7 +1,7 @@
 "use client";
 
 import { cloneElement, createContext, useContext, type ReactElement, type ReactNode } from "react";
-import { TableCell } from "@/components/ui/table";
+import { TableCell, TableRow } from "@/components/ui/table";
 import { COL_INFO, COL_LABEL, type ColKey } from "@/lib/history-columns";
 import { makeInfo, type CellDetail } from "@/lib/history-explain";
 import { monthLabel } from "@/lib/transactions-view";
@@ -20,6 +20,27 @@ export const MobileHistoryContext = createContext<(MobileHistoryView & {
 
 type Column = { column: ColKey; month: string };
 export const MobileColumnContext = createContext<Column | null>(null);
+
+// À l'ouverture sur mobile : nom, détail, puis montants de l'enveloppe.
+// Sur ordinateur, le nom et les montants restent sur la même ligne.
+export function HistoryExpandableRows({ heading, amounts, expanded, className, children }: {
+  heading: ReactNode;
+  amounts: ReactNode;
+  expanded: boolean;
+  className?: string;
+  children: ReactNode;
+}) {
+  const mobile = useContext(MobileHistoryContext);
+  const amountsAfterDetails = !!mobile && expanded;
+  return <>
+    <TableRow className={className}>
+      {heading}
+      {!amountsAfterDetails && amounts}
+    </TableRow>
+    {children}
+    {amountsAfterDetails && <TableRow className={className}>{amounts}</TableRow>}
+  </>;
+}
 
 export const MOBILE_COLUMN_LABELS: Record<ColKey, string> = {
   budgetRem: "Attendu", budgetDep: "Budget", dep: "Dépensé", recu: "Reçu",
