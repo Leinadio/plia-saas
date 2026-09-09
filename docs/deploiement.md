@@ -63,3 +63,23 @@ node --env-file=.env.local scripts/appliquer-auth.mjs
 
 Les deux se relancent sans rien détruire. Le premier pose les tables du budget, leurs
 index, le rôle bridé et ses règles ; le second les tables de connexion.
+
+## Soldes bancaires et opérations en attente
+
+Avant de déployer la correction de l'argent de départ, ajouter les colonnes sur
+chaque base concernée (ou relancer le script de schéma) :
+
+```sql
+ALTER TABLE accounts ADD COLUMN IF NOT EXISTS booked_balance NUMERIC(14, 2);
+ALTER TABLE accounts ADD COLUMN IF NOT EXISTS pending_transactions JSONB NOT NULL DEFAULT '[]'::jsonb;
+```
+
+Puis synchroniser les comptes. Le solde disponible reste dans `balance` ; le solde
+comptabilisé est conservé séparément. Les opérations en attente sont un instantané
+remplacé à chaque synchronisation, affiché avec la mention « En attente ».
+L’utilisateur peut choisir une enveloppe, un sous-poste et un mois dès cette étape.
+Ces choix sont conservés à la synchronisation et transférés à la transaction
+comptabilisée quand sa référence ou une correspondance unique montant/libellé
+permet de la reconnaître. Les correspondances ambiguës ne sont pas devinées. Seul l'écart bancaire sans opération détaillée reste sur une ligne
+séparée. Aucun montant n'est compté deux fois, et les ouvertures des mois précédents
+ne changent pas. Sans solde comptabilisé fourni par la banque, la colonne reste nulle.

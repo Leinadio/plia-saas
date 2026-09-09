@@ -18,6 +18,7 @@ import { computeForecast, type Group, type Txn } from "../../../lib/forecast";
 import { ForecastDetailSheet } from "@/components/forecast-detail-sheet";
 import { currentMonthKey } from "../../../lib/current-month";
 import { accountLabel, effectiveBalance } from "../../../lib/account";
+import { pendingAsTransactions } from "../../../lib/bank-pending";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HistoryWithDetail } from "@/components/history-with-detail";
 import { SoldeDetailleProvider, SoldeDetailleToggle } from "@/components/solde-detaille";
@@ -120,7 +121,10 @@ export default async function HistoriquePage({
         </div>
         {accounts.map((a) => {
           const groups = allGroups.filter((g) => g.accountId === a.id) as Group[];
-          const txns = allTxns.filter((t) => t.accountId === a.id);
+          const txns = [
+            ...allTxns.filter((t) => t.accountId === a.id),
+            ...pendingAsTransactions(a.id, a.pending_transactions ?? [], currentMonth),
+          ];
           // Frise du compte : du premier mois avec des transactions de CE compte (au
           // moins le mois précédent) jusqu'à stripMax. La plage de l'URL est clampée
           // sur ces bornes : un mois sans montants n'est ni sélectionnable ni affiché.
@@ -142,6 +146,7 @@ export default async function HistoriquePage({
           // Le solde de la banque privé de ce qui est hors calcul : c'est LUI qui
           // ancre tout ce qui suit (prévision, estimé de fin de mois, chaîne de soldes).
           const balance = effectiveBalance(a.balance, ignoredByAccount[a.id], manualByAccount[a.id]);
+          const pendingNet = a.booked_balance == null ? 0 : a.balance - a.booked_balance;
           const forecast = computeForecast(a.id, balance, groups, txns, currentMonth, datedBudgets, datedLines);
           const sectionsFull = computeHistory(groups, txns, calcMonths, currentMonth, datedBudgets, datedLines);
           // Estimé de fin du mois courant aligné sur le tableau (Balances vertes +
@@ -149,7 +154,8 @@ export default async function HistoriquePage({
           // mois futurs.
           const estimateValue =
             computeTableEstimate(sectionsFull, calcMonths, currentMonth, balance)?.value ?? forecast.currentEstimate;
-          const soldeFull = computeSolde(sectionsFull, calcMonths, currentMonth, balance, estimateValue);
+          const detailedPendingNet = (a.pending_transactions ?? []).reduce((sum, transaction) => sum + transaction.amount, 0);
+          const soldeFull = computeSolde(sectionsFull, calcMonths, currentMonth, balance, estimateValue, pendingNet, detailedPendingNet);
           // Acquittés retirés à la source : l'étiquette sous les montants, le signal
           // porté par un groupe récurrent et le bandeau du side panel en découlent tous,
           // et suivent donc sans avoir à vérifier chacun de leur côté.
@@ -158,7 +164,7 @@ export default async function HistoriquePage({
             a.id,
             dismissed,
           );
-          const plannedFull = computePlannedSoldes(sectionsFull, calcMonths, currentMonth, soldeFull.openings, estimateValue, datedBudgets);
+          const plannedFull = computePlannedSoldes(sectionsFull, calcMonths, currentMonth, soldeFull.openings, estimateValue, datedBudgets, soldeFull.pending);
           const sections = sliceHistorySections(sectionsFull, calcMonths, w.dropStart, w.dropEnd);
           const solde = sliceSoldeColumn(soldeFull, w.dropStart, w.dropEnd);
           const planned = slicePlannedSoldes(plannedFull, w.dropStart, w.dropEnd);

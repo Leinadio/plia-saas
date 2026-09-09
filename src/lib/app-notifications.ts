@@ -10,6 +10,7 @@ import { overspendNotifications, type Notification } from "./notifications";
 import { accountLabel } from "./account";
 import { currentMonthKey } from "./current-month";
 import type { Group, Txn } from "./forecast";
+import { pendingAsTransactions } from "./bank-pending";
 
 // Notifications affichées dans l'en-tête, tous comptes confondus. Vit à part de la page
 // d'Historique : l'en-tête est monté par le layout et s'affiche sur toutes les pages,
@@ -47,7 +48,7 @@ export async function appNotifications(): Promise<Notification[]> {
       accountName: accountLabel(a),
       byMonth: computeOverspends(
         groups.filter((g) => g.accountId === a.id),
-        txns.filter((t) => t.accountId === a.id),
+        [...txns.filter((t) => t.accountId === a.id), ...pendingAsTransactions(a.id, a.pending_transactions ?? [], currentMonth)],
         currentMonth,
         dated,
         datedLines,

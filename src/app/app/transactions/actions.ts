@@ -21,6 +21,9 @@ import { canAttachToGroup, peutRecevoir, sensDuMontant } from "@/lib/ownership";
 import { isGroupAlive } from "@/lib/forecast";
 import { countGroupLines, getLineGroupId, getGroupLifespan, getGroupDirection } from "../../../db/repositories/groups";
 import { revalidatePath } from "next/cache";
+import { getPendingTransaction, setPendingChoices } from "../../../db/repositories/pending-transactions";
+import { currentMonthKey } from "../../../lib/current-month";
+import { isMonthKey } from "../../../lib/history";
 
 function revalidateAll() {
   revalidatePath("/app/transactions");
@@ -46,12 +49,14 @@ export async function setGroup(
     // Deux choses à vérifier, pas une : la transaction qu'on déplace, et la destination.
     // Rattacher SA transaction à la dépense d'un autre la ferait compter chez lui.
     const userId = moi;
-    if (!(await ownsTransaction(base, userId, txnId))) return;
+    const pending = await getPendingTransaction(base, userId, txnId);
+    if (!pending && !(await ownsTransaction(base, userId, txnId))) return;
     const gid = groupId !== null && Number.isFinite(groupId) ? groupId : null;
     const lid = lineId !== null && Number.isFinite(lineId) ? lineId : null;
     const database = base;
     if (gid !== null) {
       if (!(await ownsGroup(database, userId, gid))) return;
+      if (pending && !(await database.one("SELECT id FROM groups WHERE id = $1 AND account_id = $2", [gid, pending.accountId]))) return;
       if (lid !== null && !(await ownsLine(database, userId, lid))) return;
       const lignes = await countGroupLines(database, gid);
       if (lignes === null || !canAttachToGroup(lignes > 0, lid)) return;
@@ -67,7 +72,9 @@ export async function setGroup(
       // Le mois retenu est celui où la transaction COMPTE, rattachement compris : une
       // dépense du 31 août rangée en septembre doit trouver un poste vivant en
       // septembre, pas en août.
-      const op = await getTransactionFacts(database, txnId);
+      const op = pending
+        ? { ...pending, date: pending.date ?? "", budgetMonth: pending.budgetMonth ?? currentMonthKey(new Date()) }
+        : await getTransactionFacts(database, txnId);
       const bornes = await getGroupLifespan(database, gid);
       if (op === null || bornes === null || !isGroupAlive(bornes, moisBudget(op))) return;
       // Le SENS, enfin : une dépense n'a rien à faire dans une rémunération, où elle
@@ -77,7 +84,8 @@ export async function setGroup(
       const sensGroupe = await getGroupDirection(database, gid);
       if (sensGroupe === null || !peutRecevoir(sensDuMontant(op.amount), sensGroupe)) return;
     }
-    await setTransactionGroup(database, txnId, gid, false, lid);
+    if (pending) await setPendingChoices(database, userId, txnId, { groupId: gid, lineId: gid === null ? null : lid });
+    else await setTransactionGroup(database, txnId, gid, false, lid);
     revalidateAll();
   });
 }
@@ -106,6 +114,13 @@ export async function setComment(txnId: string, comment: string) {
 // ligne proposera alors les postes qui vivent ce mois-ci.
 export async function setBudgetMonth(txnId: string, month: string | null) {
   return pourMoi(async (base, moi) => {
+    const pending = await getPendingTransaction(base, moi, txnId);
+    if (pending) {
+      if (month !== null && !isMonthKey(month)) return;
+      await setPendingChoices(base, moi, txnId, { budgetMonth: month });
+      revalidateAll();
+      return;
+    }
     if (!(await ownsTransaction(base, moi, txnId))) return;
     const op = await getTransactionFacts(base, txnId);
     if (op === null) return;

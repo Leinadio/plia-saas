@@ -48,6 +48,8 @@ export type Txn = {
   // (« YYYY-MM »). Aucun calcul ne le lit directement : ils passent tous par
   // moisBudget (cf. src/lib/txn-mois.ts).
   budgetMonth?: string | null;
+  // Instantané bancaire provisoire, présenté dans les non catégorisés du mois.
+  pending?: boolean;
 };
 
 // Un groupe est vivant au mois m si son mois de départ est atteint et que sa

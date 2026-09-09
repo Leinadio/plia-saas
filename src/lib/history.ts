@@ -69,6 +69,7 @@ export type HistoryTxn = {
   // Le mois de rattachement choisi à la main, quand il y en a un : la ligne montre
   // toujours la date de la banque, et dit à côté où elle compte.
   budgetMonth?: string | null;
+  pending?: boolean;
 };
 // Un sous-groupe = une ligne d'un récurrent (Spotify, Direct Assurance…).
 export type HistorySubRow = {
@@ -227,6 +228,7 @@ export function computeHistory(
     id: t.id, date: t.date, label: t.label, amount: t.amount, month: moisBudget(t),
     groupId: t.groupId, lineId: t.lineId ?? null, comment: t.comment ?? null,
     budgetMonth: t.budgetMonth ?? null,
+    ...(t.pending ? { pending: true } : {}),
   });
 
   // On ne liste que les transactions des mois affichés.
@@ -531,6 +533,10 @@ export function grandTotals(sections: HistorySection[], monthCount: number): Mon
 export type SoldeColumn = {
   openings: number[];
   closings: number[];
+  // Écart disponible − comptabilisé sans transaction détaillée, au mois courant.
+  pending?: number[];
+  // Ancre sans l'attente, conservée même lorsqu'on coupe le mois courant.
+  bookedBalance?: number;
   rowRunning: Record<number, number[]>;
   // Solde couru des deux étapes « non catégorisés » (reçus / dépenses), par sens.
   uncategorizedRunning: { in?: number[]; out?: number[] } | null;
@@ -546,8 +552,21 @@ export function computeSolde(
   // Estimé de fin du mois courant : s'il est fourni, les mois futurs partent de
   // cette estimation (au lieu du solde « maintenant ») pour la colonne Solde réel.
   currentEstimate?: number | null,
+  pendingNet = 0,
+  detailedPendingNet?: number,
 ): SoldeColumn {
   const n = months.length;
+  // Les opérations provisoires détaillées comptent déjà dans leur enveloppe.
+  // La page fournit leur total complet, même hors de la fenêtre affichée.
+  // Seul l'écart bancaire sans transaction correspondante reste à part.
+  const detailedPending = detailedPendingNet ?? sections.flatMap(section => [
+    ...(section.txns ?? []),
+    ...section.rows.flatMap(row => [...row.txns, ...row.subRows.flatMap(subRow => subRow.txns)]),
+  ])
+    .filter(transaction => transaction.pending)
+    .reduce((sum, transaction) => sum + transaction.amount, 0);
+  const remainingPending = Math.round((pendingNet - detailedPending) * 100) / 100 || 0;
+  const pending = months.map(month => month === currentMonth ? remainingPending : 0);
   // Mouvement net affiché par mois = somme des sous-totaux de section
   // (entrées - sorties). Inclut déjà les non catégorisés et les projections.
   const net = months.map((_, i) => sections.reduce((s, sec) => s + cellNet(sec.totals[i]), 0));
@@ -573,7 +592,7 @@ export function computeSolde(
       // solde de fin sur le mois courant (ou, hors plage, sur la borne haute).
       if (ci === -1) ci = n - 1;
       closings[ci] = balance;
-      openings[ci] = balance - net[ci];
+      openings[ci] = balance - net[ci] - pending[ci];
       for (let i = ci - 1; i >= 0; i--) {
         closings[i] = openings[i + 1];
         openings[i] = closings[i] - net[i];
@@ -591,7 +610,7 @@ export function computeSolde(
   const rowRunning: Record<number, number[]> = {};
   let uncategorizedRunning: { in?: number[]; out?: number[] } | null = null;
   for (let i = 0; i < n; i++) {
-    let run = openings[i];
+    let run = openings[i] + pending[i];
     for (const sec of sections) {
       if (sec.kind === "uncategorized") {
         run += cellNet(sec.totals[i]);
@@ -607,7 +626,7 @@ export function computeSolde(
     }
   }
 
-  return { openings, closings, rowRunning, uncategorizedRunning };
+  return { openings, closings, rowRunning, uncategorizedRunning, pending, bookedBalance: balance - pendingNet };
 }
 
 // Revenu projeté d'une ligne pour un mois : son budget de ce mois-là, 0 pour une
@@ -694,6 +713,8 @@ export function sliceSoldeColumn(s: SoldeColumn, k: number, j = 0): SoldeColumn 
   return {
     openings: coupe(s.openings),
     closings: coupe(s.closings),
+    ...(s.pending ? { pending: coupe(s.pending) } : {}),
+    ...(s.bookedBalance != null ? { bookedBalance: s.bookedBalance } : {}),
     rowRunning: rec(s.rowRunning),
     uncategorizedRunning: s.uncategorizedRunning
       ? { in: s.uncategorizedRunning.in && coupe(s.uncategorizedRunning.in), out: s.uncategorizedRunning.out && coupe(s.uncategorizedRunning.out) }
@@ -875,6 +896,7 @@ export function groupsWithPending(byMonth: Record<string, Overspend[]>): Set<str
 export function computePlannedSoldes(
   sections: HistorySection[], months: string[], currentMonth: string, openingsReal: number[],
   currentEstimate?: number | null, dated?: DatedBudgets,
+  pending?: readonly number[],
 ): PlannedSoldes {
   const n = months.length;
   let ci = months.indexOf(currentMonth);
@@ -902,6 +924,11 @@ export function computePlannedSoldes(
     const futureStart = i === ci + 1 && currentEstimate != null ? currentEstimate : null;
     let runP = anchored ? openingsReal[i] : futureStart ?? prevuClosings[i - 1]!;
     let runD = anchored ? openingsReal[i] : futureStart ?? depassClosings[i - 1]!;
+    // L'attente réduit le disponible maintenant, jamais l'ouverture des mois passés.
+    if (months[i] === currentMonth) {
+      runP += pending?.[i] ?? 0;
+      runD += pending?.[i] ?? 0;
+    }
     const osMonth = anchored ? i : ci;
     for (const sec of sections) {
       // « Si dépassement » = une seule chaîne continue de haut en bas : chaque ligne

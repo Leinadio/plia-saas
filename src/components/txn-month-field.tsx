@@ -19,21 +19,23 @@ import { useMiseAJour } from "@/components/mise-a-jour";
 // date. Les mois proposés entourent la date, et celui de la date porte sa mention —
 // c'est la position de repos, celle où il n'y a rien de décidé.
 export function TxnMonthField({
-  txnId, date, budgetMonth, disabled = false, className,
+  txnId, date, budgetMonth, pendingMonth, disabled = false, className,
 }: {
   txnId: string;
   date: string;
   budgetMonth: string | null;
+  pendingMonth?: string;
   disabled?: boolean;
   className?: string;
 }) {
   const { pendant, enCours } = useMiseAJour();
-  const moisDeLaDate = date.slice(0, 7);
+  const referenceDate = pendingMonth ? `${pendingMonth}-01` : date;
+  const moisDeLaDate = referenceDate.slice(0, 7);
 
   // Le choix s'affiche tout de suite, puis suit la vérité serveur : quand celle-ci
   // change après le rafraîchissement, on se resynchronise. Même mécanique que le
   // menu de rattachement de poste, juste à côté.
-  const serveur = moisBudget({ date, budgetMonth });
+  const serveur = moisBudget({ date: referenceDate, budgetMonth });
   const [valeur, setValeur] = useState(serveur);
   const [precedent, setPrecedent] = useState(serveur);
   if (serveur !== precedent) {
@@ -41,7 +43,7 @@ export function TxnMonthField({
     setValeur(serveur);
   }
 
-  const options = moisProposables(date, budgetMonth);
+  const options = moisProposables(referenceDate, budgetMonth);
   const deplacee = valeur !== moisDeLaDate;
 
   return (
@@ -62,12 +64,12 @@ export function TxnMonthField({
       onChange={(e) => {
         const m = e.currentTarget.value;
         setValeur(m);
-        pendant(() => setBudgetMonth(txnId, m === moisDeLaDate ? null : m));
+        pendant(() => setBudgetMonth(txnId, !pendingMonth && m === moisDeLaDate ? null : m));
       }}
     >
       {options.map((m) => (
         <option key={m} value={m}>
-          {m === moisDeLaDate ? `${monthLabel(m)} (sa date)` : monthLabel(m)}
+          {m === moisDeLaDate ? `${monthLabel(m)} (${pendingMonth ? "mois courant" : "sa date"})` : monthLabel(m)}
         </option>
       ))}
     </select>

@@ -104,6 +104,11 @@ export function computePrevDisplayed(
       depass: months.map((mo, i) => (mo <= currentMonth ? solde.openings[i] : planned.depassClosings[i - 1] ?? solde.openings[i])),
     },
   ];
+  if (solde.pending?.some(amount => Math.abs(amount) >= 0.005)) {
+    const start = stops[0];
+    const afterPending = (values: (number | null)[]) => values.map((value, i) => value == null ? null : value + (solde.pending?.[i] ?? 0));
+    stops.push({ key: "bank-pending", solde: afterPending(start.solde), prevu: afterPending(start.prevu), depass: afterPending(start.depass) });
+  }
   for (const sec of sections) {
     if (sec.kind === "uncategorized") {
       const dir = sec.uncatDirection ?? "out";

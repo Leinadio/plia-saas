@@ -163,6 +163,52 @@ describe("désigner une transaction depuis le panneau", () => {
 });
 
 describe("le relevé mobile conserve les montants et leurs références", () => {
+  it.each([false, true])("affiche le retrait provisoire sous les non catégorisés (mobile : %s)", mobile => {
+    const txn: HistoryTxn = { id: "pending-withdrawal", date: "", month: "2026-08", label: "RETRAIT CASH SERVICES", amount: -350, groupId: null, lineId: null, pending: true };
+    const section: HistorySection = { kind: "uncategorized", uncatDirection: "out", rows: [], totals: [cell({ depense: 350, balance: -350 })], txns: [txn] };
+    const el = document.createElement("div");
+    el.innerHTML = grille([`txn:${txn.id}::depense::0`], [section], {
+      solde: { ...solde, openings: [0], closings: [-350], pending: [0] },
+      ...(mobile ? { mobile: { month: "2026-08", metric: null, onMonthChange: () => {} } } : {}),
+    });
+    const transaction = el.querySelector("[data-history-transaction]")!;
+    expect(transaction.textContent).toContain("RETRAIT CASH SERVICES");
+    expect(transaction.textContent).toContain("En attente");
+    expect(transaction.textContent).toContain("350,00");
+    expect(transaction.previousElementSibling?.textContent).toContain("Dépenses non catégorisées");
+    expect(transaction.querySelectorAll("select")).toHaveLength(2);
+    const month = transaction.querySelector<HTMLSelectElement>('select[aria-label="Mois où cette opération compte"]')!;
+    expect(month.disabled).toBe(false);
+    expect(month.value).toBe("2026-08");
+    expect(month.textContent).not.toContain("sa date");
+    expect(transaction.textContent).not.toContain("Commenter");
+    expect(el.querySelector('[data-cellkey="bank-pending::solde::0"]')).toBeNull();
+  });
+
+  it.each([false, true])("montre l'attente après le départ et ouvre son calcul (mobile : %s)", async mobile => {
+    (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+    const container = document.createElement("div");
+    const root = createRoot(container);
+    const onSelect = vi.fn();
+    try {
+      await act(async () => root.render(elementGrille([], [], {
+        onSelect,
+        solde: { ...solde, openings: [0], closings: [-350], pending: [-350] },
+        ...(mobile ? { mobile: { month: "2026-08", metric: null, onMonthChange: () => {} } } : {}),
+      })));
+      const opening = container.querySelector('[data-cellkey="opening::solde::0"]')!.closest("tr")!;
+      expect(opening.nextElementSibling?.textContent).toContain("Opérations bancaires en attente");
+      const pending = container.querySelector('[data-cellkey="bank-pending::solde::0"]')!;
+      expect(pending.textContent).toContain("350,00");
+      await act(async () => pending.querySelector<HTMLButtonElement>(mobile ? ".history-mobile-number button" : "button")!.click());
+      const detail = onSelect.mock.calls.at(-1)![0];
+      expect(detail.nodes.reduce((sum: number, node: DetailNode) => sum + node.amount, 0)).toBe(detail.result);
+      expect(detail.nodes.map((node: DetailNode) => node.amount)).toEqual([0, -350]);
+    } finally {
+      await act(async () => root.unmount());
+    }
+  });
+
   it.each([
     { name: "enveloppe", sections: [depenses], title: "Courses", txn: sortie, total: "group:8::depense::0" },
     { name: "sous-poste", sections: [revenusAPostes], title: "Virements", txn: recetteDePoste, total: "subrow:91::recu::0" },

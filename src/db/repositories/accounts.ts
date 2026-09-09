@@ -1,10 +1,13 @@
 import type { Db } from "../pg";
+import type { PendingBankTransaction } from "../../lib/bank-pending";
 
 export type Account = {
   id: string;
   name: string;
   iban_masked: string | null;
   balance: number;
+  booked_balance?: number | null;
+  pending_transactions?: PendingBankTransaction[];
   currency: string;
   last_synced: string | null;
   custom_name: string | null;
@@ -23,13 +26,15 @@ export async function upsertAccount(
   userId: string,
 ): Promise<void> {
   await db.run(
-    `INSERT INTO accounts (id, name, iban_masked, balance, currency, last_synced, user_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `INSERT INTO accounts (id, name, iban_masked, balance, currency, last_synced, user_id, booked_balance, pending_transactions)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb)
      ON CONFLICT (id) DO UPDATE SET
        name = EXCLUDED.name, iban_masked = EXCLUDED.iban_masked,
        balance = EXCLUDED.balance, currency = EXCLUDED.currency,
+       booked_balance = EXCLUDED.booked_balance,
+       pending_transactions = EXCLUDED.pending_transactions,
        last_synced = EXCLUDED.last_synced`,
-    [a.id, a.name, a.iban_masked, a.balance, a.currency, a.last_synced, userId],
+    [a.id, a.name, a.iban_masked, a.balance, a.currency, a.last_synced, userId, a.booked_balance ?? null, JSON.stringify(a.pending_transactions ?? [])],
   );
 }
 

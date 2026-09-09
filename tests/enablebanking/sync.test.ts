@@ -6,7 +6,9 @@ import { syncAll } from "../../src/enablebanking/sync";
 import { listTransactions } from "../../src/db/repositories/transactions";
 import { totalBalance, listAccounts } from "../../src/db/repositories/accounts";
 
-const fakeEbGet = async (path: string): Promise<any> => {
+const mockEbGet = (respond: (path: string) => unknown) => async <T>(path: string): Promise<T> => respond(path) as T;
+
+const fakeEbGet = mockEbGet((path) => {
   if (path.includes("/balances")) {
     return { balances: [{ balance_amount: { amount: "500.00", currency: "EUR" } }] };
   }
@@ -27,7 +29,7 @@ const fakeEbGet = async (path: string): Promise<any> => {
     };
   }
   return {};
-};
+});
 
 test("sync imports balance + transactions", async () => {
   const db = dbFrom(await createTestDb());
@@ -42,8 +44,47 @@ test("sync imports balance + transactions", async () => {
   expect(txns[0].amount).toBe(-30);
 });
 
+test("conserve le solde comptabilisé et écarte les opérations en attente sans date", async () => {
+  const db = dbFrom(await createTestDb());
+  const ebGet = mockEbGet((path) => {
+    if (path.includes("/balances")) return { balances: [
+      { balance_type: "XPCD", balance_amount: { amount: "108.43", currency: "EUR" } },
+      { balance_type: "CLBD", balance_amount: { amount: "458.43", currency: "EUR" } },
+    ] };
+    if (path.includes("/transactions")) return { transactions: [
+      { entry_reference: "pending", status: "PDNG", booking_date: null, transaction_amount: { amount: "350", currency: "EUR" }, credit_debit_indicator: "DBIT" },
+      { entry_reference: "booked", status: "BOOK", booking_date: "2026-09-01", transaction_amount: { amount: "458.43", currency: "EUR" }, credit_debit_indicator: "CRDT" },
+    ] };
+    return {};
+  });
+  await syncAll(db, { ebGet, accountUids: ["acc1"], accountName: "CIC", userId: TEST_USER });
+  const [account] = await listAccounts(db, TEST_USER);
+  expect(account.balance).toBe(108.43);
+  expect(account.booked_balance).toBe(458.43);
+  expect(account.pending_transactions).toEqual([expect.objectContaining({ amount: -350, date: null })]);
+  expect((await listTransactions(db, TEST_USER)).map(t => t.id)).toEqual(["acc1::booked"]);
+});
+
+test("remplace l'attente par la vraie opération sans conserver de doublon", async () => {
+  const db = dbFrom(await createTestDb());
+  let booked = false;
+  const ebGet = mockEbGet(path => {
+    if (path.includes("/balances")) return { balances: [{ balance_type: "CLBD", balance_amount: { amount: booked ? "108.43" : "458.43", currency: "EUR" } }] };
+    if (path.includes("/transactions")) return { transactions: [{ entry_reference: booked ? "final" : "temporary", status: booked ? "BOOK" : "PDNG", booking_date: booked ? "2026-09-09" : null, transaction_amount: { amount: "350", currency: "EUR" }, credit_debit_indicator: "DBIT", remittance_information: ["RETRAIT"] }] };
+    return {};
+  });
+  const deps = { ebGet, accountUids: ["acc1"], accountName: "CIC", userId: TEST_USER };
+  await syncAll(db, deps);
+  expect((await listAccounts(db, TEST_USER))[0].pending_transactions).toHaveLength(1);
+  booked = true;
+  await syncAll(db, deps);
+  await syncAll(db, deps);
+  expect((await listAccounts(db, TEST_USER))[0].pending_transactions).toEqual([]);
+  expect((await listTransactions(db, TEST_USER)).map(txn => txn.id)).toEqual(["acc1::final"]);
+});
+
 test("keeps two accounts separate with their own balance, label and transactions", async () => {
-  const perAccount = async (path: string): Promise<any> => {
+  const perAccount = mockEbGet((path) => {
     const isB = path.includes("accB");
     if (path.includes("/balances"))
       return { balances: [{ balance_amount: { amount: isB ? "471.12" : "90.13", currency: "EUR" } }] };
@@ -62,7 +103,7 @@ test("keeps two accounts separate with their own balance, label and transactions
         ],
       };
     return {};
-  };
+  });
 
   const db = dbFrom(await createTestDb());
   await syncAll(db, { ebGet: perAccount, accountUids: ["accA", "accB"], accountName: "CIC", userId: TEST_USER });

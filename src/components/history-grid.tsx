@@ -1330,6 +1330,7 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
           children: [
             { label: "Revenus prévus", amount: budgetRemTotal, ref: ck("revenus"), children: revenusChildren },
             { label: "Budget", amount: -expenseBudget, ref: ck("budget"), children: budgetChildren },
+            ...(solde.pending?.[i] ? [{ label: "Opérations bancaires en attente", amount: solde.pending[i], ref: cellKey("bank-pending", "soldePrevu", i) }] : []),
           ],
         };
         const soldePrevuDetail: CellDetail | null =
@@ -1458,8 +1459,8 @@ function TxnCells({ txn, months, currentMonth, onSelect, selCellKey }: { txn: Hi
         // sa case chiffrée soit cliquable comme les montants agrégés.
         const detail: CellDetail | null = here
           ? makeDetail(
-              "Transaction",
-              [{ label: `${txn.date} · ${txn.label}`, amount: montant }],
+              txn.pending ? "Transaction en attente" : "Transaction",
+              [{ label: `${txn.pending ? "En attente" : txn.date} · ${txn.label}`, amount: montant }],
               { subtitle: monthLabel(m), result: montant },
             )
           : null;
@@ -1557,10 +1558,12 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
           <div className="group/txn flex flex-col gap-0.5 overflow-hidden">
             {/* La date reste en chasse fixe : c'est une donnée, elle s'aligne
                 d'une ligne à l'autre comme les montants. */}
-            <span className="text-ardoise-claire text-xs tabular-nums">{txn.date}</span>
+            {txn.pending
+              ? <span className="text-attente text-xs font-medium">En attente</span>
+              : <span className="text-ardoise-claire text-xs tabular-nums">{txn.date}</span>}
             <TruncatedText text={txn.label} className="leading-5" lines={2} />
             {/* Le commentaire vient juste sous le libellé, dans la même colonne. */}
-            {!demo && <TxnCommentField txnId={txn.id} comment={txn.comment} />}
+            {!demo && !txn.pending && <TxnCommentField txnId={txn.id} comment={txn.comment} />}
           </div>
           {demo ? (
             <span className="text-ardoise-claire text-xs">Disponible avec vos données</span>
@@ -1579,7 +1582,7 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
                   defaultLineId={txn.lineId}
                   className="min-w-0 flex-1"
                 />
-                <IgnoreTxnToggle txnId={txn.id} ignored={false} size="icon-sm" />
+                {!txn.pending && <IgnoreTxnToggle txnId={txn.id} ignored={false} size="icon-sm" />}
               </div>
               {/* Sous le poste, sur sa propre ligne : la colonne fait 176 px, deux
                   menus côte à côte n'y laisseraient lire ni l'un ni l'autre. */}
@@ -1587,6 +1590,7 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
                 txnId={txn.id}
                 date={txn.date}
                 budgetMonth={txn.budgetMonth ?? null}
+                pendingMonth={txn.pending ? currentMonth : undefined}
                 className="w-full"
               />
             </div>
@@ -2650,21 +2654,21 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             <FirstColBox>Argent de départ</FirstColBox>
           </TableCell>
           {solde.openings.map((v, i) => {
-            // 1er mois affiché : reconstitué en rembobinant depuis le solde réel de
-            // la banque (forecast.balance = a.balance, l'ancre de computeSolde).
+            // Reconstitution depuis les opérations comptabilisées, hors attente.
             // Mois suivants : hérité du solde de clôture du mois précédent.
+            const bookedBalance = solde.bookedBalance ?? forecast.balance;
             const detail: CellDetail =
               i === 0
                 ? makeDetail(
                     "Argent de départ",
                     [
-                      { label: "Solde du compte (banque)", amount: forecast.balance },
-                      { label: "Mouvements de la période (rembobinés)", amount: solde.openings[0] - forecast.balance },
+                      { label: "Solde du compte hors opérations en attente", amount: bookedBalance },
+                      { label: "Mouvements de la période (rembobinés)", amount: solde.openings[0] - bookedBalance },
                     ],
                     {
                       subtitle: monthLabel(months[0]),
                       result: solde.openings[0],
-                      note: "Reconstitué en rembobinant les mouvements depuis le solde réel de la banque.",
+                      note: "Reconstitué à partir des opérations comptabilisées, selon leur mois de rattachement au budget. Les opérations bancaires en attente ne modifient pas le départ du mois.",
                     },
                   )
                 : months[i - 1] === currentMonth && months[i] > currentMonth
@@ -2738,6 +2742,30 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             slots.soldePrevu = (b) => plannedSoldeCell("soldePrevu", prevuOpen, b, prevuOpenDetail, onSelect, cellKey(openingRow, "soldePrevu", i), selCellKey);
             slots.soldeDepass = (b) => plannedSoldeCell("soldeDepass", depassOpen, b, depassOpenDetail, onSelect, cellKey(openingRow, "soldeDepass", i), selCellKey);
             return <Fragment key={i}>{renderCols(months[i], cols, slots, undefined, undefined, true)}</Fragment>;
+          })}
+        </TableRow>}
+        {solde.pending?.some(amount => Math.abs(amount) >= 0.005) && (!mobile?.metric || mobile.metric.startsWith("solde") || selectedRows.has("bank-pending")) && <TableRow className="text-sm">
+          <TableCell className={cn(COL1_STICKY, "bg-background h-px p-0")}>
+            <FirstColBox><span className="text-muted-foreground">Opérations bancaires en attente</span></FirstColBox>
+          </TableCell>
+          {months.map((month, i) => {
+            const delta = solde.pending?.[i] ?? 0;
+            const slots = blankSlots();
+            if (Math.abs(delta) >= 0.005) {
+              const value = solde.openings[i] + delta;
+              for (const column of ["solde", "soldePrevu", "soldeDepass"] as const) {
+                const detail = makeDetail("Opérations bancaires en attente", [
+                  { label: "Argent de départ", amount: solde.openings[i], ref: cellKey(openingRow, column, i) },
+                  { label: "Écart entre solde disponible et solde comptabilisé", amount: delta },
+                ], {
+                  subtitle: monthLabel(month), result: value,
+                  note: "Cet écart est déjà pris en compte dans le disponible de ce mois, sans modifier les mois précédents. Il disparaît lorsque les opérations sont comptabilisées.",
+                });
+                const slot = column === "solde" ? "soldeReel" : column;
+                slots[slot] = border => plannedSoldeCell(column, value, border, detail, onSelect, cellKey("bank-pending", column, i), selCellKey, delta);
+              }
+            }
+            return <Fragment key={month}>{renderCols(month, monthColumns(monthType(month, currentMonth)), slots, undefined, undefined, true)}</Fragment>;
           })}
         </TableRow>}
         {sectionSlots(secs).map((slot, si) => {

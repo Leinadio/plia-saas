@@ -2,8 +2,10 @@ import type { Db } from "../db/pg";
 import { parseAmount } from "../lib/money";
 import { upsertAccount } from "../db/repositories/accounts";
 import { attachAccountToConnection } from "../db/repositories/bank-connections";
-import { upsertTransaction } from "../db/repositories/transactions";
+import { upsertTransaction, setTransactionGroup, setTransactionBudgetMonth } from "../db/repositories/transactions";
 import { fenetreAcceptee } from "./periode";
+import { bankBalances, type BankBalance } from "../lib/bank-balances";
+import { pendingTransactions, reconcilePendingChoices, type PendingBankTransaction } from "../lib/bank-pending";
 
 type EbGet = <T>(path: string) => Promise<T>;
 
@@ -12,7 +14,7 @@ type EbGet = <T>(path: string) => Promise<T>;
 export const TXN_ID_SEP = "::";
 export const txnId = (accountUid: string, reference: string) => `${accountUid}${TXN_ID_SEP}${reference}`;
 
-type BalancesResponse = { balances: { balance_amount: { amount: string; currency: string } }[] };
+type BalancesResponse = { balances: BankBalance[] };
 type AccountDetails = {
   account_id?: { iban?: string };
   name?: string;
@@ -21,7 +23,8 @@ type AccountDetails = {
 type EbTxn = {
   entry_reference?: string;
   transaction_id?: string;
-  booking_date: string;
+  booking_date: string | null;
+  status?: string;
   transaction_amount: { amount: string; currency: string };
   credit_debit_indicator: "CRDT" | "DBIT";
   remittance_information?: string[];
@@ -109,7 +112,7 @@ export async function syncAll(
 
   for (const uid of deps.accountUids) {
     const balances = await deps.ebGet<BalancesResponse>(`/accounts/${uid}/balances`);
-    const balance = Number.parseFloat((balances.balances ?? [])[0]?.balance_amount.amount ?? "0");
+    const { balance, bookedBalance, currency } = bankBalances(balances.balances ?? []);
 
     // Account details (IBAN, name) are optional — never let them break a sync.
     let ibanMasked: string | null = null;
@@ -129,18 +132,27 @@ export async function syncAll(
     const operations = await fetchTransactions(deps.ebGet, uid);
 
     imported += await db.pourUtilisateur(deps.userId, async (t) => {
+      const previous = (await t.one<{ pending_transactions: PendingBankTransaction[] }>(
+        "SELECT pending_transactions FROM accounts WHERE id = $1 FOR UPDATE", [uid],
+      ))?.pending_transactions ?? [];
       await upsertAccount(t, {
         id: uid,
         name,
         iban_masked: ibanMasked,
         balance,
-        currency: (balances.balances ?? [])[0]?.balance_amount.currency ?? "EUR",
+        booked_balance: bookedBalance,
+        pending_transactions: previous,
+        currency,
         last_synced: nowIso,
       }, deps.userId);
       if (deps.connectionId != null) await attachAccountToConnection(t, uid, deps.connectionId);
 
       let nouvelles = 0;
+      const booked: { id: string; pendingId: string; amount: number; label: string }[] = [];
       for (const op of operations) {
+        // L'attente est déjà dans l'écart entre les deux soldes. Elle n'est pas
+        // une opération comptabilisée et peut n'avoir ni date ni référence stable.
+        if (op.status === "PDNG" || !op.booking_date) continue;
         const ref = op.entry_reference ?? op.transaction_id;
         if (!ref) continue;
         // Préfixé par le compte. La banque rend le même identifiant pour la même
@@ -148,14 +160,33 @@ export async function syncAll(
         // préfixe, deux personnes branchées sur le même compte bancaire réel se
         // disputent les mêmes clés, et la seconde ne voit jamais rien arriver.
         const label = (op.remittance_information ?? []).join(" ").trim() || "(sans libellé)";
-        nouvelles += await upsertTransaction(t, {
+        const transaction = {
           id: txnId(uid, ref),
           account_id: uid,
           date: op.booking_date,
           amount: parseAmount(op.transaction_amount.amount, op.credit_debit_indicator),
           label,
+        };
+        const inserted = await upsertTransaction(t, transaction);
+        nouvelles += inserted;
+        if (inserted) booked.push({
+          id: transaction.id, amount: transaction.amount, label: transaction.label,
+          pendingId: pendingTransactions(uid, [{ ...op, status: "PDNG" }])[0].id,
         });
       }
+      const reconciled = reconcilePendingChoices(previous, pendingTransactions(uid, operations), booked);
+      for (const { id, choices } of reconciled.assignments) {
+        // Une enveloppe supprimée entre-temps ne doit pas bloquer toute la synchro.
+        const destination = choices.groupId == null ? null : await t.one<{ groupId: number; lineId: number | null }>(
+          `SELECT g.id AS "groupId", l.id AS "lineId" FROM groups g
+           LEFT JOIN group_lines l ON l.group_id = g.id AND l.id = $2
+           WHERE g.id = $1 AND g.account_id = $3 AND ($2::integer IS NULL OR l.id IS NOT NULL)`,
+          [choices.groupId, choices.lineId ?? null, uid],
+        );
+        await setTransactionGroup(t, id, destination?.groupId ?? null, false, destination?.lineId ?? null);
+        await setTransactionBudgetMonth(t, id, choices.budgetMonth ?? null);
+      }
+      await t.run("UPDATE accounts SET pending_transactions = $1::jsonb WHERE id = $2", [JSON.stringify(reconciled.pending), uid]);
       return nouvelles;
     });
   }
