@@ -77,18 +77,16 @@ export function HistoryWithDetail(props: {
   const soldeDetaille = useSoldeDetailleOptional();
   const showDeltas = soldeDetaille?.detaille ?? false;
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 pb-[calc(8rem+env(safe-area-inset-bottom))] sm:pb-0">
       {isMobile && !frameNavigation && <HistoryMobileControls navigation={mobile}
         min={props.months[0] ?? props.currentMonth} max={props.months.at(-1) ?? props.currentMonth} />}
-      {/* LA CARTE. Le tableau repose sur la surface du monde : blanche, arrondie à
-          12 px, cerclée d'un filet d'un pixel et posée sur une ombre courte.
-          overflow-hidden : c'est elle qui coupe le tableau qui défile à l'intérieur,
-          sinon les fonds de cellules déborderaient de ses coins arrondis. */}
+      {/* Sur ordinateur, une carte entoure tout le tableau. Sur mobile, chaque
+          section porte sa propre carte ; les espaces laissent voir le fond de page. */}
       {/* Le voile d'attente : pendant qu'une modification se propage, les chiffres
           s'éteignent d'un cran et cessent de répondre au clic. Ils restent lisibles
           — on ne cache pas un montant — mais on ne peut plus ouvrir le détail d'une
           case qui va changer dans la seconde. */}
-      <VoileDAttente className="carte overflow-hidden">
+      <VoileDAttente className={isMobile ? undefined : "carte overflow-hidden"}>
         <CenterScroll>
         <HistoryGrid
           {...history}

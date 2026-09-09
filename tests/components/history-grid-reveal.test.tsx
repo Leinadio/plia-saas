@@ -133,6 +133,79 @@ function grille(...args: Parameters<typeof elementGrille>) {
   return renderToStaticMarkup(elementGrille(...args));
 }
 
+describe("balance dans le total des dépenses", () => {
+  it.each([false, true])("conserve le montant et son calcul dans le total (mobile : %s)", async (mobile) => {
+    (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    const onSelect = vi.fn();
+    const expense = { ...depenses, totals: [cell({ budgeted: 10, depense: 12.5, balance: -2.5 })] };
+    try {
+      await act(async () => root.render(elementGrille([], [revenus, expense], {
+        onSelect,
+        ...(mobile ? { mobile: { month: "2026-08", metric: null, onMonthChange: () => {} } } : {}),
+      })));
+      expect(container.textContent).not.toContain("Balance dépenses");
+      const total = Array.from(container.querySelectorAll("tr")).find(tr => tr.textContent?.includes("Total Dépenses"))!;
+      const balance = total.querySelector<HTMLElement>('[data-cellkey="section:expense::reste::0"]');
+      expect(balance).not.toBeNull();
+      expect(balance!.textContent?.replace(/\s/g, "")).toContain("-2,50");
+      await act(async () => balance!.querySelector<HTMLButtonElement>("button:last-child")!.click());
+      expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({
+        result: -2.5,
+        nodes: expect.arrayContaining([
+          expect.objectContaining({ label: "Budget", amount: 10, ref: "section:expense::budget::0" }),
+          expect.objectContaining({ label: "Dépensé", amount: -12.5, ref: "section:expense::depense::0" }),
+        ]),
+      }));
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+    }
+  });
+});
+
+describe("cartes des sections sur mobile", () => {
+  const mobile = { month: "2026-08", metric: null, onMonthChange: () => {} };
+
+  it("réunit les montants en cinq cartes et conserve les opérations non catégorisées", () => {
+    const uncat: HistorySection = { kind: "uncategorized", uncatDirection: "out", rows: [], totals: [cell({ depense: 3, balance: -3 })], txns: [{ ...sortie, id: "uncat-1", groupId: null, amount: -3 }] };
+    const el = document.createElement("div");
+    el.innerHTML = grille([], [revenus, depenses, uncat], { mobile });
+    const cards = el.querySelectorAll("[data-history-card]");
+    expect(cards).toHaveLength(5);
+    expect(cards[0].textContent).toContain("Août 2026");
+    expect(cards[0].textContent).toContain("Solde de fin de mois");
+    expect(cards[0].textContent).toContain("Estimé fin de mois");
+    expect(cards[1].textContent).toContain("Argent de départ");
+    expect(cards[2].textContent).toContain("Ce qui rentre");
+    expect(cards[2].textContent).toContain("Total revenus");
+    expect(cards[3].textContent).toContain("Ce qui sort");
+    expect(cards[3].textContent).toContain("Total Dépenses");
+    expect(cards[3].textContent).toContain("Dépenses non catégorisées");
+    expect(cards[4].textContent).toContain("Total du mois");
+    expect(cards[4].textContent).toContain("Total dépassement hors budget");
+    expect(el.querySelector("tbody tbody")).toBeNull();
+  });
+
+  it.each([null, "soldeReel"] as const)("masque le bloc bancaire en attente sur mobile (%s), sans changer les soldes", metric => {
+    const pendingSolde = { ...solde, pending: [6.48] };
+    const el = document.createElement("div");
+    el.innerHTML = grille([], [revenus, depenses], { mobile: { ...mobile, metric }, solde: pendingSolde });
+    expect(el.textContent).not.toContain("Opérations bancaires en attente");
+    expect(el.querySelector('[data-cellkey="opening::solde::0"]')).not.toBeNull();
+    const desktop = document.createElement("div");
+    desktop.innerHTML = grille([], [revenus, depenses], { solde: pendingSolde });
+    expect(desktop.textContent).toContain("Opérations bancaires en attente");
+    expect(desktop.querySelectorAll("tbody")).toHaveLength(1);
+    expect(desktop.querySelector("[data-history-card]")).toBeNull();
+    expect(el.querySelector('[data-cellkey="opening::solde::0"]')?.textContent).toContain(
+      desktop.querySelector('[data-cellkey="opening::solde::0"]')!.textContent!,
+    );
+  });
+});
+
 describe("désigner une transaction depuis le panneau", () => {
   it("déplie le poste de dépense et montre sa transaction", () => {
     expect(grille([`txn:${sortie.id}::depense::0`])).toContain("COURSES");
@@ -185,7 +258,7 @@ describe("le relevé mobile conserve les montants et leurs références", () => 
     expect(el.querySelector('[data-cellkey="bank-pending::solde::0"]')).toBeNull();
   });
 
-  it.each([false, true])("montre l'attente après le départ et ouvre son calcul (mobile : %s)", async mobile => {
+  it("conserve l'attente après le départ et son calcul sur ordinateur", async () => {
     (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
     const container = document.createElement("div");
     const root = createRoot(container);
@@ -194,13 +267,12 @@ describe("le relevé mobile conserve les montants et leurs références", () => 
       await act(async () => root.render(elementGrille([], [], {
         onSelect,
         solde: { ...solde, openings: [0], closings: [-350], pending: [-350] },
-        ...(mobile ? { mobile: { month: "2026-08", metric: null, onMonthChange: () => {} } } : {}),
       })));
       const opening = container.querySelector('[data-cellkey="opening::solde::0"]')!.closest("tr")!;
       expect(opening.nextElementSibling?.textContent).toContain("Opérations bancaires en attente");
       const pending = container.querySelector('[data-cellkey="bank-pending::solde::0"]')!;
       expect(pending.textContent).toContain("350,00");
-      await act(async () => pending.querySelector<HTMLButtonElement>(mobile ? ".history-mobile-number button" : "button")!.click());
+      await act(async () => pending.querySelector<HTMLButtonElement>("button")!.click());
       const detail = onSelect.mock.calls.at(-1)![0];
       expect(detail.nodes.reduce((sum: number, node: DetailNode) => sum + node.amount, 0)).toBe(detail.result);
       expect(detail.nodes.map((node: DetailNode) => node.amount)).toEqual([0, -350]);

@@ -8,6 +8,22 @@
 
 .history-mobile colgroup { display: none; }
 
+.history-mobile [data-history-card] {
+  margin-bottom: 1rem;
+}
+
+.history-mobile [data-history-card]:last-child {
+  margin-bottom: 0;
+}
+
+.history-mobile [data-history-card]:empty {
+  display: none;
+}
+
+.history-mobile [data-history-card] > [data-history-band]:first-child {
+  margin-top: 0;
+}
+
 .history-mobile tr {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -55,6 +71,14 @@
 
 .history-mobile [data-history-band] {
   margin-top: 1rem;
+}
+
+.history-mobile [data-history-spacer] > td {
+  height: 2rem;
+}
+
+.history-mobile [data-history-spacer] + [data-history-band] {
+  margin-top: 0;
 }
 
 .history-mobile [data-history-band] > td:first-child > div {

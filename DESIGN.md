@@ -583,11 +583,17 @@ La pièce la plus dense du produit, et la seule qui ne soit pas une liste de car
 
 ### Vue d’ensemble mobile
 
-Sous 640 px, le tableau devient un relevé vertical dans une seule carte. Les
-soldes et l’estimation ouvrent la lecture ; les noms des postes occupent toute
-la largeur, puis les montants libellés se répartissent sur deux colonnes (une
-sur les écrans de moins de 360 px). Les soldes intermédiaires restent sous le
-contrôle du bouton de détail. Les commandes de gestion ne dépendent pas du survol.
+Sous 640 px, le relevé se répartit en cinq cartes séparées de 16 px, comme l’espace
+sous le sélecteur du mois : le mois avec
+ses soldes et son estimation, l’argent de départ, les revenus, les dépenses, puis
+les totaux du mois. Les non catégorisés restent dans la carte de leur sens ; les
+opérations hors calcul, lorsqu’il y en a, disposent d’une carte supplémentaire.
+Les noms et les montants libellés s’empilent. Les transactions apparaissent sous
+le nom du poste ouvert. La balance des dépenses figure dans le total des dépenses.
+Le bloc récapitulatif bancaire en attente est masqué sur mobile, sans retirer les
+transactions en attente des enveloppes ni modifier les calculs. Les soldes
+intermédiaires restent sous le contrôle du bouton de détail. Les commandes de gestion
+ne dépendent pas du survol. Une marge basse dégage le relevé du bouton flottant.
 
 La comparaison conserve une période et un indicateur ; les mois se lisent de
 haut en bas pour chaque poste. Les jetons, les couleurs de section et le tableau

@@ -936,10 +936,6 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
   onboarding?: OnboardingTargets;
 }) {
   const isUncat = sec.kind === "uncategorized";
-  // Sous-total d'un des deux blocs de dépenses. Il se lit comme une section à lui
-  // seul : sa Balance et ses trois soldes disent où en est le compte une fois ce
-  // bloc passé. La section entière, elle, garde ses lignes dédiées en bas.
-  const isBloc = sec.kind === "expense" && !!sec.expenseBlock;
   const teinteSection = useContext(TeinteSection);
   // Section « non catégorisés » côté reçus (affichée sous les rémunérations).
   const uncatIn = isUncat && sec.uncatDirection === "in";
@@ -1119,11 +1115,10 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
             ) : (
               <TableCell key="recu" className={cn(b && MONTH_GAP, "text-right tabular-nums text-muted-foreground")}></TableCell>
             ),
-          // Balance : affichée seulement pour les non catégorisés côté dépenses (les
-          // reçus n'ont pas de budget à confronter ; Récurrents / Enveloppes ont leurs
-          // lignes « Balance ... » dédiées).
+          // La balance clôt directement le total des dépenses et les non catégorisés
+          // côté dépenses ; les revenus n’ont pas de budget à confronter.
           reste: (b) =>
-            isBloc || (isUncat && !uncatIn) ? (
+            sec.kind === "expense" || (isUncat && !uncatIn) ? (
               <CellAmount key="reste" className={cn(b && MONTH_GAP, "text-right tabular-nums", resteColor(resteVal))} detail={resteDetail} onSelect={onSelect} cellKey={ck("reste")} selCellKey={selCellKey}>
                 {fmt(resteVal)}
                 {enDepassement && (
@@ -1602,12 +1597,19 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
   );
 }
 
+function HistorySectionBody({ name, children }: { name: string; children: React.ReactNode }) {
+  const mobile = useContext(MobileHistoryContext);
+  return mobile
+    ? <TableBody data-history-card={name} className="carte overflow-hidden">{children}</TableBody>
+    : <>{children}</>;
+}
+
 // Ligne d'espacement entre deux sections : une bande vide de faible hauteur qui
 // couvre toutes les colonnes, pour aérer visuellement sans ajouter de contenu.
 function SpacerRow({ cols }: { cols: number }) {
   return (
-    <TableRow className="hover:bg-transparent">
-      <TableCell colSpan={cols} className="h-2 border-0 p-0" />
+    <TableRow aria-hidden="true" data-history-spacer="" className="hover:bg-transparent">
+      <TableCell colSpan={cols} className="h-8 border-0 p-0" />
     </TableRow>
   );
 }
@@ -2178,47 +2180,6 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     );
   };
 
-  // Ligne dédiée affichant le Reste/Manque final de la section des dépenses, en bas
-  // du tableau, dans la colonne Reste/Manque. Le montant est retiré de la ligne
-  // « Total ... » et reporté ici.
-  const renderSectionResteRow = (kind: "expense", label: string, secs: HistorySection[]) => {
-    if (mobile?.metric && mobile.metric !== "reste" && !selectedRows.has(`reste:${kind}`)) return null;
-    const sec = secs.find((s) => s.kind === kind);
-    if (!sec) return null;
-    const rowKey = `reste:${kind}`;
-    return (
-      <TableRow className="text-sm">
-        <TableCell className={cn(COL1_STICKY, "bg-background h-px p-0")}>
-          <FirstColBox><span className="text-muted-foreground">{label}</span></FirstColBox>
-        </TableCell>
-        {months.map((m, i) => {
-          const type = monthType(m, currentMonth);
-          const cols = monthColumns(type);
-          const c = sec.totals[i];
-          const subtitle = `${label} · ${monthLabel(m)}`;
-          // Décomposition Budget − Dépensé (les sections de dépense vérifient l'invariant).
-          const depNodes = sec.rows.map((r) => groupNode(r, i, m, "depense")).filter((n) => n.amount !== 0);
-          const detail: CellDetail = makeDetail(
-            "Reste",
-            [
-              { label: "Budget", amount: c.budgeted, ref: cellKey(sectionRow(kind), "budget", i) },
-              { label: "Dépensé", amount: -c.depense, ref: cellKey(sectionRow(kind), "depense", i), children: depNodes.map(negateNode) },
-            ],
-            { subtitle, result: c.balance },
-          );
-          const resteCell = (b: boolean) => (
-            <CellAmount key="reste" className={cn(b && MONTH_GAP, "text-right tabular-nums", resteColor(c.balance))} detail={detail} onSelect={onSelect} cellKey={cellKey(rowKey, "reste", i)} selCellKey={selCellKey}>
-              {fmt(c.balance)}
-            </CellAmount>
-          );
-          const slots = blankSlots();
-          slots.reste = resteCell;
-          return <Fragment key={i}>{renderCols(months[i], cols, slots)}</Fragment>;
-        })}
-      </TableRow>
-    );
-  };
-
   // Ligne « Non catégorisés » d'une des deux sections (reçus / dépenses) : total
   // dépliable sur ses transactions. Les reçus s'affichent sous les rémunérations,
   // les dépenses après les enveloppes.
@@ -2520,6 +2481,95 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         </TableRow>}
     </>);
 
+    const slots = sectionSlots(secs);
+    const renderSectionSlot = (slot: (typeof slots)[number]) => {
+      // Un petit espace sépare chaque section de la précédente.
+      const spacer = !mobile && <SpacerRow cols={totalCols} />;
+      // Emplacement d'une section encore inexistante : son bouton d'ajout, et
+      // rien d'autre. Pas de total ni de Balance — il n'y a rien à totaliser.
+      if (slot.kind === "empty") {
+        return (
+          <Fragment key={`vide-${slot.sectionKind}`}>
+            {spacer}
+            {slot.sectionKind === "income"
+              ? enTeteRevenu()
+              : enTeteDepense()}
+          </Fragment>
+        );
+      }
+      const sec = slot.section;
+      if (sec.kind === "income") {
+        // Revenus : lignes au niveau des sections, tout en haut, puis les reçus
+        // non catégorisés, puis une ligne « Total revenus ».
+        const uncatIn = secs.find((s) => s.kind === "uncategorized" && s.uncatDirection === "in");
+        return (
+          <Fragment key={sec.kind}>
+            {spacer}
+            {enTeteRevenu()}
+            <TeinteSection.Provider value={INCOME_TINT}>
+              {sec.rows.map((r) => renderGroup(r, true))}
+            </TeinteSection.Provider>
+            {uncatIn && (
+              <TeinteSection.Provider value={INCOME_TINT}>
+                {renderUncatRows(uncatIn, secs)}
+              </TeinteSection.Provider>
+            )}
+            <TableRow className="font-medium">
+              <TableCell className={cn(INCOME_TOTAL_TINT, COL1_STICKY, "h-px p-0")}>
+                <FirstColBox>Total revenus</FirstColBox>
+              </TableCell>
+              <TeinteSection.Provider value={INCOME_TOTAL_TINT}>
+                <IncomeTotalCells sec={sec} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} />
+              </TeinteSection.Provider>
+            </TableRow>
+          </Fragment>
+        );
+      }
+      if (sec.kind === "uncategorized") {
+        // Les reçus non catégorisés sont rendus dans la section Rémunérations
+        // (ci-dessus) quand elle existe ; sinon ils s'affichent ici, à leur place.
+        if (sec.uncatDirection === "in" && secs.some((s) => s.kind === "income")) return null;
+        // Un espace au-dessus des dépenses non catégorisées : elles suivent le
+        // « Total Dépenses », qui clôt les enveloppes, et se
+        // lisent mal collées à eux. Les reçus non catégorisés, eux, restent
+        // attachés à ce qui les précède.
+        return (
+          <Fragment key={`uncat-${sec.uncatDirection ?? "out"}`}>
+            {(sec.uncatDirection ?? "out") === "out" && bande("bloc-uncat", "Pas encore rangé", BANDE)}
+            {/* Les non catégorisés portent la couleur de leur sens : ce qui entre
+                avec les revenus, ce qui sort avec les dépenses. */}
+            <TeinteSection.Provider value={(sec.uncatDirection ?? "out") === "in" ? INCOME_TINT : EXPENSE_TINT}>
+              {renderUncatRows(sec, secs)}
+            </TeinteSection.Provider>
+          </Fragment>
+        );
+      }
+      // Toutes les dépenses partagent désormais une seule section. Leur classement
+      // historique reste intact dans les données ; seule la séparation visuelle a
+      // disparu.
+      return (
+        <Fragment key={sec.kind}>
+          {spacer}
+          {enTeteDepense()}
+          {!expensesClosed && (
+            <TeinteSection.Provider value={EXPENSE_TINT}>
+              {sec.rows.map((r) => renderGroup(r))}
+            </TeinteSection.Provider>
+          )}
+          <TableRow className="font-medium">
+            <TableCell className={cn(EXPENSE_TOTAL_TINT, COL1_STICKY, "h-px p-0")}>
+              <FirstColBox>Total Dépenses</FirstColBox>
+            </TableCell>
+            <TeinteSection.Provider value={EXPENSE_TOTAL_TINT}>
+              <SectionTotalsCells accountId={accountId} sec={sec} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} />
+            </TeinteSection.Provider>
+          </TableRow>
+        </Fragment>
+      );
+    };
+    // Un seul corps sur ordinateur ; les groupes deviennent des cartes sur mobile.
+    const Body = mobile ? Fragment : TableBody;
+
     return (
     <>
     {/* La largeur du tableau suit uniquement son nombre de colonnes. Le contenu
@@ -2647,9 +2697,21 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
           })}
         </TableRow>
       </TableHeader>}
-      <TableBody>
-        {mobile && !mobile.metric && closingRows}
-        {(!mobile?.metric || mobile.metric.startsWith("solde") || selectedRows.has(openingRow)) && <TableRow className="font-medium">
+      <Body>
+        {mobile && <HistorySectionBody name="summary">
+          {!mobile.metric && <TableRow>
+            <TableCell colSpan={totalCols} className="p-0">
+              <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-3 text-base" data-onboarding-target={onboarding?.timeTarget} data-onboarding-month={mobile.month}>
+                <span className="font-semibold">{monthLabel(mobile.month)}</span>
+                {mobile.month > currentMonth && <span className="pastille">Projection</span>}
+                {countIgnoredAtMonth(ignoredBlocks, mobile.month) > 0 && <span className="pastille">{countIgnoredAtMonth(ignoredBlocks, mobile.month)} hors calcul</span>}
+              </div>
+            </TableCell>
+          </TableRow>}
+          {closingRows}
+        </HistorySectionBody>}
+        <HistorySectionBody name="opening">
+        {(!mobile?.metric || mobile.metric.startsWith("solde") || selectedRows.has(openingRow)) && <TableRow data-history-opening="" className="font-medium">
           <TableCell className={cn(COL1_STICKY, "bg-background h-px p-0")}>
             <FirstColBox>Argent de départ</FirstColBox>
           </TableCell>
@@ -2744,7 +2806,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             return <Fragment key={i}>{renderCols(months[i], cols, slots, undefined, undefined, true)}</Fragment>;
           })}
         </TableRow>}
-        {solde.pending?.some(amount => Math.abs(amount) >= 0.005) && (!mobile?.metric || mobile.metric.startsWith("solde") || selectedRows.has("bank-pending")) && <TableRow className="text-sm">
+        {!mobile && solde.pending?.some(amount => Math.abs(amount) >= 0.005) && <TableRow className="text-sm">
           <TableCell className={cn(COL1_STICKY, "bg-background h-px p-0")}>
             <FirstColBox><span className="text-muted-foreground">Opérations bancaires en attente</span></FirstColBox>
           </TableCell>
@@ -2768,106 +2830,35 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             return <Fragment key={month}>{renderCols(month, monthColumns(monthType(month, currentMonth)), slots, undefined, undefined, true)}</Fragment>;
           })}
         </TableRow>}
-        {sectionSlots(secs).map((slot, si) => {
-          // Un petit espace sépare chaque section de la précédente.
-          const spacer = si > 0 ? <SpacerRow cols={totalCols} /> : null;
-          // Emplacement d'une section encore inexistante : son bouton d'ajout, et
-          // rien d'autre. Pas de total ni de Balance — il n'y a rien à totaliser.
-          if (slot.kind === "empty") {
-            return (
-              <Fragment key={`vide-${slot.sectionKind}`}>
-                {spacer}
-                {slot.sectionKind === "income"
-                  ? enTeteRevenu()
-                  : enTeteDepense()}
-              </Fragment>
-            );
-          }
-          const sec = slot.section;
-          if (sec.kind === "income") {
-            // Revenus : lignes au niveau des sections, tout en haut, puis les reçus
-            // non catégorisés, puis une ligne « Total revenus ».
-            const uncatIn = secs.find((s) => s.kind === "uncategorized" && s.uncatDirection === "in");
-            return (
-              <Fragment key={sec.kind}>
-                {spacer}
-                {enTeteRevenu()}
-                <TeinteSection.Provider value={INCOME_TINT}>
-                  {sec.rows.map((r) => renderGroup(r, true))}
-                </TeinteSection.Provider>
-                {uncatIn && (
-                  <TeinteSection.Provider value={INCOME_TINT}>
-                    {renderUncatRows(uncatIn, secs)}
-                  </TeinteSection.Provider>
-                )}
-                <TableRow className="font-medium">
-                  <TableCell className={cn(INCOME_TOTAL_TINT, COL1_STICKY, "h-px p-0")}>
-                    <FirstColBox>Total revenus</FirstColBox>
-                  </TableCell>
-                  <TeinteSection.Provider value={INCOME_TOTAL_TINT}>
-                    <IncomeTotalCells sec={sec} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} />
-                  </TeinteSection.Provider>
-                </TableRow>
-              </Fragment>
-            );
-          }
-          if (sec.kind === "uncategorized") {
-            // Les reçus non catégorisés sont rendus dans la section Rémunérations
-            // (ci-dessus) quand elle existe ; sinon ils s'affichent ici, à leur place.
-            if (sec.uncatDirection === "in" && secs.some((s) => s.kind === "income")) return null;
-            // Un espace au-dessus des dépenses non catégorisées : elles suivent le
-            // « Total Dépenses » et sa Balance, qui closent les enveloppes, et se
-            // lisent mal collées à eux. Les reçus non catégorisés, eux, restent
-            // attachés à ce qui les précède.
-            return (
-              <Fragment key={`uncat-${sec.uncatDirection ?? "out"}`}>
-                {(sec.uncatDirection ?? "out") === "out" && bande("bloc-uncat", "Pas encore rangé", BANDE)}
-                {/* Les non catégorisés portent la couleur de leur sens : ce qui entre
-                    avec les revenus, ce qui sort avec les dépenses. */}
-                <TeinteSection.Provider value={(sec.uncatDirection ?? "out") === "in" ? INCOME_TINT : EXPENSE_TINT}>
-                  {renderUncatRows(sec, secs)}
-                </TeinteSection.Provider>
-              </Fragment>
-            );
-          }
-          // Toutes les dépenses partagent désormais une seule section. Leur classement
-          // historique reste intact dans les données ; seule la séparation visuelle a
-          // disparu.
-          return (
-            <Fragment key={sec.kind}>
-              {spacer}
-              {enTeteDepense()}
-              {!expensesClosed && (
-                <TeinteSection.Provider value={EXPENSE_TINT}>
-                  {sec.rows.map((r) => renderGroup(r))}
-                </TeinteSection.Provider>
-              )}
-              <TableRow className="font-medium">
-                <TableCell className={cn(EXPENSE_TOTAL_TINT, COL1_STICKY, "h-px p-0")}>
-                  <FirstColBox>Total Dépenses</FirstColBox>
-                </TableCell>
-                <TeinteSection.Provider value={EXPENSE_TOTAL_TINT}>
-                  <SectionTotalsCells accountId={accountId} sec={sec} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} />
-                </TeinteSection.Provider>
-              </TableRow>
-              {renderSectionResteRow("expense", "Balance dépenses", secs)}
-            </Fragment>
-          );
-        })}
+        </HistorySectionBody>
+        {mobile ? (["income", "expense"] as const).map(kind => (
+          <HistorySectionBody key={kind} name={kind}>
+            {slots.filter(slot => {
+              if (slot.kind === "empty") return slot.sectionKind === kind;
+              const sec = slot.section;
+              const income = sec.kind === "income" || (sec.kind === "uncategorized" && sec.uncatDirection === "in");
+              return income === (kind === "income");
+            }).map(renderSectionSlot)}
+          </HistorySectionBody>
+        )) : slots.map(renderSectionSlot)}
+        <HistorySectionBody name="totals">
         {/* Le pied, en encre pleine et d'un seul bloc : ce que le mois a pesé, où
             il finit, où il finirait, ce qu'il a débordé. C'est le tampon du relevé.
             Le total et le solde étaient une seule ligne qui faisait les deux métiers,
             et le solde s'y lisait comme un total de plus. */}
-        {(!mobile?.metric || ["budgetRem", "budgetDep", "dep", "recu"].includes(mobile.metric) || selectedRows.has("grand")) && <TableRow data-history-summary="" style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
-          <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
-            <FirstColBox>Total du mois</FirstColBox>
-          </TableCell>
-          <GrandTotalsCells part="totaux" sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} />
-        </TableRow>}
-        {(!mobile || mobile.metric) && closingRows}
+        {(!mobile?.metric || ["budgetRem", "budgetDep", "dep", "recu"].includes(mobile.metric) || selectedRows.has("grand")) && <>
+          {!mobile && <SpacerRow cols={totalCols} />}
+          <TableRow data-history-summary="" style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
+            <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
+              <FirstColBox>Total du mois</FirstColBox>
+            </TableCell>
+            <GrandTotalsCells part="totaux" sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} />
+          </TableRow>
+        </>}
+        {!mobile && closingRows}
         {/* Dépassement final du mois : somme des montants rouges de la colonne
-            Balance (groupes qui débordent + Non catégorisés), hors lignes
-            « Balance dépenses » qui agrège déjà ces montants. */}
+            Balance (groupes qui débordent + Non catégorisés), sans compter
+            le total des dépenses qui agrège déjà ces montants. */}
         {(!mobile?.metric || mobile.metric === "reste" || selectedRows.has("overspend")) && <TableRow data-history-summary="" style={PIED_CARBONE} className={cn(PIED_LIGNE, "text-sm")}>
           <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
             <FirstColBox><span className="text-muted-foreground">Total dépassement hors budget</span></FirstColBox>
@@ -2900,18 +2891,19 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             return <Fragment key={i}>{renderCols(months[i], cols, slots)}</Fragment>;
           })}
         </TableRow>}
+        </HistorySectionBody>
         {/* Transactions mises hors calcul : affichées pour mémoire, en dehors de
             toute somme. Elles arrivent après les lignes de solde, justement pour
             qu'on voie qu'elles ne participent à rien de ce qui précède. */}
         {(ignoredBlocks?.length ?? 0) > 0 && (
-          <>
-            <SpacerRow cols={totalCols} />
+          <HistorySectionBody name="ignored">
+            {!mobile && <SpacerRow cols={totalCols} />}
             {/* Ramenés au mois de CE tableau : leurs transactions couvrent toute la
                 frise, et dépliées ici elles montraient aussi celles des autres mois. */}
             {ignoredBlocks!.map((b) => renderIgnoredBlock(b))}
-          </>
+          </HistorySectionBody>
         )}
-      </TableBody>
+      </Body>
     </Table>
     </>
     );
@@ -2931,11 +2923,6 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
           de l'intérieur laisse une seule zone, la bonne. */}
       <MobileHistoryContext.Provider value={mobile ? { ...mobile, showDeltas: showDeltas ?? false, selected: selCellKey, onSelect } : null}>
       <div ref={gridRef} data-history-mobile={mobile ? (mobile.metric ? "compare" : "month") : undefined} className={cn(mobile ? "history-mobile w-full" : "w-max", "[&_[data-slot=table-container]]:overflow-visible")}>
-        {mobile && !mobile.metric && <div className="flex flex-wrap items-center justify-between gap-2 border-b px-3 py-3" data-onboarding-target={onboarding?.timeTarget} data-onboarding-month={mobile.month}>
-          <span className="font-semibold">{monthLabel(mobile.month)}</span>
-          {mobile.month > currentMonth && <span className="pastille">Projection</span>}
-          {countIgnoredAtMonth(ignoredBlocks, mobile.month) > 0 && <span className="pastille">{countIgnoredAtMonth(ignoredBlocks, mobile.month)} hors calcul</span>}
-        </div>}
         {grandTableau()}
       </div>
       </MobileHistoryContext.Provider>
