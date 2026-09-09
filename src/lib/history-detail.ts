@@ -216,7 +216,7 @@ export function soldeActuelDetail(
     opts.title,
     [
       { label: "Argent de départ", amount: solde.openings[i], ref: cellKey(openingRow, "solde", i) },
-      ...(solde.pending?.[i] ? [{ label: "Opérations bancaires en attente", amount: solde.pending[i], ref: cellKey("bank-pending", "solde", i) }] : []),
+      ...(solde.pending?.[i] ? [{ label: "Opérations bancaires en attente", amount: solde.pending[i] }] : []),
       ...sections.map((sec) => sectionNode(sec, i, month, "net")),
     ],
     { subtitle: monthLabel(month), result: opts.result },

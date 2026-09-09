@@ -5,6 +5,21 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { COL_INFO, COL_LABEL, type ColKey } from "@/lib/history-columns";
 import { makeInfo, type CellDetail } from "@/lib/history-explain";
 import { monthLabel } from "@/lib/transactions-view";
+import { cn } from "@/lib/utils";
+
+export const EXPENSE_RECEIPTS_LABEL = "Remboursements / apports";
+export const EXPENSE_RECEIPTS_INFO = ["L’argent reçu pour couvrir ces dépenses : remboursements, participation d’un proche ou apport depuis un autre compte. Il augmente le reste disponible sans réduire le montant affiché dans Dépensé."];
+export const HistorySectionColumnsContext = createContext<{
+  kind: "income" | "expense";
+  table: boolean;
+  colSpan?: number;
+} | null>(null);
+
+export function sectionColumns(kind: "income" | "expense", columns: ColKey[]) {
+  return columns.filter(column => kind === "income"
+    ? !["budgetDep", "dep", "reste"].includes(column)
+    : column !== "budgetRem");
+}
 
 export type MobileHistoryView = {
   month: string;
@@ -65,7 +80,22 @@ export function HistoryMobileColumns({ month, cells, keepBalances = false, trans
   transaction?: boolean;
 }) {
   const mobile = useContext(MobileHistoryContext);
-  if (!mobile) return <>{cells.map(({ element }) => element)}</>;
+  const section = useContext(HistorySectionColumnsContext);
+  if (section?.table) {
+    const allowed = sectionColumns(section.kind, cells.map(cell => cell.column));
+    cells = cells.filter(cell => allowed.includes(cell.column)).map((cell, index) => ({
+      ...cell,
+      element: cloneElement(cell.element, {
+        className: cn(cell.element.props.className, index === 0 && "border-l border-l-filet-fort pl-4"),
+      }),
+    }));
+  }
+  if (!mobile) return <>{cells.flatMap(({ column, element }) => [
+    element,
+    ...(section?.table && section.kind === "income" && column === "recu"
+      ? [<TableCell key="receipt-space" aria-hidden="true" className={cn(element.props.className, "p-0")} />]
+      : []),
+  ])}</>;
   if (!mobile.metric && mobile.month !== month) return null;
 
   const unavailable = mobile.metric && !transaction && !cells.some(({ column }) => column === mobile.metric);
@@ -99,16 +129,19 @@ export function HistoryMobileColumns({ month, cells, keepBalances = false, trans
 export function MobileCellContents({ children, label: override }: { children: ReactNode; label?: string }) {
   const mobile = useContext(MobileHistoryContext);
   const cell = useContext(MobileColumnContext);
+  const section = useContext(HistorySectionColumnsContext);
   if (!mobile || !cell) return <>{children}</>;
+  const expenseReceipt = section?.kind === "expense" && cell.column === "recu";
+  const columnLabel = expenseReceipt ? EXPENSE_RECEIPTS_LABEL : MOBILE_COLUMN_LABELS[cell.column];
   const label = mobile.metric
-    ? `${monthLabel(cell.month)}${cell.column !== mobile.metric ? ` · ${MOBILE_COLUMN_LABELS[cell.column]}` : ""}`
-    : override ?? MOBILE_COLUMN_LABELS[cell.column];
+    ? `${monthLabel(cell.month)}${cell.column !== mobile.metric ? ` · ${columnLabel}` : ""}`
+    : override ?? columnLabel;
   return <div className="history-mobile-value">
     <button
       type="button"
       className="history-mobile-label"
-      aria-label={`Comprendre : ${MOBILE_COLUMN_LABELS[cell.column]}`}
-      onClick={() => mobile.onSelect(makeInfo(COL_LABEL[cell.column], COL_INFO[cell.column]))}
+      aria-label={`Comprendre : ${columnLabel}`}
+      onClick={() => mobile.onSelect(makeInfo(expenseReceipt ? EXPENSE_RECEIPTS_LABEL : COL_LABEL[cell.column], expenseReceipt ? EXPENSE_RECEIPTS_INFO : COL_INFO[cell.column]))}
     >{label}</button>
     <div className="history-mobile-number">{children}</div>
   </div>;

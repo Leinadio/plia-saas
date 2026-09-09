@@ -101,6 +101,23 @@ describe("À quelle case renvoie le « Solde précédent » d'une ligne", () => 
     expect(prev.solde.get("opening")).toEqual([undefined]);
   });
 
+  it("ne renvoie ni vers l'attente masquée ni vers une ligne vide après cet écart", () => {
+    const running = { 1: [100, 106.48], 2: [90, 96.48], 3: [70, 76.48] };
+    const p = computePrevDisplayed(sections, ["2026-06", "2026-07"], "2026-07", {
+      openings: [100, 100], closings: [70, 76.48], pending: [0, 6.48],
+      rowRunning: running, uncategorizedRunning: null,
+    }, {
+      prevuClosings: [70, 76.48], depassClosings: [70, 76.48],
+      prevuRowRunning: running, depassRowRunning: running,
+      uncatPrevuRunning: {}, uncatDepassRunning: {},
+    });
+    for (const column of ["solde", "soldePrevu", "soldeDepass"] as const) {
+      expect(p[column].get("group:1")).toEqual(["opening", undefined]);
+      expect(p[column].get("group:2")).toEqual(["opening", undefined]);
+      expect(p[column].get("group:3")).toEqual(["group:2", "group:2"]);
+    }
+  });
+
   it("devrait donner une réponse par mois affiché", () => {
     const twoMonths = computePrevDisplayed(
       sections,

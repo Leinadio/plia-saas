@@ -19,6 +19,7 @@ import type { AccountForecast } from "../../src/lib/forecast";
 import { sectionNode } from "../../src/lib/history-detail";
 import { flattenNodes, cellsForNode } from "../../src/lib/history-nav";
 import type { DetailNode } from "../../src/lib/history-explain";
+import { FORMAT_MONTANT, decoderMontant } from "../../src/lib/calculatrice";
 
 // LE PANNEAU DÉSIGNE, LE TABLEAU DÉPLIE. Cliquer une transaction dans le calcul
 // doit la faire apparaître dans le grand tableau : elle vit sous un groupe replié,
@@ -134,6 +135,25 @@ function grille(...args: Parameters<typeof elementGrille>) {
 }
 
 describe("balance dans le total des dépenses", () => {
+  it("sépare les deux tableaux et retire les colonnes étrangères à leur sens", () => {
+    const el = document.createElement("div");
+    el.innerHTML = grille([]);
+    const income = el.querySelector('[data-history-section-table="income"]')!;
+    const expense = el.querySelector('[data-history-section-table="expense"]')!;
+    expect(income).not.toBeNull();
+    expect(expense).not.toBeNull();
+    const headings = (table: Element) => Array.from(table.querySelectorAll("th")).map(th => th.textContent);
+    expect(headings(income)).toEqual(["", "Attendu", "Reçu", "Réel", "Prévu", "Si dép."]);
+    expect(headings(expense)).toEqual(["", "Budget", "Dépensé", "Remboursements / apports", "Balance", "Réel", "Prévu", "Si dép."]);
+    expect(income.querySelector('[data-cellkey="group:7::budget::0"]')).toBeNull();
+    expect(income.querySelector('[data-cellkey="group:7::depense::0"]')).toBeNull();
+    expect(expense.querySelector('[data-cellkey="group:8::revenus::0"]')).toBeNull();
+    expect(income.querySelector('[data-cellkey="group:7::solde::0"]')).not.toBeNull();
+    expect(expense.querySelector('[data-cellkey="group:8::solde::0"]')).not.toBeNull();
+    expect(income.querySelector('[data-cellkey="group:7::recu::0"]')!.closest("tr")!.children).toHaveLength(7);
+    expect(expense.querySelector('[data-cellkey="group:8::depense::0"]')!.closest("tr")!.children).toHaveLength(8);
+  });
+
   it.each([false, true])("conserve le montant et son calcul dans le total (mobile : %s)", async (mobile) => {
     (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
     const container = document.createElement("div");
@@ -189,7 +209,7 @@ describe("cartes des sections sur mobile", () => {
     expect(el.querySelector("tbody tbody")).toBeNull();
   });
 
-  it.each([null, "soldeReel"] as const)("masque le bloc bancaire en attente sur mobile (%s), sans changer les soldes", metric => {
+  it.each([null, "soldeReel"] as const)("masque le bloc bancaire en attente sur tous les écrans (mobile : %s), sans changer les soldes", metric => {
     const pendingSolde = { ...solde, pending: [6.48] };
     const el = document.createElement("div");
     el.innerHTML = grille([], [revenus, depenses], { mobile: { ...mobile, metric }, solde: pendingSolde });
@@ -197,8 +217,8 @@ describe("cartes des sections sur mobile", () => {
     expect(el.querySelector('[data-cellkey="opening::solde::0"]')).not.toBeNull();
     const desktop = document.createElement("div");
     desktop.innerHTML = grille([], [revenus, depenses], { solde: pendingSolde });
-    expect(desktop.textContent).toContain("Opérations bancaires en attente");
-    expect(desktop.querySelectorAll("tbody")).toHaveLength(1);
+    expect(desktop.textContent).not.toContain("Opérations bancaires en attente");
+    expect(desktop.querySelectorAll("[data-history-section-table]")).toHaveLength(2);
     expect(desktop.querySelector("[data-history-card]")).toBeNull();
     expect(el.querySelector('[data-cellkey="opening::solde::0"]')?.textContent).toContain(
       desktop.querySelector('[data-cellkey="opening::solde::0"]')!.textContent!,
@@ -207,6 +227,92 @@ describe("cartes des sections sur mobile", () => {
 });
 
 describe("désigner une transaction depuis le panneau", () => {
+  it.each([false, true])("affiche un seul argent de départ et conserve son calcul (mobile : %s)", async mobile => {
+    (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+    const container = document.createElement("div");
+    const root = createRoot(container);
+    const onSelect = vi.fn();
+    try {
+      await act(async () => root.render(elementGrille([], [revenus, depenses], {
+        onSelect,
+        solde: { ...solde, openings: [6.55], bookedBalance: 50 },
+        ...(mobile ? { mobile: { month: "2026-08", metric: null, onMonthChange: () => {} } } : {}),
+      })));
+      const opening = container.querySelector('[data-history-opening]')!;
+      expect(opening.querySelectorAll('[data-cellkey^="opening::"]')).toHaveLength(1);
+      const amount = opening.querySelector('[data-cellkey="opening::solde::0"]')!;
+      expect(amount.textContent).toContain("6,55");
+      if (mobile) {
+        expect(opening.textContent).toContain("Argent de départ");
+        expect(opening.textContent).not.toMatch(/Solde réel|Solde prévu|Si dépassement/);
+      } else {
+        const head = amount.closest("th")!;
+        expect(head).not.toBeNull();
+        expect(head.textContent).toContain("Août");
+        expect(head.textContent).toContain("solde aujourd'hui");
+        expect(opening.textContent).toContain("Argent de départ");
+        expect(container.querySelector("tbody [data-history-opening]")).toBeNull();
+      }
+      await act(async () => amount.querySelector<HTMLButtonElement>(mobile ? ".history-mobile-number button" : "button")!.click());
+      expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ title: "Argent de départ", result: 6.55 }));
+    } finally {
+      await act(async () => root.unmount());
+    }
+  });
+
+  it("conserve le calcul et le glisser du départ propre à chaque mois dans l'en-tête", async () => {
+    (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+    const container = document.createElement("div");
+    const root = createRoot(container);
+    const onSelect = vi.fn();
+    try {
+      await act(async () => root.render(elementGrille([], [], {
+        months: ["2026-08", "2026-09", "2026-10"], currentMonth: "2026-09", onSelect,
+        grand: [cell(), cell(), cell()],
+        solde: { ...solde, openings: [6.55, 100, 150], closings: [100, 120, 200], bookedBalance: 50 },
+        planned: { ...planned, prevuClosings: [100, 150, 200], depassClosings: [100, 150, 200] },
+      })));
+      for (const [index, value, previous] of [[0, 6.55, undefined], [1, 100, "grand::solde::0"], [2, 150, "estime::solde::1"]] as const) {
+        const amount = container.querySelector(`thead [data-cellkey="opening::solde::${index}"]`)!;
+        expect(amount).not.toBeNull();
+        const button = amount.querySelector<HTMLButtonElement>("button")!;
+        await act(async () => button.click());
+        const detail = onSelect.mock.calls.at(-1)![0];
+        expect(detail.result).toBe(value);
+        expect(detail.cellRef).toBe(`opening::solde::${index}`);
+        expect(detail.nodes[0].ref).toBe(previous);
+        expect(detail.nodes.reduce((sum: number, node: DetailNode) => sum + node.amount, 0)).toBeCloseTo(value, 2);
+        const dataTransfer = { setData: vi.fn(), effectAllowed: "none" };
+        const drag = new Event("dragstart", { bubbles: true });
+        Object.defineProperty(drag, "dataTransfer", { value: dataTransfer });
+        await act(async () => button.dispatchEvent(drag));
+        expect(button.draggable).toBe(true);
+        expect(dataTransfer.setData.mock.calls[0][0]).toBe(FORMAT_MONTANT);
+        expect(decoderMontant(dataTransfer.setData.mock.calls[0][1])).toMatchObject({ montant: value });
+        expect(dataTransfer.effectAllowed).toBe("copy");
+      }
+    } finally {
+      await act(async () => root.unmount());
+    }
+  });
+
+  it.each(["soldePrevu", "soldeDepass"])("retrouve l'argent de départ depuis le calcul %s", column => {
+    const el = document.createElement("div");
+    el.innerHTML = grille([`opening::${column}::0`]);
+    expect(el.querySelector('[data-cellkey="opening::solde::0"]')?.classList.contains("case-active")).toBe(true);
+  });
+
+  it("conserve un remboursement sortant d'un revenu sous Reçu", () => {
+    const returned = { ...recette, id: "returned-income", amount: -2 };
+    const income = { ...revenus, rows: [{ ...revenus.rows[0], txns: [recette, returned] }] };
+    const el = document.createElement("div");
+    el.innerHTML = grille(["txn:returned-income::depense::0"], [income, depenses]);
+    const amount = el.querySelector('[data-cellkey="txn:returned-income::depense::0"]');
+    expect(amount).not.toBeNull();
+    expect(amount!.textContent).toContain("-2,00");
+    expect(amount!.closest("[data-history-section-table]")?.getAttribute("data-history-section-table")).toBe("income");
+  });
+
   it.each([false, true])("retire le total du mois et conserve les soldes et totaux des sections (mobile : %s)", mobile => {
     const el = document.createElement("div");
     el.innerHTML = grille([], [revenus, depenses], {
@@ -273,7 +379,7 @@ describe("le relevé mobile conserve les montants et leurs références", () => 
     expect(el.querySelector('[data-cellkey="bank-pending::solde::0"]')).toBeNull();
   });
 
-  it("conserve l'attente après le départ et son calcul sur ordinateur", async () => {
+  it("conserve l'écart bancaire dans les calculs sans afficher l'ancien bloc ni proposer de lien vers lui", async () => {
     (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
     const container = document.createElement("div");
     const root = createRoot(container);
@@ -281,16 +387,21 @@ describe("le relevé mobile conserve les montants et leurs références", () => 
     try {
       await act(async () => root.render(elementGrille([], [], {
         onSelect,
-        solde: { ...solde, openings: [0], closings: [-350], pending: [-350] },
+        solde: { ...solde, openings: [-6.37], closings: [0.11], pending: [6.48] },
+        planned: { ...planned, prevuClosings: [0.11], depassClosings: [0.11] },
       })));
-      const opening = container.querySelector('[data-cellkey="opening::solde::0"]')!.closest("tr")!;
-      expect(opening.nextElementSibling?.textContent).toContain("Opérations bancaires en attente");
-      const pending = container.querySelector('[data-cellkey="bank-pending::solde::0"]')!;
-      expect(pending.textContent).toContain("350,00");
-      await act(async () => pending.querySelector<HTMLButtonElement>("button")!.click());
-      const detail = onSelect.mock.calls.at(-1)![0];
-      expect(detail.nodes.reduce((sum: number, node: DetailNode) => sum + node.amount, 0)).toBe(detail.result);
-      expect(detail.nodes.map((node: DetailNode) => node.amount)).toEqual([0, -350]);
+      expect(container.textContent).not.toContain("Opérations bancaires en attente");
+      expect(container.querySelector('[data-cellkey="opening::solde::0"]')?.textContent).toContain("6,37");
+      for (const column of ["solde", "soldePrevu", "soldeDepass"]) {
+        const closing = container.querySelector(`[data-cellkey="grand::${column}::0"]`)!;
+        await act(async () => closing.querySelector<HTMLButtonElement>("button")!.click());
+        const detail = onSelect.mock.calls.at(-1)![0];
+        expect(detail.result).toBe(0.11);
+        expect(detail.nodes.reduce((sum: number, node: DetailNode) => sum + node.amount, 0)).toBeCloseTo(0.11, 2);
+        const nodes = flattenNodes(detail.nodes, tousLesChemins(detail.nodes));
+        expect(nodes.some(({ node }) => node.ref?.startsWith("bank-pending::"))).toBe(false);
+        if (column === "solde") expect(detail.nodes.map((node: DetailNode) => node.amount)).toEqual([-6.37, 6.48]);
+      }
     } finally {
       await act(async () => root.unmount());
     }

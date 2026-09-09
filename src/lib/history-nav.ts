@@ -105,6 +105,8 @@ export function computePrevDisplayed(
     },
   ];
   if (solde.pending?.some(amount => Math.abs(amount) >= 0.005)) {
+    // Étape de calcul masquée : elle permet de reconnaître les mouvements nuls
+    // après l'écart bancaire, mais aucun lien ne doit pointer vers cette étape.
     const start = stops[0];
     const afterPending = (values: (number | null)[]) => values.map((value, i) => value == null ? null : value + (solde.pending?.[i] ?? 0));
     stops.push({ key: "bank-pending", solde: afterPending(start.solde), prevu: afterPending(start.prevu), depass: afterPending(start.depass) });
@@ -143,7 +145,7 @@ export function computePrevDisplayed(
           if (vj == null || vjm1 == null || Math.abs(vj - vjm1) >= 0.005) break;
           j--;
         }
-        arr[i] = j >= 0 ? stops[j].key : undefined;
+        arr[i] = j >= 0 && stops[j].key !== "bank-pending" ? stops[j].key : undefined;
       }
       map.set(stops[k].key, arr);
     }

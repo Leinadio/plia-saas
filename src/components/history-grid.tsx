@@ -15,7 +15,7 @@
 // CE QU'ON REFUSE : réécrire les noms de postes à chaque mois (on lisait trois fois
 // « Courses »), et une ligne de pied qui totalise le mois et donne le solde en même
 // temps — ce sont deux choses, elles ont deux lignes.
-import { HistoryExpandableRows, HistoryMobileColumns, MobileHistoryContext, MobileColumnContext, MobileCellContents, type MobileHistoryView } from "@/components/history-mobile-columns";
+import { HistoryExpandableRows, HistoryMobileColumns, HistorySectionColumnsContext, sectionColumns, EXPENSE_RECEIPTS_LABEL, EXPENSE_RECEIPTS_INFO, MobileHistoryContext, MobileColumnContext, MobileCellContents, type MobileHistoryView } from "@/components/history-mobile-columns";
 import "@/components/history-mobile.css";
 import { Fragment, cloneElement, createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, ArrowDownRight, ChevronDown, ChevronRight, Plus, Pencil } from "lucide-react";
@@ -185,7 +185,9 @@ const COL1_W = "w-44 sm:w-80";
 // qu'on gardait sous les yeux au prix des montants qu'on venait lire. Le tableau
 // s'ouvre donc sur les noms, et on les quitte en glissant vers les mois (voir aussi
 // CenterScroll, qui ne saute au mois courant que si l'épine est figée).
-const COL1_STICKY = "sm:sticky sm:left-0 sm:z-10";
+// Le filet intérieur appartient à la cellule figée : il reste visible sur toute
+// sa hauteur, même lorsque les bordures du tableau défilent derrière elle.
+const COL1_STICKY = "sm:sticky sm:left-0 sm:z-10 sm:shadow-[inset_-1px_0_0_var(--filet-fort)]";
 
 // Les titres de bloc (« Dépenses prévues »), leurs boutons de création et les
 // formulaires en ligne vivent dans une cellule qui traverse tout le tableau. Leur
@@ -399,9 +401,8 @@ function blankSlots(): ColSlots {
 
 // Boîte à largeur fixe placée dans la cellule de gauche. Le retrait (indent) est
 // appliqué à l'intérieur, donc toutes les cellules gardent la même largeur.
-// Filet à droite de la colonne figée : quand le tableau défile horizontalement,
-// les mois passent DERRIÈRE cette colonne. Sans séparation, les libellés et les
-// chiffres semblent se toucher.
+// Sur ordinateur, le filet est porté par la cellule figée pour couvrir aussi les
+// en-têtes vides et les lignes plus hautes. La boîte garde son filet sur mobile.
 // h-full ne suffit pas seul : dans un <td>, un pourcentage de hauteur se résout
 // contre la hauteur INTRINSÈQUE de la cellule, pas contre celle que la ligne lui
 // impose. Sur une ligne étirée par une autre colonne (une Balance qui porte son
@@ -413,7 +414,7 @@ function blankSlots(): ColSlots {
 function FirstColBox({ children, indent = 0 }: { children: React.ReactNode; indent?: number }) {
   return (
     <div
-      className={cn("border-border/60 flex h-full items-center gap-1.5 overflow-hidden border-r py-2 pr-2 font-sans", COL1_W)}
+      className={cn("border-border/60 flex h-full items-center gap-1.5 overflow-hidden border-r py-2 pr-2 font-sans sm:border-r-0", COL1_W)}
       style={{ paddingLeft: `${0.5 + indent * 1.25}rem` }}
     >
       {children}
@@ -434,9 +435,34 @@ function selectAmountDetail(
   onOnboardingSelect?.();
 }
 
-export function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCellKey, onboardingTarget, onboardingGroupId, onboardingMonth, onOnboardingSelect, mobileLabel }: {
+function AmountDetailButton({ children, detail, onSelect, cellKey: ck, onOnboardingSelect }: {
+  children: React.ReactNode;
+  detail: CellDetail;
+  onSelect: (detail: CellDetail) => void;
+  cellKey?: string;
+  onOnboardingSelect?: () => void;
+}) {
+  return <button
+    type="button"
+    draggable
+    onDragStart={(e) => {
+      e.dataTransfer.setData(FORMAT_MONTANT, encoderMontant({
+        libelle: detail.subtitle ? `${detail.subtitle} · ${detail.title}` : detail.title,
+        montant: detail.result,
+      }));
+      e.dataTransfer.effectAllowed = "copy";
+    }}
+    onClick={() => selectAmountDetail(detail, ck, onSelect, onOnboardingSelect)}
+    className="cursor-pointer decoration-dotted underline-offset-2 hover:underline"
+  >
+    {children}
+  </button>;
+}
+
+export function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCellKey, onboardingTarget, onboardingGroupId, onboardingMonth, onOnboardingSelect, mobileLabel, colSpan }: {
   children: React.ReactNode;
   mobileLabel?: string;
+  colSpan?: number;
   className?: string;
   detail?: CellDetail | null;
   onSelect?: (d: CellDetail) => void;
@@ -450,7 +476,7 @@ export function CellAmount({ children, className, detail, onSelect, cellKey: ck,
   const mobileColumn = useContext(MobileColumnContext);
   const mobileAttrs = mobileColumn ? { "data-mobile-column": mobileColumn.column, "data-mobile-month": mobileColumn.month } : {};
   const cls = cn(className, ck != null && selCellKey?.has(ck) && CELL_HL);
-  if (!detail || !onSelect) return <TableCell {...mobileAttrs} data-cellkey={ck} data-onboarding-target={onboardingTarget} data-onboarding-group-id={onboardingGroupId} data-onboarding-month={onboardingMonth} className={cls}><MobileCellContents label={mobileLabel}>{children}</MobileCellContents></TableCell>;
+  if (!detail || !onSelect) return <TableCell {...mobileAttrs} colSpan={colSpan} data-cellkey={ck} data-onboarding-target={onboardingTarget} data-onboarding-group-id={onboardingGroupId} data-onboarding-month={onboardingMonth} className={cls}><MobileCellContents label={mobileLabel}>{children}</MobileCellContents></TableCell>;
   // On rattache la clé de cette case au détail (cellRef), pour pouvoir la surligner
   // depuis la ligne « Total » du side panel.
   //
@@ -459,23 +485,11 @@ export function CellAmount({ children, className, detail, onSelect, cellKey: ck,
   // juillet 2026 » et le montant — donc chaque case chiffrée du tableau devient une
   // réserve sans que personne ait à décrire son contenu une seconde fois.
   return (
-    <TableCell {...mobileAttrs} data-cellkey={ck} data-onboarding-target={onboardingTarget} data-onboarding-group-id={onboardingGroupId} data-onboarding-month={onboardingMonth} className={cls}>
+    <TableCell {...mobileAttrs} colSpan={colSpan} data-cellkey={ck} data-onboarding-target={onboardingTarget} data-onboarding-group-id={onboardingGroupId} data-onboarding-month={onboardingMonth} className={cls}>
       <MobileCellContents label={mobileLabel}>
-      <button
-        type="button"
-        draggable
-        onDragStart={(e) => {
-          e.dataTransfer.setData(FORMAT_MONTANT, encoderMontant({
-            libelle: detail.subtitle ? `${detail.subtitle} · ${detail.title}` : detail.title,
-            montant: detail.result,
-          }));
-          e.dataTransfer.effectAllowed = "copy";
-        }}
-        onClick={() => selectAmountDetail(detail, ck, onSelect, onOnboardingSelect)}
-        className="cursor-pointer decoration-dotted underline-offset-2 hover:underline"
-      >
+      <AmountDetailButton detail={detail} onSelect={onSelect} cellKey={ck} onOnboardingSelect={onOnboardingSelect}>
         {children}
-      </button>
+      </AmountDetailButton>
       </MobileCellContents>
     </TableCell>
   );
@@ -654,7 +668,7 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
         const contreSensDetail: CellDetail | null =
           contreSens && r
             ? makeDetail(
-                mode === "out" ? "Remboursé" : "Rendu",
+                mode === "out" ? EXPENSE_RECEIPTS_LABEL : "Rendu",
                 txnsDuSens(r, month, mode === "out" ? "in" : "out", i) ?? [],
                 {
                   subtitle,
@@ -1325,7 +1339,7 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
           children: [
             { label: "Revenus prévus", amount: budgetRemTotal, ref: ck("revenus"), children: revenusChildren },
             { label: "Budget", amount: -expenseBudget, ref: ck("budget"), children: budgetChildren },
-            ...(solde.pending?.[i] ? [{ label: "Opérations bancaires en attente", amount: solde.pending[i], ref: cellKey("bank-pending", "soldePrevu", i) }] : []),
+            ...(solde.pending?.[i] ? [{ label: "Opérations bancaires en attente", amount: solde.pending[i] }] : []),
           ],
         };
         const soldePrevuDetail: CellDetail | null =
@@ -1439,7 +1453,11 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
 // ligne plus haut — le Dépensé du poste est déjà net de ce remboursement.
 function TxnCells({ txn, months, currentMonth, onSelect, selCellKey }: { txn: HistoryTxn; months: string[]; currentMonth: string; onSelect?: (d: CellDetail) => void; selCellKey?: ReadonlySet<string> }) {
   const isOut = txn.amount < 0;
-  const montant = Math.abs(txn.amount);
+  const section = useContext(HistorySectionColumnsContext);
+  const returnedIncome = section?.table && section.kind === "income" && isOut;
+  // Sans colonne Dépensé côté revenus, un montant rendu reste visible, signé,
+  // sous Reçu. Sa référence de transaction ne change pas.
+  const montant = returnedIncome ? txn.amount : Math.abs(txn.amount);
   const teinteSection = useContext(TeinteSection);
   return (
     <>
@@ -1463,7 +1481,7 @@ function TxnCells({ txn, months, currentMonth, onSelect, selCellKey }: { txn: Hi
           budgetRem: (b) => blankCol("budgetRem", b),
           budgetDep: (b) => blankCol("budgetDep", b),
           dep: (b) =>
-            here && isOut ? (
+            here && isOut && !returnedIncome ? (
               <CellAmount key="dep" className={cn(b && MONTH_GAP, "text-right tabular-nums text-muted-foreground")} detail={detail} onSelect={onSelect} cellKey={ck} selCellKey={selCellKey}>
                 {val}
               </CellAmount>
@@ -1471,7 +1489,7 @@ function TxnCells({ txn, months, currentMonth, onSelect, selCellKey }: { txn: Hi
               <TableCell key="dep" className={cn(b && MONTH_GAP, "text-right tabular-nums text-muted-foreground")} />
             ),
           recu: (b) =>
-            here && !isOut ? (
+            here && (!isOut || returnedIncome) ? (
               <CellAmount key="recu" className={cn(b && MONTH_GAP, "text-right tabular-nums text-muted-foreground")} detail={detail} onSelect={onSelect} cellKey={ck} selCellKey={selCellKey}>
                 {val}
               </CellAmount>
@@ -1597,11 +1615,43 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
   );
 }
 
+function HistorySpanCell(props: React.ComponentProps<typeof TableCell>) {
+  const section = useContext(HistorySectionColumnsContext);
+  return <TableCell {...props} colSpan={section?.table ? section.colSpan : props.colSpan} />;
+}
+
+function HistorySectionTable({ kind, months, currentMonth, children }: {
+  kind: "income" | "expense";
+  months: string[];
+  currentMonth: string;
+  children: React.ReactNode;
+}) {
+  const columns = months.map(month => sectionColumns(kind, monthColumns(monthType(month, currentMonth))));
+  const colSpan = 1 + columns.reduce((sum, cols) => sum + cols.length + (kind === "income" ? 1 : 0), 0);
+  // Attendu et Reçu se lisent aux mêmes positions que Budget et Dépensé.
+  // L'espace restant est réservé après Reçu pour garder les soldes alignés.
+  return <HistorySectionColumnsContext.Provider value={{ kind, table: true, colSpan }}>
+    <Table data-history-section-table={kind} className="w-full table-fixed text-[13px] tabular-nums">
+      <colgroup>
+        <col className={COL1_W} />
+        {columns.flatMap((cols, index) => cols.flatMap(column => [
+          <col key={`${months[index]}-${column}`} style={{ width: column.startsWith("solde") ? "6rem" : "7.5rem" }} />,
+          ...(kind === "income" && column === "recu" ? [<col key={`${months[index]}-space`} style={{ width: "15rem" }} />] : []),
+        ]))}
+      </colgroup>
+      <TableBody>{children}</TableBody>
+    </Table>
+  </HistorySectionColumnsContext.Provider>;
+}
+
 function HistorySectionBody({ name, children }: { name: string; children: React.ReactNode }) {
   const mobile = useContext(MobileHistoryContext);
-  return mobile
+  const body = mobile
     ? <TableBody data-history-card={name} className="carte overflow-hidden">{children}</TableBody>
     : <>{children}</>;
+  return name === "income" || name === "expense"
+    ? <HistorySectionColumnsContext.Provider value={{ kind: name, table: false }}>{body}</HistorySectionColumnsContext.Provider>
+    : body;
 }
 
 // Ligne d'espacement entre deux sections : une bande vide de faible hauteur qui
@@ -1666,6 +1716,10 @@ type OnboardingTargets = {
   detailTarget: string;
   endingBalanceTarget: string;
 };
+
+function openingDisplayKey(key: string): string {
+  return key.replace(/^opening::solde(?:Prevu|Depass)::/, "opening::solde::");
+}
 
 export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast, sections, ignoredBlocks, overspend, grand, groups, solde, planned, onSelect, selected, anchor, accountId, overspendsByMonth, showDeltas, onboarding, onDetailOpened, mobile }: {
   mobile?: MobileHistoryView;
@@ -1771,10 +1825,13 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
 
   // Case active (B) choisie dans le panneau : sert au défilement et à la révélation.
   // S'il y en a plusieurs (somme), on défile vers la première.
-  const activeCell = selected?.[0] ?? null;
+  const displaySelection = useMemo(() => selected?.map(openingDisplayKey) ?? null, [selected]);
+  const activeCell = displaySelection?.[0] ?? null;
   // Cases à surligner dans le tableau : l'ancre (A, le montant cliqué dans le tableau,
   // qui reste sélectionné tant que le panneau est ouvert) ET les cases actives (B).
-  const selCellKey = useMemo(() => highlightedCells(anchor ?? null, selected ?? null), [anchor, selected]);
+  const selCellKey = useMemo(() => new Set(
+    [...highlightedCells(anchor ?? null, selected ?? null)].map(openingDisplayKey),
+  ), [anchor, selected]);
   // Ligne porteuse de la case active : préfixe de la clé « <ligne>::col::mois »
   // (ex. txn:<id>, subrow:<id>). Sert à retrouver les dépliages qui la révèlent.
   const selRowKey = rowKeyOf(activeCell);
@@ -1870,6 +1927,36 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
   // arrivant sur un mois, on veut d'abord savoir combien il y a (cf. solde-du-mois.ts).
   const soldeEnTete = (m: string, i: number) =>
     soldeDuMois(m, currentMonth, i, solde.closings, planned.prevuClosings);
+  const openingDetailOf = (i: number): CellDetail => {
+    // Reconstitution depuis les opérations comptabilisées, hors attente.
+    // Mois suivants : hérité du solde de clôture du mois précédent.
+    const bookedBalance = solde.bookedBalance ?? forecast.balance;
+    return i === 0
+      ? makeDetail(
+          "Argent de départ",
+          [
+            { label: "Solde du compte hors opérations en attente", amount: bookedBalance },
+            { label: "Mouvements de la période (rembobinés)", amount: solde.openings[0] - bookedBalance },
+          ],
+          {
+            subtitle: monthLabel(months[0]),
+            result: solde.openings[0],
+            note: "Reconstitué à partir des opérations comptabilisées, selon leur mois de rattachement au budget. Les opérations bancaires en attente ne modifient pas le départ du mois.",
+          },
+        )
+      : months[i - 1] === currentMonth && months[i] > currentMonth
+        ? // Premier mois futur : il s'ouvre sur l'estimé de fin du mois courant.
+          makeDetail(
+            "Argent de départ",
+            [{ label: "Estimé fin du mois précédent", amount: solde.openings[i], ref: cellKey("estime", "solde", i - 1) }],
+            { subtitle: monthLabel(months[i]), result: solde.openings[i] },
+          )
+        : makeDetail(
+            "Argent de départ",
+            [{ label: "Solde de fin du mois précédent", amount: solde.closings[i - 1], ref: cellKey("grand", "solde", i - 1) }],
+            { subtitle: monthLabel(months[i]), result: solde.openings[i] },
+          );
+  };
   const dataCols = totalCols - 1;
   // Une cellule de chiffres occupe toujours 6 rem. La largeur totale est donc
   // déterminée par le NOMBRE de colonnes, jamais par leur contenu : ouvrir un
@@ -2055,7 +2142,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             existe déjà (sous-postes et transactions). */}
         {!demo && addingLineHere(r.id, moisDeTravail) && (
           <TableRow className="hover:bg-transparent">
-            <TableCell colSpan={totalCols} className="p-0">
+            <HistorySpanCell colSpan={totalCols} className="p-0">
               <div className={cn(BLOC_EPINE, "font-sans bg-background w-fit")}>
                 <NewLineInline
                   groupId={r.id}
@@ -2065,7 +2152,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                   onDone={() => setAdding(null)}
                 />
               </div>
-            </TableCell>
+            </HistorySpanCell>
           </TableRow>
         )}
         {gOpen && (
@@ -2351,6 +2438,25 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       </TableRow>
     );
 
+    const sectionHeaders = (kind: "income" | "expense") => !mobile && (
+      <TableRow className="hover:bg-transparent">
+        <TableHead className={cn(COL1_STICKY, "bg-card")} />
+        {months.flatMap(month => sectionColumns(kind, monthColumns(monthType(month, currentMonth))).map((column, index) => {
+          const receipt = kind === "expense" && column === "recu";
+          const title = receipt ? EXPENSE_RECEIPTS_LABEL : COL_COURT[column];
+          return <Fragment key={`${month}-${column}`}><TableHead scope="col"
+            className={cn(COL_TINT[column], index === 0 && MONTH_RULE, "h-auto whitespace-normal px-2 py-2 text-right")}>
+            <button type="button" className="cursor-pointer decoration-dotted underline-offset-2 hover:underline"
+              onClick={() => onSelect(makeInfo(receipt ? EXPENSE_RECEIPTS_LABEL : COL_LABEL[column], receipt ? EXPENSE_RECEIPTS_INFO : COL_INFO[column]))}>
+              {title}
+            </button>
+          </TableHead>
+          {kind === "income" && column === "recu" && <TableCell aria-hidden="true" className={cn(COL_TINT[column], "p-0")} />}
+          </Fragment>;
+        }))}
+      </TableRow>
+    );
+
     // En-tête unique de toutes les sorties : son nom, la flèche qui replie les lignes,
     // le bouton d'ajout et le formulaire quand il est ouvert.
     const enTeteDepense = () => {
@@ -2367,9 +2473,10 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               </Button>
             ) : null,
           })}
+          {sectionHeaders("expense")}
           {!demo && addingHere(moisDeTravail) === "expense" && (
             <TableRow className="hover:bg-transparent">
-              <TableCell colSpan={totalCols} className="p-0">
+              <HistorySpanCell colSpan={totalCols} className="p-0">
                 <div className={cn(BLOC_EPINE, "font-sans bg-background w-fit")}>
                   {/* Créé depuis le tableau d'un mois : ce mois-là est proposé
                       d'emblée comme mois de départ. */}
@@ -2382,7 +2489,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                     onDone={() => setAdding(null)}
                   />
                 </div>
-              </TableCell>
+              </HistorySpanCell>
             </TableRow>
           )}
         </>
@@ -2405,9 +2512,10 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             </Button>
           ) : null,
         })}
+        {sectionHeaders("income")}
         {!demo && addingHere(moisDeTravail) === "income" && (
           <TableRow className="hover:bg-transparent">
-            <TableCell colSpan={totalCols} className="p-0">
+            <HistorySpanCell colSpan={totalCols} className="p-0">
               <div className={cn(BLOC_EPINE, "font-sans bg-background w-fit")}>
                 <NewGroupInline
                   accountId={accountId}
@@ -2418,7 +2526,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                   onDone={() => setAdding(null)}
                 />
               </div>
-            </TableCell>
+            </HistorySpanCell>
           </TableRow>
         )}
       </>
@@ -2483,14 +2591,11 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
 
     const slots = sectionSlots(secs);
     const renderSectionSlot = (slot: (typeof slots)[number]) => {
-      // Un petit espace sépare chaque section de la précédente.
-      const spacer = !mobile && <SpacerRow cols={totalCols} />;
       // Emplacement d'une section encore inexistante : son bouton d'ajout, et
       // rien d'autre. Pas de total ni de Balance — il n'y a rien à totaliser.
       if (slot.kind === "empty") {
         return (
           <Fragment key={`vide-${slot.sectionKind}`}>
-            {spacer}
             {slot.sectionKind === "income"
               ? enTeteRevenu()
               : enTeteDepense()}
@@ -2504,7 +2609,6 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         const uncatIn = secs.find((s) => s.kind === "uncategorized" && s.uncatDirection === "in");
         return (
           <Fragment key={sec.kind}>
-            {spacer}
             {enTeteRevenu()}
             <TeinteSection.Provider value={INCOME_TINT}>
               {sec.rows.map((r) => renderGroup(r, true))}
@@ -2549,7 +2653,6 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       // disparu.
       return (
         <Fragment key={sec.kind}>
-          {spacer}
           {enTeteDepense()}
           {!expensesClosed && (
             <TeinteSection.Provider value={EXPENSE_TINT}>
@@ -2606,16 +2709,17 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         )}
       </colgroup>
       {!mobile && <TableHeader>
-        {/* Le nom du mois coiffe son bloc, centré. L'épine reste nue : la maquette
-            n'y met aucun intitulé, et « Catégorie » n'apprenait rien à personne. */}
-        <TableRow className="hover:bg-transparent">
-          <TableHead rowSpan={2} data-epine="" className={cn(COL1_STICKY, "bg-card h-px p-0 align-bottom")}>
+        {/* Le nom du mois coiffe son bloc, centré. L'épine reste vide, mais son
+            fond opaque masque les mois lorsqu'ils défilent derrière elle. */}
+        <TableRow style={{ border: 0 }} className="hover:bg-transparent">
+          <TableHead data-epine="" aria-hidden="true" className={cn(COL1_STICKY, "bg-card h-px border-0 p-0 align-bottom")}>
             <FirstColBox>&nbsp;</FirstColBox>
           </TableHead>
           {months.map((m, mi) => {
             const cols = monthColumns(monthType(m, currentMonth));
             const nonComptees = countIgnoredAtMonth(ignoredBlocks, m);
             const futur = m > currentMonth;
+            const openingKey = cellKey(openingRow, "solde", mi);
             return (
               <TableHead
                 key={m}
@@ -2623,13 +2727,13 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 data-current-month={m === currentMonth ? "" : undefined}
                 data-onboarding-target={m === onboarding?.month ? onboarding?.timeTarget : undefined}
                 data-onboarding-month={m === onboarding?.month ? onboarding?.month : undefined}
-                className={cn(mi > 0 && MONTH_RULE, "h-[5.75rem] px-2 py-2 text-left align-middle sm:px-4 sm:text-center")}
+                className={cn(mi > 0 && MONTH_RULE, "h-[7.75rem] px-2 py-2 text-left align-middle sm:px-4 sm:text-center")}
               >
                 {/* Le nom du mois se pose À GAUCHE de son bloc sur téléphone. Centré, il
                     tombait au milieu de six cents pixels de colonnes : on arrivait sur
                     le tableau sans savoir quel mois on regardait, le titre étant hors
                     de l'écran à droite. */}
-                <div className="flex h-full flex-col justify-center overflow-hidden">
+                <div className="relative flex flex-col">
                   <div className="flex items-baseline justify-start gap-2 whitespace-nowrap sm:justify-center">
                     <span className={cn("font-display text-lg leading-none", futur && "text-muted-foreground")}>
                       {monthName(m)}
@@ -2638,24 +2742,34 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                       {m.slice(0, 4)}
                     </span>
                   </div>
-                  {/* LE SOLDE DU MOIS, sous son nom. Ce qu'il restait, ce qu'il
-                      reste, ce qu'il restera : le mot change avec le temps, sans quoi
-                      un relevé et une promesse s'écriraient pareil. */}
-                  {(() => {
-                    const { valeur, nature } = soldeEnTete(m, mi);
-                    if (valeur === null) return null;
-                    return (
-                      <div className="mt-1 flex items-baseline justify-start gap-1.5 whitespace-nowrap sm:justify-center">
-                        <span className="legende text-ardoise-claire">{LEGENDE_SOLDE[nature]}</span>
-                        <span className={cn("text-sm font-semibold tabular-nums", soldeColor(valeur))}>
-                          {fmt(valeur)}
-                        </span>
-                      </div>
-                    );
-                  })()}
-                  {/* Cette ligne est toujours réservée. Un badge qui apparaît ou
-                      disparaît ne change donc jamais la hauteur de l'en-tête. */}
-                  <div className="mt-1.5 flex h-5 items-center justify-start gap-2 overflow-hidden sm:justify-center">
+                  <div className="mt-2 flex flex-wrap items-baseline justify-center gap-x-5 gap-y-1">
+                    <span data-history-opening="" className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
+                      <span className="legende text-ardoise-claire">Argent de départ</span>
+                      <span data-cellkey={openingKey} className={cn("inline-flex px-1.5 py-0.5 text-sm font-semibold tabular-nums", soldeColor(solde.openings[mi]), selCellKey.has(openingKey) && CELL_HL)}>
+                        <AmountDetailButton detail={openingDetailOf(mi)} onSelect={onSelect} cellKey={openingKey}>
+                          {fmt(solde.openings[mi])}
+                        </AmountDetailButton>
+                      </span>
+                    </span>
+                    {/* LE SOLDE DU MOIS, sous son nom. Ce qu'il restait, ce qu'il
+                        reste, ce qu'il restera : le mot change avec le temps, sans quoi
+                        un relevé et une promesse s'écriraient pareil. */}
+                    {(() => {
+                      const { valeur, nature } = soldeEnTete(m, mi);
+                      if (valeur === null) return null;
+                      return (
+                        <div className="flex items-baseline gap-1.5 whitespace-nowrap">
+                          <span className="legende text-ardoise-claire">{LEGENDE_SOLDE[nature]}</span>
+                          <span className={cn("text-sm font-semibold tabular-nums", soldeColor(valeur))}>
+                            {fmt(valeur)}
+                          </span>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                  {/* Les mentions se placent sous le bloc centré, sans décaler
+                      les titres et montants d'un mois à l'autre. */}
+                  <div className="absolute inset-x-0 top-full mt-1.5 flex h-5 items-center justify-center gap-2 overflow-hidden">
                     {futur && <span className="legende text-ardoise-claire">projection</span>}
                     {nonComptees > 0 && <span className="pastille">{nonComptees} hors calcul</span>}
                   </div>
@@ -2664,183 +2778,61 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             );
           })}
         </TableRow>
-        <TableRow>
-          {months.map((m, mi) => {
-            const cols = monthColumns(monthType(m, currentMonth));
-            return (
-              <Fragment key={m}>
-                {/* Intitulés courts, ceux de la maquette. Les longs (« Solde si
-                    dépassement ») fixaient à eux seuls la largeur de leur colonne et
-                    étiraient tout le tableau. Le mot entier reste dans l'explication
-                    qu'un clic ouvre. */}
-                {cols.map((col, idx) => (
-                  <TableHead
-                    key={col}
-                    className={cn(
-                      COL_TINT[col],
-                      idx === 0 && mi > 0 && MONTH_RULE,
-                      "legende h-auto px-1 pt-1 pb-2 text-right align-bottom sm:px-2",
-                    )}
-                  >
-                    <button
-                      type="button"
-                      title={COL_LABEL[col]}
-                      onClick={() => onSelect(makeInfo(COL_LABEL[col], COL_INFO[col]))}
-                      className="hover:text-foreground cursor-pointer decoration-dotted underline-offset-2 hover:underline"
-                    >
-                      {COL_COURT[col]}
-                    </button>
-                  </TableHead>
-                ))}
-              </Fragment>
-            );
-          })}
-        </TableRow>
       </TableHeader>}
       <Body>
         {mobile && <HistorySectionBody name="summary">
           {!mobile.metric && <TableRow>
-            <TableCell colSpan={totalCols} className="p-0">
+            <HistorySpanCell colSpan={totalCols} className="p-0">
               <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-3 text-base" data-onboarding-target={onboarding?.timeTarget} data-onboarding-month={mobile.month}>
                 <span className="font-semibold">{monthLabel(mobile.month)}</span>
                 {mobile.month > currentMonth && <span className="pastille">Projection</span>}
                 {countIgnoredAtMonth(ignoredBlocks, mobile.month) > 0 && <span className="pastille">{countIgnoredAtMonth(ignoredBlocks, mobile.month)} hors calcul</span>}
               </div>
-            </TableCell>
+            </HistorySpanCell>
           </TableRow>}
           {closingRows}
         </HistorySectionBody>}
-        <HistorySectionBody name="opening">
-        {(!mobile?.metric || mobile.metric.startsWith("solde") || selectedRows.has(openingRow)) && <TableRow data-history-opening="" className="font-medium">
-          <TableCell className={cn(COL1_STICKY, "bg-background h-px p-0")}>
-            <FirstColBox>Argent de départ</FirstColBox>
-          </TableCell>
+        {mobile && <HistorySectionBody name="opening">
+        {(!mobile.metric || mobile.metric.startsWith("solde") || selectedRows.has(openingRow)) && <TableRow data-history-opening="" className="font-medium">
           {solde.openings.map((v, i) => {
-            // Reconstitution depuis les opérations comptabilisées, hors attente.
-            // Mois suivants : hérité du solde de clôture du mois précédent.
-            const bookedBalance = solde.bookedBalance ?? forecast.balance;
-            const detail: CellDetail =
-              i === 0
-                ? makeDetail(
-                    "Argent de départ",
-                    [
-                      { label: "Solde du compte hors opérations en attente", amount: bookedBalance },
-                      { label: "Mouvements de la période (rembobinés)", amount: solde.openings[0] - bookedBalance },
-                    ],
-                    {
-                      subtitle: monthLabel(months[0]),
-                      result: solde.openings[0],
-                      note: "Reconstitué à partir des opérations comptabilisées, selon leur mois de rattachement au budget. Les opérations bancaires en attente ne modifient pas le départ du mois.",
-                    },
-                  )
-                : months[i - 1] === currentMonth && months[i] > currentMonth
-                  ? // Premier mois futur : il s'ouvre sur l'estimé de fin du mois courant.
-                    makeDetail(
-                      "Argent de départ",
-                      [{ label: "Estimé fin du mois précédent", amount: solde.openings[i], ref: cellKey("estime", "solde", i - 1) }],
-                      { subtitle: monthLabel(months[i]), result: solde.openings[i] },
-                    )
-                  : makeDetail(
-                      "Argent de départ",
-                      [{ label: "Solde de fin du mois précédent", amount: solde.closings[i - 1], ref: cellKey("grand", "solde", i - 1) }],
-                      { subtitle: monthLabel(months[i]), result: solde.openings[i] },
-                    );
+            const detail = openingDetailOf(i);
             const type = monthType(months[i], currentMonth);
             const cols = monthColumns(type);
-            // L'ouverture est commune aux trois chaînes au mois courant. En
-            // projection, l'ouverture d'une chaîne = clôture (prévue / si dépassement)
-            // du mois précédent ; repli sur l'argent de départ réel au 1er mois.
-            // Mois passés et courant : le plan s'ancre sur l'ouverture réelle du mois.
-            // Premier mois futur : les deux chaînes repartent de l'estimé de fin du
-            // mois courant. Mois futurs suivants : elles enchaînent sur la clôture
-            // (prévue / si dépassement) du mois précédent.
-            const firstFuture = months[i] > currentMonth && i > 0 && months[i - 1] === currentMonth;
-            const prevuOpen =
-              months[i] <= currentMonth ? v
-              : firstFuture ? estimateValue
-              : i > 0 && planned.prevuClosings[i - 1] != null ? planned.prevuClosings[i - 1] : v;
-            const depassOpen =
-              months[i] <= currentMonth ? v
-              : firstFuture ? estimateValue
-              : i > 0 && planned.depassClosings[i - 1] != null ? planned.depassClosings[i - 1] : v;
-            const openingCell = (b: boolean) => (
-              <CellAmount key="soldeReel" className={cn(b && MONTH_GAP, "text-right tabular-nums", soldeColor(v))} detail={detail} onSelect={onSelect} cellKey={cellKey(openingRow, "solde", i)} selCellKey={selCellKey}>
+            const openingColumn: ColKey = mobile.metric && mobile.metric.startsWith("solde") ? mobile.metric : "soldeReel";
+            const openingCell = (border: boolean) => (
+              <CellAmount key="opening"
+                mobileLabel="Argent de départ"
+                className={cn(SOLDE_TINT, border && MONTH_GAP, "text-right tabular-nums", soldeColor(v))}
+                detail={detail} onSelect={onSelect} cellKey={cellKey(openingRow, "solde", i)} selCellKey={selCellKey}>
                 {fmt(v)}
               </CellAmount>
             );
-            // Détail des ouvertures de plan : sur un mois passé ou courant, l'ouverture
-            // prévue / si dépassement vaut l'argent de départ réel (même détail). En
-            // projection, elle vaut la clôture (prévue / si dépassement) du mois passé.
-            const prevuOpenDetail: CellDetail =
-              months[i] <= currentMonth
-                ? detail
-                : firstFuture
-                  ? makeDetail(
-                      "Argent de départ",
-                      [{ label: "Estimé fin du mois précédent", amount: prevuOpen ?? 0, ref: cellKey("estime", "solde", i - 1) }],
-                      { subtitle: monthLabel(months[i]), result: prevuOpen ?? 0 },
-                    )
-                  : makeDetail(
-                      "Argent de départ",
-                      [{ label: "Solde prévu de fin du mois précédent", amount: prevuOpen ?? 0, ref: i > 0 ? cellKey("grand", "soldePrevu", i - 1) : undefined }],
-                      { subtitle: monthLabel(months[i]), result: prevuOpen ?? 0 },
-                    );
-            const depassOpenDetail: CellDetail =
-              months[i] <= currentMonth
-                ? detail
-                : firstFuture
-                  ? makeDetail(
-                      "Argent de départ",
-                      [{ label: "Estimé fin du mois précédent", amount: depassOpen ?? 0, ref: cellKey("estime", "solde", i - 1) }],
-                      { subtitle: monthLabel(months[i]), result: depassOpen ?? 0 },
-                    )
-                  : makeDetail(
-                      "Argent de départ",
-                      [{ label: "Solde de fin du mois précédent (si dépassement)", amount: depassOpen ?? 0, ref: i > 0 ? cellKey("grand", "soldeDepass", i - 1) : undefined }],
-                      { subtitle: monthLabel(months[i]), result: depassOpen ?? 0 },
-                    );
-            const slots = blankSlots();
-            slots.soldeReel = openingCell;
-            slots.soldePrevu = (b) => plannedSoldeCell("soldePrevu", prevuOpen, b, prevuOpenDetail, onSelect, cellKey(openingRow, "soldePrevu", i), selCellKey);
-            slots.soldeDepass = (b) => plannedSoldeCell("soldeDepass", depassOpen, b, depassOpenDetail, onSelect, cellKey(openingRow, "soldeDepass", i), selCellKey);
-            return <Fragment key={i}>{renderCols(months[i], cols, slots, undefined, undefined, true)}</Fragment>;
+            const openingSlots = blankSlots();
+            openingSlots[openingColumn] = openingCell;
+            return <Fragment key={i}>{renderCols(months[i], cols, openingSlots, undefined, undefined, true)}</Fragment>;
           })}
         </TableRow>}
-        {!mobile && solde.pending?.some(amount => Math.abs(amount) >= 0.005) && <TableRow className="text-sm">
-          <TableCell className={cn(COL1_STICKY, "bg-background h-px p-0")}>
-            <FirstColBox><span className="text-muted-foreground">Opérations bancaires en attente</span></FirstColBox>
-          </TableCell>
-          {months.map((month, i) => {
-            const delta = solde.pending?.[i] ?? 0;
-            const slots = blankSlots();
-            if (Math.abs(delta) >= 0.005) {
-              const value = solde.openings[i] + delta;
-              for (const column of ["solde", "soldePrevu", "soldeDepass"] as const) {
-                const detail = makeDetail("Opérations bancaires en attente", [
-                  { label: "Argent de départ", amount: solde.openings[i], ref: cellKey(openingRow, column, i) },
-                  { label: "Écart entre solde disponible et solde comptabilisé", amount: delta },
-                ], {
-                  subtitle: monthLabel(month), result: value,
-                  note: "Cet écart est déjà pris en compte dans le disponible de ce mois, sans modifier les mois précédents. Il disparaît lorsque les opérations sont comptabilisées.",
-                });
-                const slot = column === "solde" ? "soldeReel" : column;
-                slots[slot] = border => plannedSoldeCell(column, value, border, detail, onSelect, cellKey("bank-pending", column, i), selCellKey, delta);
-              }
-            }
-            return <Fragment key={month}>{renderCols(month, monthColumns(monthType(month, currentMonth)), slots, undefined, undefined, true)}</Fragment>;
-          })}
-        </TableRow>}
-        </HistorySectionBody>
-        {mobile ? (["income", "expense"] as const).map(kind => (
-          <HistorySectionBody key={kind} name={kind}>
-            {slots.filter(slot => {
-              if (slot.kind === "empty") return slot.sectionKind === kind;
-              const sec = slot.section;
-              const income = sec.kind === "income" || (sec.kind === "uncategorized" && sec.uncatDirection === "in");
-              return income === (kind === "income");
-            }).map(renderSectionSlot)}
-          </HistorySectionBody>
-        )) : slots.map(renderSectionSlot)}
+        </HistorySectionBody>}
+        {(["income", "expense"] as const).map(kind => {
+          const content = slots.filter(slot => {
+            if (slot.kind === "empty") return slot.sectionKind === kind;
+            const sec = slot.section;
+            const income = sec.kind === "income" || (sec.kind === "uncategorized" && sec.uncatDirection === "in");
+            return income === (kind === "income");
+          }).map(renderSectionSlot);
+          return mobile
+            ? <HistorySectionBody key={kind} name={kind}>{content}</HistorySectionBody>
+            : <Fragment key={kind}>
+                {kind === "expense" && <SpacerRow cols={totalCols} />}
+                <TableRow className="hover:bg-transparent">
+                  {/* Le tableau interne doit partager le défilement extérieur :
+                      masquer son débordement empêcherait sa colonne gauche de rester fixe. */}
+                  <TableCell colSpan={totalCols} className="p-0" style={{ overflow: "visible" }}>
+                    <HistorySectionTable kind={kind} months={months} currentMonth={currentMonth}>{content}</HistorySectionTable>
+                  </TableCell>
+                </TableRow>
+              </Fragment>;
+        })}
         <HistorySectionBody name="totals">
         {/* Le pied conserve les soldes et le dépassement. Les totaux de revenus
             et de dépenses restent dans leurs sections respectives. */}

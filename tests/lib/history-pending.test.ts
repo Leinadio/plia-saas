@@ -41,16 +41,20 @@ describe("les opérations bancaires en attente ne réécrivent pas le passé", (
     const detail = soldeActuelDetail(sections, result, 1, "2026-09", { title: "Solde", result: 108.43 });
     expect(detail.nodes.reduce((sum, node) => sum + node.amount, 0)).toBeCloseTo(detail.result, 2);
     expect(detail.nodes.find(node => node.label === "Opérations bancaires en attente")?.amount).toBe(-350);
+    expect(detail.nodes.find(node => node.label === "Opérations bancaires en attente")?.ref).toBeUndefined();
   });
 
-  it("conserve le prévu disponible et relie la première opération à l'attente", () => {
+  it("conserve le prévu disponible sans renvoyer vers le bloc bancaire retiré", () => {
     const real = computeSolde(sections, months, "2026-09", 108.43, 108.43, -350);
     const plan = computePlannedSoldes(sections, months, "2026-09", real.openings, 108.43, undefined, real.pending);
     const before = computeSolde(sections, months, "2026-09", 108.43, 108.43);
     const previousPlan = computePlannedSoldes(sections, months, "2026-09", before.openings, 108.43);
     expect(plan.prevuClosings[1]).toBeCloseTo(previousPlan.prevuClosings[1]!, 2);
     expect(plan.depassClosings[1]).toBeCloseTo(previousPlan.depassClosings[1]!, 2);
-    expect(computePrevDisplayed(sections, months, "2026-09", real, plan).solde.get("section:uncat-in")?.[1]).toBe("bank-pending");
+    const prev = computePrevDisplayed(sections, months, "2026-09", real, plan);
+    for (const column of ["solde", "soldePrevu", "soldeDepass"] as const) {
+      expect(prev[column].get("section:uncat-in")?.[1]).toBeUndefined();
+    }
   });
 
   it("ne compte pas deux fois une opération lorsqu'elle est comptabilisée", () => {

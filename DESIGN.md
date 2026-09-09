@@ -554,12 +554,40 @@ vocabulaire, écrit noir sur blanc pour qu'il ne se redéfausse pas.
 ### Le grand tableau de l'Historique
 La pièce la plus dense du produit, et la seule qui ne soit pas une liste de cartes.
 
+Sur ordinateur, les revenus et les dépenses ont désormais chacun leur tableau et
+leurs en-têtes : Attendu et Reçu pour les revenus ; Budget, Dépensé,
+Remboursements / apports et Balance pour les dépenses. Les colonnes Réel, Prévu
+et Si dép. gardent leur présentation et leur alignement commun. Le cadre conserve
+Attendu et Reçu aux mêmes positions que Budget et Dépensé, avec l'espace restant
+après Reçu pour maintenir les soldes en place. Il conserve aussi
+une surbrillance limitée à la case Reçu, sans inclure cet espace vide, et
+la navigation entre les mois. Sur mobile, les cartes verticales restent en place.
+Le libellé Remboursements / apports s'applique aussi aux sommes reçues dans les
+enveloppes de dépenses sur mobile.
+
+L'argent de départ affiche un seul montant. Sur ordinateur, son libellé et son
+montant sont regroupés sous le nom du mois, à côté du solde du mois. Le bloc
+séparé à droite disparaît. Le montant garde son calcul au clic, sa surbrillance
+compacte et le glisser vers la calculatrice.
+Le nom du mois et ses montants sont centrés verticalement dans l'en-tête. Les
+mentions de projection ou d'opérations hors calcul se placent dessous sans
+décaler les titres. L'espace avant les revenus fait partie de l'en-tête pour que
+les séparations entre les mois rejoignent le tableau sans interruption.
+La partie fixe garde le fond de la carte pour masquer les titres des mois et
+l'argent de départ lorsqu'ils défilent derrière elle. Sa bordure droite remonte
+jusqu'au haut de la carte, sans interruption dans l'espace avant les revenus.
+Sur mobile, le libellé et le montant partagent une ligne. Le calcul reste cliquable.
+
 - **Sa surface :** une carte, `overflow-hidden`, qui coupe le tableau qui défile à
   l'intérieur. Une seule zone de défilement horizontal — deux imbriquées empêchent toute
   colonne figée de fonctionner.
 - **Son épine :** la colonne des noms, écrite une fois pour tous les mois. Elle se fige
   au bord gauche à partir de 640 px seulement : en dessous, figée, elle occuperait 176
-  des 390 pixels d'un téléphone en permanence.
+  des 390 pixels d'un téléphone en permanence. Les titres de section, boutons et
+  totaux restent fixes avec les noms, y compris dans les deux tableaux internes.
+  Leur cellule d'accueil laisse le débordement visible pour conserver l'unique
+  zone de défilement extérieure. Un filet intérieur continu à droite des cellules
+  fixes sépare les noms des montants, même pendant le défilement.
 - **Ses familles de colonnes :** trois, et elles se lisent à la DENSITÉ, pas à la
   teinte. Les colonnes de mouvement du mois partagent le fond le plus clair (ardoise à
   5 %), Balance a le sien (11 %), les trois chaînes de solde partagent le plus dense
@@ -592,8 +620,9 @@ dans leurs sections. Les non catégorisés restent dans la carte de leur sens ; 
 opérations hors calcul, lorsqu’il y en a, disposent d’une carte supplémentaire.
 Les noms et les montants libellés s’empilent. Les transactions apparaissent sous
 le nom du poste ouvert. La balance des dépenses figure dans le total des dépenses.
-Le bloc récapitulatif bancaire en attente est masqué sur mobile, sans retirer les
-transactions en attente des enveloppes ni modifier les calculs. Les soldes
+Le bloc récapitulatif bancaire en attente est retiré sur ordinateur et mobile,
+sans retirer les transactions en attente des enveloppes ni modifier les calculs.
+L'écart bancaire reste expliqué dans le détail des soldes, sans lien vers l'ancien bloc. Les soldes
 intermédiaires restent sous le contrôle du bouton de détail. Les commandes de gestion
 ne dépendent pas du survol. Une marge basse dégage le relevé du bouton flottant.
 
