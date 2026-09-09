@@ -586,7 +586,9 @@ La pièce la plus dense du produit, et la seule qui ne soit pas une liste de car
 Sous 640 px, le relevé se répartit en cinq cartes séparées de 16 px, comme l’espace
 sous le sélecteur du mois : le mois avec
 ses soldes et son estimation, l’argent de départ, les revenus, les dépenses, puis
-les totaux du mois. Les non catégorisés restent dans la carte de leur sens ; les
+le dépassement total hors budget. La ligne « Total du mois » est retirée sur
+ordinateur et mobile ; les totaux propres aux revenus et aux dépenses restent
+dans leurs sections. Les non catégorisés restent dans la carte de leur sens ; les
 opérations hors calcul, lorsqu’il y en a, disposent d’une carte supplémentaire.
 Les noms et les montants libellés s’empilent. Les transactions apparaissent sous
 le nom du poste ouvert. La balance des dépenses figure dans le total des dépenses.

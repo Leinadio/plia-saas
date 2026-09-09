@@ -184,7 +184,7 @@ describe("cartes des sections sur mobile", () => {
     expect(cards[3].textContent).toContain("Ce qui sort");
     expect(cards[3].textContent).toContain("Total Dépenses");
     expect(cards[3].textContent).toContain("Dépenses non catégorisées");
-    expect(cards[4].textContent).toContain("Total du mois");
+    expect(cards[4].textContent).not.toContain("Total du mois");
     expect(cards[4].textContent).toContain("Total dépassement hors budget");
     expect(el.querySelector("tbody tbody")).toBeNull();
   });
@@ -207,6 +207,21 @@ describe("cartes des sections sur mobile", () => {
 });
 
 describe("désigner une transaction depuis le panneau", () => {
+  it.each([false, true])("retire le total du mois et conserve les soldes et totaux des sections (mobile : %s)", mobile => {
+    const el = document.createElement("div");
+    el.innerHTML = grille([], [revenus, depenses], {
+      ...(mobile ? { mobile: { month: "2026-08", metric: null, onMonthChange: () => {} } } : {}),
+    });
+    expect(el.textContent).not.toContain("Total du mois");
+    for (const label of ["Total revenus", "Total Dépenses", "Solde de fin de mois", "Estimé fin de mois", "Total dépassement hors budget"]) {
+      expect(el.textContent).toContain(label);
+    }
+    expect(el.querySelector('[data-cellkey="grand::solde::0"]')).not.toBeNull();
+    for (const column of ["revenus", "budget", "depense", "recu"]) {
+      expect(el.querySelector(`[data-cellkey="grand::${column}::0"]`)).toBeNull();
+    }
+  });
+
   it("déplie le poste de dépense et montre sa transaction", () => {
     expect(grille([`txn:${sortie.id}::depense::0`])).toContain("COURSES");
   });
@@ -390,7 +405,7 @@ describe("le relevé mobile conserve les montants et leurs références", () => 
     expect(transaction.compareDocumentPosition(amount) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it.each(["grand::revenus::0", "grand::budget::0", "estime::solde::0"])("révèle %s même hors indicateur comparé", (reference) => {
+  it.each(["section:expense::depense::0", "section:expense::budget::0", "estime::solde::0"])("révèle %s même hors indicateur comparé", (reference) => {
     const el = document.createElement("div");
     el.innerHTML = grille([reference], [expense], {
       ...multiMonth, mobile: { month: "2026-08", metric: "soldePrevu", onMonthChange: () => {} },

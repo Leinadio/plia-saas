@@ -2842,19 +2842,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
           </HistorySectionBody>
         )) : slots.map(renderSectionSlot)}
         <HistorySectionBody name="totals">
-        {/* Le pied, en encre pleine et d'un seul bloc : ce que le mois a pesé, où
-            il finit, où il finirait, ce qu'il a débordé. C'est le tampon du relevé.
-            Le total et le solde étaient une seule ligne qui faisait les deux métiers,
-            et le solde s'y lisait comme un total de plus. */}
-        {(!mobile?.metric || ["budgetRem", "budgetDep", "dep", "recu"].includes(mobile.metric) || selectedRows.has("grand")) && <>
-          {!mobile && <SpacerRow cols={totalCols} />}
-          <TableRow data-history-summary="" style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
-            <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
-              <FirstColBox>Total du mois</FirstColBox>
-            </TableCell>
-            <GrandTotalsCells part="totaux" sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} />
-          </TableRow>
-        </>}
+        {/* Le pied conserve les soldes et le dépassement. Les totaux de revenus
+            et de dépenses restent dans leurs sections respectives. */}
+        {!mobile && <SpacerRow cols={totalCols} />}
         {!mobile && closingRows}
         {/* Dépassement final du mois : somme des montants rouges de la colonne
             Balance (groupes qui débordent + Non catégorisés), sans compter
