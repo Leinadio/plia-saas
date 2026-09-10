@@ -35,7 +35,7 @@ Les photographies sont des créations originales générées avec l’outil imag
 ## Portée
 
 Juste après les trois repères du budget, « Plia, en action. » propose une visite
-guidée de 1 min 04 dans les vrais écrans de démonstration. Elle montre les achats,
+guidée de 1 min 14 dans les vrais écrans de démonstration. Elle montre les achats,
 le détail d’un montant, l’ajustement d’un budget et les mois à venir. Le lecteur
 s’ouvre au clic, avec sous-titres français facultatifs. Les données fictives et
 la voix générée par IA sont signalées sous l’aperçu.

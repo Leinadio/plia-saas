@@ -1,35 +1,37 @@
 1
-00:00:00,250 --> 00:00:08,400
-Votre solde est positif. Mais que restera-t-il une fois les dépenses du
-mois passées ? Regardons ensemble dans Plia.
+00:00:00,250 --> 00:00:08,300
+Un week-end à deux, des vacances, ou simplement un mois plus serein… Une
+fois les charges passées, quelle place reste-t-il pour vous ?
 
 2
-00:00:09,451 --> 00:00:18,151
-Ici, les revenus et les dépenses sont réunis dans le même tableau.
-J’ouvre l’enveloppe Courses : les achats apparaissent juste en dessous.
+00:00:10,520 --> 00:00:22,420
+Avec Plia, vos revenus et vos dépenses sont réunis au même endroit. Vos
+courses, vos sorties, vos charges : vous voyez où va votre argent, sans
+refaire tous les calculs.
 
 3
-00:00:19,201 --> 00:00:26,251
-Pour comprendre un montant, je clique dessus. Le détail s’ouvre à
-droite, avec les opérations qui l’expliquent.
+00:00:23,455 --> 00:00:31,655
+Un montant vous surprend ? Un clic, et vous retrouvez les achats qui
+l’expliquent. Vous comprenez l’écart, et vous savez sur quoi agir.
 
 4
-00:00:27,301 --> 00:00:34,701
-Le transport a dépassé les cent vingt euros prévus. Je clique sur son
-budget, puis je le passe à cent soixante euros.
+00:00:32,709 --> 00:00:41,709
+Et quand le mois ne se passe pas comme prévu, vous gardez la main. Ici,
+le transport coûte plus cher : on ajuste simplement son budget.
 
 5
-00:00:35,766 --> 00:00:43,716
-J’applique. Le tableau se recalcule et le montant restant change. Je
-peux ainsi ajuster mes prévisions à ma situation.
+00:00:42,757 --> 00:00:51,707
+Vous validez, et vos prévisions se mettent à jour. Vous voyez tout de
+suite ce qu’il reste dans l’enveloppe, avec un budget qui suit votre
+quotidien.
 
 6
-00:00:44,782 --> 00:00:55,882
-Je replie les enveloppes pour garder les totaux, puis je regarde les
-mois suivants. Les soldes prévus sont des estimations, basées sur les
-revenus et les budgets renseignés.
+00:00:52,774 --> 00:01:04,124
+Puis, prenez un peu d’avance. Regardez les mois à venir pour préparer
+vos projets. Ces soldes sont des estimations, calculées à partir de vos
+revenus et de vos budgets.
 
 7
-00:00:56,923 --> 00:01:03,323
-L’objectif : voir ce qui reste pour vos projets, une fois les dépenses
-prévues prises en compte. C’est ça, Plia.
+00:01:05,182 --> 00:01:12,832
+Moins de calculs en tête. Plus de place pour ce qui compte. Découvrez
+Plia, et commencez à préparer vos prochains projets.

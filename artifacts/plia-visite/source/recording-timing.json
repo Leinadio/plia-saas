@@ -1,68 +1,68 @@
 {
-  "duration": 64.1098555,
+  "duration": 73.626938125,
   "chapters": [
     {
       "id": "intro",
-      "text": "Votre solde est positif. Mais que restera-t-il une fois les dépenses du mois passées ? Regardons ensemble dans Plia.",
-      "duration": 8.15,
+      "text": "Un week-end à deux, des vacances, ou simplement un mois plus serein… Une fois les charges passées, quelle place reste-t-il pour vous ?",
+      "duration": 8.05,
       "audio": "voix-intro.wav",
-      "start": 0.00008470800000031887,
-      "audioStart": 0.2500847080000003,
-      "end": 9.150342
+      "start": 0.00011349999999993088,
+      "audioStart": 0.25011349999999993,
+      "end": 10.201406417
     },
     {
       "id": "enveloppe",
-      "text": "Ici, les revenus et les dépenses sont réunis dans le même tableau. J’ouvre l’enveloppe Courses : les achats apparaissent juste en dessous.",
-      "duration": 8.7,
+      "text": "Avec Plia, vos revenus et vos dépenses sont réunis au même endroit. Vos courses, vos sorties, vos charges : vous voyez où va votre argent, sans refaire tous les calculs.",
+      "duration": 11.9,
       "audio": "voix-enveloppe.wav",
-      "start": 9.200604333,
-      "audioStart": 9.450604333,
-      "end": 18.901552833
+      "start": 10.270161667,
+      "audioStart": 10.520161667,
+      "end": 23.171174584
     },
     {
       "id": "detail",
-      "text": "Pour comprendre un montant, je clique dessus. Le détail s’ouvre à droite, avec les opérations qui l’expliquent.",
-      "duration": 7.05,
+      "text": "Un montant vous surprend ? Un clic, et vous retrouvez les achats qui l’expliquent. Vous comprenez l’écart, et vous savez sur quoi agir.",
+      "duration": 8.2,
       "audio": "voix-detail.wav",
-      "start": 18.951380875,
-      "audioStart": 19.201380875,
-      "end": 27.002036874999998
+      "start": 23.205028333999998,
+      "audioStart": 23.455028333999998,
+      "end": 32.406256167
     },
     {
       "id": "budget",
-      "text": "Le transport a dépassé les cent vingt euros prévus. Je clique sur son budget, puis je le passe à cent soixante euros.",
-      "duration": 7.4,
+      "text": "Et quand le mois ne se passe pas comme prévu, vous gardez la main. Ici, le transport coûte plus cher : on ajuste simplement son budget.",
+      "duration": 9,
       "audio": "voix-budget.wav",
-      "start": 27.051310250000004,
-      "audioStart": 27.301310250000004,
-      "end": 35.452540916
+      "start": 32.459428834,
+      "audioStart": 32.709428834,
+      "end": 42.464838916999994
     },
     {
       "id": "appliquer",
-      "text": "J’applique. Le tableau se recalcule et le montant restant change. Je peux ainsi ajuster mes prévisions à ma situation.",
-      "duration": 7.95,
+      "text": "Vous validez, et vos prévisions se mettent à jour. Vous voyez tout de suite ce qu’il reste dans l’enveloppe, avec un budget qui suit votre quotidien.",
+      "duration": 8.95,
       "audio": "voix-appliquer.wav",
-      "start": 35.516313333,
-      "audioStart": 35.766313333,
-      "end": 44.467208375
+      "start": 42.50740525,
+      "audioStart": 42.75740525,
+      "end": 52.461183084
     },
     {
       "id": "futur",
-      "text": "Je replie les enveloppes pour garder les totaux, puis je regarde les mois suivants. Les soldes prévus sont des estimations, basées sur les revenus et les budgets renseignés.",
-      "duration": 11.1,
+      "text": "Puis, prenez un peu d’avance. Regardez les mois à venir pour préparer vos projets. Ces soldes sont des estimations, calculées à partir de vos revenus et de vos budgets.",
+      "duration": 11.35,
       "audio": "voix-futur.wav",
-      "start": 44.5315575,
-      "audioStart": 44.7815575,
-      "end": 56.632845499999995
+      "start": 52.524170334,
+      "audioStart": 52.774170334,
+      "end": 64.874424
     },
     {
       "id": "conclusion",
-      "text": "L’objectif : voir ce qui reste pour vos projets, une fois les dépenses prévues prises en compte. C’est ça, Plia.",
-      "duration": 6.4,
+      "text": "Moins de calculs en tête. Plus de place pour ce qui compte. Découvrez Plia, et commencez à préparer vos prochains projets.",
+      "duration": 7.65,
       "audio": "voix-conclusion.wav",
-      "start": 56.673233583,
-      "audioStart": 56.923233583,
-      "end": 64.074069708
+      "start": 64.93162212499999,
+      "audioStart": 65.18162212499999,
+      "end": 73.582773917
     }
   ],
   "errors": [],

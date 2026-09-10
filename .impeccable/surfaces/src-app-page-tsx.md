@@ -38,7 +38,7 @@ Le haut partage la promesse à gauche et une photographie sculpturale à droite.
 Un cartouche sombre posé au pied de l’image expose trois soldes prévus avec la
 mention d’exemple illustratif. Trois repères relient ce qui rentre, ce qui sort et
 ce qu’il restera. Une section « Plia, en action. » présente ensuite la visite
-guidée de 1 min 04, ouverte au clic dans Hero Video Dialog de Magic UI.
+guidée de 1 min 14, ouverte au clic dans Hero Video Dialog de Magic UI.
 Sur fond forêt, la démonstration alterne « Votre mois »,
 « Comparer » et « Le détail » ; la courbe lumineuse change avec la vue choisie.
 
@@ -59,7 +59,9 @@ texte et l’image ; il ne permet pas de modifier les enveloppes montrées.
 La visite guidée qui précède ces aperçus est une capture continue des vrais écrans
 de démonstration. Elle montre les achats, le détail d’un montant, l’ajustement d’un
 budget et les prévisions. Sa légende signale les données fictives et la voix IA.
-Son aperçu est extrait de la vidéo à 22 secondes, avec provenance conservée à côté.
+La narration chaleureuse part des projets et du quotidien ; une musique originale
+de claviers et de percussion légère baisse de volume pendant la parole.
+Son aperçu est extrait de la vidéo à 26 secondes, avec provenance conservée à côté.
 Le MP4 se charge au clic ; le lecteur propose des sous-titres français, conserve
 le focus, se ferme avec Échap et tient dans un écran mobile en paysage. La lecture
 ne démarre pas automatiquement sous réduction des animations.

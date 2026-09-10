@@ -2,7 +2,8 @@
 
 Ouvrir **plia-visite-guidee.mp4**. La présentation se déroule intégralement dans
 les composants interactifs de Plia, avec une souris visible et des clics réels.
-La voix française est générée par IA avec OpenAI Marin. Ce n’est pas une voix
+La voix française est générée par IA avec OpenAI Cedar, avec un ton chaleureux
+et conversationnel. Ce n’est pas une voix
 humaine enregistrée et aucun avatar n’est utilisé.
 
 ## Parcours
@@ -42,7 +43,12 @@ l’environnement ; elle n’est présente dans aucun fichier de livraison.
 `source/narration.json` contient le texte ; `source/voice.py` produit les segments
 vocaux. Les fichiers `voix-*.wav` sont conservés pour refaire le montage sans
 nouvelle génération. `source/record.cjs` exécute le parcours et relève son timing.
-`source/export.py` assemble capture et narration. Les images `etape-*.png` montrent
+`source/music.py` compose un accompagnement original de claviers doux, de nappes
+et de percussion légère à 88 BPM, sans enregistrement tiers. La musique est
+conservée dans `musique-originale.wav`. `source/export.py` assemble capture,
+narration et musique. La voix reste au premier plan : la musique baisse quand
+elle parle. Le mixage stéréo vise −16 LUFS avec une crête maximale de −1,5 dBTP.
+Les images `etape-*.png` montrent
 les sept étapes enregistrées.
 
 L’entrée de capture est conservée hors des routes dans `source/capture-page.tsx`.
@@ -52,14 +58,16 @@ Pour reproduire localement, la copier temporairement dans
 ```sh
 python3 artifacts/plia-visite/source/voice.py
 PLAYWRIGHT_PATH=/chemin/vers/playwright node artifacts/plia-visite/source/record.cjs
+python3 artifacts/plia-visite/source/music.py
 python3 artifacts/plia-visite/source/export.py
 ```
 
 Retirer ensuite la route temporaire. Ne pas publier cette entrée. Les scripts
-nécessitent Python 3, FFmpeg, Node.js et Playwright/Chromium. Ne jamais remplacer
+nécessitent Python 3 avec NumPy, FFmpeg, Node.js et Playwright/Chromium. Ne jamais remplacer
 les fixtures de démonstration par des données bancaires réelles pour reproduire
-la vidéo. Après toute modification de texte, régénérer le segment vocal concerné
-avant de relancer la capture.
+la vidéo. Après toute modification de texte ou de `source/voice-settings.json`,
+relancer la génération : l’empreinte du texte et des réglages invalide le cache
+des segments concernés. Puis relancer la capture, la musique et l’export.
 
 ## Vérifications effectuées
 
@@ -67,10 +75,18 @@ Enregistrement terminé sans erreur de page ni requête d’écriture. La saisie
 budget à 160,00 euros et le reste de 12,40 euros ont été vérifiés dans l’interface.
 Les images des étapes ont été inspectées, notamment le détail à droite et la
 lecture des soldes futurs. Le MP4 se décode entièrement sans erreur, sans écran
-noir détecté. Durée finale : 64,12 secondes ; image H.264 à 25 i/s, son AAC à
+noir détecté. Durée finale : 73,64 secondes ; image H.264 à 25 i/s, son AAC stéréo à
 48 kHz. Les sous-titres sont une piste française facultative. La lecture dans
 Chromium a été testée. L’entrée temporaire de capture a été retirée.
 
 Avant et après le travail : 114 fichiers et 1 119 tests de l’application passent.
 La narration est générée ; aucune validation par un comédien ni écoute humaine
 n’est revendiquée. Le discours ne promet aucun résultat financier garanti.
+
+Contrôle du mixage final du 11 septembre : −16,39 LUFS, crête à −1,72 dBTP,
+aucune erreur de décodage ni image noire détectée. Une transcription automatique
+du mixage retrouve tous les mots du script après normalisation de la ponctuation.
+La lecture, les sous-titres et le clavier passent sur cinq formats, dont téléphone
+en paysage, mode sombre et réduction des animations. La nouvelle version est
+intégrée au lecteur de la landing ; aucune publication ni aucun commit n’est
+effectué dans cette passe.

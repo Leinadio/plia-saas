@@ -93,9 +93,10 @@ comparés et le détail d’un montant. Ce sont quatre captures des vrais compos
 des données fictives, adaptées au support, pas une simulation de budget manipulable.
 Le cartouche de soldes du haut est également identifié comme illustratif.
 
-Une visite guidée de 1 min 04 suit les trois repères du budget. Elle montre les vrais
+Une visite guidée de 1 min 14 suit les trois repères du budget. Elle montre les vrais
 écrans de démonstration, un parcours guidé par la souris et une voix française
-générée par IA, signalée dans la légende. Le lecteur s’ouvre au clic et propose
+générée par IA, signalée dans la légende. Un accompagnement musical original reste
+en retrait pendant la narration. Le lecteur s’ouvre au clic et propose
 des sous-titres français facultatifs.
 
 Les quatre photographies originales ont été générées avec imagegen ; les personnes

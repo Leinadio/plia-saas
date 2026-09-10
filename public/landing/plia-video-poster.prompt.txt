@@ -1,1 +1,1 @@
-Origin: frame extracted at 22 seconds from the recorded Plia guided tour, generated 2026-09-10. Actual Plia demo components with fictional demo data, not a customer account. No generated or reconstructed product UI.
+Image extraite à 26 secondes de la visite guidée Plia du 11 septembre 2026. Capture des vrais composants du mode démonstration, données fictives, aucun compte personnel. Source : artifacts/plia-visite/plia-visite-guidee.mp4.

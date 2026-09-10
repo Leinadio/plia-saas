@@ -1,7 +1,10 @@
 {
-  "duration": 64.1098555,
-  "recordingOffset": 1.48,
+  "duration": 73.626938125,
+  "recordingOffset": 2.16,
   "sourceFps": 25.0,
   "file": "plia-visite-guidee.mp4",
-  "bytes": 7810190
+  "bytes": 8941451,
+  "voice": "OpenAI Cedar",
+  "music": "musique-originale.wav",
+  "mix": "Stereo, speech ducking, target -16 LUFS / -1.5 dBTP"
 }
