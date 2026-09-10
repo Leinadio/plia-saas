@@ -2855,7 +2855,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       </TableHeader>}
       <Body>
         {mobile && <HistorySectionBody name="summary">
-          {!mobile.metric && <TableRow>
+          {!mobile.metric && <TableRow data-history-summary="" style={PIED_CARBONE} className={PIED_LIGNE}>
             <HistorySpanCell colSpan={totalCols} className="p-0">
               <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-3 text-base" data-onboarding-target={onboarding?.timeTarget} data-onboarding-month={mobile.month}>
                 <span className="font-semibold">{monthLabel(mobile.month)}</span>
