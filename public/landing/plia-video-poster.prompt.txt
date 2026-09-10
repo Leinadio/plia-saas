@@ -1,0 +1,1 @@
+Origin: frame extracted at 22 seconds from the recorded Plia guided tour, generated 2026-09-10. Actual Plia demo components with fictional demo data, not a customer account. No generated or reconstructed product UI.

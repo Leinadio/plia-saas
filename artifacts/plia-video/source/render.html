@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="fr"><meta charset="utf-8"><title>Plia · Studio vidéo</title>
+<style>
+@font-face{font-family:"Bricolage Grotesque";src:url(assets/display.woff2);font-weight:200 800}
+@font-face{font-family:"Schibsted Grotesk";src:url(assets/body.woff2);font-weight:400 900}
+body{margin:0;background:#edf5f0}canvas{display:block;width:100vw;height:auto}
+</style>
+<canvas width="1920" height="1080"></canvas>
+<script>
+const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');
+const mint='#edf5f0',ink='#172d28',green='#126b5b',coral='#efad98',dark='#17222b';
+const images={},clamp=(v)=>Math.max(0,Math.min(1,v)),ease=(v)=>1-(1-clamp(v))**3;
+let timeline;
+function round(x,y,w,h,r=24){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
+function box(x,y,w,h,color,r=24){ctx.fillStyle=color;round(x,y,w,h,r);ctx.fill();}
+function text(str,x,y,size=36,color=ink,weight=400,font='Schibsted Grotesk'){
+ ctx.font=`${weight} ${size}px ${font}`;ctx.fillStyle=color;ctx.textBaseline='top';ctx.fillText(str,x,y);
+}
+function lines(list,x,y,size=90,color=ink){list.forEach((s,i)=>text(s,x,y+i*size*1.07,size,color,550,'Bricolage Grotesque'));}
+function cover(img,x,y,w,h,t=0,r=28){
+ ctx.save();round(x,y,w,h,r);ctx.clip();
+ const scale=Math.max(w/img.width,h/img.height)*(1+0.025*t),dw=img.width*scale,dh=img.height*scale;
+ ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);ctx.restore();
+}
+function panel(img,x,y,w,h,crop){
+ ctx.save();ctx.shadowColor='#172d281c';ctx.shadowBlur=50;ctx.shadowOffsetY=16;box(x,y,w,h,'#fff',24);ctx.restore();
+ ctx.save();round(x,y,w,h,24);ctx.clip();
+ if(crop)ctx.drawImage(img,...crop,x,y,w,h);else ctx.drawImage(img,x,y,w,h);ctx.restore();
+}
+function curve(t,color,alpha=.25){
+ ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.lineWidth=90;
+ ctx.beginPath();ctx.moveTo(1400,-200);ctx.bezierCurveTo(900,200,1850,450,1420,820);
+ ctx.bezierCurveTo(1170,1100,880,950,720,1200);ctx.stroke();ctx.restore();
+}
+function brandHeader(isDark=false){
+ const color=isDark?mint:ink;
+ box(88,64,66,66,isDark?mint:green,[23,23,23,0]);text('P',107,75,42,isDark?green:'#fff',650,'Bricolage Grotesque');
+ text('Plia',169,70,49,color,650,'Bricolage Grotesque');
+ ctx.textAlign='right';text('MAQUETTE · VOIX PROVISOIRE',1832,84,21,isDark?'#aabbb5':'#58736b',500);ctx.textAlign='left';
+}
+function eyebrow(s,n,isDark=false){text(`0${n} / 06     ${s}`,100,181,23,isDark?'#b8d8cb':green,550);}
+function proof(s,isDark=false){text(s,100,906,23,isDark?'#b8c6c8':'#56736a');}
+function scene(index,time){
+ const s=timeline.scenes[index],local=Math.max(0,time-s.start+.28),p=clamp(local/(s.end-s.start));
+ const isDark=s.id==='future';box(0,0,1920,1080,isDark?dark:mint,0);
+ if(s.id==='problem'||s.id==='close')curve(p,coral,.30);
+ brandHeader(isDark);
+ ctx.save();ctx.globalAlpha*=ease(local/0.6);ctx.translate(0,22*(1-ease(local/0.7)));
+ if(s.id==='problem'){
+  eyebrow('ET LES DÉPENSES À VENIR ?',1);
+  lines(['Votre solde,','aujourd’hui.'],100,280,112);
+  text('Et après ?',100,525,122,green,550,'Bricolage Grotesque');
+  text('Loyer. Courses. Projets.',104,708,33,'#506b61');
+  cover(images['lumiere-hero-v1.png'],1030,187,790,685,p,[170,28,170,28]);
+  text('Emplacement du présentateur dans la version finale',1030,895,22,'#56736a');
+ }
+ if(s.id==='month'){
+  eyebrow('UNE VUE CLAIRE',2);
+  lines(['Tout votre','mois.'],100,307,108);
+  lines(['Au même','endroit.'],100,544,100,green);
+  panel(images['plia-budget-desktop.png'],890,163,930,772);
+  proof('Écran Plia · données de démonstration');
+ }
+ if(s.id==='envelopes'){
+  eyebrow('VOTRE BUDGET, EN ENVELOPPES',3);
+  text('Un budget. Des repères.',100,238,96,ink,550,'Bricolage Grotesque');
+  text('Prévu, dépensé, reste : voyez les écarts.',104,357,34,green);
+  text('Écran Plia · données de démonstration',104,415,22,'#56736a');
+  panel(images['plia-budget-desktop.png'],100,465,1720,514,[0,364,800,239]);
+  if(local>4){
+   ctx.save();ctx.globalAlpha=ease((local-4)/.6);ctx.strokeStyle=green;ctx.lineWidth=4;
+   round(100+352*2.15,465+83*2.15,202*2.15,147*2.15,12);ctx.stroke();ctx.restore();
+  }
+ }
+ if(s.id==='detail'){
+  eyebrow('LES CHIFFRES S’EXPLIQUENT',4);
+  lines(['Comprendre','chaque'],100,285,106);
+  text('montant.',100,514,114,green,550,'Bricolage Grotesque');
+  text('Du total aux dépenses qui le composent.',104,700,31,'#506b61');
+  ctx.save();ctx.translate(1390,556);ctx.rotate(-.016);box(-430,-354,860,690,coral,[80,28,80,28]);ctx.restore();
+  panel(images['plia-detail-mobile.png'],995,248,800,595,[0,0,430,320]);
+  proof('Écran Plia · enveloppe Courses · données de démonstration');
+ }
+ if(s.id==='future'){
+  eyebrow('UNE VUE D’AVANCE',5,true);
+  lines(['Voir venir.'],100,297,118,mint);
+  lines(['Décider','plus tôt.'],100,450,111,'#a8ddc6');
+  text('Prévisions estimées selon les données',104,751,29,'#aabcb5');
+  text('renseignées dans Plia.',104,793,29,'#aabcb5');
+  panel(images['plia-soldes-mobile.png'],990,265,830,613);
+  proof('Vue Comparer · données de démonstration',true);
+ }
+ if(s.id==='close'){
+  eyebrow('EN SOLO OU À DEUX',6);
+  lines(['Faites de la','place à vos'],100,280,102);
+  text('projets.',100,502,118,green,550,'Bricolage Grotesque');
+  box(100,699,480,99,green,50);text('Découvrir Plia',141,724,37,'#fff',550);
+  text('↗',509,717,45,'#fff');
+  cover(images['audience-solo-v1.png'],997,245,400,530,p,[115,24,24,24]);
+  cover(images['audience-couple-v1.png'],1420,310,400,530,p,[24,24,115,24]);
+  text('Images illustratives · personnes fictives',1003,882,22,'#56736a');
+ }
+ ctx.restore();
+}
+function caption(time){
+ const c=timeline.scenes.flatMap(s=>s.captions).find(c=>time>=c.start&&time<c.end);
+ if(!c)return;
+ ctx.font='500 34px Schibsted Grotesk';const width=ctx.measureText(c.text).width;
+ box((1920-width)/2-30,985,width+60,67,'#10271ff2',14);
+ ctx.textAlign='center';text(c.text,960,1000,34,'#fff',500);ctx.textAlign='left';
+}
+window.ready=(async()=>{
+ timeline=await(await fetch('timeline.json')).json();
+ await Promise.all(['Bricolage Grotesque','Schibsted Grotesk'].map(async name=>{await document.fonts.load(`500 40px ${name}`);}));
+ for(const name of ['lumiere-hero-v1.png','plia-budget-desktop.png','plia-detail-mobile.png','plia-soldes-mobile.png','audience-solo-v1.png','audience-couple-v1.png']){
+  const img=new Image();img.src='assets/'+name;await img.decode();images[name]=img;
+ }
+ return timeline;
+})();
+window.draw=(time)=>{
+ const index=Math.max(0,timeline.scenes.findIndex(s=>time>=s.start&&time<s.end));
+ scene(index,time);
+ const remaining=timeline.scenes[index].end-time;
+ if(index<timeline.scenes.length-1&&remaining<.28){
+  ctx.save();ctx.globalAlpha=1-remaining/.28;scene(index+1,time);ctx.restore();
+ }
+ caption(time);
+ box(0,1074,1920,6,'#cadcd3',0);box(0,1074,1920*clamp(time/timeline.duration),6,green,0);
+ return canvas.toDataURL('image/jpeg',.93).split(',')[1];
+};
+</script></html>

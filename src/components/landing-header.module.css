@@ -1,0 +1,119 @@
+header.header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+}
+.sections,
+.center,
+.pageGroup {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-size: 14px;
+}
+.center {
+  justify-content: center;
+}
+.sections {
+  justify-content: center;
+  color: var(--land-muted);
+}
+.sections a,
+.pageLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  white-space: nowrap;
+}
+.sections svg,
+.pageLink svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.sections a:hover,
+.pageLink:hover {
+  color: var(--land-green);
+  text-decoration: underline;
+}
+.pageGroup {
+  font-weight: 600;
+}
+.separator {
+  color: var(--land-muted);
+  font-size: 18px;
+  font-weight: 400;
+}
+.pageLink[aria-current="page"] {
+  color: var(--land-green);
+  text-decoration: underline;
+}
+/* Native hash navigation preserves history, keyboard and no-JS behavior.
+   Smooth scrolling is limited to public pages. */
+:global(html):has(.header) {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  :global(html):has(.header) {
+    scroll-behavior: auto;
+  }
+}
+@media (max-width: 1100px) {
+  header.header {
+    grid-template-columns: auto 1fr auto;
+    height: auto;
+    padding-top: 12px;
+    padding-bottom: 0;
+    row-gap: 8px;
+  }
+  .sections {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: center;
+    border-top: 1px solid var(--land-line);
+    padding-block: 4px;
+  }
+  .center {
+    display: contents;
+  }
+  .pageGroup {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+  }
+  .header > a:last-child {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+@media (max-width: 700px) {
+  header.header {
+    column-gap: 12px;
+  }
+  .pageGroup {
+    gap: 8px;
+    font-size: 13px;
+  }
+  .sections {
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 12px;
+  }
+}
+@media (max-width: 360px) {
+  header.header {
+    column-gap: 8px;
+  }
+  .pageGroup {
+    gap: 4px;
+    font-size: 12px;
+  }
+  .header > a:last-child {
+    font-size: 12px;
+    gap: 4px;
+  }
+  .header > a:last-child svg {
+    width: 14px;
+    height: 14px;
+  }
+}

@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import Image from "next/image"
-import { Play, XIcon } from "lucide-react"
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { Play, XIcon } from "lucide-react";
 import {
   AnimatePresence,
   motion,
   useReducedMotion,
   type MotionStyle,
-} from "motion/react"
+} from "motion/react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 type AnimationStyle =
   | "from-bottom"
@@ -20,15 +20,16 @@ type AnimationStyle =
   | "from-right"
   | "fade"
   | "top-in-bottom-out"
-  | "left-in-right-out"
+  | "left-in-right-out";
 
 interface HeroVideoProps {
-  animationStyle?: AnimationStyle
-  videoSrc: string
-  thumbnailSrc: string
-  thumbnailAlt?: string
-  className?: string
-  triggerStyle?: MotionStyle
+  animationStyle?: AnimationStyle;
+  videoSrc: string;
+  captionsSrc?: string;
+  thumbnailSrc: string;
+  thumbnailAlt?: string;
+  className?: string;
+  triggerStyle?: MotionStyle;
 }
 
 const animationVariants = {
@@ -72,64 +73,65 @@ const animationVariants = {
     animate: { x: 0, opacity: 1 },
     exit: { x: "100%", opacity: 0 },
   },
-}
+};
 
 export function HeroVideoDialog({
   animationStyle = "from-center",
   videoSrc,
+  captionsSrc,
   thumbnailSrc,
   thumbnailAlt = "Video thumbnail",
   className,
   triggerStyle,
 }: HeroVideoProps) {
-  const [isVideoOpen, setIsVideoOpen] = useState(false)
-  const triggerRef = useRef<HTMLButtonElement>(null)
-  const dialogRef = useRef<HTMLDivElement>(null)
-  const closeButtonRef = useRef<HTMLButtonElement>(null)
-  const prefersReducedMotion = useReducedMotion()
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const prefersReducedMotion = useReducedMotion();
   const selectedAnimation = prefersReducedMotion
     ? animationVariants.fade
-    : animationVariants[animationStyle]
-  const isNativeVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(videoSrc)
+    : animationVariants[animationStyle];
+  const isNativeVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(videoSrc);
 
   useEffect(() => {
-    if (!isVideoOpen) return
-    const previousOverflow = document.body.style.overflow
-    const trigger = triggerRef.current
+    if (!isVideoOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    const trigger = triggerRef.current;
 
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setIsVideoOpen(false)
-    }
+      if (event.key === "Escape") setIsVideoOpen(false);
+    };
 
-    document.body.style.overflow = "hidden"
-    window.addEventListener("keydown", closeOnEscape)
-    closeButtonRef.current?.focus()
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOnEscape);
+    closeButtonRef.current?.focus();
 
     return () => {
-      document.body.style.overflow = previousOverflow
-      window.removeEventListener("keydown", closeOnEscape)
-      trigger?.focus()
-    }
-  }, [isVideoOpen])
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+      trigger?.focus();
+    };
+  }, [isVideoOpen]);
 
   const keepFocusInDialog = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== "Tab") return
+    if (event.key !== "Tab") return;
 
     const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
       'button, video, iframe, [href], [tabindex]:not([tabindex="-1"])',
-    )
-    if (!focusable?.length) return
+    );
+    if (!focusable?.length) return;
 
-    const first = focusable[0]
-    const last = focusable[focusable.length - 1]
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
     if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault()
-      last.focus()
+      event.preventDefault();
+      last.focus();
     } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault()
-      first.focus()
+      event.preventDefault();
+      first.focus();
     }
-  }
+  };
 
   return (
     <div className={cn("relative", className)}>
@@ -146,7 +148,6 @@ export function HeroVideoDialog({
           alt={thumbnailAlt}
           width={1920}
           height={1080}
-          priority
           className="size-full rounded-md border object-cover object-left-top shadow-lg transition-all duration-200 ease-out group-hover:brightness-[0.8]"
         />
         <div className="absolute inset-0 flex scale-[0.9] items-center justify-center rounded-2xl transition-all duration-200 ease-out group-hover:scale-100">
@@ -181,8 +182,13 @@ export function HeroVideoDialog({
           >
             <motion.div
               {...selectedAnimation}
-              transition={prefersReducedMotion ? { duration: 0 } : { type: "spring", damping: 30, stiffness: 300 }}
-              className="relative mx-4 aspect-video w-full max-w-4xl md:mx-0"
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { type: "spring", damping: 30, stiffness: 300 }
+              }
+              className="relative mx-4 aspect-video w-full md:mx-0"
+              style={{ maxWidth: "min(72rem, calc((100svh - 8rem) * 16 / 9))" }}
               onClick={(event) => event.stopPropagation()}
             >
               <motion.button
@@ -201,11 +207,21 @@ export function HeroVideoDialog({
                     poster={thumbnailSrc}
                     className="size-full rounded-2xl bg-black object-contain"
                     controls
+                    preload="metadata"
                     autoPlay={!prefersReducedMotion}
                     playsInline
                     tabIndex={0}
-                    aria-label="Aperçu animé de Plia"
-                  />
+                    aria-label="Visite guidée de Plia"
+                  >
+                    {captionsSrc && (
+                      <track
+                        kind="captions"
+                        src={captionsSrc}
+                        srcLang="fr"
+                        label="Français"
+                      />
+                    )}
+                  </video>
                 ) : (
                   <iframe
                     src={videoSrc}
@@ -221,5 +237,5 @@ export function HeroVideoDialog({
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

@@ -1,0 +1,7 @@
+Tool: built-in image_gen.imagegen
+Purpose: Fictional editorial imagery, not an actual customer or testimonial.
+
+Exact prompt:
+Use case: photorealistic-natural.
+Asset type: original portrait 4:5 editorial campaign photograph for the Plia solo audience page.
+A candid premium editorial lifestyle photograph of a woman in her early thirties spending a slow weekend morning alone on a sunlit Mediterranean city apartment balcony. Seated sideways reading a paperback, relaxed confident posture, natural skin texture, cream cotton blouse, deep green trousers; a small coral ceramic espresso cup and folded magazine on simple round table. A bicycle and leafy climbing jasmine softly in background, textured pale mint shutters, rich forest green shade and warm coral sunlight accents. Composition medium-wide with person fully readable within central 65% so responsive crops retain face and body. A large sweeping soft sunlit curtain at one edge catches light and introduces an organic curve. Direct natural late morning sunlight with rich tactile shadow, beautiful lived-in realism, 35mm editorial photography, restrained analog color character, sophisticated European lifestyle campaign, candid rather than posed. This is about having space for your own plans and enjoying everyday life, not using a finance app. No text, no numbers, no logos, no phone or computer, no bank imagery, no fake testimonial, no excess luxury, no additional people. Create original artwork. Fictional editorial subject, not an actual customer.

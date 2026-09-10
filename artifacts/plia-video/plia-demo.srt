@@ -1,0 +1,59 @@
+1
+00:00:00,000 --> 00:00:02,803
+Votre compte affiche ce que vous avez.
+
+2
+00:00:02,803 --> 00:00:07,332
+Mais entre le loyer, les courses et les dépenses à venir,
+
+3
+00:00:07,332 --> 00:00:09,958
+que restera-t-il pour vos projets ?
+
+4
+00:00:09,958 --> 00:00:14,442
+Avec Plia, réunissez vos revenus et vos dépenses
+
+5
+00:00:14,442 --> 00:00:16,952
+dans une vue claire de votre mois.
+
+6
+00:00:16,952 --> 00:00:19,693
+Donnez un budget à chaque enveloppe.
+
+7
+00:00:19,693 --> 00:00:23,753
+Comparez ce qui était prévu avec ce qui a été dépensé,
+
+8
+00:00:23,753 --> 00:00:25,865
+et repérez les écarts.
+
+9
+00:00:25,865 --> 00:00:28,075
+Un montant vous interpelle ?
+
+10
+00:00:28,075 --> 00:00:31,439
+Ouvrez son détail pour comprendre d’où il vient.
+
+11
+00:00:31,439 --> 00:00:34,502
+Regardez ensuite les mois à venir.
+
+12
+00:00:34,502 --> 00:00:37,665
+Les estimations vous aident à anticiper
+
+13
+00:00:37,665 --> 00:00:40,993
+et à ajuster votre budget avant de décider.
+
+14
+00:00:40,993 --> 00:00:44,736
+Seul ou à deux, faites de la place à vos projets.
+
+15
+00:00:44,736 --> 00:00:46,561
+Découvrez Plia.

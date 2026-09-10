@@ -1,0 +1,8 @@
+Origin: Built-in tools.image_gen__imagegen
+Generated: 2026-09-10
+Source: /Users/danieldupont/.codex/generated_images/01a08bcb-37a6-71a0-bf27-54cb65be71f2/exec-1f8e4968-f329-48f3-b8e7-6c39f475e237.png
+Asset: lumiere-hero-v1.png
+Dimensions: 1536 x 1024
+
+Exact prompt:
+Use case: stylized-concept. Asset type: photographic art-direction hero for the French personal budget brand Plia, NOT a website screenshot or UI. Create one stunning wide landscape 3:2 editorial photograph with a tangible sculptural installation: two large curved panels of real translucent colored architectural glass, one emerald teal and one pale coral, casting long soft green and warm amber caustic shadows in a light mint-white lived-in apartment. An organic S-shaped glass edge leads the eye toward an open window, everyday outside light, a quiet suggestion of a home and a leafy plant. A small table with a ceramic cup near the back creates human scale. Art photography level; visually mesmerizing yet believable, extraordinary curved glass textures and daylight. Frame glass across right two thirds, open luminous space on left; strong thoughtful composition, architectural curves, tactile materials. Palette pale mint #EDF5F0, deep emerald #147D72, delicate coral #EE806B, warm amber #F1C94E, natural white. No letters, no typography, no watermark, no logo, no mock UI, no chrome bubble render, no currency, no coins, no finance symbols, no dark backdrop. Beautiful artwork worthy of a creative studio identity presentation. Do not make a collage.

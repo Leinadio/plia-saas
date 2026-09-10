@@ -66,6 +66,15 @@ FORM: Verre coloré des intérieurs contemporains, candidat 7 ; seed 29f966f4, d
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
 -->`;
 
+const AUDIENCE_CONTRAT = `<!--
+THESIS: La vie, à votre façon. La page Pour qui relie envies et budget par deux scènes de vie et des bénéfices courts.
+OWN-WORLD: Monde public Plia conservé : Bricolage, Schibsted, menthe, forêt ; le corail des photographies devient un fond de preuve opaque.
+STORY: Se reconnaître en solo ou à deux, comprendre les enveloppes et les mois à venir, puis découvrir ou commencer Plia. Pas d’accès partagé promis.
+FIRST VIEWPORT: Grand titre centré, promesse courte et action ; deux photographies originales décalées, courbes opposées et liens vers chaque usage.
+FORM: Diptyque de campagne photographique, refinement code-led du monde public existant, audience-art-v2. Pas de nouvelle animation.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->`;
+
 const themeScript =
   "document.documentElement.classList.toggle('dark', window.matchMedia('(prefers-color-scheme: dark)').matches)";
 
@@ -96,7 +105,9 @@ export default function RootLayout({
             contrat que la construction efface n'est vérifiable par personne. */}
         <div
           hidden
-          dangerouslySetInnerHTML={{ __html: `${CONTRAT}${LANDING_CONTRAT}` }}
+          dangerouslySetInnerHTML={{
+            __html: `${CONTRAT}${LANDING_CONTRAT}${AUDIENCE_CONTRAT}`,
+          }}
         />
         {children}
         {/* Les accusés de réception des actions confirmées (voir toastSucces).

@@ -1,0 +1,70 @@
+{
+  "duration": 64.1098555,
+  "chapters": [
+    {
+      "id": "intro",
+      "text": "Votre solde est positif. Mais que restera-t-il une fois les dépenses du mois passées ? Regardons ensemble dans Plia.",
+      "duration": 8.15,
+      "audio": "voix-intro.wav",
+      "start": 0.00008470800000031887,
+      "audioStart": 0.2500847080000003,
+      "end": 9.150342
+    },
+    {
+      "id": "enveloppe",
+      "text": "Ici, les revenus et les dépenses sont réunis dans le même tableau. J’ouvre l’enveloppe Courses : les achats apparaissent juste en dessous.",
+      "duration": 8.7,
+      "audio": "voix-enveloppe.wav",
+      "start": 9.200604333,
+      "audioStart": 9.450604333,
+      "end": 18.901552833
+    },
+    {
+      "id": "detail",
+      "text": "Pour comprendre un montant, je clique dessus. Le détail s’ouvre à droite, avec les opérations qui l’expliquent.",
+      "duration": 7.05,
+      "audio": "voix-detail.wav",
+      "start": 18.951380875,
+      "audioStart": 19.201380875,
+      "end": 27.002036874999998
+    },
+    {
+      "id": "budget",
+      "text": "Le transport a dépassé les cent vingt euros prévus. Je clique sur son budget, puis je le passe à cent soixante euros.",
+      "duration": 7.4,
+      "audio": "voix-budget.wav",
+      "start": 27.051310250000004,
+      "audioStart": 27.301310250000004,
+      "end": 35.452540916
+    },
+    {
+      "id": "appliquer",
+      "text": "J’applique. Le tableau se recalcule et le montant restant change. Je peux ainsi ajuster mes prévisions à ma situation.",
+      "duration": 7.95,
+      "audio": "voix-appliquer.wav",
+      "start": 35.516313333,
+      "audioStart": 35.766313333,
+      "end": 44.467208375
+    },
+    {
+      "id": "futur",
+      "text": "Je replie les enveloppes pour garder les totaux, puis je regarde les mois suivants. Les soldes prévus sont des estimations, basées sur les revenus et les budgets renseignés.",
+      "duration": 11.1,
+      "audio": "voix-futur.wav",
+      "start": 44.5315575,
+      "audioStart": 44.7815575,
+      "end": 56.632845499999995
+    },
+    {
+      "id": "conclusion",
+      "text": "L’objectif : voir ce qui reste pour vos projets, une fois les dépenses prévues prises en compte. C’est ça, Plia.",
+      "duration": 6.4,
+      "audio": "voix-conclusion.wav",
+      "start": 56.673233583,
+      "audioStart": 56.923233583,
+      "end": 64.074069708
+    }
+  ],
+  "errors": [],
+  "writes": []
+}

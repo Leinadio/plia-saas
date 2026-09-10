@@ -101,6 +101,13 @@ colors:
   landing-offer-copy-dark: "#c2d7c7"
   landing-offer-line-dark: "#5b8065"
   landing-close-copy: "#bcd1c4"
+  landing-audience-coral: "#f5b5a2"
+  landing-audience-coral-hover: "#ef9d87"
+  landing-audience-coral-dark: "#e5a18d"
+  landing-audience-brown: "#654234"
+  landing-audience-shadow: "#56302724"
+  landing-audience-line: "#54816b"
+  landing-audience-mint: "#b6dbc4"
 typography:
   display:
     fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
@@ -177,6 +184,66 @@ typography:
     fontSize: "clamp(44px, 12.7vw, 68px)"
     fontWeight: 550
     lineHeight: 1.04
+    letterSpacing: "-0.035em"
+  landing-audience-hero:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "clamp(64px, 8vw, 96px)"
+    fontWeight: 550
+    lineHeight: 0.98
+    letterSpacing: "-0.035em"
+  landing-audience-hero-mobile:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "clamp(52px, 12vw, 70px)"
+    fontWeight: 550
+    lineHeight: 0.98
+    letterSpacing: "-0.035em"
+  landing-audience-profile:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "clamp(40px, 4.3vw, 60px)"
+    fontWeight: 500
+    lineHeight: 1.06
+    letterSpacing: "-0.035em"
+  landing-audience-profile-mobile:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "42px"
+    fontWeight: 500
+    lineHeight: 1.06
+    letterSpacing: "-0.035em"
+  landing-audience-proof:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "40px"
+    fontWeight: 500
+    lineHeight: 1.05
+    letterSpacing: "-0.035em"
+  landing-audience-proof-mobile:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "36px"
+    fontWeight: 500
+    lineHeight: 1.05
+    letterSpacing: "-0.035em"
+  landing-audience-comparison:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "60px"
+    fontWeight: 500
+    lineHeight: 1.05
+    letterSpacing: "-0.035em"
+  landing-audience-comparison-mobile:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "48px"
+    fontWeight: 500
+    lineHeight: 1.05
+    letterSpacing: "-0.035em"
+  landing-audience-close:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "clamp(40px, 5vw, 70px)"
+    fontWeight: 500
+    lineHeight: 1.08
+    letterSpacing: "-0.035em"
+  landing-audience-close-mobile:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "42px"
+    fontWeight: 500
+    lineHeight: 1.08
     letterSpacing: "-0.035em"
   landing-headline:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
@@ -325,6 +392,13 @@ rounded:
   landing-close-mobile: "130px 0 0"
   landing-brand: "15px 15px 15px 4px"
   landing-brand-mobile: "13px 13px 13px 4px"
+  landing-audience-solo: "180px 16px 16px 16px"
+  landing-audience-couple: "16px 16px 180px 16px"
+  landing-audience-solo-mobile: "80px 12px 12px 12px"
+  landing-audience-couple-mobile: "12px 12px 80px 12px"
+  landing-audience-proof: "16px 160px 16px 16px"
+  landing-audience-proof-tablet: "16px 120px 16px 16px"
+  landing-audience-proof-mobile: "16px 100px 16px 16px"
 spacing:
   xs: "4px"
   sm: "8px"
@@ -504,11 +578,11 @@ components:
 **Creative North Star: « L’enveloppe » dans l’application ; « La lumière en mouvement » sur la page publique.**
 
 Les règles ci-dessous décrivent l’application, sauf les paragraphes explicitement
-« Page publique ». Les jetons `landing-*` ne s’appliquent qu’à cette page ; ils ne
-remplacent ni les jetons du relevé, ni ses règles mobiles. La page publique associe
+« Page publique ». Les jetons `landing-*` s’appliquent aux routes `/` et `/pour-qui` ;
+ils ne remplacent ni les jetons du relevé, ni ses règles mobiles. Le monde public associe
 verre courbe, lumière naturelle, fonds menthe et forêt, et une typographie expressive.
 Les chiffres reposent sur des surfaces opaques ; le verre appartient aux images.
-La composition de cette page et ses preuves vivent dans son brief de surface.
+La composition et les preuves de chaque route vivent dans son brief de surface.
 
 ### Application
 
@@ -618,6 +692,13 @@ est à 16 % d’opacité. Le défilement reprend les verts documentés `demo-scr
 `tabs-scroll`, pas les couleurs système. Les valeurs CSS finales du frontmatter
 font foi ; la couleur émeraude du prompt d’image n’est pas un jeton d’action.
 
+Sur `/pour-qui` seulement, `landing-audience-coral` porte le lien photographique
+du couple, le support de la preuve solo et un accent de titre sur forêt. Son
+survol est `coral-hover` ; seul le support solo passe à `coral-dark` dans le thème
+sombre. `brown` rend le grand titre lisible sur corail ; `line` sépare la note
+d’accès personnel, et `mint` éclaire les titres et coches sur forêt. Ces rôles
+locaux ne modifient ni les sens financiers ni la palette de l’application.
+
 ## Typography
 
 **Fonte unique dans l’application :** Schibsted Grotesk (variable, sous-ensemble latin, servie par
@@ -666,6 +747,11 @@ présentes, de la note illustrative au prix. Les titres ont un interlettrage de
 courants de section ont une graisse 500, le héros et les étapes 550. Le corps varie
 de 14 à 18 px selon le contexte ; les mentions et légendes vont de 10 à 12 px.
 Les notes fines restent secondaires, jamais le seul endroit portant la promesse.
+Sur `/pour-qui`, les rôles `landing-audience-*` donnent au titre une ampleur
+propre à cette page, avec un interligne serré. Les titres de profils, les phrases
+des preuves et la conclusion ont leurs variantes mobiles explicites. Le corps
+est à 18 px, puis 16 px sur téléphone ; les bénéfices ont une phrase forte à
+18 px puis 16 px, suivie d’une explication à 15 px puis 14 px.
 
 ## Layout
 
@@ -694,10 +780,22 @@ de largeurs différentes retombent en escalier.
 La largeur principale est limitée à 1440 px ; les marges passent de 64 à 36 puis
 24 px aux seuils de 1100 et 700 px. Le haut est partagé entre texte et image ;
 les sections alternent colonnes et plages de couleur. Sur téléphone, le texte et
-l’action précèdent l’image, puis les sections s’empilent. La navigation de sections
-se masque, la connexion reste visible. Les aperçus deviennent des captures mobiles ;
+l’action précèdent l’image, puis les sections s’empilent. Le bandeau partagé
+réunit les sections de l’accueil et « Pour qui ? » dans le groupe central,
+séparés par une barre oblique « / ». La connexion reste à droite.
+À 1100 px et en dessous, la marque, « / Pour qui ? » et la connexion occupent la première ligne ;
+les trois sections restent visibles sur une seconde ligne séparée par un filet. Les aperçus deviennent des captures mobiles ;
 leurs choix défilent horizontalement dans leur propre bande. Les marges et seuils
-de cette page ne changent pas ceux de l’application.
+des pages publiques ne changent pas ceux de l’application.
+
+Sur `/pour-qui`, le titre et l’action sont centrés dans un haut limité à 1440 px.
+Deux photographies en colonnes 1fr / 1.12fr forment un diptyque décalé : celle du
+solo descend de 48 px. Les images mesurent 460 px de haut, puis 400 px à 1100 px.
+À 700 px, elles restent côte à côte, en colonnes égales, hautes de 300 px, avec
+un décalage de 24 px et un espace de 12 px. Les deux récits alternent texte et
+preuve sur 1312 px maximum, colonnes 1.08fr / 1fr, espace de 96 px puis 48 px.
+Leurs marges latérales sont de 40, 36 puis 24 px. Sur téléphone, chaque récit
+précède sa preuve. La conclusion reste centrée sur le fond public.
 
 ## Elevation & Depth
 
@@ -734,6 +832,12 @@ Le changement d’aperçu révèle l’image en 450 ms et déplace la courbe lum
 650 ms avec `cubic-bezier(0.16, 1, 0.3, 1)`. Les boutons réagissent en 200 ms, les
 choix en 180 ms et le signe de FAQ en 250 ms. Sous `prefers-reduced-motion`,
 animations et transitions s’arrêtent et le défilement redevient immédiat.
+La page `/pour-qui` n’ajoute aucune animation ; elle conserve uniquement les
+réactions des commandes partagées et les mêmes préférences de mouvement réduit.
+Le support corail porte une rotation statique de 2°, compensée de −2° sur la
+capture ; les deux rotations disparaissent sur téléphone. L’ombre du détail
+est `0 16px 32px #56302724` ; celle de la comparaison `0 20px 40px #071c1a30`.
+Ces traitements appartiennent aux preuves de `/pour-qui`, pas aux cartes du budget.
 
 ## Shapes
 
@@ -759,6 +863,10 @@ Les grandes découpes sont asymétriques : les jetons `landing-hero`, `life` et
 `close`, avec leurs variantes mobiles, encadrent les photographies. La marque a
 son propre coin court (`landing-brand`). Les courbes de séparation relient les
 plages de couleur ; elles ne sont ni des graphiques ni des indicateurs financiers.
+Sur `/pour-qui`, les rôles `landing-audience-solo` et `couple` ouvrent des coins
+opposés sur les portraits ; leurs variantes mobiles conservent ce dialogue.
+Le support corail utilise `landing-audience-proof` et ses variantes. La courbe
+statique au-dessus du bloc forêt mesure 80 px, puis 48 px sur téléphone.
 
 ## Components
 
@@ -977,6 +1085,25 @@ Le bouton principal est une capsule pleine, haute d’au moins 56 px (54 sur
 mobile), avec une flèche. Au survol, son fond se renforce et il monte de 2 px ;
 la mise au point dessine un contour de 3 px décalé de 5 px. Les liens de texte
 restent soulignables. Les cibles de navigation et de connexion font au moins 44 px.
+Le bandeau et la marque sont partagés entre `/` et `/pour-qui`. Le lien actif
+« Pour qui ? » est souligné, teinté de la couleur d’action et annoncé par
+`aria-current="page"`. Depuis cette page, les liens de section reviennent aux
+ancres de l’accueil ; la marque revient à `/` et la connexion à `/connexion`.
+« Le produit », « Fonctionnement » et « L’offre » portent une flèche vers le bas
+et restent des ancres natives. « Pour qui ? » et « Se connecter » portent une
+flèche diagonale. La navigation des sections garde son nom accessible ; le séparateur est masqué aux lecteurs d’écran.
+Le défilement est progressif sur les pages publiques et immédiat sous réduction
+des animations. Les marges de section existantes déterminent le point d’arrivée.
+Sur téléphone, les sections sont à 12 px et les pages à 13 px ; sous 360 px,
+les pages passent à 12 px et leurs espacements se resserrent. Les cibles gardent
+44 px de hauteur et toutes les flèches restent visibles.
+
+La visite guidée suit les trois repères du budget. Son aperçu au format 16:9
+utilise un arrondi de 12 px et les couleurs publiques ; le bouton de lecture
+conserve son contraste en clair et en sombre. Le lecteur Magic UI s’ouvre au clic,
+avec fermeture au clavier, retour du focus et sous-titres facultatifs. Sa hauteur
+respecte aussi les écrans mobiles en paysage. Sous réduction des animations,
+la transition et le démarrage automatique de la vidéo sont désactivés.
 
 Les trois choix d’aperçu sont des boutons à état pressé, hauts de 56 px puis
 48 px sur téléphone. Le choix actif est menthe sur forêt. Le texte associé est

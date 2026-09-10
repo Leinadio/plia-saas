@@ -11,12 +11,13 @@ web
 Aujourd’hui, le créateur utilise Plia pour son budget personnel. Les comptes et les
 données sont séparés par utilisateur ; cela ne constitue pas une preuve de demande.
 
-La cible de lancement proposée est la personne active qui pilote le budget d’un
-foyer aux revenus confortables, avec des charges importantes et des projets à
-financer. Elle veut relier les dépenses d’aujourd’hui aux prochains mois. Cette
-hypothèse remplace l’ancien ciblage des revenus irréguliers ; elle reste à valider
-auprès d’utilisateurs, comme leur volonté de payer. Elle ne suppose pas un compte
-partagé entre conjoints.
+La cible retenue par le créateur le 10 septembre 2026 est celle des personnes seules
+et des couples qui souhaitent piloter leur budget personnel et préparer leurs projets.
+Elle veut relier les dépenses d’aujourd’hui aux prochains mois, sans condition de
+revenus confortables. Le ciblage professionnel exploré n’est pas retenu. Le besoin
+et la volonté de payer restent à valider auprès d’utilisateurs. Ce positionnement
+ne suppose pas un accès partagé entre conjoints. La page publique `/pour-qui`,
+accessible depuis le header sur mobile et ordinateur, explique les deux usages.
 
 ## Product Purpose
 
@@ -92,9 +93,16 @@ comparés et le détail d’un montant. Ce sont quatre captures des vrais compos
 des données fictives, adaptées au support, pas une simulation de budget manipulable.
 Le cartouche de soldes du haut est également identifié comme illustratif.
 
-Les deux photographies originales ont été générées avec imagegen ; les personnes
-représentées ne sont pas des clients. Les six images livrées dans `public/landing/`
-portent leur provenance embarquée. Les preuves du rendu clair, sombre, ordinateur,
+Une visite guidée de 1 min 04 suit les trois repères du budget. Elle montre les vrais
+écrans de démonstration, un parcours guidé par la souris et une voix française
+générée par IA, signalée dans la légende. Le lecteur s’ouvre au clic et propose
+des sous-titres français facultatifs.
+
+Les quatre photographies originales ont été générées avec imagegen ; les personnes
+représentées ne sont pas des clients. Les huit PNG livrés dans `public/landing/`
+portent leur provenance embarquée. La page `/pour-qui` présente deux scènes de vie
+originales (lecture en solo et projet d’appartement en couple), des arguments courts
+et deux captures des vrais écrans, identifiées comme démonstration. Les preuves du rendu clair, sombre, ordinateur,
 téléphone et des trois vues sont conservées dans `.impeccable/review/`.
 
 Aucun client, témoignage, chiffre d’usage ou logo de presse n’est disponible. Ne pas

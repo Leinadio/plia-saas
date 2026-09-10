@@ -11,31 +11,13 @@ import {
 import { LandingHero } from "@/components/landing-hero";
 import { LandingDemo } from "@/components/landing-demo";
 import { LandingFaq } from "@/components/landing-faq";
+import { LandingVideo } from "@/components/landing-video";
+import { LandingBrand, LandingHeader } from "@/components/landing-header";
 import styles from "./landing.module.css";
-function Brand() {
-  return (
-    <Link href="/" aria-label="Plia, accueil" className={styles.brand}>
-      <span className={styles.brandMark} aria-hidden>
-        P
-      </span>
-      Plia
-    </Link>
-  );
-}
 export function LandingContent() {
   return (
     <main className={styles.landing}>
-      <header className={styles.header}>
-        <Brand />
-        <nav aria-label="Navigation principale" className={styles.nav}>
-          <a href="#demonstration">L’expérience Plia</a>
-          <a href="#fonctionnement">Comment ça marche</a>
-          <a href="#offre">L’offre</a>
-        </nav>
-        <Link href="/connexion" className={styles.headerLogin}>
-          Se connecter <ArrowUpRight aria-hidden />
-        </Link>
-      </header>
+      <LandingHeader />
       <LandingHero />
       <section
         className={styles.promise}
@@ -58,6 +40,7 @@ export function LandingContent() {
           </span>
         </div>
       </section>
+      <LandingVideo />
       <LandingDemo />
       <section className={styles.life} aria-labelledby="life-heading">
         <div className={styles.lifeImage}>
@@ -206,7 +189,7 @@ export function LandingContent() {
         </div>
       </section>
       <footer className={styles.footer}>
-        <Brand />
+        <LandingBrand />
         <p>Votre budget. Vos projets. Une vue d’avance.</p>
         <a href="#faq">
           Questions fréquentes <ArrowUpRight aria-hidden />

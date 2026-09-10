@@ -1,0 +1,1 @@
+Origin: local Playwright screenshot of actual HistoryWithDetail component, built-in Plia demo fixtures, September 2026. Synthetic data; not a customer account. Captured 2026-09-10.

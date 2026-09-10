@@ -1,14 +1,14 @@
 # Plia — positionnement de la nouvelle landing
 
-Proposition du 10 septembre 2026. La direction visuelle « La lumière en mouvement » a été choisie dans la page de décision (seed `29f966f4`, option `assigned`, réalisation en code). Le ciblage et le prix ci-dessous sont des hypothèses de lancement, pas des résultats d’étude clients.
+Proposition du 10 septembre 2026, mise à jour avec la cible retenue par le créateur : les personnes seules et les couples. La direction visuelle « La lumière en mouvement » a été choisie dans la page de décision (seed `29f966f4`, option `assigned`, réalisation en code). Le choix de cible ne constitue pas une étude clients ; le prix reste une hypothèse de lancement.
 
-## Cible proposée
+## Cible retenue
 
-La personne qui pilote le budget d’un foyer aux revenus confortables : un ou deux salaires, plusieurs postes de dépenses, des charges fixes importantes et des projets à financer. Elle a déjà une application bancaire ou un tableau, mais doit encore faire mentalement le lien entre les dépenses d’aujourd’hui et les prochains mois.
+Les personnes seules et les couples qui veulent organiser leur budget personnel : les dépenses du quotidien, les charges fixes et les projets à financer. Le ciblage ne suppose plus de revenus confortables. La personne qui suit le budget doit encore faire mentalement le lien entre les dépenses d’aujourd’hui et les prochains mois.
 
 Le déclencheur est concret : préparer un voyage, des travaux ou une rentrée, et vouloir comprendre ce qui restera une fois les dépenses prévues prises en compte. La valeur recherchée est une vision claire et un budget moins dispersé. Le ciblage ne suppose ni connexion partagée entre conjoints, ni gestion de patrimoine, ni conseil financier : ces fonctionnalités ne sont pas promises.
 
-Cette cible correspond mieux à une ambition tarifaire élevée que les personnes qui cherchent principalement à éviter un découvert. Cela ne prouve pas sa volonté de payer. Il faudra confronter la proposition à des utilisateurs concernés, puis mesurer les inscriptions et l’activation réelle du budget.
+La page `/pour-qui`, reliée au header sur mobile et ordinateur, présente ces usages en solo et à deux. Le ciblage des professionnels exploré ensuite n’est pas retenu. Le choix de cette cible ne prouve pas sa volonté de payer un prix premium : il faudra confronter la proposition à des utilisateurs concernés, puis mesurer les inscriptions et l’activation réelle du budget.
 
 ## Offre proposée
 
@@ -34,4 +34,25 @@ Les photographies sont des créations originales générées avec l’outil imag
 
 ## Portée
 
+Juste après les trois repères du budget, « Plia, en action. » propose une visite
+guidée de 1 min 04 dans les vrais écrans de démonstration. Elle montre les achats,
+le détail d’un montant, l’ajustement d’un budget et les mois à venir. Le lecteur
+s’ouvre au clic, avec sous-titres français facultatifs. Les données fictives et
+la voix générée par IA sont signalées sous l’aperçu.
+
 La refonte concerne la page publique. La police de titre et les couleurs de cette page sont isolées de l’interface de gestion du budget. La page prévoit une composition mobile, une version sombre et une réduction des animations selon les préférences du navigateur. Le prix reste une proposition commerciale à valider avant son lancement définitif.
+
+## Page « Pour qui ? » — proposition artistique
+
+À la demande du créateur, la première version informative est remplacée par une
+page de campagne : « La vie, à votre façon. » Deux photographies originales de
+lecture en solo et de projet d’appartement en couple composent un diptyque décalé.
+Les portraits permettent de rejoindre chaque usage. Trois arguments courts par
+public accompagnent les vrais écrans de détail et de comparaison, sur des plages
+corail et forêt. La page reprend les polices et les commandes publiques de Plia.
+
+La promesse reste celle du budget personnel et de l’anticipation. L’absence d’accès
+partagé entre conjoints est indiquée. Les photos sont fictives, créées par imagegen,
+avec prompts et provenance intégrés ; aucun témoignage ni résultat client n’est
+inventé. Les boutons ouvrent la démonstration, la connexion ou l’offre existante.
+Aucune nouvelle animation ni modification du tarif n’est introduite.

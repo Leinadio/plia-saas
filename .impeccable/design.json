@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-10T15:47:00.273619+00:00",
+  "generatedAt": "2026-09-10T20:19:47.386736+00:00",
   "title": "Design System: Plia",
   "extensions": {
     "colorMeta": {
@@ -266,6 +266,42 @@
           "#e5f2e7"
         ],
         "darkValue": "#274d39"
+      },
+      "landing-audience-coral": {
+        "role": "secondary",
+        "displayName": "Pour qui · coral",
+        "scope": "src/app/pour-qui/page.tsx",
+        "purpose": "Support de la preuve solo, lien photographique couple et accent sur forêt."
+      },
+      "landing-audience-coral-hover": {
+        "role": "secondary",
+        "displayName": "Pour qui · coral-hover",
+        "scope": "src/app/pour-qui/page.tsx",
+        "purpose": "Survol du lien photographique couple."
+      },
+      "landing-audience-coral-dark": {
+        "role": "secondary",
+        "displayName": "Pour qui · coral-dark",
+        "scope": "src/app/pour-qui/page.tsx",
+        "purpose": "Support de la preuve solo en thème sombre."
+      },
+      "landing-audience-brown": {
+        "role": "secondary",
+        "displayName": "Pour qui · brown",
+        "scope": "src/app/pour-qui/page.tsx",
+        "purpose": "Grand titre sur le support corail ; contraste vérifié pour du grand texte."
+      },
+      "landing-audience-line": {
+        "role": "secondary",
+        "displayName": "Pour qui · line",
+        "scope": "src/app/pour-qui/page.tsx",
+        "purpose": "Filet au-dessus de la limite de l’accès personnel."
+      },
+      "landing-audience-mint": {
+        "role": "secondary",
+        "displayName": "Pour qui · mint",
+        "scope": "src/app/pour-qui/page.tsx",
+        "purpose": "Accent des titres et coches du récit couple sur forêt."
       }
     },
     "typographyMeta": {
@@ -321,6 +357,31 @@
         "displayName": "Page publique · command",
         "purpose": "Rôle command de la page publique ; tailles normatives dans DESIGN.md.",
         "scope": "landing"
+      },
+      "landing-audience-hero": {
+        "displayName": "Page publique · audience-hero",
+        "purpose": "Titre ample de /pour-qui ; rôle dédié et variante mobile dans DESIGN.md.",
+        "scope": "src/app/pour-qui/page.tsx"
+      },
+      "landing-audience-profile": {
+        "displayName": "Page publique · audience-profile",
+        "purpose": "Titres des récits solo et couple ; variante mobile dans DESIGN.md.",
+        "scope": "src/app/pour-qui/page.tsx"
+      },
+      "landing-audience-close": {
+        "displayName": "Page publique · audience-close",
+        "purpose": "Titre de conclusion de /pour-qui.",
+        "scope": "src/app/pour-qui/page.tsx"
+      },
+      "landing-audience-proof": {
+        "displayName": "Page publique · audience-proof",
+        "purpose": "Phrase de la preuve solo sur corail.",
+        "scope": "src/app/pour-qui/page.tsx"
+      },
+      "landing-audience-comparison": {
+        "displayName": "Page publique · audience-comparison",
+        "purpose": "Phrase de la comparaison sur forêt.",
+        "scope": "src/app/pour-qui/page.tsx"
       }
     },
     "roundedMeta": {
@@ -383,6 +444,16 @@
         "name": "landing-demo",
         "value": "0 20px 45px #071c1a30",
         "purpose": "Captures de produit sur fond forêt."
+      },
+      {
+        "name": "landing-audience-detail",
+        "value": "0 16px 32px #56302724",
+        "purpose": "Capture du détail sur support corail, /pour-qui uniquement."
+      },
+      {
+        "name": "landing-audience-comparison",
+        "value": "0 20px 40px #071c1a30",
+        "purpose": "Capture de comparaison sur forêt, /pour-qui uniquement."
       }
     ],
     "motion": [
@@ -501,6 +572,66 @@
         "donts": [
           "Ne pas transposer les grandes découpes photographiques ni Bricolage aux écrans de gestion."
         ]
+      },
+      "relatedScopes": [
+        "src/app/pour-qui/page.tsx"
+      ],
+      "sharedHeader": {
+        "targets": [
+          "src/components/landing-header.tsx",
+          "src/components/landing-header.module.css"
+        ],
+        "desktop": "Above 1100px: brand, centered group of home-section anchors / Pour qui ?, then login at right. Slash separator is aria-hidden; arrows retain their section/page meaning.",
+        "compact": "At or below 1100px: brand, / Pour qui ? centered, login at right, all section anchors in second row. At or below 700px: 12px section and13px page text. At or below 360px:12px page text and tighter gaps.",
+        "currentPage": "Pour qui ? uses aria-current=\"page\", the action color and an underline on /pour-qui.",
+        "destinations": "Le produit → #demonstration, Fonctionnement → #fonctionnement, L’offre → #offre. From /pour-qui these target home anchors. Pour qui ? → /pour-qui and login → /connexion. Section navigation keeps its accessible name; the decorative slash is hidden from screen readers.",
+        "scroll": "Native anchor navigation and history; smooth scrolling scoped to public pages, immediate with prefers-reduced-motion. Existing section scroll margins preserved."
+      },
+      "audience": {
+        "scope": "src/app/pour-qui/page.tsx",
+        "surfaceBrief": ".impeccable/surfaces/src-app-pour-qui-page-tsx.md",
+        "authority": "Inherits the public Bricolage/Schibsted, mint/forest world; original solo and couple imagery and surface-specific art direction. No approved UI comp.",
+        "layout": "Centered hero, 1440px cover; offset 1fr/1.12fr photo diptych, opposite curved corners, both photos remain side by side on mobile. Alternating 1312px stories in 1.08fr/1fr columns, 96/48px gap; text precedes proof at 700px. Coral detail plate and forest comparison section; centered final CTA.",
+        "theme": "Existing public light/dark roles; local coral proof changes to its dedicated dark variant, and forest uses the existing dark demo background.",
+        "motion": "No new animation; shared command transitions and reduced-motion behavior only.",
+        "review": {
+          "disposition": "ship",
+          "materialFindings": [],
+          "evidence": [
+            ".impeccable/review/audience-art-1440.png",
+            ".impeccable/review/audience-art-1440-top.png",
+            ".impeccable/review/audience-art-1440-solo.png",
+            ".impeccable/review/audience-art-1440-couple.png",
+            ".impeccable/review/audience-art-1440-dark.png",
+            ".impeccable/review/audience-art-1440-dark-top.png",
+            ".impeccable/review/audience-art-1440-dark-solo.png",
+            ".impeccable/review/audience-art-1440-dark-couple.png",
+            ".impeccable/review/audience-art-390.png",
+            ".impeccable/review/audience-art-390-top.png",
+            ".impeccable/review/audience-art-390-solo.png",
+            ".impeccable/review/audience-art-390-couple.png",
+            ".impeccable/review/audience-art-390-dark.png",
+            ".impeccable/review/audience-art-390-dark-top.png",
+            ".impeccable/review/audience-art-390-dark-solo.png",
+            ".impeccable/review/audience-art-390-dark-couple.png"
+          ],
+          "contrast": "Pass; brown on dark coral 4.12:1 for large text.",
+          "validation": "1119 tests passed in 114 files; ESLint and production build passed. Production HTML contract audience-art-v2 verified. Browser 320/390/768/1100/1440px and dark 390/1440px: four images loaded, no overflow, photo anchors, keyboard focus, connexion/demo links passed. Documentation pass did not repeat tests, browser or detector."
+        },
+        "contract": "audience-art-v2",
+        "imagery": {
+          "originals": [
+            "public/landing/audience-solo-v1.png",
+            "public/landing/audience-couple-v1.png"
+          ],
+          "provenance": "Exact adjacent .prompt.txt files and embedded provenance; eight public raster assets checked, zero missing provenance. People shown are illustrative, not clients.",
+          "proofs": [
+            "public/landing/plia-detail-mobile.png",
+            "public/landing/plia-soldes-mobile.png"
+          ]
+        },
+        "interaction": "Photo anchors #en-solo and #a-deux; visible keyboard focus; personal access and demo/estimate caveats; connexion and home demo/offer links.",
+        "localDecisions": "Only the audience scope accepts the intentional 64px hero clamp minimum, coral and brown roles, detail shadow, note divider and 80px mobile photo corners/desktop separator height. No blanket application exception."
       }
     }
   },

@@ -1,0 +1,165 @@
+{
+  "duration": 46.561,
+  "fps": 30,
+  "scenes": [
+    {
+      "id": "problem",
+      "lines": [
+        "Votre compte affiche ce que vous avez.",
+        "Mais entre le loyer, les courses et les dépenses à venir,",
+        "que restera-t-il pour vos projets ?"
+      ],
+      "start": 0,
+      "captions": [
+        {
+          "text": "Votre compte affiche ce que vous avez.",
+          "start": 0,
+          "end": 2.803,
+          "audio": "work/00-00.wav"
+        },
+        {
+          "text": "Mais entre le loyer, les courses et les dépenses à venir,",
+          "start": 2.803,
+          "end": 7.332,
+          "audio": "work/00-01.wav"
+        },
+        {
+          "text": "que restera-t-il pour vos projets ?",
+          "start": 7.332,
+          "end": 9.958,
+          "audio": "work/00-02.wav"
+        }
+      ],
+      "end": 9.958
+    },
+    {
+      "id": "month",
+      "lines": [
+        "Avec Plia, réunissez vos revenus et vos dépenses",
+        "dans une vue claire de votre mois."
+      ],
+      "start": 9.958,
+      "captions": [
+        {
+          "text": "Avec Plia, réunissez vos revenus et vos dépenses",
+          "start": 9.958,
+          "end": 14.442,
+          "audio": "work/01-00.wav"
+        },
+        {
+          "text": "dans une vue claire de votre mois.",
+          "start": 14.442,
+          "end": 16.952,
+          "audio": "work/01-01.wav"
+        }
+      ],
+      "end": 16.952
+    },
+    {
+      "id": "envelopes",
+      "lines": [
+        "Donnez un budget à chaque enveloppe.",
+        "Comparez ce qui était prévu avec ce qui a été dépensé,",
+        "et repérez les écarts."
+      ],
+      "start": 16.952,
+      "captions": [
+        {
+          "text": "Donnez un budget à chaque enveloppe.",
+          "start": 16.952,
+          "end": 19.693,
+          "audio": "work/02-00.wav"
+        },
+        {
+          "text": "Comparez ce qui était prévu avec ce qui a été dépensé,",
+          "start": 19.693,
+          "end": 23.753,
+          "audio": "work/02-01.wav"
+        },
+        {
+          "text": "et repérez les écarts.",
+          "start": 23.753,
+          "end": 25.865,
+          "audio": "work/02-02.wav"
+        }
+      ],
+      "end": 25.865
+    },
+    {
+      "id": "detail",
+      "lines": [
+        "Un montant vous interpelle ?",
+        "Ouvrez son détail pour comprendre d’où il vient."
+      ],
+      "start": 25.865,
+      "captions": [
+        {
+          "text": "Un montant vous interpelle ?",
+          "start": 25.865,
+          "end": 28.075,
+          "audio": "work/03-00.wav"
+        },
+        {
+          "text": "Ouvrez son détail pour comprendre d’où il vient.",
+          "start": 28.075,
+          "end": 31.439,
+          "audio": "work/03-01.wav"
+        }
+      ],
+      "end": 31.439
+    },
+    {
+      "id": "future",
+      "lines": [
+        "Regardez ensuite les mois à venir.",
+        "Les estimations vous aident à anticiper",
+        "et à ajuster votre budget avant de décider."
+      ],
+      "start": 31.439,
+      "captions": [
+        {
+          "text": "Regardez ensuite les mois à venir.",
+          "start": 31.439,
+          "end": 34.502,
+          "audio": "work/04-00.wav"
+        },
+        {
+          "text": "Les estimations vous aident à anticiper",
+          "start": 34.502,
+          "end": 37.665,
+          "audio": "work/04-01.wav"
+        },
+        {
+          "text": "et à ajuster votre budget avant de décider.",
+          "start": 37.665,
+          "end": 40.993,
+          "audio": "work/04-02.wav"
+        }
+      ],
+      "end": 40.993
+    },
+    {
+      "id": "close",
+      "lines": [
+        "Seul ou à deux, faites de la place à vos projets.",
+        "Découvrez Plia."
+      ],
+      "start": 40.993,
+      "captions": [
+        {
+          "text": "Seul ou à deux, faites de la place à vos projets.",
+          "start": 40.993,
+          "end": 44.736,
+          "audio": "work/05-00.wav"
+        },
+        {
+          "text": "Découvrez Plia.",
+          "start": 44.736,
+          "end": 46.561,
+          "audio": "work/05-01.wav"
+        }
+      ],
+      "end": 46.561
+    }
+  ]
+}

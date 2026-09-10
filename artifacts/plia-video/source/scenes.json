@@ -1,0 +1,8 @@
+[
+  {"id":"problem","lines":["Votre compte affiche ce que vous avez.","Mais entre le loyer, les courses et les dépenses à venir,","que restera-t-il pour vos projets ?"]},
+  {"id":"month","lines":["Avec Plia, réunissez vos revenus et vos dépenses","dans une vue claire de votre mois."]},
+  {"id":"envelopes","lines":["Donnez un budget à chaque enveloppe.","Comparez ce qui était prévu avec ce qui a été dépensé,","et repérez les écarts."]},
+  {"id":"detail","lines":["Un montant vous interpelle ?","Ouvrez son détail pour comprendre d’où il vient."]},
+  {"id":"future","lines":["Regardez ensuite les mois à venir.","Les estimations vous aident à anticiper","et à ajuster votre budget avant de décider."]},
+  {"id":"close","lines":["Seul ou à deux, faites de la place à vos projets.","Découvrez Plia."]}
+]
