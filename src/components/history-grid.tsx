@@ -2868,7 +2868,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         </HistorySectionBody>}
         {mobile && <HistorySectionBody name="opening">
         {mobile.metric && mobile.comparison && <TableRow>
-          <TableCell className="font-medium"><FirstColBox>Argent de départ</FirstColBox></TableCell>
+          <TableCell className={cn(SOLDE_TINT, "font-medium")}><FirstColBox>Argent de départ</FirstColBox></TableCell>
         </TableRow>}
         {(!mobile.metric || mobile.metric.startsWith("solde") || selectedRows.has(openingRow)) && <TableRow data-history-opening="" className="font-medium">
           {solde.openings.map((v, i) => {
