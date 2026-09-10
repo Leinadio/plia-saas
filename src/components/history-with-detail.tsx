@@ -96,7 +96,7 @@ export function HistoryWithDetail(props: {
           anchor={sameScope ? anchor : null}
           showDeltas={showDeltas}
           onDetailOpened={onDetailOpened}
-          mobile={isMobile ? { month: mobile.month, metric: mobile.metric, onMonthChange: mobile.onMonthChange } : undefined}
+          mobile={isMobile ? mobile : undefined}
         />
         </CenterScroll>
       </VoileDAttente>

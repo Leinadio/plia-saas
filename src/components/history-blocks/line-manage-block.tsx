@@ -31,7 +31,7 @@ import { useMiseAJour } from "@/components/mise-a-jour";
 // Plus de jour du mois non plus : il ne pilotait aucun calcul, et il n'a plus de sens
 // maintenant que n'importe quelle dépense peut avoir des sous-postes — « Boulangerie,
 // le combien ? ». La colonne a été retirée de la base (migrateDropLineDay).
-export function LineManageBlock({ info, onClose }: { info: LineManageInfo; onClose: () => void }) {
+export function LineManageBlock({ info, onClose, inline }: { info: LineManageInfo; onClose: () => void; inline?: boolean }) {
   // Occupé jusqu'à ce que le tableau derrière soit refait (voir mise-a-jour.tsx).
   const { pendant, enCours: busy } = useMiseAJour();
   const [name, setName] = useState(info.name);
@@ -40,7 +40,7 @@ export function LineManageBlock({ info, onClose }: { info: LineManageInfo; onClo
   const run = (fn: () => Promise<void>) => pendant(fn);
   return (
     <>
-      <SidebarHeader className="gap-0 border-b p-4">
+      {!inline && <SidebarHeader className="gap-0 border-b p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="text-muted-foreground text-sm">Gérer la ligne</p>
@@ -55,8 +55,8 @@ export function LineManageBlock({ info, onClose }: { info: LineManageInfo; onClo
             <X className="size-4" />
           </button>
         </div>
-      </SidebarHeader>
-      <SidebarContent className="space-y-6 p-4">
+      </SidebarHeader>}
+      <SidebarContent className={inline ? "space-y-6 overflow-visible" : "space-y-6 p-4"}>
         <div className="flex flex-col gap-2">
           <Label className="font-normal">Nom de la ligne</Label>
           <div className="flex items-center gap-2">

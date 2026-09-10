@@ -88,7 +88,8 @@ describe("la navigation sur téléphone", () => {
     await render();
     await change("Mois affiché", "2026-12");
     const query = new URL(mocks.push.mock.calls[0][0], "http://localhost").searchParams;
-    expect(Object.fromEntries(query)).toEqual({ from: "2026-08", to: "2026-12", account: "cic", mobileMonth: "2026-12" });
+    expect(Object.fromEntries(query)).toEqual({ from: "2026-08", to: "2026-12", account: "cic", mobileMonth: "2026-12",
+      mobileIncomeMetric: "recu", mobileExpenseMetric: "dep", mobileBalanceMetric: "soldeReel" });
     expect(container.querySelector("[role=status]")?.textContent).toContain("Chargement");
     mocks.search = query.toString();
     await render("2026-08", "2026-12");
@@ -96,23 +97,23 @@ describe("la navigation sur téléphone", () => {
     expect(button("Mois suivant").disabled).toBe(true);
   });
 
-  it("conserve l’indicateur comparé après un changement de plage et le retour au mois", async () => {
+  it("conserve la comparaison après un changement de plage et le retour au mois", async () => {
+    mocks.search = "mobileMetric=soldeDepass";
     await render();
     expect(button("Comparer")).toBeDefined();
-    await act(async () => button("Comparer").click());
-    expect(select("Indicateur à comparer").options.length).toBe(8);
-    await change("Indicateur à comparer", "soldeDepass");
+    expect(button("Comparer").getAttribute("aria-pressed")).toBe("true");
+    expect(select("Indicateur à comparer")).toBeNull();
     await act(async () => button("sept.").click());
     await act(async () => button("nov.").click());
     const query = new URL(mocks.push.mock.calls[0][0], "http://localhost").searchParams;
     expect(query.get("mobileMetric")).toBe("soldeDepass");
     mocks.search = query.toString();
     await render("2026-09", "2026-11");
-    expect(select("Indicateur à comparer").value).toBe("soldeDepass");
+    expect(button("Comparer").getAttribute("aria-pressed")).toBe("true");
     await act(async () => button("Par mois").click());
     expect(select("Mois affiché").value).toBe("2026-09");
     await act(async () => button("Comparer").click());
-    expect(select("Indicateur à comparer").value).toBe("soldeDepass");
+    expect(button("Comparer").getAttribute("aria-pressed")).toBe("true");
     expect(mocks.push).toHaveBeenCalledTimes(1);
   });
 

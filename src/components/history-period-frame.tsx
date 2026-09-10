@@ -27,7 +27,9 @@ export function HistoryPeriodFrame({ min, max, from, to, current, children }: {
   const isMobile = useIsMobile(640);
   const [pendingRange, setPendingRange] = useState<Range | null>(null);
   const mobile = useHistoryMobileState({ from, to, current,
-    initialMonth: searchParams.get("mobileMonth"), initialMetric: searchParams.get("mobileMetric") });
+    initialMonth: searchParams.get("mobileMonth"), initialMetric: searchParams.get("mobileMetric"),
+    initialIncomeMetric: searchParams.get("mobileIncomeMetric"), initialExpenseMetric: searchParams.get("mobileExpenseMetric"),
+    initialBalanceMetric: searchParams.get("mobileBalanceMetric") });
 
   const changeRange = (nextFrom: string, nextTo: string, nextMonth = mobile.month) => {
     if (nextFrom === from && nextTo === to) return;
@@ -37,6 +39,9 @@ export function HistoryPeriodFrame({ min, max, from, to, current, children }: {
     query.set("to", nextTo);
     if (isMobile) {
       query.set("mobileMonth", nextMonth);
+      query.set("mobileIncomeMetric", mobile.comparison.metrics.income);
+      query.set("mobileExpenseMetric", mobile.comparison.metrics.expense);
+      query.set("mobileBalanceMetric", mobile.comparison.metrics.balance);
       if (mobile.metric) query.set("mobileMetric", mobile.metric);
       else query.delete("mobileMetric");
     }

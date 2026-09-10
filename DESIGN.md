@@ -633,11 +633,37 @@ sans retirer les transactions en attente des enveloppes ni modifier les calculs.
 L'écart bancaire reste expliqué dans le détail des soldes, sans lien vers l'ancien bloc. Les soldes
 intermédiaires restent sous le contrôle du bouton de détail. Les commandes de gestion
 ne dépendent pas du survol. Une marge basse dégage le relevé du bouton flottant.
+Sur mobile, les boutons d’icône du relevé ont tous une cible de 44 × 44 px et une
+icône de 18 px, comme le filtre. Les ajouts et crayons restent sans fond, bordure
+ni ombre ; aucun « Gérer » sous le crayon. Les titres de revenus et dépenses
+portent uniquement un « + », dans « Par mois » comme dans « Comparer ».
+Ajouter une enveloppe, un revenu ou une sous-enveloppe, et gérer une enveloppe ou
+une sous-enveloppe, ouvre le même panneau du bas que le filtre, sur le fond de
+la section. Les formulaires conservent le mois consulté et le parent choisi ;
+la fermeture rend le focus au bouton d’origine. Les formulaires de création
+en ligne et la gestion latérale restent la présentation sur ordinateur.
 
-La comparaison conserve une période et un indicateur ; les mois se lisent de
-haut en bas pour chaque poste. Les jetons, les couleurs de section et le tableau
-sur ordinateur restent identiques. Le panneau de calcul occupe toute la largeur
-du téléphone et propose un retour explicite au relevé.
+La comparaison place la période commune en tête et garde « Ce qui rentre » et
+« Ce qui sort » visibles ensemble. L’indicateur choisi est intégré au titre du bloc,
+par exemple « Ce qui sort · Dépensé ». Le bouton avec une icône de filtre ouvre un panneau
+ancré en bas du téléphone. Chaque indicateur a une courte explication et le choix
+actif est coché. Choisir ferme le panneau et met à jour le titre ; fermer sans
+choisir conserve l’indicateur. Le focus revient au bouton de filtre.
+Les revenus proposent « Attendu » et « Reçu » ; les dépenses « Budget », « Dépensé »,
+« Reste » et « Remboursements » ; les soldes « Réel », « Prévu » et « Si dépassement ».
+Les actions pour replier le bloc et ajouter un poste restent indépendantes.
+Chaque mois occupe une ligne ; sous le solde réel du mois courant, l’estimation
+reste cliquable. Les autres mois ne répètent pas une liste d’estimations. Une
+estimation visée depuis un calcul reste révélée sous le mois correspondant.
+Le fond du panneau reprend celui de sa section : vert pour les revenus,
+rouge pour les dépenses, noir pour les soldes, y compris dans le thème sombre. L’argent
+de départ conserve un bloc nommé « Argent de départ ». Les mois se lisent de haut
+en bas pour chaque poste ; le total garde le choix de sa section, même repliée.
+Les montants restent cliquables. Les trois choix sont conservés au changement de
+période et lors des allers-retours entre « Par mois » et « Comparer » ; les anciens
+liens de comparaison restent utilisables. Les jetons, les couleurs de section,
+la vue mensuelle et le tableau sur ordinateur restent identiques. Le panneau de
+calcul occupe toute la largeur du téléphone et propose un retour explicite au relevé.
 
 ## Do's and Don'ts
 

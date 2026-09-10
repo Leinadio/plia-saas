@@ -4,33 +4,44 @@ import { createContext, useContext, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { monthRange } from "@/lib/history";
 import { type ColKey, COL_LABEL } from "@/lib/history-columns";
-import { MOBILE_COLUMN_LABELS } from "@/components/history-mobile-columns";
+import { validComparisonMetric, type ComparisonMetrics, type HistoryComparison } from "@/components/history-comparison";
 import { cn } from "@/lib/utils";
 
 export type HistoryMobileNavigation = {
   month: string;
   metric: ColKey | null;
   onMonthChange: (month: string) => void;
-  onMetricChange: (metric: ColKey) => void;
+  comparison: HistoryComparison;
   onCompareChange: (compare: boolean) => void;
 };
 
 export const HistoryMobileNavigationContext = createContext<HistoryMobileNavigation | null>(null);
 export const useHistoryMobileNavigation = () => useContext(HistoryMobileNavigationContext);
 
-export function useHistoryMobileState({ from, to, current, initialMonth, initialMetric }: {
+export function useHistoryMobileState({ from, to, current, initialMonth, initialMetric, initialIncomeMetric, initialExpenseMetric, initialBalanceMetric }: {
   from: string;
   to: string;
   current: string;
   initialMonth?: string | null;
   initialMetric?: string | null;
+  initialIncomeMetric?: string | null;
+  initialExpenseMetric?: string | null;
+  initialBalanceMetric?: string | null;
 }): HistoryMobileNavigation {
   const validMetric = initialMetric && Object.hasOwn(COL_LABEL, initialMetric) ? initialMetric as ColKey : null;
   const [month, setMonth] = useState(initialMonth && monthRange(from, to).includes(initialMonth)
     ? initialMonth : current >= from && current <= to ? current : from);
   const [compare, setCompare] = useState(validMetric !== null);
-  const [metric, setMetric] = useState<ColKey>(validMetric ?? "dep");
-  return { month, metric: compare ? metric : null, onMonthChange: setMonth, onMetricChange: setMetric, onCompareChange: setCompare };
+  const [metrics, setMetrics] = useState<ComparisonMetrics>(() => ({
+    income: validComparisonMetric("income", initialIncomeMetric, validComparisonMetric("income", validMetric, "recu")),
+    expense: validComparisonMetric("expense", initialExpenseMetric, validComparisonMetric("expense", validMetric, "dep")),
+    balance: validComparisonMetric("balance", initialBalanceMetric, validComparisonMetric("balance", validMetric, "soldeReel")),
+  }));
+  return { month, metric: compare ? metrics.balance : null, onMonthChange: setMonth, onCompareChange: setCompare,
+    comparison: { metrics, onChange: (section, metric) => setMetrics(previous => ({
+      ...previous, [section]: validComparisonMetric(section, metric, previous[section]),
+    })) },
+  };
 }
 
 const monthLabel = (month: string) => new Date(`${month}-01T12:00:00`).toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
@@ -43,7 +54,7 @@ export function HistoryMobileControls({ navigation, min, max, disabled = false }
   max: string;
   disabled?: boolean;
 }) {
-  const { month, metric, onMonthChange, onMetricChange, onCompareChange } = navigation;
+  const { month, metric, onMonthChange, onCompareChange } = navigation;
   const months = monthRange(min, max);
   const index = months.indexOf(month);
   return (
@@ -57,7 +68,7 @@ export function HistoryMobileControls({ navigation, min, max, disabled = false }
           </button>
         ))}
       </div>
-      {metric === null ? (
+      {metric === null && (
         <div className="flex min-w-0 items-center gap-2">
           <button type="button" aria-label="Mois précédent" disabled={disabled || index <= 0} className={buttonClass}
             onClick={() => onMonthChange(months[index - 1])}><ChevronLeft className="size-4" /></button>
@@ -68,14 +79,6 @@ export function HistoryMobileControls({ navigation, min, max, disabled = false }
           <button type="button" aria-label="Mois suivant" disabled={disabled || index < 0 || index >= months.length - 1} className={buttonClass}
             onClick={() => onMonthChange(months[index + 1])}><ChevronRight className="size-4" /></button>
         </div>
-      ) : (
-        <label className="flex min-w-0 flex-col gap-1.5 text-xs text-muted-foreground">
-          Indicateur à comparer
-          <select aria-label="Indicateur à comparer" value={metric} disabled={disabled} className={cn(selectClass, "text-foreground")}
-            onChange={(event) => onMetricChange(event.target.value as ColKey)}>
-            {(Object.keys(COL_LABEL) as ColKey[]).map((key) => <option key={key} value={key}>{MOBILE_COLUMN_LABELS[key]}</option>)}
-          </select>
-        </label>
       )}
     </div>
   );

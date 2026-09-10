@@ -88,9 +88,31 @@ s'ouvre au clic sur n'importe quel montant, comme avant.
 
 La proposition mobile a été approuvée explicitement : sous 640 px, le relevé
 présente un mois verticalement, avec soldes et estimation en tête, postes
-dépliables, montants libellés et commandes tactiles visibles. « Comparer » garde
-la période et les huit indicateurs : chaque poste aligne ses mois verticalement.
-Les mois sans indicateur applicable sont nommés, sans montant inventé.
+dépliables, montants libellés et commandes tactiles visibles. « Comparer » place
+la période commune en tête et présente ensemble « Ce qui rentre » et « Ce qui
+sort ». Chaque titre indique le choix courant, par exemple « Ce qui sort · Dépensé ».
+Le bouton avec une icône de filtre ouvre un panneau en bas de l’écran : une explication par indicateur,
+le choix courant coché, fermeture après le choix et retour du focus au bouton.
+Fermer sans choisir conserve l’indicateur. Les revenus proposent « Attendu » et
+« Reçu » ; les dépenses « Budget », « Dépensé », « Reste » et « Remboursements » ;
+les soldes « Réel », « Prévu » et « Si dépassement ». Le panneau reprend le fond
+vert, rouge ou noir du bloc. Le repli et l’ajout restent des actions indépendantes.
+Les icônes du relevé ont une taille de 18 px dans des boutons de 44 × 44 px.
+Les « + » et crayons sont sans fond ni bordure, et sans libellé visible. Dans les
+deux vues mobiles, les ajouts d’enveloppes, de revenus et de sous-enveloppes,
+ainsi que leur gestion, réutilisent le panneau du bas du filtre. Les formulaires
+gardent le mois consulté et le parent choisi, puis rendent le focus au bouton
+d’origine à la fermeture. La présentation sur ordinateur reste identique.
+Le solde réel du mois courant porte son estimation
+cliquable juste dessous, sans deuxième liste de mois. Les estimations visées
+depuis un calcul sont révélées sous le mois correspondant. Le bloc d’ouverture porte
+le titre « Argent de départ ». Chaque poste aligne ses mois verticalement ; les
+mois sans indicateur applicable sont nommés, sans montant inventé. Le total suit
+le choix de sa section, même repliée, et les montants restent cliquables.
+Les trois choix sont conservés au changement de période et lors des allers-retours
+entre « Par mois » et « Comparer ». Les anciens liens avec `mobileMetric` restent
+compatibles. Cette extension conserve la vue mensuelle, les jetons et les couleurs
+de section existants.
 
 Le grand tableau reste la présentation sur ordinateur. Les mêmes cellules et
 actions servent les deux dispositions ; leurs index ne sont pas recalculés au

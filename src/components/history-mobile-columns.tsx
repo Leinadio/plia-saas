@@ -6,6 +6,7 @@ import { COL_INFO, COL_LABEL, type ColKey } from "@/lib/history-columns";
 import { makeInfo, type CellDetail } from "@/lib/history-explain";
 import { monthLabel } from "@/lib/transactions-view";
 import { cn } from "@/lib/utils";
+import type { HistoryComparison } from "@/components/history-comparison";
 
 export const EXPENSE_RECEIPTS_LABEL = "Remboursements / apports";
 export const EXPENSE_RECEIPTS_INFO = ["L’argent reçu pour couvrir ces dépenses : remboursements, participation d’un proche ou apport depuis un autre compte. Il augmente le reste disponible sans réduire le montant affiché dans Dépensé."];
@@ -25,6 +26,7 @@ export type MobileHistoryView = {
   month: string;
   metric: ColKey | null;
   onMonthChange: (month: string) => void;
+  comparison?: HistoryComparison;
 };
 
 export const MobileHistoryContext = createContext<(MobileHistoryView & {
@@ -126,7 +128,7 @@ export function HistoryMobileColumns({ month, cells, keepBalances = false, trans
 
 // Le libellé ouvre l'explication de la colonne ; le chiffre ouvre son calcul.
 // Les deux boutons sont voisins, jamais imbriqués.
-export function MobileCellContents({ children, label: override }: { children: ReactNode; label?: string }) {
+export function MobileCellContents({ children, label: override, supplement }: { children: ReactNode; label?: string; supplement?: ReactNode }) {
   const mobile = useContext(MobileHistoryContext);
   const cell = useContext(MobileColumnContext);
   const section = useContext(HistorySectionColumnsContext);
@@ -143,6 +145,6 @@ export function MobileCellContents({ children, label: override }: { children: Re
       aria-label={`Comprendre : ${columnLabel}`}
       onClick={() => mobile.onSelect(makeInfo(expenseReceipt ? EXPENSE_RECEIPTS_LABEL : COL_LABEL[cell.column], expenseReceipt ? EXPENSE_RECEIPTS_INFO : COL_INFO[cell.column]))}
     >{label}</button>
-    <div className="history-mobile-number">{children}</div>
+    <div className="history-mobile-number">{children}{supplement}</div>
   </div>;
 }

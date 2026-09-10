@@ -179,6 +179,142 @@
   background: var(--mobile-total-tint);
 }
 
+.history-mobile [data-history-comparison="income"],
+[data-comparison-sheet="income"] {
+  --comparison-background: var(--portant-voile);
+  --comparison-accent: var(--portant);
+}
+
+.history-mobile [data-history-comparison="expense"],
+[data-comparison-sheet="expense"] {
+  --comparison-background: var(--tension-voile);
+  --comparison-accent: var(--tension);
+}
+
+.history-mobile [data-history-comparison="balance"],
+[data-comparison-sheet="balance"] {
+  --comparison-background: var(--encre);
+  --comparison-accent: var(--foreground);
+  --foreground: var(--surface);
+  --muted-foreground: color-mix(in oklab, var(--surface) 70%, var(--encre));
+  --border: color-mix(in oklab, var(--surface) 40%, var(--encre));
+  color-scheme: dark;
+}
+
+.dark .history-mobile [data-history-comparison="balance"],
+.dark [data-comparison-sheet="balance"] {
+  --comparison-background: var(--sol);
+  --foreground: var(--encre);
+  --muted-foreground: var(--ardoise);
+  --border: var(--filet);
+}
+
+.history-mobile [data-history-comparison] > td:not(.case-active) {
+  background: var(--comparison-background);
+}
+
+.history-comparison-label {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--foreground);
+}
+
+.history-comparison-heading {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.history-mobile :is(button.history-mobile-icon, button[data-size^="icon"]),
+.history-mobile-sheet :is(button.history-mobile-icon, button[data-size^="icon"]) {
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.history-mobile :is(button.history-mobile-icon, button[data-size^="icon"]) > svg,
+.history-mobile-sheet :is(button.history-mobile-icon, button[data-size^="icon"]) > svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.history-comparison-modify { color: var(--foreground); }
+
+.history-comparison-modify:hover {
+  background: color-mix(in oklab, var(--comparison-accent) 10%, var(--comparison-background));
+}
+
+.history-comparison-sheet {
+  background: var(--comparison-background);
+  color: var(--foreground);
+}
+
+.history-comparison-options {
+  padding: 0 1rem calc(1rem + env(safe-area-inset-bottom));
+}
+
+.history-comparison-options button {
+  display: flex;
+  width: 100%;
+  min-height: 4.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 0.75rem;
+  border-top: 1px solid color-mix(in oklab, var(--foreground) 15%, transparent);
+  text-align: left;
+  cursor: pointer;
+}
+
+.history-comparison-options button:hover {
+  background: color-mix(in oklab, var(--comparison-accent) 8%, var(--comparison-background));
+}
+
+.history-comparison-options button[aria-pressed="true"] {
+  background: color-mix(in oklab, var(--comparison-accent) 16%, var(--comparison-background));
+}
+
+.history-comparison-sheet button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+.history-mobile-value:has(.history-mobile-estimate) {
+  align-items: flex-start;
+}
+
+.history-mobile-estimate {
+  display: block;
+  margin-bottom: 0.5rem;
+  padding: 0 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.history-mobile-estimate button {
+  display: flex;
+  min-height: 2.75rem;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+}
+
 .history-mobile [data-history-transaction] select,
 .history-mobile [data-history-transaction] input,
 .history-mobile form select,
@@ -218,3 +354,37 @@
 @media (max-width: 359px) {
   .history-mobile [data-mobile-column] { grid-column: 1 / -1; }
 }
+
+.history-mobile-form,
+.history-mobile-management {
+  padding: 0 1rem calc(1rem + env(safe-area-inset-bottom));
+}
+
+.history-mobile-form form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 1rem;
+  padding: 0;
+}
+
+.history-mobile-form :is(input, select),
+.history-mobile-management :is(input, select) {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  min-height: 2.75rem;
+  font-size: 1rem;
+}
+
+.history-mobile-form button,
+.history-mobile-management button {
+  min-height: 2.75rem;
+  max-width: 100%;
+  white-space: normal;
+}
+
+.history-mobile-form button:not([data-size^="icon"]) { width: 100%; }
+
+.history-mobile-management .flex.items-center { flex-wrap: wrap; }
+.history-mobile-management .flex.items-center > button { flex-shrink: 1; }

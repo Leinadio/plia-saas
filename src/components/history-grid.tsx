@@ -17,6 +17,8 @@
 // temps — ce sont deux choses, elles ont deux lignes.
 import { HistoryExpandableRows, HistoryMobileColumns, HistorySectionColumnsContext, sectionColumns, EXPENSE_RECEIPTS_LABEL, EXPENSE_RECEIPTS_INFO, MobileHistoryContext, MobileColumnContext, MobileCellContents, type MobileHistoryView } from "@/components/history-mobile-columns";
 import "@/components/history-mobile.css";
+import { HistoryMobileActions, type HistoryMobileAction } from "@/components/history-mobile-actions";
+import { HistoryComparisonControl, HistoryComparisonLabel, HistoryMetricScope, type ComparisonSection } from "@/components/history-comparison";
 import { Fragment, cloneElement, createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, ArrowDownRight, ChevronDown, ChevronRight, Plus, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -341,7 +343,7 @@ const COL_COURT: Record<ColKey, string> = {
 };
 
 // Une cellule de tableau, avec sa className.
-type ColCell = React.ReactElement<React.PropsWithChildren<{ className?: string; cellKey?: string }>>;
+type ColCell = React.ReactElement<React.PropsWithChildren<{ className?: string; cellKey?: string; mobileSupplement?: React.ReactNode }>>;
 // Un jeu de slots : une fonction de rendu par colonne, qui reçoit « est-ce la
 // première colonne du mois » (bordure de séparation).
 export type ColSlots = Record<ColKey, (border: boolean) => ColCell>;
@@ -459,9 +461,10 @@ function AmountDetailButton({ children, detail, onSelect, cellKey: ck, onOnboard
   </button>;
 }
 
-export function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCellKey, onboardingTarget, onboardingGroupId, onboardingMonth, onOnboardingSelect, mobileLabel, colSpan }: {
+export function CellAmount({ children, className, detail, onSelect, cellKey: ck, selCellKey, onboardingTarget, onboardingGroupId, onboardingMonth, onOnboardingSelect, mobileLabel, mobileSupplement, colSpan }: {
   children: React.ReactNode;
   mobileLabel?: string;
+  mobileSupplement?: React.ReactNode;
   colSpan?: number;
   className?: string;
   detail?: CellDetail | null;
@@ -476,7 +479,7 @@ export function CellAmount({ children, className, detail, onSelect, cellKey: ck,
   const mobileColumn = useContext(MobileColumnContext);
   const mobileAttrs = mobileColumn ? { "data-mobile-column": mobileColumn.column, "data-mobile-month": mobileColumn.month } : {};
   const cls = cn(className, ck != null && selCellKey?.has(ck) && CELL_HL);
-  if (!detail || !onSelect) return <TableCell {...mobileAttrs} colSpan={colSpan} data-cellkey={ck} data-onboarding-target={onboardingTarget} data-onboarding-group-id={onboardingGroupId} data-onboarding-month={onboardingMonth} className={cls}><MobileCellContents label={mobileLabel}>{children}</MobileCellContents></TableCell>;
+  if (!detail || !onSelect) return <TableCell {...mobileAttrs} colSpan={colSpan} data-cellkey={ck} data-onboarding-target={onboardingTarget} data-onboarding-group-id={onboardingGroupId} data-onboarding-month={onboardingMonth} className={cls}><MobileCellContents label={mobileLabel} supplement={mobileSupplement}>{children}</MobileCellContents></TableCell>;
   // On rattache la clé de cette case au détail (cellRef), pour pouvoir la surligner
   // depuis la ligne « Total » du side panel.
   //
@@ -486,7 +489,7 @@ export function CellAmount({ children, className, detail, onSelect, cellKey: ck,
   // réserve sans que personne ait à décrire son contenu une seconde fois.
   return (
     <TableCell {...mobileAttrs} colSpan={colSpan} data-cellkey={ck} data-onboarding-target={onboardingTarget} data-onboarding-group-id={onboardingGroupId} data-onboarding-month={onboardingMonth} className={cls}>
-      <MobileCellContents label={mobileLabel}>
+      <MobileCellContents label={mobileLabel} supplement={mobileSupplement}>
       <AmountDetailButton detail={detail} onSelect={onSelect} cellKey={ck} onOnboardingSelect={onOnboardingSelect}>
         {children}
       </AmountDetailButton>
@@ -1250,8 +1253,9 @@ function IncomeTotalCells({ sec, months, currentMonth, onSelect, selCellKey }: {
 type PartDuPied = "totaux" | "soldes";
 const COLONNES_DE_SOLDE: ColKey[] = ["soldeReel", "soldePrevu", "soldeDepass"];
 
-function GrandTotalsCells({ sections, grand, solde, planned, months, currentMonth, currentEstimate, onSelect, selCellKey, part }: {
+function GrandTotalsCells({ sections, grand, solde, planned, months, currentMonth, currentEstimate, onSelect, selCellKey, part, renderMobileEstimate }: {
   part: PartDuPied;
+  renderMobileEstimate?: (month: string, index: number) => React.ReactNode;
   sections: HistorySection[];
   grand: MonthCell[];
   solde: SoldeColumn;
@@ -1264,6 +1268,7 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
   onSelect?: (d: CellDetail) => void;
   selCellKey?: ReadonlySet<string>;
 }) {
+  const mobile = useContext(MobileHistoryContext);
   return (
     <>
       {grand.map((c, i) => {        const type = monthType(months[i], currentMonth);
@@ -1435,6 +1440,11 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
           if (estSolde === (part === "soldes")) continue;
           slots[col] = vides[col];
         }
+        const supplement = renderMobileEstimate?.(month, i);
+        if (supplement && mobile?.metric && COLONNES_DE_SOLDE.includes(mobile.metric)) {
+          const amount = slots[mobile.metric];
+          slots[mobile.metric] = (gap) => cloneElement(amount(gap), { mobileSupplement: supplement });
+        }
         // Le gris du grand total ne couvre que les colonnes de données : Balance et
         // Solde gardent leur densité propre jusqu'en bas du tableau.
         return <Fragment key={i}>{renderCols(months[i], cols, slots, undefined, TOTAL_TINT, part === "soldes")}</Fragment>;
@@ -1539,7 +1549,7 @@ function NameCell({ children, indent, expandable, expanded, onToggle }: {
     >
       <FirstColBox indent={indent}>
         {expandable ? (
-          mobile ? <button type="button" aria-label={expanded ? "Replier le poste" : "Déplier le poste"} aria-expanded={expanded} onClick={(event) => { event.stopPropagation(); onToggle?.(); }}>
+          mobile ? <button type="button" className="history-mobile-icon" aria-label={expanded ? "Replier le poste" : "Déplier le poste"} aria-expanded={expanded} onClick={(event) => { event.stopPropagation(); onToggle?.(); }}>
             {expanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
           </button> : expanded ? <ChevronDown className="size-4 shrink-0" /> : <ChevronRight className="size-4 shrink-0" />
         ) : (
@@ -1660,8 +1670,10 @@ function HistorySectionTable({ kind, months, currentMonth, children }: {
 
 function HistorySectionBody({ name, children }: { name: string; children: React.ReactNode }) {
   const mobile = useContext(MobileHistoryContext);
+  const metric = name === "income" || name === "expense" ? mobile?.comparison?.metrics[name]
+    : name === "totals" ? "reste" : undefined;
   const body = mobile
-    ? <TableBody data-history-card={name} className="carte overflow-hidden">{children}</TableBody>
+    ? <HistoryMetricScope metric={metric}><TableBody data-history-card={name} className="carte overflow-hidden">{children}</TableBody></HistoryMetricScope>
     : <>{children}</>;
   return name === "income" || name === "expense"
     ? <HistorySectionColumnsContext.Provider value={{ kind: name, table: false }}>{body}</HistorySectionColumnsContext.Provider>
@@ -1814,6 +1826,20 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     | { kind: "income"; month: string }
     | { kind: "line"; groupId: number; month: string };
   const [adding, setAdding] = useState<Adding | null>(null);
+  const [mobileAction, setMobileAction] = useState<(HistoryMobileAction & { scope: string }) | null>(null);
+  const mobileActionScope = `${accountId}:${months.join(",")}:${mobile?.month ?? ""}`;
+  const [mobileActionOpen, setMobileActionOpen] = useState(false);
+  const mobileActionTrigger = useRef<HTMLButtonElement | null>(null);
+  const openMobileAction = (action: HistoryMobileAction, trigger: HTMLButtonElement) => {
+    mobileActionTrigger.current = trigger;
+    setMobileAction({ ...action, scope: mobileActionScope });
+    setMobileActionOpen(true);
+  };
+  const manage = (detail: CellDetail, direction: "in" | "out", trigger: HTMLButtonElement) => {
+    if (mobile && detail.groupManage) openMobileAction({ kind: "manage-group", info: detail.groupManage, direction }, trigger);
+    else if (mobile && detail.lineManage) openMobileAction({ kind: "manage-line", info: detail.lineManage, direction }, trigger);
+    else onSelect(detail);
+  };
   // Ouvre le formulaire de cette section dans CE tableau, ou le referme si c'est
   // déjà lui qui est ouvert.
   const toggleAdding = (kind: "expense" | "income", month: string) =>
@@ -2111,11 +2137,11 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               aria-label="Gérer le groupe"
               onClick={(e) => {
                 e.stopPropagation();
-                onSelect(manageDetail);
+                manage(manageDetail, r.direction, e.currentTarget);
               }}
-              className="text-muted-foreground hover:text-foreground ml-1 -m-1.5 shrink-0 cursor-pointer p-1.5 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
+              className="history-mobile-icon text-muted-foreground hover:text-foreground ml-1 -m-1.5 shrink-0 cursor-pointer p-1.5 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
             >
-              <Pencil className="size-3.5" />{mobile && <span className="text-xs">Gérer</span>}
+              <Pencil className="size-3.5" />
             </button>}
             {/* Découper en sous-postes, juste à côté : le formulaire s'ouvre sous cette
                 ligne-ci, là où le sous-poste ira. Il ne touche PAS au dépliage du
@@ -2126,9 +2152,10 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               aria-label="Ajouter un sous-poste"
               onClick={(e) => {
                 e.stopPropagation();
-                toggleAddingLine(r.id, moisDeTravail);
+                if (mobile) openMobileAction({ kind: "new-line", groupId: r.id, name: r.name, direction: r.direction, month: moisDeTravail }, e.currentTarget);
+                else toggleAddingLine(r.id, moisDeTravail);
               }}
-              className="text-muted-foreground hover:text-foreground shrink-0 cursor-pointer opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
+              className="history-mobile-icon text-muted-foreground hover:text-foreground shrink-0 cursor-pointer opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
             >
               <Plus className="size-3.5" />
             </button>}
@@ -2227,7 +2254,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                         aria-label="Gérer la ligne"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onSelect({
+                          manage({
                             title: sub.name,
                             nodes: [],
                             result: 0,
@@ -2243,11 +2270,11 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                               endMonth: sgLine?.endMonth,
                               changes: sgLine?.changes ?? [],
                             },
-                          });
+                          }, r.direction, e.currentTarget);
                         }}
-                        className="text-muted-foreground hover:text-foreground ml-1 -m-1.5 shrink-0 cursor-pointer p-1.5 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
+                        className="history-mobile-icon text-muted-foreground hover:text-foreground ml-1 -m-1.5 shrink-0 cursor-pointer p-1.5 opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100"
                       >
-                        <Pencil className="size-3.5" />{mobile && <span className="text-xs">Gérer</span>}
+                        <Pencil className="size-3.5" />
                       </button>}
                     </NameCell>
                   }
@@ -2415,16 +2442,18 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
   // là où il n'y a encore rien.
   const grandTableau = () => {
     const secs = sections;
+    const comparing = Boolean(mobile?.metric && mobile.comparison);
 
     // Une bande de section : son nom dans l'épine, sa teinte en travers de tous les
     // mois, et ce qu'elle porte de commandes (replier, créer).
     const bande = (cle: string, titre: string, tint: string, opts?: {
+      comparisonSection?: ComparisonSection;
       replie?: boolean;
       onToggle?: () => void;
       action?: React.ReactNode;
       onboardingTarget?: string;
     }) => (
-      <TableRow key={cle} data-history-band="" data-onboarding-target={opts?.onboardingTarget} className="hover:bg-transparent">
+      <TableRow key={cle} data-history-band="" data-history-comparison={comparing ? opts?.comparisonSection : undefined} data-onboarding-target={opts?.onboardingTarget} className="hover:bg-transparent">
         <TableCell className={cn(COL1_STICKY, tint, "h-px p-0")}>
           {/* Sur téléphone le nom du bloc et son bouton de création ne tiennent pas
               côte à côte dans 176 px : « Dépenses non prévues » passait SOUS le
@@ -2435,15 +2464,17 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               <button
                 type="button"
                 onClick={opts.onToggle}
+                aria-label={comparing ? titre : undefined}
                 aria-expanded={!opts.replie}
                 className="flex min-w-0 flex-1 cursor-pointer items-center gap-1"
               >
                 {opts.replie ? <ChevronRight className="size-3.5 shrink-0" /> : <ChevronDown className="size-3.5 shrink-0" />}
-                <span className="legende min-w-0 text-left leading-tight">{titre}</span>
+                <span className="legende min-w-0 text-left leading-tight">{titre}{opts.comparisonSection && <HistoryComparisonLabel section={opts.comparisonSection} />}</span>
               </button>
             ) : (
               <span className="legende min-w-0 leading-tight">{titre}</span>
             )}
+            {opts?.comparisonSection && <HistoryComparisonControl section={opts.comparisonSection} />}
             {opts?.action}
           </div>
         </TableCell>
@@ -2483,13 +2514,14 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       return (
         <>
           {bande("bloc-expenses", "Ce qui sort", BANDE_TENSION, {
+            comparisonSection: "expense",
             replie: expensesClosed,
             onToggle: () => setDepensesRepliees((value) => !value),
             onboardingTarget: onboarding?.expensesTarget,
             action: !demo ? (
-              <Button type="button" size="xs" variant="outline" className="shrink-0 cursor-pointer sm:ml-auto" onClick={() => toggleAdding("expense", moisDeTravail)}>
+              <Button type="button" size="xs" variant="outline" className="history-mobile-icon shrink-0 cursor-pointer sm:ml-auto" onClick={(event) => mobile ? openMobileAction({ kind: "new-group", direction: "out", month: moisDeTravail }, event.currentTarget) : toggleAdding("expense", moisDeTravail)}>
                 <Plus />
-                Dépense
+                <span className={mobile ? "sr-only" : undefined}>Dépense</span>
               </Button>
             ) : null,
           })}
@@ -2524,13 +2556,14 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     const enTeteRevenu = () => (
       <>
         {bande("bloc-revenu", "Ce qui rentre", BANDE_PORTANT, {
+          comparisonSection: "income",
           replie: incomeClosed,
           onToggle: () => setRevenusReplies((value) => !value),
           onboardingTarget: onboarding?.incomeTarget,
           action: !demo ? (
-            <Button type="button" size="xs" variant="outline" className="shrink-0 cursor-pointer sm:ml-auto" onClick={() => toggleAdding("income", moisDeTravail)}>
+            <Button type="button" size="xs" variant="outline" className="history-mobile-icon shrink-0 cursor-pointer sm:ml-auto" onClick={(event) => mobile ? openMobileAction({ kind: "new-group", direction: "in", month: moisDeTravail }, event.currentTarget) : toggleAdding("income", moisDeTravail)}>
               <Plus />
-              Revenu
+              <span className={mobile ? "sr-only" : undefined}>Revenu</span>
             </Button>
           ) : null,
         })}
@@ -2554,12 +2587,48 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       </>
     );
 
+    const compactEstimate = Boolean(mobile?.metric && mobile.comparison);
+    const estimateDetailOf = (m: string, i: number): CellDetail => {
+      return m === currentMonth
+        ? makeDetail(
+            "Estimé fin de mois",
+            [
+              { label: "Total", amount: forecast.balance, ref: cellKey("grand", "solde", i) },
+              ...(tableEstimate?.incomeSteps ?? []).map((s): DetailNode => ({
+                label: `${s.name} — reste à recevoir`,
+                amount: s.amount,
+                ref: cellKey(groupRow(s.id), "revenus", i),
+              })),
+              ...(tableEstimate?.spendSteps ?? []).map((s): DetailNode => ({
+                label: `${s.name} — reste à dépenser`,
+                amount: -s.amount,
+                ref: cellKey(groupRow(s.id), "reste", i),
+              })),
+            ],
+            { subtitle: monthLabel(m), result: estimateValue },
+          )
+        : soldeActuelDetail(secs, solde, i, m, { title: "Estimé fin de mois", result: solde.closings[i] });
+    };
+    const renderMobileEstimate = (m: string, i: number) => {
+      const ck = cellKey("estime", "solde", i);
+      const selected = selCellKey?.has(ck);
+      if (m > currentMonth || (!selected && (m !== currentMonth || mobile?.metric !== "soldeReel"))) return null;
+      const value = m === currentMonth ? estimateValue : solde.closings[i];
+      const contents = <><span className="text-muted-foreground">Estimé fin de mois</span><span className={soldeColor(value)}>{fmt(value)}</span></>;
+      return <span data-cellkey={ck} className={cn("history-mobile-estimate", selected && CELL_HL)}>
+        {onSelect ? <AmountDetailButton detail={estimateDetailOf(m, i)} onSelect={onSelect} cellKey={ck}>{contents}</AmountDetailButton> : contents}
+      </span>;
+    };
+
     const closingRows = (!mobile?.metric || mobile.metric.startsWith("solde") || selectedRows.has("grand") || selectedRows.has("estime")) && (<>
-        <TableRow data-history-summary="" data-onboarding-target={onboarding?.endingBalanceTarget} style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
+        <TableRow data-history-summary="" data-history-comparison={comparing ? "balance" : undefined} data-onboarding-target={onboarding?.endingBalanceTarget} style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
           <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
-            <FirstColBox>Solde de fin de mois</FirstColBox>
+            <FirstColBox>{comparing ? <div className="history-comparison-heading">
+              <span>Soldes<HistoryComparisonLabel section="balance" /></span>
+              <HistoryComparisonControl section="balance" />
+            </div> : "Solde de fin de mois"}</FirstColBox>
           </TableCell>
-          <GrandTotalsCells part="soldes" sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} />
+          <GrandTotalsCells renderMobileEstimate={compactEstimate ? renderMobileEstimate : undefined} part="soldes" sections={secs} grand={grand} solde={solde} planned={planned} months={months} currentMonth={currentMonth} currentEstimate={estimateValue} onSelect={onSelect} selCellKey={selCellKey} />
         </TableRow>
         {/* Estimé fin de mois, DANS le pied et sous le solde : c'est la même
             question posée un cran plus loin — le solde dit où le mois en est, l'estimé
@@ -2569,32 +2638,14 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             à recevoir − Balances vertes (le budget restant, supposé dépensé d'ici la
             fin du mois) ; autres mois = leur solde de clôture (même détail que la
             ligne « Total » pour ce mois — cf. soldeActuelDetail). */}
-        {(!mobile || (!mobile.metric && mobile.month <= currentMonth) || mobile.metric === "soldeReel" || selectedRows.has("estime")) && <TableRow data-history-summary="" style={PIED_CARBONE} className={cn(PIED_LIGNE, "text-sm")}>
+        {!compactEstimate && (!mobile || (!mobile.metric && mobile.month <= currentMonth) || mobile.metric === "soldeReel" || selectedRows.has("estime")) && <TableRow data-history-summary="" style={PIED_CARBONE} className={cn(PIED_LIGNE, "text-sm")}>
           <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
             <FirstColBox><span className="text-muted-foreground">Estimé fin de mois</span></FirstColBox>
           </TableCell>
           {months.map((m, i) => {
             const isCurrent = m === currentMonth;
             const v = isCurrent ? estimateValue : solde.closings[i];
-            const detail: CellDetail = isCurrent
-              ? makeDetail(
-                  "Estimé fin de mois",
-                  [
-                    { label: "Total", amount: forecast.balance, ref: cellKey("grand", "solde", i) },
-                    ...(tableEstimate?.incomeSteps ?? []).map((s): DetailNode => ({
-                      label: `${s.name} — reste à recevoir`,
-                      amount: s.amount,
-                      ref: cellKey(groupRow(s.id), "revenus", i),
-                    })),
-                    ...(tableEstimate?.spendSteps ?? []).map((s): DetailNode => ({
-                      label: `${s.name} — reste à dépenser`,
-                      amount: -s.amount,
-                      ref: cellKey(groupRow(s.id), "reste", i),
-                    })),
-                  ],
-                  { subtitle: monthLabel(m), result: v },
-                )
-              : soldeActuelDetail(secs, solde, i, m, { title: "Estimé fin de mois", result: solde.closings[i] });
+            const detail = estimateDetailOf(m, i);
             const type = monthType(m, currentMonth);
             const cols = monthColumns(type);
             const estCell = (b: boolean) => (
@@ -2816,6 +2867,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
           {closingRows}
         </HistorySectionBody>}
         {mobile && <HistorySectionBody name="opening">
+        {mobile.metric && mobile.comparison && <TableRow>
+          <TableCell className="font-medium"><FirstColBox>Argent de départ</FirstColBox></TableCell>
+        </TableRow>}
         {(!mobile.metric || mobile.metric.startsWith("solde") || selectedRows.has(openingRow)) && <TableRow data-history-opening="" className="font-medium">
           {solde.openings.map((v, i) => {
             const detail = openingDetailOf(i);
@@ -2864,7 +2918,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         {/* Dépassement final du mois : somme des montants rouges de la colonne
             Balance (groupes qui débordent + Non catégorisés), sans compter
             le total des dépenses qui agrège déjà ces montants. */}
-        {(!mobile?.metric || mobile.metric === "reste" || selectedRows.has("overspend")) && <TableRow data-history-summary="" style={PIED_CARBONE} className={cn(PIED_LIGNE, "text-sm")}>
+        {(!mobile?.metric || mobile.comparison || mobile.metric === "reste" || selectedRows.has("overspend")) && <TableRow data-history-summary="" style={PIED_CARBONE} className={cn(PIED_LIGNE, "text-sm")}>
           <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
             <FirstColBox><span className="text-muted-foreground">Total dépassement hors budget</span></FirstColBox>
           </TableCell>
@@ -2905,7 +2959,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             {!mobile && <SpacerRow cols={totalCols} />}
             {/* Ramenés au mois de CE tableau : leurs transactions couvrent toute la
                 frise, et dépliées ici elles montraient aussi celles des autres mois. */}
-            {ignoredBlocks!.map((b) => renderIgnoredBlock(b))}
+            {ignoredBlocks!.map((b) => <HistoryMetricScope key={b.direction} metric={b.direction === "in" ? "recu" : "dep"}>{renderIgnoredBlock(b)}</HistoryMetricScope>)}
           </HistorySectionBody>
         )}
       </Body>
@@ -2930,6 +2984,8 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       <div ref={gridRef} data-history-mobile={mobile ? (mobile.metric ? "compare" : "month") : undefined} className={cn(mobile ? "history-mobile w-full" : "w-max", "[&_[data-slot=table-container]]:overflow-visible")}>
         {grandTableau()}
       </div>
+      {mobile && <HistoryMobileActions action={mobileAction} open={mobileActionOpen && mobileAction?.scope === mobileActionScope} onClose={() => setMobileActionOpen(false)}
+        trigger={mobileActionTrigger} accountId={accountId} stripMin={stripMin} stripMax={stripMax} />}
       </MobileHistoryContext.Provider>
     </SoldeDetaille.Provider>
   );
