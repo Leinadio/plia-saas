@@ -1,0 +1,8 @@
+Origin: Built-in tools.image_gen__imagegen
+Generated: 2026-09-10
+Source: /Users/danieldupont/.codex/generated_images/01a08bcb-37a6-71a0-bf27-54cb65be71f2/exec-ee85c5ff-17fd-40a7-b1c9-5699deaece2e.png
+Asset: projets-foyer-v1.png
+Dimensions: 1536 x 1024
+
+Exact prompt:
+Use case: photorealistic-natural. Asset type: complementary original editorial photograph for the lower landing page of French personal budget brand Plia. The scene sells time and life regained, not doing bills. A candid French urban couple around 35–45, comfortably dressed, preparing a weekend departure in a bright lived-in apartment. One person rolls a small carry-on suitcase and the other slips into a light jacket by a curved glazed doorway. Elegant relatable home, warm daylight crossing mint walls, a subtle curved translucent emerald glass edge on the right. Editorial photography, a spontaneous unposed moment, warm smiles exchanged between the two people, realistic anatomy, beautiful composition, quiet affluent contemporary taste without ostentatious wealth. Wide landscape 3:2. People on the left and center, architectural curved glass on the right. Palette emerald, mint, pale coral, natural linen. Tactile real materials, natural skin texture, warm French city home atmosphere. No text, UI, logo, money, piggybank, finance symbols, paperwork, calculator, staged desk stock photograph. Do not make a collage.

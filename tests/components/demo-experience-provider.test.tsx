@@ -41,8 +41,7 @@ async function renderExperience(options: {
   await act(async () => {
     root.render(createElement(
       DemoExperienceProvider,
-      { mode: "automatic-demo", ...options },
-      createElement(Commands),
+      { mode: "automatic-demo", ...options, children: createElement(Commands) },
     ));
   });
   mocks.push.mockClear();
@@ -124,7 +123,7 @@ describe("la démonstration sauvegardée", () => {
   });
 
   it("attend la dernière sauvegarde avant Compris ou Guide", async () => {
-    let releaseSave = () => undefined;
+    let releaseSave: () => void = () => undefined;
     const onPersist = vi.fn(() => new Promise<void>((resolve) => { releaseSave = resolve; }));
     const onFinish = vi.fn(async () => ({ destination: "/app/historique" as const }));
     const onRestart = vi.fn(async () => ({ destination: "/app/historique" as const, visit: freshTourVisit() }));

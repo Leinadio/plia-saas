@@ -35,7 +35,9 @@ describe("la landing publique", () => {
   it("reste disponible quand la vérification de session échoue", async () => {
     mocks.getSession.mockRejectedValue(new Error("base indisponible"));
 
-    await expect(LandingPage()).resolves.toMatchObject({ type: LandingContent });
+    await expect(LandingPage()).resolves.toMatchObject({
+      type: LandingContent,
+    });
     expect(mocks.redirect).not.toHaveBeenCalled();
   });
 
@@ -47,8 +49,7 @@ describe("la landing publique", () => {
     const html = renderToStaticMarkup(createElement(ActualLandingContent));
     const visibleText = html.replace(/<[^>]+>/g, "");
 
-    expect(visibleText).toContain(
-      "Pilotez vos finances sans perdre de vue les mois à venir.",
-    );
+    expect(visibleText).toContain("Faites de la place à vos projets.");
+    expect(visibleText).toContain("mois à venir");
   });
 });

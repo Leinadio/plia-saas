@@ -42,7 +42,8 @@ async function clickCoursesSpentCell(
       createElement(CellAmount, {
         detail, onSelect, cellKey: coursesSpentCell,
         onOnboardingSelect: onDetailOpened,
-      }, "216,30"))),
+        children: "216,30",
+      }))),
   )));
   await act(async () => container.querySelector("button")!.click());
   await act(async () => root.unmount());

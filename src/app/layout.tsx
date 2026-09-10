@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Schibsted_Grotesk } from "next/font/google";
+import { Bricolage_Grotesque, Schibsted_Grotesk } from "next/font/google";
 import Script from "next/script";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -19,6 +19,13 @@ const ui = Schibsted_Grotesk({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-ui",
+});
+
+// La voix de la page publique ; l’interface du budget conserve sa fonte de travail.
+const landingDisplay = Bricolage_Grotesque({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-landing-display",
 });
 
 // Le contrat de la refonte, écrit une fois et rendu dans la page : ce que cette
@@ -51,20 +58,28 @@ review, the verdict, and DESIGN.md
 -->`;
 
 const LANDING_CONTRAT = `<!--
-THESIS: Une promesse unique mène à une démonstration manipulable. La landing refuse le héros SaaS vide suivi d'une grille de promesses.
-OWN-WORLD: Sol cyanisé, cartes blanches, encre bleu-ardoise et sarcelle réservée aux commandes. Les données illustratives portent vert, rouge et sable selon leur sens.
-STORY: Une personne aux revenus irréguliers comprend que Plia relie sa banque, reporte ses enveloppes et montre où son solde atterrit dans les mois à venir, puis commence.
-FIRST VIEWPORT: Barre légère puis héros centré « Pilotez vos finances sans perdre de vue les mois à venir » ; deux actions et grande démonstration vidéo sur un horizon de trois mois.
-FORM: L'horizon vivant. Un rail temporel place la vidéo dans les mois à venir ; elle se redresse légèrement au défilement. Magic UI ouvre la démonstration et structure le Bento sans remplacer le langage de Plia. La section tarifs annonce honnêtement que le prix reste à fixer.
+THESIS: La lumière en mouvement. Voir venir ses dépenses laisse de la place aux projets ; une photographie sculpturale remplace le héros logiciel générique.
+OWN-WORLD: Verre cintré vert et corail, lumière naturelle, menthe #edf5f0, encre #17222b, commandes #126b5b ; Bricolage Grotesque en titres, Schibsted pour lire. Courbes continues, chiffres sur fonds opaques.
+STORY: La personne qui pilote le budget du foyer découvre ses mois à venir, explore les vrais écrans, comprend les enveloppes et la connexion bancaire, puis commence. Offre premium proposée, prix explicitement provisoire.
+FIRST VIEWPORT: Promesse monumentale et action à gauche ; verre photographié à droite, aperçu chiffré au pied. Sur mobile, promesse et action précèdent l’image. Une lumière suit le changement de vue ; mouvement réduit respecté.
+FORM: Verre coloré des intérieurs contemporains, candidat 7 ; seed 29f966f4, direction choisie par l’utilisateur, code-led.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
 -->`;
 
 const themeScript =
   "document.documentElement.classList.toggle('dark', window.matchMedia('(prefers-color-scheme: dark)').matches)";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="fr" suppressHydrationWarning className={ui.variable}>
+    <html
+      lang="fr"
+      suppressHydrationWarning
+      className={`${ui.variable} ${landingDisplay.variable}`}
+    >
       <head>
         <Script
           id="plia-theme"
@@ -79,7 +94,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Le contrat de direction de la refonte, posé dans le HTML livré et non
             en commentaire JSX : React ne rend pas les commentaires JSX, et un
             contrat que la construction efface n'est vérifiable par personne. */}
-        <div hidden dangerouslySetInnerHTML={{ __html: `${CONTRAT}${LANDING_CONTRAT}` }} />
+        <div
+          hidden
+          dangerouslySetInnerHTML={{ __html: `${CONTRAT}${LANDING_CONTRAT}` }}
+        />
         {children}
         {/* Les accusés de réception des actions confirmées (voir toastSucces).
             Ici plutôt que dans le shell : un toast peut suivre une connexion. */}

@@ -3,11 +3,15 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { LandingContent } from "@/components/landing-page";
 
-// La page publique. Elle occupe la racine depuis que l'application est passée sous
-// /app. Elle dit ce que le produit fait, et rien de plus : aucun chiffre d'usage,
-// aucun témoignage, aucun prix — rien de tout cela n'existe, et une landing ne
-// s'invente pas des preuves.
+// La page publique présente les fonctionnalités réelles et des données de démo.
+// Le tarif proposé reste identifié comme provisoire, sans promesse de paiement.
 export const dynamic = "force-dynamic";
+
+export const metadata = {
+  title: "Plia — Votre budget, une vue d’avance",
+  description:
+    "Reliez votre banque, organisez vos enveloppes et comparez les mois à venir. Plia vous aide à voir ce qu’il restera pour vos projets.",
+};
 
 export default async function LandingPage() {
   // Déjà connecté : la page d'accueil n'a rien à lui apprendre.

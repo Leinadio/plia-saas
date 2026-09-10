@@ -43,6 +43,64 @@ colors:
   filet-nuit: "#2c363d"
   filet-fort-nuit: "#3d4950"
   commande-texte-nuit: "#06181a"
+  landing-bg: "#edf5f0"
+  landing-surface: "#fbfdfb"
+  landing-ink: "#172d28"
+  landing-muted: "#496359"
+  landing-green: "#126b5b"
+  landing-line: "#c5d7cc"
+  landing-soft: "#dcece1"
+  landing-bg-dark: "#132822"
+  landing-surface-dark: "#1b342b"
+  landing-ink-dark: "#f0f6f0"
+  landing-muted-dark: "#bdcfc3"
+  landing-green-dark: "#9fddbc"
+  landing-line-dark: "#3c5a4d"
+  landing-soft-dark: "#234234"
+  landing-green-hover: "#0b5043"
+  landing-green-hover-dark: "#b9edcf"
+  landing-button-ink-dark: "#143328"
+  landing-white: "#fff"
+  landing-selection: "#f1c94e"
+  landing-balance-bg: "#17222b"
+  landing-balance-ink: "#f4f8f5"
+  landing-balance-icon: "#b9d8c7"
+  landing-balance-label: "#c1d0c8"
+  landing-balance-note: "#b0c5b9"
+  landing-balance-shadow: "#122e2729"
+  landing-income-ink: "#205940"
+  landing-income-bg: "#d0e8d7"
+  landing-expense-ink: "#853f31"
+  landing-expense-bg: "#f5ded4"
+  landing-remaining-ink: "#f1f6f2"
+  landing-demo-bg: "#164c3c"
+  landing-demo-bg-dark: "#103b2e"
+  landing-demo-ink: "#f4f9f1"
+  landing-demo-title: "#b8ddc0"
+  landing-demo-copy: "#c3ddce"
+  landing-demo-tab-line: "#7aaa9166"
+  landing-demo-tab-ink: "#e5f0e8"
+  landing-demo-tab-hover: "#276650"
+  landing-demo-hint-line: "#7aaa914d"
+  landing-demo-hint: "#cee6d7"
+  landing-light-green: "#70b18c"
+  landing-light-coral: "#ee806b"
+  landing-demo-shadow: "#071c1a30"
+  landing-demo-scroll: "#547a69"
+  landing-tabs-scroll: "#83ae91"
+  landing-offer-bg: "#d3e7d7"
+  landing-offer-ink: "#173e2e"
+  landing-offer-title: "#357458"
+  landing-offer-copy: "#3c614d"
+  landing-offer-line: "#98bda4"
+  landing-offer-button-hover: "#0d382b"
+  landing-offer-note: "#466453"
+  landing-offer-bg-dark: "#274d39"
+  landing-offer-ink-dark: "#e5f2e7"
+  landing-offer-title-dark: "#b2dcbe"
+  landing-offer-copy-dark: "#c2d7c7"
+  landing-offer-line-dark: "#5b8065"
+  landing-close-copy: "#bcd1c4"
 typography:
   display:
     fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
@@ -102,6 +160,154 @@ typography:
     "32": "2rem"
     "36": "2.25rem"
     "44": "2.75rem"
+  landing-hero:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "clamp(60px, 6.4vw, 92px)"
+    fontWeight: 550
+    lineHeight: 1.02
+    letterSpacing: "-0.035em"
+  landing-hero-tablet:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "70px"
+    fontWeight: 550
+    lineHeight: 1.02
+    letterSpacing: "-0.035em"
+  landing-hero-mobile:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "clamp(44px, 12.7vw, 68px)"
+    fontWeight: 550
+    lineHeight: 1.04
+    letterSpacing: "-0.035em"
+  landing-headline:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "clamp(40px, 4.15vw, 60px)"
+    fontWeight: 500
+    lineHeight: 1.08
+    letterSpacing: "-0.035em"
+  landing-headline-mobile:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "38px"
+    fontWeight: 500
+    lineHeight: 1.13
+    letterSpacing: "-0.035em"
+  landing-life:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "clamp(42px, 4.2vw, 60px)"
+    fontWeight: 500
+    lineHeight: 1.08
+    letterSpacing: "-0.035em"
+  landing-how:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "52px"
+    fontWeight: 500
+    lineHeight: 1.08
+    letterSpacing: "-0.035em"
+  landing-offer:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "56px"
+    fontWeight: 500
+    lineHeight: 1.08
+    letterSpacing: "-0.035em"
+  landing-faq:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "48px"
+    fontWeight: 500
+    lineHeight: 1.1
+    letterSpacing: "-0.035em"
+  landing-close:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "60px"
+    fontWeight: 500
+    lineHeight: 1.07
+    letterSpacing: "-0.035em"
+  landing-demo-title:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "34px"
+    fontWeight: 500
+    lineHeight: 1.18
+    letterSpacing: "-0.035em"
+  landing-demo-title-mobile:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "29px"
+    fontWeight: 500
+    lineHeight: 1.18
+    letterSpacing: "-0.035em"
+  landing-step:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "26px"
+    fontWeight: 550
+    lineHeight: 1.2
+    letterSpacing: "-0.035em"
+  landing-price:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "96px"
+    fontWeight: 400
+    lineHeight: 1.2
+    letterSpacing: "-0.04em"
+  landing-price-mobile:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "85px"
+    fontWeight: 400
+    lineHeight: 1.2
+    letterSpacing: "-0.04em"
+  landing-body:
+    fontFamily: "Schibsted Grotesk, sans-serif"
+    fontSize: "16px"
+    fontWeight: 400
+    lineHeight: 1.8
+    letterSpacing: "normal"
+  landing-intro:
+    fontFamily: "Schibsted Grotesk, sans-serif"
+    fontSize: "18px"
+    fontWeight: 400
+    lineHeight: 1.7
+    letterSpacing: "normal"
+  landing-command:
+    fontFamily: "Schibsted Grotesk, sans-serif"
+    fontSize: "15px"
+    fontWeight: 600
+    lineHeight: 1.5
+    letterSpacing: "normal"
+  landing-caption:
+    fontFamily: "Schibsted Grotesk, sans-serif"
+    fontSize: "11px"
+    fontWeight: 400
+    lineHeight: 1.7
+    letterSpacing: "normal"
+  landing-scale:
+    "10": "10px"
+    "11": "11px"
+    "12": "12px"
+    "13": "13px"
+    "14": "14px"
+    "15": "15px"
+    "16": "16px"
+    "17": "17px"
+    "18": "18px"
+    "19": "19px"
+    "20": "20px"
+    "21": "21px"
+    "23": "23px"
+    "24": "24px"
+    "25": "25px"
+    "26": "26px"
+    "28": "28px"
+    "29": "29px"
+    "30": "30px"
+    "34": "34px"
+    "38": "38px"
+    "40": "40px"
+    "42": "42px"
+    "43": "43px"
+    "45": "45px"
+    "48": "48px"
+    "50": "50px"
+    "52": "52px"
+    "56": "56px"
+    "60": "60px"
+    "70": "70px"
+    "85": "85px"
+    "96": "96px"
 rounded:
   xs: "5px"
   sm: "0.375rem"
@@ -109,6 +315,16 @@ rounded:
   lg: "0.75rem"
   xl: "1rem"
   full: "999px"
+  landing-pill: "100px"
+  landing-balance: "14px"
+  landing-hero: "220px 16px 16px 16px"
+  landing-hero-mobile: "150px 0 0 12px"
+  landing-life: "16px 16px 200px 16px"
+  landing-life-mobile: "12px 12px 120px 12px"
+  landing-close: "170px 0 0"
+  landing-close-mobile: "130px 0 0"
+  landing-brand: "15px 15px 15px 4px"
+  landing-brand-mobile: "13px 13px 13px 4px"
 spacing:
   xs: "4px"
   sm: "8px"
@@ -116,6 +332,9 @@ spacing:
   lg: "16px"
   xl: "20px"
   2xl: "24px"
+  landing-gutter: "64px"
+  landing-gutter-tablet: "36px"
+  landing-gutter-mobile: "24px"
 components:
   button-primary:
     backgroundColor: "{colors.sarcelle}"
@@ -256,13 +475,42 @@ components:
     rounded: "{rounded.md}"
     padding: "6px 10px"
     typography: "{typography.body}"
+  landing-primary:
+    backgroundColor: "{colors.landing-green}"
+    textColor: "{colors.landing-white}"
+    rounded: "{rounded.landing-pill}"
+    padding: "15px 24px"
+    typography: "{typography.landing-command}"
+  landing-primary-hover:
+    backgroundColor: "{colors.landing-green-hover}"
+  landing-demo-choice:
+    textColor: "{colors.landing-demo-tab-ink}"
+    rounded: "{rounded.landing-pill}"
+    padding: "13px 19px"
+  landing-demo-choice-selected:
+    backgroundColor: "{colors.landing-bg}"
+    textColor: "{colors.landing-demo-bg}"
+  landing-balance:
+    backgroundColor: "{colors.landing-balance-bg}"
+    textColor: "{colors.landing-balance-ink}"
+    rounded: "{rounded.landing-balance}"
+    padding: "23px 24px 18px"
 ---
 
 # Design System: Plia
 
 ## Overview
 
-**Creative North Star: « L'enveloppe »**
+**Creative North Star: « L’enveloppe » dans l’application ; « La lumière en mouvement » sur la page publique.**
+
+Les règles ci-dessous décrivent l’application, sauf les paragraphes explicitement
+« Page publique ». Les jetons `landing-*` ne s’appliquent qu’à cette page ; ils ne
+remplacent ni les jetons du relevé, ni ses règles mobiles. La page publique associe
+verre courbe, lumière naturelle, fonds menthe et forêt, et une typographie expressive.
+Les chiffres reposent sur des surfaces opaques ; le verre appartient aux images.
+La composition de cette page et ses preuves vivent dans son brief de surface.
+
+### Application
 
 Un budget est une collection d'enveloppes. Chacune a un nom, une contenance, ce qu'on
 en a déjà sorti — et, quand ça a mal tourné, ce qui a débordé au-delà du bord. Le monde
@@ -352,9 +600,27 @@ partout.
 rouge rendait le rouge muet. Seuls le reste et la jauge portent la couleur — c'est-à-dire
 les deux endroits où le signe est une information et non une fatalité.
 
+### Page publique — palette isolée
+
+Le fond menthe et l’encre verte portent la lecture ; le vert d’action sert aussi
+aux mots accentués des titres. Cette page ne suit donc pas la restriction sarcelle
+réservée aux commandes de l’application. Le bloc de démonstration est forêt ;
+l’offre est sauge ; les photographies apportent le corail et la lumière.
+
+Les sept rôles `landing-bg`, `surface`, `ink`, `muted`, `green`, `line`, `soft`
+ont chacun leur pendant `-dark`. Les familles `landing-balance-*`, `income-*`,
+`expense-*`, `demo-*` et `offer-*` fixent les nuances propres aux fonds, textes,
+filets et états. Les variations claires d’un texte sur forêt sont intentionnelles :
+titre, texte courant, légende et note restent distincts. `landing-selection` sert
+à la sélection de texte, à la mise au point des boutons sur forêt et à la lumière
+de comparaison ; `landing-light-coral` accompagne le détail. La courbe lumineuse
+est à 16 % d’opacité. Le défilement reprend les verts documentés `demo-scroll` et
+`tabs-scroll`, pas les couleurs système. Les valeurs CSS finales du frontmatter
+font foi ; la couleur émeraude du prompt d’image n’est pas un jeton d’action.
+
 ## Typography
 
-**Fonte unique :** Schibsted Grotesk (variable, sous-ensemble latin, servie par
+**Fonte unique dans l’application :** Schibsted Grotesk (variable, sous-ensemble latin, servie par
 next/font ; repli `ui-sans-serif, system-ui, sans-serif`).
 
 **Caractère :** un grotesque de presse — formes ouvertes, hauteur d'x généreuse, un
@@ -364,7 +630,7 @@ les titres, les libellés, les commandes et les montants. Un logiciel de travail
 besoin d'un couple d'affichage : il a besoin d'une famille qui tienne partout.
 
 ### Hierarchy
-- **Display** (700, 2rem, montant à 2.75rem dès 640 px, interlettrage -0.025em) : le titre de la landing, et lui seul. Il n'existe pas sous la porte de session.
+- **Display** (700, 2rem, interlettrage -0.025em) : ancien jeton Schibsted conservé ; la page publique utilise désormais les rôles `landing-*`.
 - **Headline** (600, 1.75rem, montant à 2.25rem dès 640 px, tabulaire) : la mesure de tête du relevé — le seul chiffre de l'écran qui réponde directement à « est-ce que je peux dépenser ? ».
 - **Title** (600, 0.9375rem, interligne 1.3) : le titre d'une carte. Une phrase en casse normale, pas une inscription. L'ancien monde gravait ses titres en capitales de chasse fixe ; celui-ci les écrit.
 - **Body** (400, 0.875rem, interligne 1.5) : le texte courant, les libellés de transaction, les phrases d'explication. Le texte creux passe à 0.8125rem.
@@ -384,10 +650,22 @@ seul en bas.
 chasse d'un chiffre : posée sur le document entier, elle détachait la ponctuation de
 chaque phrase du produit, jusque dans le titre de la page d'accueil.
 
-**La règle de la fonte unique.** Une seule famille, et pas de chasse fixe. Un montant
+**La règle de la fonte unique dans l’application.** Une seule famille, et pas de chasse fixe. Un montant
 n'a pas besoin d'être monospacé pour s'aligner ; il a besoin de `tabular-nums`. Toute
 demande de « fonte de chiffres » se règle par une variante numérique, pas par une
 deuxième famille.
+
+### Page publique — deux voix
+
+Bricolage Grotesque porte les titres et le grand prix ; Schibsted Grotesk porte les
+phrases, commandes et données. Les familles sont servies par next/font. Les rôles
+`landing-*` donnent les tailles exactes, y compris les titres fluides et leurs
+variantes mobiles. La rampe `landing-scale` répertorie les tailles fixes réellement
+présentes, de la note illustrative au prix. Les titres ont un interlettrage de
+−0.035em, le prix −0.04em ; les chiffres du cartouche sont tabulaires. Les titres
+courants de section ont une graisse 500, le héros et les étapes 550. Le corps varie
+de 14 à 18 px selon le contexte ; les mentions et légendes vont de 10 à 12 px.
+Les notes fines restent secondaires, jamais le seul endroit portant la promesse.
 
 ## Layout
 
@@ -410,6 +688,16 @@ plutôt qu'au-dessus, et la barre produit affiche les noms de destination en ent
 1280 px les deux cartes de postes du mois se mettent côte à côte. Sur téléphone, une
 grille à deux colonnes réglée plutôt qu'un retour à la ligne libre : à 390 px, six champs
 de largeurs différentes retombent en escalier.
+
+### Page publique — composition et adaptation
+
+La largeur principale est limitée à 1440 px ; les marges passent de 64 à 36 puis
+24 px aux seuils de 1100 et 700 px. Le haut est partagé entre texte et image ;
+les sections alternent colonnes et plages de couleur. Sur téléphone, le texte et
+l’action précèdent l’image, puis les sections s’empilent. La navigation de sections
+se masque, la connexion reste visible. Les aperçus deviennent des captures mobiles ;
+leurs choix défilent horizontalement dans leur propre bande. Les marges et seuils
+de cette page ne changent pas ceux de l’application.
 
 ## Elevation & Depth
 
@@ -438,6 +726,15 @@ totaux, une piste de jauge, un détail replié, un champ de saisie. Jamais une d
 carte, jamais une deuxième ombre. Test : sur n'importe quel écran, aucun rectangle
 blanc à filet ne doit en contenir un autre.
 
+### Page publique — profondeur et mouvement
+
+Le cartouche sombre porte une ombre `0 16px 38px #122e2729` ; les captures portent
+`0 20px 45px #071c1a30`. Les textes ne sont jamais posés sur du verre translucide.
+Le changement d’aperçu révèle l’image en 450 ms et déplace la courbe lumineuse en
+650 ms avec `cubic-bezier(0.16, 1, 0.3, 1)`. Les boutons réagissent en 200 ms, les
+choix en 180 ms et le signe de FAQ en 250 ms. Sous `prefers-reduced-motion`,
+animations et transitions s’arrêtent et le défilement redevient immédiat.
+
 ## Shapes
 
 Des rectangles arrondis, et une seule silhouette d'ovale. La carte est arrondie à 12 px
@@ -453,6 +750,15 @@ contour de champ, filet sous la barre produit, filet sous une rangée d'onglets.
 trait de deux pixels du produit est l'anneau de mise au point, et le seul trait oblique
 est celui qu'on refuse : aucune découpe à 45°, aucun angle vif, aucune bordure épaisse
 en guise d'accent.
+
+### Page publique — arrondis et courbes
+
+Les commandes et choix sont des capsules (`landing-pill`). Le cartouche utilise
+`landing-balance`, les captures et notes 12 px, les petits repères mobiles 8 px.
+Les grandes découpes sont asymétriques : les jetons `landing-hero`, `life` et
+`close`, avec leurs variantes mobiles, encadrent les photographies. La marque a
+son propre coin court (`landing-brand`). Les courbes de séparation relient les
+plages de couleur ; elles ne sont ni des graphiques ni des indicateurs financiers.
 
 ## Components
 
@@ -665,7 +971,26 @@ liens de comparaison restent utilisables. Les jetons, les couleurs de section,
 la vue mensuelle et le tableau sur ordinateur restent identiques. Le panneau de
 calcul occupe toute la largeur du téléphone et propose un retour explicite au relevé.
 
+### Page publique — composants
+
+Le bouton principal est une capsule pleine, haute d’au moins 56 px (54 sur
+mobile), avec une flèche. Au survol, son fond se renforce et il monte de 2 px ;
+la mise au point dessine un contour de 3 px décalé de 5 px. Les liens de texte
+restent soulignables. Les cibles de navigation et de connexion font au moins 44 px.
+
+Les trois choix d’aperçu sont des boutons à état pressé, hauts de 56 px puis
+48 px sur téléphone. Le choix actif est menthe sur forêt. Le texte associé est
+annoncé poliment et chaque image a une description ; le panneau montre une capture
+avec données de démonstration, pas une application interactive. Les réponses de
+FAQ utilisent des éléments natifs ouvrables au clavier. Le montant illustratif
+reste sur un fond opaque, avec sa mention d’exemple toujours visible.
+
 ## Do's and Don'ts
+
+Les listes ci-dessous restent les règles de l’application. Pour la page publique :
+conserver les jetons isolés, les chiffres opaques et lisibles, les adaptations
+claire/sombre/mobile et la réduction des animations. Ne pas transposer les grandes
+découpes photographiques ni Bricolage aux écrans de gestion.
 
 ### Do:
 - **Do** poser tout panneau, section, relevé ou enveloppe sur `.carte` — blanche, 12 px, filet d'un pixel, ombre de carte — et donner à ce qui vit dedans la surface creusée `.creux`.

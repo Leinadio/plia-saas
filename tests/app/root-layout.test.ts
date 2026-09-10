@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/font/google", () => ({
   Schibsted_Grotesk: () => ({ variable: "font-ui" }),
+  Bricolage_Grotesque: () => ({ variable: "font-landing-display" }),
 }));
 vi.mock("@/components/ui/sonner", () => ({ Toaster: () => null }));
 
@@ -18,7 +19,8 @@ describe("la mise en page principale", () => {
     const themeLoader = Children.only(head.props.children);
 
     expect(isValidElement(themeLoader)).toBe(true);
-    if (!isValidElement<{ id?: string; strategy?: string }>(themeLoader)) return;
+    if (!isValidElement<{ id?: string; strategy?: string }>(themeLoader))
+      return;
     expect(themeLoader.type).not.toBe("script");
     expect(themeLoader.props.id).toBe("plia-theme");
     expect(themeLoader.props.strategy).toBe("beforeInteractive");

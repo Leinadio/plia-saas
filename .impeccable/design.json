@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-26T11:02:23Z",
+  "generatedAt": "2026-09-10T15:47:00.273619+00:00",
   "title": "Design System: Plia",
   "extensions": {
     "colorMeta": {
@@ -163,6 +163,109 @@
           "oklch(88% 0.008 218)",
           "oklch(96% 0.005 218)"
         ]
+      },
+      "landing-bg": {
+        "role": "neutral",
+        "displayName": "Page publique · bg",
+        "canonical": "#edf5f0",
+        "scope": "landing",
+        "purpose": "Variation CSS du rôle bg sur la page publique uniquement.",
+        "tonalRamp": [
+          "#132822",
+          "#172d28",
+          "#1b342b",
+          "#234234",
+          "#496359",
+          "#bdcfc3",
+          "#edf5f0",
+          "#fbfdfb"
+        ],
+        "darkValue": "#132822"
+      },
+      "landing-green": {
+        "role": "primary",
+        "displayName": "Page publique · green",
+        "canonical": "#126b5b",
+        "scope": "landing",
+        "purpose": "Variation CSS du rôle green sur la page publique uniquement.",
+        "tonalRamp": [
+          "#0b5043",
+          "#126b5b",
+          "#164c3c",
+          "#276650",
+          "#70b18c",
+          "#9fddbc",
+          "#b9edcf",
+          "#edf5f0"
+        ],
+        "darkValue": "#9fddbc"
+      },
+      "landing-selection": {
+        "role": "neutral",
+        "displayName": "Page publique · selection",
+        "canonical": "#f1c94e",
+        "scope": "landing",
+        "purpose": "Variation CSS du rôle selection sur la page publique uniquement."
+      },
+      "landing-balance-bg": {
+        "role": "neutral",
+        "displayName": "Page publique · balance-bg",
+        "canonical": "#17222b",
+        "scope": "landing",
+        "purpose": "Variation CSS du rôle balance-bg sur la page publique uniquement.",
+        "tonalRamp": [
+          "#17222b",
+          "#3c5a4d",
+          "#547a69",
+          "#83ae91",
+          "#b0c5b9",
+          "#b9d8c7",
+          "#c1d0c8",
+          "#f4f8f5"
+        ]
+      },
+      "landing-demo-bg": {
+        "role": "neutral",
+        "displayName": "Page publique · demo-bg",
+        "canonical": "#164c3c",
+        "scope": "landing",
+        "purpose": "Variation CSS du rôle demo-bg sur la page publique uniquement.",
+        "tonalRamp": [
+          "#103b2e",
+          "#164c3c",
+          "#276650",
+          "#70b18c",
+          "#b8ddc0",
+          "#c3ddce",
+          "#e5f0e8",
+          "#f4f9f1"
+        ],
+        "darkValue": "#103b2e"
+      },
+      "landing-light-coral": {
+        "role": "neutral",
+        "displayName": "Page publique · light-coral",
+        "canonical": "#ee806b",
+        "scope": "landing",
+        "purpose": "Variation CSS du rôle light-coral sur la page publique uniquement."
+      },
+      "landing-offer-bg": {
+        "role": "neutral",
+        "displayName": "Page publique · offer-bg",
+        "canonical": "#d3e7d7",
+        "scope": "landing",
+        "purpose": "Variation CSS du rôle offer-bg sur la page publique uniquement.",
+        "tonalRamp": [
+          "#173e2e",
+          "#274d39",
+          "#357458",
+          "#466453",
+          "#98bda4",
+          "#b2dcbe",
+          "#d3e7d7",
+          "#e5f2e7"
+        ],
+        "darkValue": "#274d39"
       }
     },
     "typographyMeta": {
@@ -193,6 +296,31 @@
       "label": {
         "displayName": "Légende",
         "purpose": "Petites capitales posées au-dessus d'un montant ou en tête de colonne. Une cote, pas une étiquette."
+      },
+      "landing-hero": {
+        "displayName": "Page publique · hero",
+        "purpose": "Rôle hero de la page publique ; tailles normatives dans DESIGN.md.",
+        "scope": "landing"
+      },
+      "landing-headline": {
+        "displayName": "Page publique · headline",
+        "purpose": "Rôle headline de la page publique ; tailles normatives dans DESIGN.md.",
+        "scope": "landing"
+      },
+      "landing-price": {
+        "displayName": "Page publique · price",
+        "purpose": "Rôle price de la page publique ; tailles normatives dans DESIGN.md.",
+        "scope": "landing"
+      },
+      "landing-body": {
+        "displayName": "Page publique · body",
+        "purpose": "Rôle body de la page publique ; tailles normatives dans DESIGN.md.",
+        "scope": "landing"
+      },
+      "landing-command": {
+        "displayName": "Page publique · command",
+        "purpose": "Rôle command de la page publique ; tailles normatives dans DESIGN.md.",
+        "scope": "landing"
       }
     },
     "roundedMeta": {
@@ -245,6 +373,16 @@
         "value": "0 4px 8px rgba(23, 34, 43, 0.08), 0 18px 44px -10px rgba(23, 34, 43, 0.2)",
         "darkValue": "0 18px 44px -10px rgba(0, 0, 0, 0.65)",
         "purpose": "Ce qui sort du flux : menus, infobulles, panneaux latéraux, messages passagers."
+      },
+      {
+        "name": "landing-balance",
+        "value": "0 16px 38px #122e2729",
+        "purpose": "Cartouche illustratif opaque sur la photographie."
+      },
+      {
+        "name": "landing-demo",
+        "value": "0 20px 45px #071c1a30",
+        "purpose": "Captures de produit sur fond forêt."
       }
     ],
     "motion": [
@@ -267,6 +405,31 @@
         "name": "fil-attente",
         "value": "1050ms cubic-bezier(0.65, 0, 0.35, 1) infinite",
         "purpose": "La barre sarcelle sous la barre produit pendant qu'un rendu serveur revient. S'arrête sous prefers-reduced-motion."
+      },
+      {
+        "name": "landing-primary",
+        "value": "background 0.2s ease, transform 0.2s ease",
+        "purpose": "Survol du bouton ; déplacement vertical de -2 px."
+      },
+      {
+        "name": "landing-choice",
+        "value": "background 0.18s ease, color 0.18s ease",
+        "purpose": "Changement d’état des choix d’aperçu."
+      },
+      {
+        "name": "landing-reveal",
+        "value": "0.45s cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Révélation de la capture choisie par opacité et clip-path."
+      },
+      {
+        "name": "landing-light",
+        "value": "transform 650ms cubic-bezier(0.16, 1, 0.3, 1), color 650ms ease",
+        "purpose": "La courbe lumineuse accompagne le choix du mois, de la comparaison ou du détail."
+      },
+      {
+        "name": "landing-faq",
+        "value": "transform 0.25s ease",
+        "purpose": "Rotation du signe de FAQ à l’ouverture."
       }
     ],
     "breakpoints": [
@@ -285,8 +448,61 @@
       {
         "name": "xl",
         "value": "1280px"
+      },
+      {
+        "name": "landing-tablet",
+        "value": "1100px"
+      },
+      {
+        "name": "landing-mobile",
+        "value": "700px"
       }
-    ]
+    ],
+    "landing": {
+      "scope": "src/app/page.tsx",
+      "surfaceBrief": ".impeccable/surfaces/src-app-page-tsx.md",
+      "applicationRules": "Existing narrative, components and non-landing extensions remain scoped to the application.",
+      "northStar": "La lumière en mouvement",
+      "direction": {
+        "seed": "29f966f4",
+        "option": "assigned",
+        "candidate": 7,
+        "execution": "code-led",
+        "approvedUiComp": false
+      },
+      "focus": "3px solid current landing action color, offset 5px; yellow on forest demo choices.",
+      "reducedMotion": "All landing animations and transitions are disabled; scroll behavior is auto.",
+      "tonalRamps": "Observed role families only; these strips group the actual CSS shades, not new interchangeable semantic tokens.",
+      "review": {
+        "disposition": "ship",
+        "verdictScope": "Persistence fix only: Check 1 resolved, no documentary regression; prior rendering review unchanged.",
+        "materialFixes": [
+          "Persistence of product hypothesis, provisional offer and rendered public visual system."
+        ],
+        "renderingCorrections": [],
+        "evidence": [
+          ".impeccable/review/desktop.png",
+          ".impeccable/review/mobile.png",
+          ".impeccable/review/desktop-dark.png",
+          ".impeccable/review/mobile-dark.png",
+          ".impeccable/review/desktop-hero.png",
+          ".impeccable/review/mobile-hero.png",
+          ".impeccable/review/desktop-life.png",
+          ".impeccable/review/desktop-offre.png",
+          ".impeccable/review/desktop-compare.png",
+          ".impeccable/review/desktop-detail.png"
+        ]
+      },
+      "narrative": {
+        "overview": "La page publique associe verre courbe, lumière naturelle, fonds menthe et forêt, et une typographie expressive. Les chiffres reposent sur des surfaces opaques ; le verre appartient aux images.",
+        "dos": [
+          "Conserver les jetons isolés, les chiffres opaques et lisibles, les adaptations claire/sombre/mobile et la réduction des animations."
+        ],
+        "donts": [
+          "Ne pas transposer les grandes découpes photographiques ni Bricolage aux écrans de gestion."
+        ]
+      }
+    }
   },
   "components": [
     {
@@ -368,6 +584,37 @@
       "description": "Tient la place d'une valeur pas encore arrivée, à l'emplacement et à la largeur exacte de ce qui la remplacera. Un des deux seuls mouvements du produit.",
       "html": "<div class='ds-tirage' style='height:14px;width:180px'></div><div class='ds-tirage' style='height:8px;width:100%;max-width:320px;margin-top:10px'></div>",
       "css": ".ds-tirage { position: relative; overflow: hidden; border-radius: 999px; background: var(--surface-creuse, #f4f7f8); } .ds-tirage::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--filet-fort, #c3d0d5) 55%, transparent), transparent); animation: ds-tirage-passer 1500ms ease-in-out infinite; } @keyframes ds-tirage-passer { from { transform: translateX(-100%); } to { transform: translateX(100%); } } @media (prefers-reduced-motion: reduce) { .ds-tirage::after { animation: none; background: color-mix(in oklab, var(--filet-fort, #c3d0d5) 40%, transparent); } }"
+    },
+    {
+      "name": "Landing · Bouton principal",
+      "kind": "button",
+      "refersTo": "landing-primary",
+      "description": "Action principale publique ; mène à l’accès Plia.",
+      "html": "<a class=\"ds-land-primary\" href=\"#\">Commencer avec Plia <svg aria-hidden=\"true\" width=\"21\" height=\"21\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M7 17 17 7M7 7h10v10\"/></svg></a>",
+      "css": ".ds-land-primary{display:inline-flex;align-items:center;justify-content:center;gap:24px;min-height:56px;padding:15px 24px;border-radius:100px;background:#126b5b;color:#fff;font:600 15px/1.5 \"Schibsted Grotesk\",sans-serif;text-decoration:none;transition:background .2s ease,transform .2s ease}.ds-land-primary:hover{background:#0b5043;transform:translateY(-2px)}.ds-land-primary:focus-visible{outline:3px solid #126b5b;outline-offset:5px}@media(prefers-color-scheme:dark){.ds-land-primary{background:#9fddbc;color:#143328}.ds-land-primary:hover{background:#b9edcf}}@media(prefers-reduced-motion:reduce){.ds-land-primary{transition:none}}"
+    },
+    {
+      "name": "Landing · Choix d’aperçu",
+      "kind": "button",
+      "refersTo": "landing-demo-choice",
+      "description": "Trois choix à état pressé changent les captures ; pas une simulation budgétaire.",
+      "html": "<div class=\"ds-land-choices\"><button aria-pressed=\"true\">Votre mois</button><button aria-pressed=\"false\">Comparer</button><button aria-pressed=\"false\">Le détail</button></div>",
+      "css": ".ds-land-choices{display:flex;gap:12px;flex-wrap:wrap;background:#164c3c;padding:20px}.ds-land-choices button{min-height:56px;padding:13px 19px;border:1px solid #7aaa9166;border-radius:100px;background:transparent;color:#e5f0e8;font:400 14px/1.5 \"Schibsted Grotesk\",sans-serif;cursor:pointer;transition:background .18s ease,color .18s ease}.ds-land-choices button[aria-pressed=true]{background:#edf5f0;color:#164c3c;border-color:transparent}.ds-land-choices button:not([aria-pressed=true]):hover{background:#276650}.ds-land-choices button:focus-visible{outline:3px solid #f1c94e;outline-offset:5px}@media(prefers-reduced-motion:reduce){.ds-land-choices button{transition:none}}"
+    },
+    {
+      "name": "Landing · Cartouche illustratif",
+      "kind": "card",
+      "refersTo": "landing-balance",
+      "description": "Soldes sur fond opaque ; l’exemple demeure explicitement identifié.",
+      "html": "<aside class=\"ds-land-balance\"><strong>Voir plus loin.</strong><p>Solde prévu en fin de mois</p><dl><div><dt>Septembre</dt><dd>3 502,90 €</dd></div><div><dt>Octobre</dt><dd>7 032,91 €</dd></div><div><dt>Novembre</dt><dd>8 762,92 €</dd></div></dl><small>Exemple illustratif de budget</small></aside>",
+      "css": ".ds-land-balance{width:300px;padding:23px 24px 18px;background:#17222b;color:#f4f8f5;border-radius:14px;box-shadow:0 16px 38px #122e2729;font-family:\"Schibsted Grotesk\",sans-serif}.ds-land-balance strong{font-size:21px;font-weight:550}.ds-land-balance p{font-size:12px;color:#c1d0c8;margin:8px 0 16px}.ds-land-balance dl{margin:0}.ds-land-balance dl div{display:flex;justify-content:space-between;gap:16px;align-items:baseline;padding:10px 0}.ds-land-balance dt{font-size:13px;color:#c1d0c8}.ds-land-balance dd{margin:0;font-size:18px;font-weight:550;font-variant-numeric:tabular-nums}.ds-land-balance small{display:block;padding-top:10px;color:#b0c5b9;font-size:10px}"
+    },
+    {
+      "name": "Landing · Réponse bancaire",
+      "kind": "custom",
+      "description": "FAQ native, ouvrable au clavier et au clic.",
+      "html": "<details class=\"ds-land-faq\"><summary>Plia peut-il déplacer mon argent ?<span aria-hidden=\"true\">+</span></summary><p>Non. Plia lit le solde et les opérations de vos comptes pour construire votre budget. Il ne réalise pas de virements.</p></details>",
+      "css": ".ds-land-faq{background:#edf5f0;color:#172d28;border-block:1px solid #c5d7cc;font-family:\"Schibsted Grotesk\",sans-serif}.ds-land-faq summary{display:flex;justify-content:space-between;gap:25px;padding:25px 0;cursor:pointer;list-style:none;font-size:15px;font-weight:550}.ds-land-faq summary::-webkit-details-marker{display:none}.ds-land-faq summary:focus-visible{outline:3px solid #126b5b;outline-offset:5px}.ds-land-faq summary span{transition:transform .25s ease}.ds-land-faq[open] summary span{transform:rotate(45deg)}.ds-land-faq p{color:#496359;font-size:14px;line-height:1.8;padding:0 38px 26px 0}@media(prefers-reduced-motion:reduce){.ds-land-faq summary span{transition:none}}"
     }
   ],
   "narrative": {

@@ -13,9 +13,11 @@ related_targets: []
 ---
 
 ## Portée
-Toute l'app connectée sous `/app` : la barre produit, le tableau de bord,
-les transactions, l'historique, les réglages et le compte. La landing publique et
-l'écran de connexion héritent des mêmes jetons et ont été repris avec eux.
+Toute l'app connectée sous `/app` : la barre produit, les transactions,
+l'historique, les réglages et le compte. L'accueil redirige vers l'historique.
+L'écran de connexion hérite des jetons de l'application. La landing publique
+possède depuis le 10 septembre 2026 son propre périmètre visuel, décrit dans
+`src-app-page-tsx.md` ; ses couleurs et sa police de titre ne modifient pas l'app.
 
 ## Mode du visiteur
 Operate. Un indépendant à revenus irréguliers ouvre l'app quelques fois par mois,
@@ -146,8 +148,8 @@ formulaire d’ajout. Aucun débordement horizontal du relevé mobile constaté.
 | Imagerie | aucune — le produit est un relevé, pas une vitrine |
 
 ## Décisions ouvertes
-- La landing reste sommaire : elle dit ce que le produit fait, sans preuve
-  fabriquée. Elle mérite une vraie conception le jour où il y aura de quoi montrer.
+- La refonte de la landing est décrite dans `src-app-page-tsx.md`. Ses captures
+  de produit utilisent les données de démonstration et sont identifiées comme telles.
 - Les captures de la refonte ont été prises sur une route d'aperçu temporaire
   (`src/app/apercu`, supprimée) avec des données fabriquées : les vrais écrans
   demandent une session bancaire. À revoir sur les vraies données.
