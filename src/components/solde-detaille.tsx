@@ -4,8 +4,8 @@ import { Rows3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // DÉTAILLER LES MOUVEMENTS DE SOLDE. Un seul réglage, deux endroits éloignés : le
-// bouton vit dans la barre d'outils au-dessus de la frise, à côté du détail du
-// calcul, et le tableau qui obéit vit sous la frise. Trop loin l'un de l'autre pour
+// bouton vit dans la barre d'outils au-dessus de la frise sur ordinateur,
+// et le tableau qui obéit vit sous la frise. Trop loin l'un de l'autre pour
 // se passer un état par les props — d'où ce fournisseur, qui ne porte qu'un booléen.
 //
 // Ce que le réglage répare : dans les colonnes de solde, une case rouge veut dire
@@ -42,6 +42,7 @@ export function SoldeDetailleToggle() {
     <Button
       type="button"
       size="sm"
+      className="hidden sm:inline-flex"
       variant={etat.detaille ? "default" : "outline"}
       aria-pressed={etat.detaille}
       onClick={() => etat.basculer(!etat.detaille)}

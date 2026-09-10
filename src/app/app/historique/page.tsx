@@ -15,7 +15,6 @@ import { budgetChanges } from "../../../lib/budget-history";
 import { withoutDismissed } from "../../../lib/notifications";
 import { listDismissedNotifications } from "../../../db/repositories/dismissed-notifications";
 import { computeForecast, type Group, type Txn } from "../../../lib/forecast";
-import { ForecastDetailSheet } from "@/components/forecast-detail-sheet";
 import { currentMonthKey } from "../../../lib/current-month";
 import { accountLabel, effectiveBalance } from "../../../lib/account";
 import { pendingAsTransactions } from "../../../lib/bank-pending";
@@ -197,12 +196,9 @@ export default async function HistoriquePage({
             {/* Le fournisseur englobe la barre d'outils ET le tableau : le bouton est
                 au-dessus de la frise, le tableau qui obéit en dessous. */}
             <SoldeDetailleProvider>
-              {/* Au-dessus de la frise, pas en dessous : la frise et le tableau
-                  qu'elle commande restent collés, et le bouton d'explication du
-                  calcul se lit comme un outil de la page, à l'écart de ce couple. */}
-              <div className="flex flex-wrap items-center justify-end gap-2">
+              {/* Le réglage des mouvements reste au-dessus de la frise sur ordinateur. */}
+              <div className="hidden flex-wrap items-center justify-end gap-2 sm:flex">
                 <SoldeDetailleToggle />
-                <ForecastDetailSheet label={accountLabel(a)} forecast={forecast} />
               </div>
               <HistoryPeriodFrame
                 key={`${a.id}:${from}:${to}`}
