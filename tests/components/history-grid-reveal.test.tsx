@@ -134,6 +134,65 @@ function grille(...args: Parameters<typeof elementGrille>) {
   return renderToStaticMarkup(elementGrille(...args));
 }
 
+describe("repli des revenus", () => {
+  const nonRanges: HistorySection = {
+    kind: "uncategorized", uncatDirection: "in", rows: [],
+    txns: [{ ...recette, id: "recette-non-rangee", groupId: null }],
+    totals: [cell({ recu: 4.5 })],
+  };
+
+  it.each([false, true])("replie et rouvre les revenus sans toucher aux dépenses ni au total (mobile : %s)", async (isMobile) => {
+    (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    const mobile = isMobile ? { month: "2026-08", metric: null, onMonthChange: () => {} } : undefined;
+    try {
+      await act(async () => root.render(elementGrille([], [revenus, nonRanges, depenses], { mobile })));
+      const fold = Array.from(container.querySelectorAll("button")).find(button => button.textContent === "Ce qui rentre");
+      expect(fold).toBeDefined();
+      const total = container.querySelector('[data-history-total="income"]')!.textContent;
+      await act(async () => fold!.click());
+      expect(fold!.getAttribute("aria-expanded")).toBe("false");
+      expect(container.querySelector('[data-cellkey="group:7::recu::0"]')).toBeNull();
+      expect(container.querySelector('[data-cellkey="section:uncat-in::recu::0"]')).toBeNull();
+      expect(container.querySelector('[data-cellkey="group:8::depense::0"]')).not.toBeNull();
+      expect(container.querySelector('[data-history-total="income"]')!.textContent).toBe(total);
+      await act(async () => fold!.click());
+      expect(fold!.getAttribute("aria-expanded")).toBe("true");
+      expect(container.querySelector('[data-cellkey="group:7::recu::0"]')).not.toBeNull();
+      expect(container.querySelector('[data-cellkey="section:uncat-in::recu::0"]')).not.toBeNull();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+    }
+  });
+
+  it.each([
+    { section: revenusAPostes, reference: `txn:${recetteDePoste.id}::recu::0` },
+    { section: nonRanges, reference: "txn:recette-non-rangee::recu::0" },
+  ])("révèle $reference désigné dans le détail malgré le repli", async ({ section, reference }) => {
+    (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    const mobile = { month: "2026-08", metric: null, onMonthChange: () => {} };
+    try {
+      await act(async () => root.render(elementGrille([], [section], { mobile })));
+      const fold = Array.from(container.querySelectorAll("button")).find(button => button.textContent === "Ce qui rentre");
+      expect(fold).toBeDefined();
+      await act(async () => fold!.click());
+      expect(fold!.getAttribute("aria-expanded")).toBe("false");
+      await act(async () => root.render(elementGrille([reference], [section], { mobile })));
+      expect(fold!.getAttribute("aria-expanded")).toBe("true");
+      expect(container.querySelector(`[data-cellkey="${reference}"]`)).not.toBeNull();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+    }
+  });
+});
+
 describe("balance dans le total des dépenses", () => {
   it("sépare les deux tableaux et retire les colonnes étrangères à leur sens", () => {
     const el = document.createElement("div");

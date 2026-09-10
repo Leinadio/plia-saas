@@ -48,7 +48,7 @@ export function HistoryExpandableRows({ heading, amounts, expanded, className, c
   const mobile = useContext(MobileHistoryContext);
   const amountsAfterDetails = !!mobile && expanded;
   return <>
-    <TableRow className={className}>
+    <TableRow data-history-heading="" className={className}>
       {heading}
       {!amountsAfterDetails && amounts}
     </TableRow>

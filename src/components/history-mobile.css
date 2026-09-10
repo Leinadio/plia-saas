@@ -145,6 +145,40 @@
   gap: 0.5rem;
 }
 
+.history-mobile-transaction-amount {
+  flex-shrink: 0;
+  padding: 0 0.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Une seule teinte pour les chiffres, puis deux fonds plus soutenus pour le
+   nom du poste et le total. Les soldes et la sélection gardent leurs repères. */
+.history-mobile [data-history-card="income"] {
+  --mobile-amount-tint: color-mix(in oklab, var(--portant) 7%, var(--card));
+  --mobile-heading-tint: color-mix(in oklab, var(--portant) 14%, var(--card));
+  --mobile-total-tint: color-mix(in oklab, var(--portant) 24%, var(--card));
+}
+
+.history-mobile [data-history-card="expense"] {
+  --mobile-amount-tint: color-mix(in oklab, var(--tension) 5%, var(--card));
+  --mobile-heading-tint: color-mix(in oklab, var(--tension) 12%, var(--card));
+  --mobile-total-tint: color-mix(in oklab, var(--tension) 23%, var(--card));
+}
+
+.history-mobile [data-history-card="expense"] [data-mobile-column="reste"]:not(.case-active) {
+  background: var(--mobile-amount-tint);
+}
+
+.history-mobile :is([data-history-card="income"], [data-history-card="expense"]) [data-history-heading] > td:first-child:not([data-mobile-column]):not(.case-active) {
+  background: var(--mobile-heading-tint);
+}
+
+.history-mobile [data-history-total] > td:not([data-mobile-column^="solde"]):not(.case-active) {
+  background: var(--mobile-total-tint);
+}
+
 .history-mobile [data-history-transaction] select,
 .history-mobile [data-history-transaction] input,
 .history-mobile form select,

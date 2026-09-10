@@ -619,7 +619,15 @@ ordinateur et mobile ; les totaux propres aux revenus et aux dépenses restent
 dans leurs sections. Les non catégorisés restent dans la carte de leur sens ; les
 opérations hors calcul, lorsqu’il y en a, disposent d’une carte supplémentaire.
 Les noms et les montants libellés s’empilent. Les transactions apparaissent sous
-le nom du poste ouvert. La balance des dépenses figure dans le total des dépenses.
+le nom du poste ouvert. Leur montant signé et cliquable apparaît à droite de la
+date, dans le même bloc, sans ligne « Dépensé » ou « Reçu » séparée. Budget,
+dépensé et reste partagent le même fond clair ; le nom du poste est plus soutenu,
+puis les totaux revenus et dépenses encore davantage. Cette hiérarchie ne change
+pas les fonds des soldes ni la surbrillance de sélection.
+La balance des dépenses figure dans le total des dépenses.
+« Ce qui rentre » et « Ce qui sort » se replient indépendamment, en gardant
+leur total visible. Sur mobile, sélectionner une opération dans le détail
+rouvre sa section pour la montrer.
 Le bloc récapitulatif bancaire en attente est retiré sur ordinateur et mobile,
 sans retirer les transactions en attente des enveloppes ni modifier les calculs.
 L'écart bancaire reste expliqué dans le détail des soldes, sans lien vers l'ancien bloc. Les soldes

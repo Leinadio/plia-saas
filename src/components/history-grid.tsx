@@ -1452,6 +1452,7 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
 // quel. Ce qu'il pèse dans son poste est une autre affaire, et elle se lit une
 // ligne plus haut — le Dépensé du poste est déjà net de ce remboursement.
 function TxnCells({ txn, months, currentMonth, onSelect, selCellKey }: { txn: HistoryTxn; months: string[]; currentMonth: string; onSelect?: (d: CellDetail) => void; selCellKey?: ReadonlySet<string> }) {
+  const mobile = useContext(MobileHistoryContext);
   const isOut = txn.amount < 0;
   const section = useContext(HistorySectionColumnsContext);
   const returnedIncome = section?.table && section.kind === "income" && isOut;
@@ -1477,6 +1478,16 @@ function TxnCells({ txn, months, currentMonth, onSelect, selCellKey }: { txn: Hi
               { subtitle: monthLabel(m), result: montant },
             )
           : null;
+        if (mobile) {
+          if (!here || !detail) return null;
+          return <span key={m} data-cellkey={ck} className={cn("history-mobile-transaction-amount tabular-nums", ck && selCellKey?.has(ck) && CELL_HL)}>
+            {onSelect
+              ? <AmountDetailButton detail={detail} onSelect={onSelect} cellKey={ck}>
+                  <span className="sr-only">{isOut ? "Dépensé : " : "Reçu : "}</span>{isOut ? "−" : "+"}{val}
+                </AmountDetailButton>
+              : <>{isOut ? "−" : "+"}{val}</>}
+          </span>;
+        }
         const slots: ColSlots = {
           budgetRem: (b) => blankCol("budgetRem", b),
           budgetDep: (b) => blankCol("budgetDep", b),
@@ -1571,9 +1582,12 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
           <div className="group/txn flex flex-col gap-0.5 overflow-hidden">
             {/* La date reste en chasse fixe : c'est une donnée, elle s'aligne
                 d'une ligne à l'autre comme les montants. */}
-            {txn.pending
-              ? <span className="text-attente text-xs font-medium">En attente</span>
-              : <span className="text-ardoise-claire text-xs tabular-nums">{txn.date}</span>}
+            <div className={mobile ? "flex items-center justify-between gap-2" : "contents"}>
+              {txn.pending
+                ? <span className="text-attente text-xs font-medium">En attente</span>
+                : <span className="text-ardoise-claire text-xs tabular-nums">{txn.date}</span>}
+              {mobile && <TxnCells txn={txn} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} />}
+            </div>
             <TruncatedText text={txn.label} className="leading-5" lines={2} />
             {/* Le commentaire vient juste sous le libellé, dans la même colonne. */}
             {!demo && !txn.pending && <TxnCommentField txnId={txn.id} comment={txn.comment} />}
@@ -1610,7 +1624,7 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
           )}
         </div>
       </TableCell>
-      <TxnCells txn={txn} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} />
+      {!mobile && <TxnCells txn={txn} months={months} currentMonth={currentMonth} onSelect={onSelect} selCellKey={selCellKey} />}
     </TableRow>
   );
 }
@@ -1810,9 +1824,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     );
   // Le formulaire ouvert dans ce tableau-ci, ou null : le même état sert les N mois.
   const addingHere = (month: string) => (adding?.month === month ? adding.kind : null);
-  // La section « Ce qui sort » se replie d'un seul geste. Les dépenses conservent
-  // leur nature en base, mais l'écran ne les sépare plus en deux blocs.
+  // Chaque section se replie indépendamment, en conservant son total visible.
   const [depensesRepliees, setDepensesRepliees] = useState(false);
+  const [revenusReplies, setRevenusReplies] = useState(false);
   // Idem pour un sous-poste, mais la question porte sur une dépense précise.
   const addingLineHere = (groupId: number, month: string) =>
     adding?.kind === "line" && adding.groupId === groupId && adding.month === month;
@@ -1851,6 +1865,12 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
   const revealExpenses = isMobileView && sections.some(section => section.kind === "expense" && section.rows.some(row =>
     selectedRows.has(groupRow(row.id)) || mobileRevealAncestors.has(rowOpenKey(row.id))));
   const expensesClosed = depensesRepliees && !revealExpenses;
+  const revealIncome = isMobileView && sections.some(section =>
+    section.kind === "income"
+      ? section.rows.some(row => selectedRows.has(groupRow(row.id)) || mobileRevealAncestors.has(rowOpenKey(row.id)))
+      : section.kind === "uncategorized" && section.uncatDirection === "in"
+        && (selectedRows.has(sectionRowKey(section)) || mobileRevealAncestors.has(uncatOpenKey("in"))));
+  const incomeClosed = revenusReplies && !revealIncome;
 
   // Vers quelle case renvoie le « Solde précédent » de chaque ligne, colonne par
   // colonne (cf. src/lib/history-nav.ts).
@@ -2504,6 +2524,8 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     const enTeteRevenu = () => (
       <>
         {bande("bloc-revenu", "Ce qui rentre", BANDE_PORTANT, {
+          replie: incomeClosed,
+          onToggle: () => setRevenusReplies((value) => !value),
           onboardingTarget: onboarding?.incomeTarget,
           action: !demo ? (
             <Button type="button" size="xs" variant="outline" className="shrink-0 cursor-pointer sm:ml-auto" onClick={() => toggleAdding("income", moisDeTravail)}>
@@ -2610,15 +2632,15 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         return (
           <Fragment key={sec.kind}>
             {enTeteRevenu()}
-            <TeinteSection.Provider value={INCOME_TINT}>
+            {!incomeClosed && <TeinteSection.Provider value={INCOME_TINT}>
               {sec.rows.map((r) => renderGroup(r, true))}
-            </TeinteSection.Provider>
-            {uncatIn && (
+            </TeinteSection.Provider>}
+            {!incomeClosed && uncatIn && (
               <TeinteSection.Provider value={INCOME_TINT}>
                 {renderUncatRows(uncatIn, secs)}
               </TeinteSection.Provider>
             )}
-            <TableRow className="font-medium">
+            <TableRow data-history-total="income" className="font-medium">
               <TableCell className={cn(INCOME_TOTAL_TINT, COL1_STICKY, "h-px p-0")}>
                 <FirstColBox>Total revenus</FirstColBox>
               </TableCell>
@@ -2633,6 +2655,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         // Les reçus non catégorisés sont rendus dans la section Rémunérations
         // (ci-dessus) quand elle existe ; sinon ils s'affichent ici, à leur place.
         if (sec.uncatDirection === "in" && secs.some((s) => s.kind === "income")) return null;
+        if (sec.uncatDirection === "in" && incomeClosed) return null;
         // Un espace au-dessus des dépenses non catégorisées : elles suivent le
         // « Total Dépenses », qui clôt les enveloppes, et se
         // lisent mal collées à eux. Les reçus non catégorisés, eux, restent
@@ -2659,7 +2682,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
               {sec.rows.map((r) => renderGroup(r))}
             </TeinteSection.Provider>
           )}
-          <TableRow className="font-medium">
+          <TableRow data-history-total="expense" className="font-medium">
             <TableCell className={cn(EXPENSE_TOTAL_TINT, COL1_STICKY, "h-px p-0")}>
               <FirstColBox>Total Dépenses</FirstColBox>
             </TableCell>
