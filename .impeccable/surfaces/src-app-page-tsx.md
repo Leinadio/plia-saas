@@ -17,7 +17,19 @@ règles mobiles. Ce brief fait autorité pour la page publique.
 ## Travail à accomplir
 
 Faire comprendre que revenus, dépenses et mois à venir se lisent ensemble pour
-faire de la place aux projets. La promesse est « Faites de la place à vos projets. »
+faire de la place aux projets. Le titre choisi est « L’outil pour gérer vos finances sans vous compliquer la vie. »
+L’utilisateur conserve « L’outil pour gérer vos finances », sans la conjonction
+« et », avec une promesse de simplicité.
+Sa taille est réduite sur ordinateur et mobile. « finances » et « la vie »
+portent deux courbes vertes dessinées sur mesure, d’épaisseur variable ; un second
+trait léger prolonge le premier. Les mots restent dans la même phrase, sans animation.
+L’utilisateur retient le premier fond à larges rubans sauge et corail, sans sa
+partie haute. Les courbes inférieures et leur tracé fin d’accompagnement sont
+restaurés ; le titre et le bandeau restent sur fond uni. Les contours s’adaptent
+au téléphone, les teintes au mode sombre. Leur amplitude verticale est réduite
+de 40 % à la demande de l’utilisateur, pour des courbes plus plates.
+Le décor est statique et n’intercepte
+aucun clic ; les trois repères restent affichés au-dessus des courbes.
 L’action principale ouvre `/connexion` ; l’action secondaire rejoint la présentation
 par captures. Il n’y a ni paiement ni souscription simulée.
 
@@ -37,14 +49,14 @@ d’action de l’interface.
 Le haut partage la promesse à gauche et une photographie sculpturale à droite.
 Un cartouche sombre posé au pied de l’image expose trois soldes prévus avec la
 mention d’exemple illustratif. Trois repères relient ce qui rentre, ce qui sort et
-ce qu’il restera. Une section « Plia, en action. » présente ensuite la visite
+ce qu’il restera. Une section « Planora, en action. » présente ensuite la visite
 guidée de 1 min 14, ouverte au clic dans Hero Video Dialog de Magic UI.
 Sur fond forêt, la démonstration alterne « Votre mois »,
 « Comparer » et « Le détail » ; la courbe lumineuse change avec la vue choisie.
 
 Une scène de départ en week-end relie ensuite le budget à un projet concret.
 Le fonctionnement présente connexion bancaire, enveloppes et comparaison, suivi
-d’un rappel que Plia ne déplace pas d’argent. L’offre unique est affichée à
+d’un rappel que Planora ne déplace pas d’argent. L’offre unique est affichée à
 29 € / mois avec « Tarif envisagé. L’offre commerciale est en cours de finalisation. »
 L’ambition premium est autorisée ; le prix définitif reste à valider. La FAQ
 répond sur le budget, la banque, les prévisions, la synchronisation et le classement.

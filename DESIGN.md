@@ -1,5 +1,5 @@
 ---
-name: Plia
+name: Planora
 description: Un relevé en cartes claires — une sarcelle qui ne sert qu'à commander, une jauge qui déborde vraiment, et un pied d'encre qui ferme le grand tableau.
 colors:
   encre: "#17222b"
@@ -62,6 +62,12 @@ colors:
   landing-button-ink-dark: "#143328"
   landing-white: "#fff"
   landing-selection: "#f1c94e"
+  landing-hero-ribbon-sage: "#c6dfd1"
+  landing-hero-ribbon-coral: "#f3d3c2"
+  landing-hero-ribbon-line: "#89b4a0"
+  landing-hero-ribbon-sage-dark: "#244c3c"
+  landing-hero-ribbon-coral-dark: "#634a3e"
+  landing-hero-ribbon-line-dark: "#4e8068"
   landing-balance-bg: "#17222b"
   landing-balance-ink: "#f4f8f5"
   landing-balance-icon: "#b9d8c7"
@@ -169,21 +175,21 @@ typography:
     "44": "2.75rem"
   landing-hero:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
-    fontSize: "clamp(60px, 6.4vw, 92px)"
+    fontSize: "clamp(48px, 5vw, 72px)"
     fontWeight: 550
-    lineHeight: 1.02
+    lineHeight: 1.1
     letterSpacing: "-0.035em"
   landing-hero-tablet:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
-    fontSize: "70px"
+    fontSize: "56px"
     fontWeight: 550
-    lineHeight: 1.02
+    lineHeight: 1.1
     letterSpacing: "-0.035em"
   landing-hero-mobile:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
-    fontSize: "clamp(44px, 12.7vw, 68px)"
+    fontSize: "clamp(36px, 10vw, 54px)"
     fontWeight: 550
-    lineHeight: 1.04
+    lineHeight: 1.1
     letterSpacing: "-0.035em"
   landing-audience-hero:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
@@ -571,7 +577,7 @@ components:
     padding: "23px 24px 18px"
 ---
 
-# Design System: Plia
+# Design System: Planora
 
 ## Overview
 
@@ -588,7 +594,7 @@ La composition et les preuves de chaque route vivent dans son brief de surface.
 
 Un budget est une collection d'enveloppes. Chacune a un nom, une contenance, ce qu'on
 en a déjà sorti — et, quand ça a mal tourné, ce qui a débordé au-delà du bord. Le monde
-visuel de Plia n'a qu'un objet, la CARTE : tout ce qui est panneau, section, relevé,
+visuel de Planora n'a qu'un objet, la CARTE : tout ce qui est panneau, section, relevé,
 enveloppe ou grand tableau est posé dedans, et rien ne s'imbrique.
 
 L'Historique fait exception à la carte-liste et l'assume : c'est un RELEVÉ À COLONNES DE
@@ -1079,7 +1085,28 @@ liens de comparaison restent utilisables. Les jetons, les couleurs de section,
 la vue mensuelle et le tableau sur ordinateur restent identiques. Le panneau de
 calcul occupe toute la largeur du téléphone et propose un retour explicite au relevé.
 
+### Identité — logo
+
+Le symbole Planora est un P dessiné en ruban replié, sans cadre ni fond.
+Il est vert profond (#126b5b) en clair et menthe (#d4f2df) en sombre. Sa boucle ouverte et son retour vert tendre rappellent les courbes
+de la page publique. La forme reste identique en clair et en sombre ; le nom
+Planora garde la couleur de texte du thème. Le symbole est partagé entre le site,
+la connexion et la barre de l’application. Le favicon SVG est la source du
+dessin ; les variantes ICO (16, 32 et 48 px) et Apple (180 px) en sont dérivées.
+
 ### Page publique — composants
+
+Le premier fond à larges rubans sauge et corail est repris uniquement dans sa
+partie basse, avec son tracé fin d’accompagnement. La grande courbe du haut est
+supprimée : le titre et le bandeau retrouvent le fond menthe uni. Les contours
+inférieurs sont adaptés au téléphone et les teintes au mode sombre. Leur amplitude
+verticale est réduite de 40 % pour une ondulation plus douce. Le décor
+reste derrière le contenu, statique, masqué aux lecteurs d’écran et sans interaction.
+
+Dans le titre d’accueil, « finances » et « la vie » sont soulignés par deux
+courbes vectorielles distinctes, effilées comme un geste au pinceau. La première
+possède un retour plus léger. Ces tracés suivent la couleur verte du thème,
+restent attachés à leur mot et sont masqués aux lecteurs d’écran. Ils sont statiques.
 
 Le bouton principal est une capsule pleine, haute d’au moins 56 px (54 sur
 mobile), avec une flèche. Au survol, son fond se renforce et il monte de 2 px ;

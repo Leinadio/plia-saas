@@ -107,7 +107,7 @@ export function LandingContent() {
         </div>
         <div className={styles.bankNote}>
           <span>Vos comptes restent chez votre banque.</span>
-          <p>Plia consulte vos opérations. Il ne déplace pas votre argent.</p>
+          <p>Planora consulte vos opérations. Il ne déplace pas votre argent.</p>
           <Link2 aria-hidden />
         </div>
       </section>
@@ -150,7 +150,7 @@ export function LandingContent() {
             </ul>
           </div>
           <div className={styles.price}>
-            <h3>Plia</h3>
+            <h3>Planora</h3>
             <p className={styles.priceAmount}>
               29 <span>€ / mois</span>
             </p>
@@ -158,7 +158,7 @@ export function LandingContent() {
               Votre budget, avec une vue d’avance.
             </p>
             <Link href="/connexion" className={styles.primary}>
-              Découvrir Plia <ArrowUpRight aria-hidden />
+              Découvrir Planora <ArrowUpRight aria-hidden />
             </Link>
             <p className={styles.priceNote}>
               Tarif envisagé. L’offre commerciale est en cours de finalisation.
@@ -176,7 +176,7 @@ export function LandingContent() {
           </h2>
           <p>Commencez par voir ce que vos prochains mois vous réservent.</p>
           <Link href="/connexion" className={styles.primary}>
-            Commencer avec Plia <ArrowUpRight aria-hidden />
+            Commencer avec Planora <ArrowUpRight aria-hidden />
           </Link>
         </div>
         <div className={styles.closeImage}>

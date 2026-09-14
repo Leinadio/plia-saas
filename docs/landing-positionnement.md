@@ -1,4 +1,4 @@
-# Plia — positionnement de la nouvelle landing
+# Planora — positionnement de la nouvelle landing
 
 Proposition du 10 septembre 2026, mise à jour avec la cible retenue par le créateur : les personnes seules et les couples. La direction visuelle « La lumière en mouvement » a été choisie dans la page de décision (seed `29f966f4`, option `assigned`, réalisation en code). Le choix de cible ne constitue pas une étude clients ; le prix reste une hypothèse de lancement.
 
@@ -12,11 +12,11 @@ La page `/pour-qui`, reliée au header sur mobile et ordinateur, présente ces u
 
 ## Offre proposée
 
-Une offre complète à **29 € par mois**, hypothèse premium demandée par le créateur. La landing indique « Tarif envisagé. L’offre commerciale est en cours de finalisation. » Le bouton conduit à l’accès Plia, sans simuler un paiement ou un abonnement inexistant. Aucun essai gratuit, engagement annuel, accompagnement personnel ou niveau de service n’est inventé.
+Une offre complète à **29 € par mois**, hypothèse premium demandée par le créateur. La landing indique « Tarif envisagé. L’offre commerciale est en cours de finalisation. » Le bouton conduit à l’accès Planora, sans simuler un paiement ou un abonnement inexistant. Aucun essai gratuit, engagement annuel, accompagnement personnel ou niveau de service n’est inventé.
 
-Ce prix est ambitieux au regard des repères publics consultés le 10 septembre 2026 : Bankin’ Plus annonce 39,99 € par an ; YNAB affiche 14,99 USD par mois ou 109 USD par an ; Monarch Plus annonce 199 USD par an. Les devises, les marchés et les fonctionnalités diffèrent : ces montants ne sont pas une comparaison à périmètre égal. Un prix élevé de Plia devra être défendu par la clarté du produit, la qualité de son utilisation et une valeur confirmée auprès de la cible, pas seulement par une esthétique premium.
+Ce prix est ambitieux au regard des repères publics consultés le 10 septembre 2026 : Bankin’ Plus annonce 39,99 € par an ; YNAB affiche 14,99 USD par mois ou 109 USD par an ; Monarch Plus annonce 199 USD par an. Les devises, les marchés et les fonctionnalités diffèrent : ces montants ne sont pas une comparaison à périmètre égal. Un prix élevé de Planora devra être défendu par la clarté du produit, la qualité de son utilisation et une valeur confirmée auprès de la cible, pas seulement par une esthétique premium.
 
-Sources primaires : [Bankin’ Plus](https://support.bankin.com/hc/fr/articles/360006559578-Pr%C3%A9sentation-de-Bankin-Plus), [YNAB — tarifs](https://www.ynab.com/pricing), [Monarch Plus](https://www.monarch.com/blog/monarch-plus). La présence de prévisions chez Bankin’ et Monarch interdit de présenter l’anticipation comme une exclusivité de Plia.
+Sources primaires : [Bankin’ Plus](https://support.bankin.com/hc/fr/articles/360006559578-Pr%C3%A9sentation-de-Bankin-Plus), [YNAB — tarifs](https://www.ynab.com/pricing), [Monarch Plus](https://www.monarch.com/blog/monarch-plus). La présence de prévisions chez Bankin’ et Monarch interdit de présenter l’anticipation comme une exclusivité de Planora.
 
 ## Ce que l’analyse du produit a changé
 
@@ -26,15 +26,15 @@ L’ancienne landing présentait une vidéo et des illustrations moins proches d
 
 ## Parcours de conversion
 
-La promesse « Faites de la place à vos projets » relie le budget à une vie concrète. Le texte explique immédiatement le rôle de Plia : revenus, dépenses et mois à venir. L’action principale conduit à l’accès à Plia ; l’action secondaire ouvre la présentation du produit.
+La promesse « Faites de la place à vos projets » relie le budget à une vie concrète. Le texte explique immédiatement le rôle de Planora : revenus, dépenses et mois à venir. L’action principale conduit à l’accès à Planora ; l’action secondaire ouvre la présentation du produit.
 
 Le visiteur explore ensuite trois aperçus issus des vrais composants, avec des données de démonstration : le budget du mois, la comparaison des soldes et le détail d’un montant. Une photographie de départ en week-end remet ces chiffres dans le contexte d’un projet. Le fonctionnement et les réponses bancaires précèdent ou accompagnent l’offre. La page se termine par une nouvelle invitation à commencer.
 
-Les photographies sont des créations originales générées avec l’outil imagegen intégré. Elles ne représentent pas des clients. Les captures de produit utilisent les données fictives déjà présentes dans Plia ; leur caractère démonstratif est visible sur la page. Les prompts et les origines sont enregistrés avec les images dans `public/landing/`.
+Les photographies sont des créations originales générées avec l’outil imagegen intégré. Elles ne représentent pas des clients. Les captures de produit utilisent les données fictives déjà présentes dans Planora ; leur caractère démonstratif est visible sur la page. Les prompts et les origines sont enregistrés avec les images dans `public/landing/`.
 
 ## Portée
 
-Juste après les trois repères du budget, « Plia, en action. » propose une visite
+Juste après les trois repères du budget, « Planora, en action. » propose une visite
 guidée de 1 min 14 dans les vrais écrans de démonstration. Elle montre les achats,
 le détail d’un montant, l’ajustement d’un budget et les mois à venir. Le lecteur
 s’ouvre au clic, avec sous-titres français facultatifs. Les données fictives et
@@ -49,7 +49,7 @@ page de campagne : « La vie, à votre façon. » Deux photographies originales 
 lecture en solo et de projet d’appartement en couple composent un diptyque décalé.
 Les portraits permettent de rejoindre chaque usage. Trois arguments courts par
 public accompagnent les vrais écrans de détail et de comparaison, sur des plages
-corail et forêt. La page reprend les polices et les commandes publiques de Plia.
+corail et forêt. La page reprend les polices et les commandes publiques de Planora.
 
 La promesse reste celle du budget personnel et de l’anticipation. L’absence d’accès
 partagé entre conjoints est indiquée. Les photos sont fictives, créées par imagegen,

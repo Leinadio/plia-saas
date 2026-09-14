@@ -3,7 +3,7 @@ import { Bricolage_Grotesque, Schibsted_Grotesk } from "next/font/google";
 import Script from "next/script";
 import { Toaster } from "@/components/ui/sonner";
 
-export const metadata = { title: "Plia" };
+export const metadata = { title: "Planora" };
 
 // UNE SEULE FONTE, ET C'EST UN CHOIX. Schibsted Grotesk porte les titres, les
 // libellés, les commandes et les montants. Un logiciel de travail n'a pas besoin
@@ -45,7 +45,7 @@ que des montants, des pastilles ovales et la jauge : vert portant, rouge tension
 sable attente. Schibsted Grotesk seule, tabulaire.
 STORY: L'utilisateur voit quelles enveloppes ont débordé, de combien, et où le
 solde atterrit à la fin de chaque mois — puis il va corriger le poste responsable.
-FIRST VIEWPORT: Barre produit blanche (Plia, trois destinations, synchro,
+FIRST VIEWPORT: Barre produit blanche (Planora, trois destinations, synchro,
 calculatrice, notifications) ; sur le tableau de bord, carte d'horizon — une colonne
 par mois posée sur la ligne du zéro, le montant écrit au-dessus — puis les relevés et
 les enveloppes du mois ; sur l'Historique, la frise des mois et le grand tableau dans
@@ -68,8 +68,8 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
 const AUDIENCE_CONTRAT = `<!--
 THESIS: La vie, à votre façon. La page Pour qui relie envies et budget par deux scènes de vie et des bénéfices courts.
-OWN-WORLD: Monde public Plia conservé : Bricolage, Schibsted, menthe, forêt ; le corail des photographies devient un fond de preuve opaque.
-STORY: Se reconnaître en solo ou à deux, comprendre les enveloppes et les mois à venir, puis découvrir ou commencer Plia. Pas d’accès partagé promis.
+OWN-WORLD: Monde public Planora conservé : Bricolage, Schibsted, menthe, forêt ; le corail des photographies devient un fond de preuve opaque.
+STORY: Se reconnaître en solo ou à deux, comprendre les enveloppes et les mois à venir, puis découvrir ou commencer Planora. Pas d’accès partagé promis.
 FIRST VIEWPORT: Grand titre centré, promesse courte et action ; deux photographies originales décalées, courbes opposées et liens vers chaque usage.
 FORM: Diptyque de campagne photographique, refinement code-led du monde public existant, audience-art-v2. Pas de nouvelle animation.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance

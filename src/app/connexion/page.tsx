@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { PlanoraMark } from "@/components/planora-mark";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { signIn, signUp } from "@/lib/auth-client";
@@ -47,13 +48,8 @@ export default function ConnexionPage() {
     // page vide, la carte laissait tout l'écran désert sous elle.
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 px-4 py-10">
       <Link href="/" className="flex items-center gap-2.5">
-        <span
-          aria-hidden
-          className="bg-encre text-[var(--surface)] flex size-9 items-center justify-center rounded-[0.625rem] text-lg font-bold"
-        >
-          P
-        </span>
-        <span className="text-2xl font-bold tracking-[-0.02em]">Plia</span>
+        <PlanoraMark className="size-9 shrink-0" />
+        <span className="text-2xl font-bold tracking-[-0.02em]">Planora</span>
       </Link>
       <Card className="w-full max-w-sm">
         <CardHeader>

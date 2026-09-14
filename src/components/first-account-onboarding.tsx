@@ -9,7 +9,7 @@ const ETAPES = [
   },
   {
     icon: RefreshCw,
-    titre: "Laissez Plia rassembler",
+    titre: "Laissez Planora rassembler",
     texte: "La première synchronisation récupère vos opérations.",
   },
   {
@@ -35,7 +35,7 @@ export function FirstAccountOnboarding({ connexionTerminee = false }: { connexio
             id="premiers-pas-titre"
             className="max-w-xl text-3xl leading-[1.08] font-bold tracking-[-0.025em] text-balance sm:text-4xl"
           >
-            Vous avez vu comment Plia fonctionne.
+            Vous avez vu comment Planora fonctionne.
           </h1>
           <p className="text-muted-foreground mt-4 max-w-[60ch] text-sm leading-6 sm:text-base">
             Reliez une banque quand vous êtes prêt à retrouver cette vue avec vos chiffres.

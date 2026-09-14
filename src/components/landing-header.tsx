@@ -1,15 +1,14 @@
 import Link from "next/link";
+import { PlanoraMark } from "./planora-mark";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import styles from "./landing.module.css";
 import headerStyles from "./landing-header.module.css";
 
 export function LandingBrand() {
   return (
-    <Link href="/" aria-label="Plia, accueil" className={styles.brand}>
-      <span className={styles.brandMark} aria-hidden>
-        P
-      </span>
-      Plia
+    <Link href="/" aria-label="Planora, accueil" className={styles.brand}>
+      <PlanoraMark className={styles.brandMark} />
+      Planora
     </Link>
   );
 }

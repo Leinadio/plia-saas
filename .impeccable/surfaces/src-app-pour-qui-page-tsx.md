@@ -15,7 +15,7 @@ est émis dans le document de production.
 
 ## Travail à accomplir
 
-Faire reconnaître des envies et situations de vie, montrer comment Plia aide à
+Faire reconnaître des envies et situations de vie, montrer comment Planora aide à
 organiser les dépenses et préparer les mois suivants, puis rejoindre la démonstration
 ou commencer. Les bénéfices reposent sur les enveloppes, le détail des montants et
 la comparaison des mois déjà présents dans le produit.
@@ -40,7 +40,7 @@ cette page seulement. Les règles du budget connecté et de l’accueil sont pr�
 
 ## Composition et parcours
 
-« La vie, à votre façon. » ouvre la page au centre. « Découvrir Plia » rejoint
+« La vie, à votre façon. » ouvre la page au centre. « Découvrir Planora » rejoint
 `/#demonstration`. Deux photographies originales composent un diptyque : le solo
 est décalé vers le bas, leurs grands coins sont opposés. Les photos entières sont
 des liens vers `#en-solo` et `#a-deux`, avec cartouches opaques et flèches visibles.
@@ -57,7 +57,7 @@ de comparaison répond à « Aujourd’hui. Et après ? ». Le lien propose
 Les deux liens ouvrent `/connexion`.
 
 La conclusion « Faites de la place à votre prochaine envie. » propose
-« Commencer avec Plia » vers `/connexion` et « Découvrir l’offre » vers `/#offre`.
+« Commencer avec Planora » vers `/connexion` et « Découvrir l’offre » vers `/#offre`.
 Le bandeau et le pied communs conservent les liens vers l’accueil et ses sections.
 
 ## Images et provenance

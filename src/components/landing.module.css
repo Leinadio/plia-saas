@@ -6,6 +6,9 @@
   --land-green: #126b5b;
   --land-line: #c5d7cc;
   --land-soft: #dcece1;
+  --hero-ribbon-sage: #c6dfd1;
+  --hero-ribbon-coral: #f3d3c2;
+  --hero-ribbon-line: #89b4a0;
   color: var(--land-ink);
   background: var(--land-bg);
   overflow: clip;
@@ -58,14 +61,10 @@
   letter-spacing: -0.04em;
 }
 .brandMark {
-  display: grid;
-  place-items: center;
-  width: 36px;
+  display: block;
+  flex-shrink: 0;
+  width: 40px;
   height: 40px;
-  border-radius: 15px 15px 15px 4px;
-  background: var(--land-green);
-  color: #fff;
-  font-size: 24px;
 }
 .nav {
   display: flex;
@@ -96,6 +95,8 @@
   height: 18px;
 }
 .hero {
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: 1fr 1fr;
   max-width: 1440px;
@@ -104,24 +105,64 @@
   margin: 0 auto;
   gap: 24px;
 }
+.heroBackdrop {
+  position: absolute;
+  z-index: -1;
+  top: -104px;
+  bottom: -120px;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  overflow: hidden;
+  pointer-events: none;
+}
+.heroBackdrop svg {
+  width: 100%;
+  height: 100%;
+}
+.heroBackdropNarrow {
+  display: none;
+}
+.heroRibbonSage {
+  fill: var(--hero-ribbon-sage);
+}
+.heroRibbonCoral {
+  fill: var(--hero-ribbon-coral);
+}
+.heroRibbonLine {
+  fill: none;
+  stroke: var(--hero-ribbon-line);
+  stroke-width: 1;
+}
 .heroCopy {
   position: relative;
   z-index: 1;
   align-self: center;
-  padding-bottom: 36px;
 }
 .hero h1 {
   position: relative;
   width: 110%;
   max-width: 700px;
-  font-size: clamp(60px, 6.4vw, 92px);
-  line-height: 1.02;
+  font-size: clamp(48px, 5vw, 72px);
+  line-height: 1.1;
   font-weight: 550;
   margin: 0;
 }
-.hero h1 span {
+.heroAccent {
+  position: relative;
+  display: inline-block;
   color: var(--land-green);
-  display: block;
+  white-space: nowrap;
+}
+.heroAccent svg {
+  position: absolute;
+  left: -2%;
+  bottom: -0.13em;
+  width: 104%;
+  height: 0.24em;
+  fill: currentColor;
+  overflow: visible;
+  pointer-events: none;
 }
 .heroCopy > p {
   max-width: 460px;
@@ -191,6 +232,7 @@
 }
 .heroVisual {
   position: relative;
+  isolation: isolate;
   min-width: 0;
   min-height: 630px;
 }
@@ -271,10 +313,12 @@
     --land-green: #9fddbc;
     --land-line: #3c5a4d;
     --land-soft: #234234;
+    --hero-ribbon-sage: #244c3c;
+    --hero-ribbon-coral: #634a3e;
+    --hero-ribbon-line: #4e8068;
     color-scheme: dark;
   }
-  .primary,
-  .brandMark {
+  .primary {
     color: #143328;
   }
   .primary:hover {
@@ -292,7 +336,7 @@
     min-height: 680px;
   }
   .hero h1 {
-    font-size: 70px;
+    font-size: 56px;
     width: 108%;
   }
   .heroVisual {
@@ -307,6 +351,16 @@
   }
 }
 @media (max-width: 700px) {
+  .heroBackdrop {
+    top: -117px;
+    bottom: -60px;
+  }
+  .heroBackdropWide {
+    display: none;
+  }
+  .heroBackdropNarrow {
+    display: block;
+  }
   .header {
     height: 80px;
     padding: 0 24px;
@@ -315,10 +369,8 @@
     font-size: 25px;
   }
   .brandMark {
-    width: 30px;
+    width: 34px;
     height: 34px;
-    font-size: 21px;
-    border-radius: 13px 13px 13px 4px;
   }
   .nav {
     display: none;
@@ -338,10 +390,10 @@
     align-self: stretch;
   }
   .hero h1 {
-    font-size: clamp(44px, 12.7vw, 68px);
+    font-size: clamp(36px, 10vw, 54px);
     width: auto;
     max-width: 520px;
-    line-height: 1.04;
+    line-height: 1.1;
   }
   .heroCopy > p {
     margin-top: 22px;
@@ -396,6 +448,7 @@
   }
 }
 .promise {
+  position: relative;
   max-width: 1312px;
   margin: auto;
   padding: 38px 40px 95px;

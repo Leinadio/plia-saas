@@ -138,7 +138,7 @@ export function HeroVideoDialog({
       <motion.button
         ref={triggerRef}
         type="button"
-        aria-label="Lire la démonstration de Plia"
+        aria-label="Lire la démonstration de Planora"
         className="group relative block size-full cursor-pointer border-0 bg-transparent p-0"
         style={triggerStyle}
         onClick={() => setIsVideoOpen(true)}
@@ -174,7 +174,7 @@ export function HeroVideoDialog({
             role="dialog"
             ref={dialogRef}
             aria-modal="true"
-            aria-label="Démonstration de Plia"
+            aria-label="Démonstration de Planora"
             onKeyDown={keepFocusInDialog}
             onClick={() => setIsVideoOpen(false)}
             exit={{ opacity: 0 }}
@@ -211,7 +211,7 @@ export function HeroVideoDialog({
                     autoPlay={!prefersReducedMotion}
                     playsInline
                     tabIndex={0}
-                    aria-label="Visite guidée de Plia"
+                    aria-label="Visite guidée de Planora"
                   >
                     {captionsSrc && (
                       <track
@@ -225,7 +225,7 @@ export function HeroVideoDialog({
                 ) : (
                   <iframe
                     src={videoSrc}
-                    title="Démonstration de Plia"
+                    title="Démonstration de Planora"
                     className="mt-0 size-full rounded-2xl"
                     allowFullScreen
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

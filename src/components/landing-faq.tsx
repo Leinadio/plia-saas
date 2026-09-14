@@ -4,7 +4,7 @@ const questions = [
   {
     question: "Est-ce fait pour mon budget ?",
     answer:
-      "Plia s’adresse aux personnes qui pilotent le budget du foyer et veulent anticiper leurs dépenses : charges fixes, achats du quotidien ou projets à venir. Vous organisez les enveloppes selon votre vie.",
+      "Planora s’adresse aux personnes qui pilotent le budget du foyer et veulent anticiper leurs dépenses : charges fixes, achats du quotidien ou projets à venir. Vous organisez les enveloppes selon votre vie.",
   },
   {
     question: "Quelle banque puis-je connecter ?",
@@ -12,9 +12,9 @@ const questions = [
       "Vous choisissez votre établissement parmi les banques proposées par Enable Banking au moment de la connexion. Les établissements disponibles dépendent du pays et de la compatibilité bancaire.",
   },
   {
-    question: "Plia peut-il déplacer mon argent ?",
+    question: "Planora peut-il déplacer mon argent ?",
     answer:
-      "Non. Plia lit le solde et les opérations de vos comptes pour construire votre budget. Il ne réalise pas de virements. Créer une enveloppe organise votre budget ; cela ne déplace pas votre argent.",
+      "Non. Planora lit le solde et les opérations de vos comptes pour construire votre budget. Il ne réalise pas de virements. Créer une enveloppe organise votre budget ; cela ne déplace pas votre argent.",
   },
   {
     question: "D’où viennent les prévisions ?",
@@ -42,7 +42,7 @@ export function LandingFaq() {
           Même vos questions.
         </h2>
         <p>
-          Quelques réponses avant de faire entrer Plia dans votre quotidien.
+          Quelques réponses avant de faire entrer Planora dans votre quotidien.
         </p>
       </div>
       <div className={styles.faqItems}>

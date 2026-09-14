@@ -82,7 +82,7 @@ export default async function HistoriquePage({
       // rembobine des mouvements d'où ces opérations sont absentes, en partant d'un solde
       // qui les contient — et se retrouve décalée de leur montant.
       ignoredByAccount: await sumIgnoredByAccount(database),
-      // Une saisie manuelle existe dans Plia avant d'exister à la banque. Son montant
+      // Une saisie manuelle existe dans Planora avant d'exister à la banque. Son montant
       // corrige donc le solde bancaire jusqu'à la synchronisation qui la remplacera.
       manualByAccount: await sumManualByAccount(database, currentMonth),
     }));

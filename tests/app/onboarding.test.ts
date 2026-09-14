@@ -13,7 +13,7 @@ describe("la première prise en main", () => {
     const html = renderToStaticMarkup(createElement(FirstAccountOnboarding));
     const texte = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
 
-    expect(texte).toContain("Vous avez vu comment Plia fonctionne");
+    expect(texte).toContain("Vous avez vu comment Planora fonctionne");
     expect(texte).toContain("Connecter ma banque");
     expect(texte).toContain("quand vous êtes prêt");
     expect(texte).toContain("Vous choisissez les comptes à partager");

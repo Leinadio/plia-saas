@@ -7,9 +7,9 @@ import landing from "@/components/landing.module.css";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "En solo ou à deux, un budget à votre image — Plia",
+  title: "En solo ou à deux, un budget à votre image — Planora",
   description:
-    "Un budget pensé pour les personnes seules et les couples. Organisez vos dépenses, voyez les mois à venir et faites de la place à vos projets avec Plia.",
+    "Un budget pensé pour les personnes seules et les couples. Organisez vos dépenses, voyez les mois à venir et faites de la place à vos projets avec Planora.",
 };
 
 export default function AudiencePage() {
@@ -28,7 +28,7 @@ export default function AudiencePage() {
             Et de la place pour tout ce qui compte.
           </p>
           <Link href="/#demonstration" className={landing.primary}>
-            Découvrir Plia <ArrowUpRight aria-hidden />
+            Découvrir Planora <ArrowUpRight aria-hidden />
           </Link>
         </div>
         <div className={styles.portraits}>
@@ -125,13 +125,13 @@ export default function AudiencePage() {
           <div className={styles.detailImage}>
             <Image
               src="/landing/plia-detail-mobile.png"
-              alt="Dans Plia, l’enveloppe Courses détaille un budget de 350 euros, 216,30 euros dépensés et 133,70 euros restants."
+              alt="Dans Planora, l’enveloppe Courses détaille un budget de 350 euros, 216,30 euros dépensés et 133,70 euros restants."
               width={430}
               height={480}
               sizes="(max-width: 700px) 80vw, 330px"
             />
           </div>
-          <figcaption>Écran Plia · données de démonstration</figcaption>
+          <figcaption>Écran Planora · données de démonstration</figcaption>
         </figure>
       </section>
 
@@ -198,13 +198,13 @@ export default function AudiencePage() {
             </p>
             <Image
               src="/landing/plia-soldes-mobile.png"
-              alt="La vue Comparer de Plia présente les soldes de plusieurs mois et une estimation de fin de mois."
+              alt="La vue Comparer de Planora présente les soldes de plusieurs mois et une estimation de fin de mois."
               width={398}
               height={294}
               sizes="(max-width: 700px) 88vw, 398px"
             />
             <figcaption>
-              Écran Plia · données de démonstration
+              Écran Planora · données de démonstration
               <br />
               Les prévisions dépendent des informations de votre budget.
             </figcaption>
@@ -221,7 +221,7 @@ export default function AudiencePage() {
         <p>Pour un petit plaisir. Pour un grand départ.</p>
         <div className={styles.actions}>
           <Link href="/connexion" className={landing.primary}>
-            Commencer avec Plia <ArrowUpRight aria-hidden />
+            Commencer avec Planora <ArrowUpRight aria-hidden />
           </Link>
           <Link href="/#offre" className={landing.textLink}>
             Découvrir l’offre <ArrowUpRight aria-hidden />

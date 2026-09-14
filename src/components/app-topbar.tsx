@@ -1,6 +1,7 @@
 "use client";
 import { useTransition } from "react";
 import Link from "next/link";
+import { PlanoraMark } from "./planora-mark";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeftRight, History, Settings, LogOut, User, ChevronDown, RefreshCw, BookOpen } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
@@ -110,17 +111,9 @@ export function AppTopbar({
         href="/app/historique"
         className="mr-1 flex items-center gap-2 rounded-lg py-1 pr-1 sm:mr-2"
       >
-        {/* La marque : un carré d'encre aux coins arrondis, et le pli du nom
-            dedans. Un logotype de logiciel de travail se reconnaît petit, dans un
-            onglet de navigateur comme au coin d'une barre. */}
-        <span
-          aria-hidden
-          className="bg-encre text-[var(--surface)] flex size-7 items-center justify-center rounded-lg text-sm font-bold"
-        >
-          P
-        </span>
+        <PlanoraMark className="size-7 shrink-0" />
         <span className="text-foreground text-lg leading-none font-bold tracking-[-0.02em]">
-          Plia
+          Planora
         </span>
       </Link>
       <nav

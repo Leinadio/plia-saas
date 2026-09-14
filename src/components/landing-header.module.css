@@ -100,9 +100,44 @@ header.header {
     font-size: 12px;
   }
 }
-@media (max-width: 360px) {
+@media (max-width: 420px) {
   header.header {
     column-gap: 8px;
+    padding-inline: 16px;
+  }
+  .header > a:first-child {
+    gap: 6px;
+    font-size: 22px;
+  }
+  .header > a:first-child img {
+    width: 28px;
+    height: 28px;
+  }
+  .pageGroup {
+    gap: 4px;
+    font-size: 12px;
+  }
+  .header > a:last-child {
+    font-size: 12px;
+    gap: 4px;
+  }
+  .header > a:last-child svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+@media (max-width: 360px) {
+  header.header {
+    column-gap: 6px;
+    padding-inline: 12px;
+  }
+  .header > a:first-child {
+    font-size: 19px;
+    gap: 4px;
+  }
+  .header > a:first-child img {
+    width: 24px;
+    height: 24px;
   }
   .pageGroup {
     gap: 4px;

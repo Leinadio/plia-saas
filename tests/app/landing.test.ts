@@ -49,7 +49,9 @@ describe("la landing publique", () => {
     const html = renderToStaticMarkup(createElement(ActualLandingContent));
     const visibleText = html.replace(/<[^>]+>/g, "");
 
-    expect(visibleText).toContain("Faites de la place à vos projets.");
+    expect(visibleText).toContain(
+      "L’outil pour gérer vos finances sans vous compliquer la vie.",
+    );
     expect(visibleText).toContain("mois à venir");
   });
 });

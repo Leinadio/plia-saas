@@ -8,9 +8,9 @@ import { LandingContent } from "@/components/landing-page";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Plia — Votre budget, une vue d’avance",
+  title: "Planora — Votre budget, une vue d’avance",
   description:
-    "Reliez votre banque, organisez vos enveloppes et comparez les mois à venir. Plia vous aide à voir ce qu’il restera pour vos projets.",
+    "Reliez votre banque, organisez vos enveloppes et comparez les mois à venir. Planora vous aide à voir ce qu’il restera pour vos projets.",
 };
 
 export default async function LandingPage() {

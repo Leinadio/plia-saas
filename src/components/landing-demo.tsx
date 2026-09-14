@@ -12,7 +12,7 @@ const views = [
       "Ce qui rentre, ce qui sort et ce qui reste dans chaque enveloppe : votre budget se lit d’un seul regard.",
     image: "/landing/plia-budget-desktop.png",
     mobile: "/landing/plia-enveloppes-mobile.png",
-    alt: "Le tableau Plia en septembre 2026 : revenus, enveloppes et solde. Données de démonstration.",
+    alt: "Le tableau Planora en septembre 2026 : revenus, enveloppes et solde. Données de démonstration.",
     note: "Vue du budget · Septembre 2026",
     width: 1160,
     height: 905,
@@ -24,7 +24,7 @@ const views = [
     description:
       "Comparez les mois et choisissez l’indicateur qui vous intéresse : budget, dépenses ou solde. Chaque section garde son propre repère.",
     image: "/landing/plia-soldes-mobile.png",
-    alt: "La vue Comparer de Plia présente les soldes d’août à novembre 2026. Données de démonstration.",
+    alt: "La vue Comparer de Planora présente les soldes d’août à novembre 2026. Données de démonstration.",
     note: "Vue Comparer · Soldes réels et estimation",
     width: 398,
     height: 294,
@@ -36,7 +36,7 @@ const views = [
     description:
       "Retrouvez les montants qui l’expliquent. Vous comprenez d’où vient l’écart et quelle enveloppe mérite votre attention.",
     image: "/landing/plia-detail-mobile.png",
-    alt: "Le panneau de détail de Plia explique le reste de l’enveloppe Courses à partir du budget et des dépenses.",
+    alt: "Le panneau de détail de Planora explique le reste de l’enveloppe Courses à partir du budget et des dépenses.",
     note: "Détail d’un montant · Enveloppe Courses",
     width: 430,
     height: 480,
@@ -69,13 +69,13 @@ export function LandingDemo() {
           </h2>
           <p>
             Un compte bien rempli aujourd’hui peut déjà avoir beaucoup à faire
-            demain. Plia met les prochains mois en perspective.
+            demain. Planora met les prochains mois en perspective.
           </p>
         </div>
         <div
           className={styles.demoChoices}
           role="group"
-          aria-label="Explorer les vues de Plia"
+          aria-label="Explorer les vues de Planora"
         >
           {views.map(({ label, Icon }, i) => (
             <button

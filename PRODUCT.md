@@ -8,7 +8,7 @@ web
 
 ## Users
 
-Aujourd’hui, le créateur utilise Plia pour son budget personnel. Les comptes et les
+Aujourd’hui, le créateur utilise Planora pour son budget personnel. Les comptes et les
 données sont séparés par utilisateur ; cela ne constitue pas une preuve de demande.
 
 La cible retenue par le créateur le 10 septembre 2026 est celle des personnes seules
@@ -27,7 +27,7 @@ qu’il restera, avant de décider.
 
 ## Positioning
 
-Plia réunit les revenus, les dépenses et les soldes dans un relevé lisible. Les vues
+Planora réunit les revenus, les dépenses et les soldes dans un relevé lisible. Les vues
 « Par mois » et « Comparer » rendent les mois à venir concrets ; les enveloppes,
 sous-enveloppes et détails de montants expliquent les chiffres. La connexion bancaire
 via Enable Banking alimente cette lecture. L’anticipation n’est pas présentée comme
@@ -37,14 +37,14 @@ règle automatique universelle.
 La proposition commerciale est une offre complète à **29 € par mois**. L’ambition
 premium a été demandée par le créateur ; ce prix est une hypothèse, pas un tarif de
 souscription validé. La page porte la mention « Tarif envisagé. L’offre commerciale
-est en cours de finalisation. » Les boutons conduisent à l’accès Plia. Aucun paiement,
+est en cours de finalisation. » Les boutons conduisent à l’accès Planora. Aucun paiement,
 essai gratuit, abonnement annuel, accompagnement personnel ou offre gratuite n’est
 promis. Le raisonnement et les repères tarifaires datés vivent dans
 [le positionnement de lancement](docs/landing-positionnement.md).
 
 ## Operating Context
 
-Plia se consulte sur ordinateur et téléphone. Une barre produit donne accès au budget,
+Planora se consulte sur ordinateur et téléphone. Une barre produit donne accès au budget,
 aux transactions et aux réglages. Les montants ouvrent leur détail ; sur téléphone,
 les formulaires et les choix de comparaison utilisent un panneau du bas.
 
@@ -68,7 +68,7 @@ Les chiffres reflètent la dernière synchronisation. Les prévisions sont des
 estimations dépendant des budgets, revenus prévus et opérations connues. La banque
 peut demander une nouvelle autorisation. Les banques disponibles dépendent du
 catalogue Enable Banking au moment du choix ; aucun nombre d’établissements ni accès
-universel n’est promis. Plia consulte les comptes et ne réalise pas de virements.
+universel n’est promis. Planora consulte les comptes et ne réalise pas de virements.
 Créer une enveloppe ne déplace pas d’argent.
 
 Ne pas inventer : paiement actif, prix définitif, date d’ouverture commerciale, essai,
@@ -76,7 +76,7 @@ connexion familiale partagée, gestion de patrimoine ou conseil financier.
 
 ## Brand Commitments
 
-Le nom public est **Plia**. La marque associe clarté du budget et place donnée aux
+Le nom public est **Planora**. La marque associe clarté du budget et place donnée aux
 projets. La page publique adopte « La lumière en mouvement », direction choisie dans
 la page de décision (option `assigned`, seed `29f966f4`, réalisation en code).
 Aucune maquette d’interface n’a été approuvée avant cette réalisation.
@@ -108,7 +108,7 @@ téléphone et des trois vues sont conservées dans `.impeccable/review/`.
 
 Aucun client, témoignage, chiffre d’usage ou logo de presse n’est disponible. Ne pas
 les fabriquer. Le document de positionnement distingue les repères publics datés des
-hypothèses propres à Plia ; ils ne prouvent ni une supériorité ni la volonté de payer.
+hypothèses propres à Planora ; ils ne prouvent ni une supériorité ni la volonté de payer.
 
 ## Product Principles
 
