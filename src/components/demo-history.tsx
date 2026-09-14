@@ -11,7 +11,7 @@ export function DemoHistory() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div data-onboarding-target="demo-account" className="w-fit rounded-lg border px-3 py-2 text-sm font-semibold">
+      <div data-onboarding-target="demo-account" className="app-account-choice w-fit rounded-lg border px-3 py-2 text-sm font-semibold">
         Compte Démo
       </div>
       <div data-onboarding-target="overview-period">

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { PlanoraMark } from "@/components/planora-mark";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -46,7 +47,13 @@ export default function ConnexionPage() {
   return (
     // Centré dans l'écran, et pas seulement horizontalement : posée en haut d'une
     // page vide, la carte laissait tout l'écran désert sous elle.
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 px-4 py-10">
+    <div className="planora-workspace app-auth flex min-h-svh items-center justify-center px-6 py-10 sm:px-10">
+      <div className="app-auth-layout">
+      <div className="app-auth-art" aria-hidden="true">
+        <Image src="/landing/lumiere-hero-v1.png" alt="" fill sizes="(max-width: 767px) 0px, 50vw" />
+        <div className="app-auth-welcome"><p>Vos finances,<br />plus simplement.</p></div>
+      </div>
+      <div className="app-auth-form">
       <Link href="/" className="flex items-center gap-2.5">
         <PlanoraMark className="size-9 shrink-0" />
         <span className="text-2xl font-bold tracking-[-0.02em]">Planora</span>
@@ -55,19 +62,20 @@ export default function ConnexionPage() {
         <CardHeader>
           {/* Le titre ne répète pas le bouton : c'est le bouton qui nomme
               l'action, et le titre qui dit où l'on est. */}
-          <CardTitle>{inscription ? "Crée ton compte" : "Connecte-toi pour continuer"}</CardTitle>
+          <CardTitle><h1>{inscription ? "Crée ton compte" : "Connecte-toi pour continuer"}</h1></CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={submit} className="flex flex-col gap-4">
             {inscription && (
               <div className="flex flex-col gap-1">
-                <Label className="font-normal">Nom</Label>
-                <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Daniel" />
+                <Label htmlFor="signup-name" className="font-normal">Nom</Label>
+                <Input id="signup-name" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Daniel" />
               </div>
             )}
             <div className="flex flex-col gap-1">
-              <Label className="font-normal">Adresse e-mail</Label>
+              <Label htmlFor="login-email" className="font-normal">Adresse e-mail</Label>
               <Input
+                id="login-email"
                 type="email"
                 required
                 autoComplete="email"
@@ -77,8 +85,9 @@ export default function ConnexionPage() {
               />
             </div>
             <div className="flex flex-col gap-1">
-              <Label className="font-normal">Mot de passe</Label>
+              <Label htmlFor="login-password" className="font-normal">Mot de passe</Label>
               <Input
+                id="login-password"
                 type="password"
                 required
                 minLength={8}
@@ -102,6 +111,8 @@ export default function ConnexionPage() {
           </form>
         </CardContent>
       </Card>
+      </div>
+      </div>
     </div>
   );
 }

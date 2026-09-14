@@ -1,3 +1,4 @@
+import { AppPageHeading } from "@/components/app-page-heading";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
@@ -58,7 +59,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               colonne de rétrécir sous sa taille min-content et déborde sous le
               panneau. overflow-hidden : c'est le contenu qui défile, pas le
               shell — la poutre reste en place. */}
-          <div className="flex h-svh min-w-0 flex-1 flex-col overflow-hidden">
+          <div className="planora-workspace flex h-svh min-w-0 flex-1 flex-col overflow-hidden">
             <AppTopbar
               user={{ name: session.user.name || session.user.email, email: session.user.email }}
               outils={<CalculatriceButton />}
@@ -73,7 +74,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             {/* Marges resserrées sur téléphone : 12 px de chaque côté, parce que
                 tout ce qu'on prendrait de plus serait pris sur la largeur des
                 cartes, où vivent les montants. */}
-            <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-6 sm:py-6">{children}</div>
+            <main className="app-content flex-1 overflow-y-auto"><div className="app-content-inner"><AppPageHeading />{children}</div></main>
             <OnboardingTour />
             {/* La roue des outils, en bas à droite et sur téléphone seulement :
                 démo, guide et calculatrice y descendent pour rendre la barre du

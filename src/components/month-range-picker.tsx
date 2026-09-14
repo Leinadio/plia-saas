@@ -85,7 +85,7 @@ export function MonthRangePicker({ min, max, from, to, current, pendingRange, on
   const scrollBy = (dir: -1 | 1) => scroller.current?.scrollBy({ left: dir * 260, behavior: "smooth" });
 
   return (
-    <div aria-busy={disabled || undefined} className={cn("carte flex flex-col gap-3 px-3 py-3 sm:px-4", disabled && "opacity-70")}>
+    <div aria-busy={disabled || undefined} className={cn("app-period-picker carte flex flex-col gap-3 px-3 py-3 sm:px-4", disabled && "opacity-70")}>
       <div className="mx-auto grid w-full max-w-xl grid-cols-2 gap-2">
         <Borne label="Mois de départ" mois={displayFrom} active={anchor !== null} />
         <Borne label="Mois de fin" mois={displayTo} active={anchor !== null} />

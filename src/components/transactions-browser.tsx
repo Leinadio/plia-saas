@@ -254,10 +254,11 @@ export function TransactionsBrowser({
           des champs qui flottent au-dessus du relevé. Sur téléphone, deux colonnes
           réglées plutôt qu'un retour à la ligne libre — à 390 px, six champs de
           largeurs différentes retombent en escalier. */}
-      <div className="carte grid grid-cols-2 gap-2 px-3 py-3 sm:flex sm:flex-wrap sm:items-center sm:px-4">
+      <div className="app-transaction-filters carte grid grid-cols-2 gap-2 px-3 py-3 sm:flex sm:flex-wrap sm:items-center sm:px-4">
         <div className="relative col-span-2 w-full sm:w-64">
           <Search className="text-ardoise-claire pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
           <Input
+            aria-label="Rechercher une opération"
             placeholder="Rechercher un libellé…"
             value={filters.text}
             onChange={(e) => set({ text: e.target.value })}
@@ -265,6 +266,7 @@ export function TransactionsBrowser({
           />
         </div>
         <select
+          aria-label="Filtrer par enveloppe"
           value={filters.group === "all" ? "all" : filters.group === "none" ? "none" : String(filters.group)}
           onChange={(e) => {
             const v = e.target.value;
@@ -281,6 +283,7 @@ export function TransactionsBrowser({
         <Input
           type="number"
           inputMode="decimal"
+          aria-label="Montant minimum"
           placeholder="Min €"
           value={filters.amountMin ?? ""}
           onChange={(e) => set({ amountMin: numOrNull(e.target.value) })}
@@ -289,6 +292,7 @@ export function TransactionsBrowser({
         <Input
           type="number"
           inputMode="decimal"
+          aria-label="Montant maximum"
           placeholder="Max €"
           value={filters.amountMax ?? ""}
           onChange={(e) => set({ amountMax: numOrNull(e.target.value) })}
@@ -296,12 +300,14 @@ export function TransactionsBrowser({
         />
         <Input
           type="date"
+          aria-label="À partir du"
           value={filters.dateFrom ?? ""}
           onChange={(e) => set({ dateFrom: e.target.value || null })}
           className="w-full sm:w-40"
         />
         <Input
           type="date"
+          aria-label="Jusqu’au"
           value={filters.dateTo ?? ""}
           onChange={(e) => set({ dateTo: e.target.value || null })}
           className="w-full sm:w-40"

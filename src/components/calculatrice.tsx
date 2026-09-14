@@ -140,7 +140,7 @@ export function CalculatriceButton() {
       )}
     >
       <Calculator className="size-4 shrink-0" />
-      <span className="hidden lg:inline">Calculatrice</span>
+      <span data-app-tool-label className="hidden lg:inline">Calculatrice</span>
       {/* Le compte des lignes en attente : sarcelle et non rouge, parce qu'un
           brouillon en cours n'est pas une alerte. */}
       {lignes.length > 0 && (

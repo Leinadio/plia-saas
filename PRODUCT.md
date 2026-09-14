@@ -81,9 +81,13 @@ projets. La page publique adopte « La lumière en mouvement », direction chois
 la page de décision (option `assigned`, seed `29f966f4`, réalisation en code).
 Aucune maquette d’interface n’a été approuvée avant cette réalisation.
 
-Les titres publics utilisent Bricolage Grotesque et le texte Schibsted Grotesk.
-L’application conserve Schibsted et ses règles de relevé ; les couleurs et formes de
-la vitrine sont limitées à cette page. Le système exact est documenté dans DESIGN.md.
+Cette identité relie désormais les pages publiques, la connexion et l’application.
+Bricolage Grotesque porte la marque et les titres ; Schibsted Grotesk garde les données,
+libellés et commandes. Les fonds menthe et forêt, les accents corail, les cartes arrondies
+et les commandes en capsule accompagnent le budget. Les chiffres restent sur des surfaces
+opaques. Les repères financiers et les parcours existants guident cette adaptation,
+notamment les revenus verts, dépenses rouges et soldes sombres sur téléphone.
+Le système exact est documenté dans DESIGN.md.
 
 ## Evidence on Hand
 

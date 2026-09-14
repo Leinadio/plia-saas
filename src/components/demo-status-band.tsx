@@ -9,7 +9,7 @@ export function DemoStatusBand() {
   if (!isDemoMode(experience.mode)) return null;
 
   return (
-    <div className="border-filet bg-sarcelle-voile text-sarcelle-encre flex min-h-9 shrink-0 items-center justify-center gap-2 border-b px-3 text-center text-xs font-semibold sm:text-sm">
+    <div className="app-demo-band border-filet bg-sarcelle-voile text-sarcelle-encre flex min-h-9 shrink-0 items-center justify-center gap-2 border-b px-3 text-center text-xs font-semibold sm:text-sm">
       <span>Démonstration</span>
       <span aria-hidden>·</span>
       <span>Aucune donnée réelle</span>

@@ -21,7 +21,7 @@ const ETAPES = [
 
 export function FirstAccountOnboarding({ connexionTerminee = false }: { connexionTerminee?: boolean }) {
   return (
-    <section aria-labelledby="premiers-pas-titre" className="carte mx-auto w-full max-w-5xl overflow-hidden">
+    <section aria-labelledby="premiers-pas-titre" className="app-onboarding carte mx-auto w-full max-w-5xl overflow-hidden">
       {connexionTerminee && (
         <div className="bandeau bandeau-attente m-4 sm:m-5" role="status">
           La banque est reliée, mais aucun compte n&apos;est encore disponible. Rouvrez la
@@ -31,12 +31,12 @@ export function FirstAccountOnboarding({ connexionTerminee = false }: { connexio
 
       <div className="grid lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
         <div className="flex flex-col justify-center px-6 py-9 sm:px-10 sm:py-12 lg:px-12 lg:py-14">
-          <h1
+          <h2
             id="premiers-pas-titre"
             className="max-w-xl text-3xl leading-[1.08] font-bold tracking-[-0.025em] text-balance sm:text-4xl"
           >
             Vous avez vu comment Planora fonctionne.
-          </h1>
+          </h2>
           <p className="text-muted-foreground mt-4 max-w-[60ch] text-sm leading-6 sm:text-base">
             Reliez une banque quand vous êtes prêt à retrouver cette vue avec vos chiffres.
           </p>

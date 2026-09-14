@@ -1,0 +1,273 @@
+/* Planora's public identity, adapted to a daily workspace. The scope includes
+   portals while keeping the landing's own palette and composition independent. */
+html:has(.planora-workspace) {
+  color-scheme: light;
+  --encre: #172d28;
+  --sol: #edf5f0;
+  --surface: #fbfdfb;
+  --surface-creuse: #f1f6f2;
+  --surface-survol: #e6f0e9;
+  --sarcelle: #126b5b;
+  --sarcelle-forte: #0b5043;
+  --sarcelle-voile: #dcece1;
+  --sarcelle-encre: #12614f;
+  --portant: #236345;
+  --portant-voile: #dceee1;
+  --tension: #b94e39;
+  --tension-encre-base: #9e3e2c;
+  --tension-voile: #f7e2da;
+  --attente: #846019;
+  --attente-voile: #f6edda;
+  --ardoise: #496359;
+  --ardoise-claire: #5d7167;
+  --filet: #d6e4db;
+  --filet-fort: #b8cdc0;
+  --barre: #edf5f0;
+  --radius: 1rem;
+  --ombre-carte: 0 3px 12px -7px #173e2e20;
+  --ombre-levee: 0 8px 24px -12px #173e2e30;
+  --ombre-flottante: 0 18px 50px -16px #173e2e3d;
+  --app-curve: #b8d5c4;
+  --app-curve-warm: #e9c9b7;
+  --app-nav: #dcece1;
+  --app-selected: #126b5b;
+  --app-selected-ink: #ffffff;
+  --app-display: var(--font-landing-display), var(--font-ui), sans-serif;
+  scrollbar-color: var(--filet-fort) var(--sol);
+}
+html.dark:has(.planora-workspace) {
+  color-scheme: dark;
+  --encre: #f0f6f0;
+  --sol: #132822;
+  --surface: #1b342b;
+  --surface-creuse: #213e32;
+  --surface-survol: #2a493b;
+  --sarcelle: #9fddbc;
+  --sarcelle-forte: #b9edcf;
+  --sarcelle-voile: #294d3a;
+  --sarcelle-encre: #b2e1c6;
+  --portant: #a3dfb7;
+  --portant-voile: #254b35;
+  --tension: #ee9d85;
+  --tension-encre-base: #f3ac97;
+  --tension-voile: #543329;
+  --attente: #e3c487;
+  --attente-voile: #433b27;
+  --ardoise: #bdcfc3;
+  --ardoise-claire: #a9bfb1;
+  --filet: #355345;
+  --filet-fort: #526e5e;
+  --barre: #132822;
+  --primary-foreground: #143328;
+  --sidebar-primary-foreground: #143328;
+  --app-curve: #345c47;
+  --app-curve-warm: #684f3e;
+  --app-nav: #213e32;
+  --app-selected: #9fddbc;
+  --app-selected-ink: #143328;
+  --ombre-carte: 0 4px 14px -8px #00000045;
+  --ombre-levee: 0 10px 24px -12px #00000065;
+  --ombre-flottante: 0 18px 50px -16px #00000085;
+}
+html:has(.planora-workspace) ::selection {
+  background: var(--sarcelle-voile);
+  color: var(--encre);
+}
+html:has(.planora-workspace) :is(input, textarea) { caret-color: var(--sarcelle); }
+html:has(.planora-workspace) :is([data-slot="button"], [data-slot="tabs-trigger"]) {
+  border-radius: 999px;
+}
+html:has(.planora-workspace) [data-slot="button"][data-variant="default"] {
+  box-shadow: none;
+  padding-inline: 1.25rem;
+}
+html:has(.planora-workspace) [data-slot="button"][data-size^="icon"] { padding-inline: 0; }
+html:has(.planora-workspace) [data-slot="input"] {
+  border-radius: 12px;
+  background: var(--surface);
+}
+html:has(.planora-workspace) [data-slot="card-header"] { padding-block: 1.25rem; }
+html:has(.planora-workspace) [data-slot="card-title"] {
+  font-family: var(--app-display);
+  font-size: 1.125rem;
+  letter-spacing: -0.02em;
+}
+html:has(.planora-workspace) [data-slot="tabs-list"] {
+  border-radius: 999px;
+  background: var(--app-nav);
+  padding: 4px;
+  height: auto;
+}
+html:has(.planora-workspace) [data-slot="tabs-trigger"] {
+  min-height: 36px;
+  padding-inline: 18px;
+}
+html:has(.planora-workspace) [data-slot="tabs-trigger"][data-state="active"] {
+  background: var(--surface);
+  color: var(--encre);
+  box-shadow: none;
+}
+.planora-workspace .app-topbar {
+  min-height: 84px;
+  height: auto;
+  padding: 16px 32px;
+  column-gap: 24px;
+  border-bottom: 0;
+}
+.app-topbar > a:first-child {
+  gap: 8px;
+  margin-right: 8px;
+}
+.app-topbar > a:first-child > span {
+  font-family: var(--app-display);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+.app-topbar > a:first-child img { width: 34px; height: 34px; }
+.app-topbar nav {
+  background: var(--app-nav);
+  border-radius: 999px;
+  padding: 5px;
+  gap: 4px;
+}
+.app-topbar nav a { border-radius: 999px; height: 40px; padding-inline: 18px; }
+.app-topbar nav a[aria-current="page"] {
+  background: var(--app-selected);
+  color: var(--app-selected-ink);
+}
+.app-topbar button:not([role="switch"]) { border-radius: 999px; }
+.app-demo-band {
+  background: var(--sol);
+  color: var(--ardoise);
+  border: 0;
+  min-height: 28px;
+  padding-bottom: 8px;
+  font-weight: 400;
+}
+.app-demo-band > span:first-child { font-weight: 600; }
+.planora-workspace { background: var(--sol); }
+.app-content { padding: 12px 32px 40px; }
+.app-content-inner { max-width: 1600px; margin-inline: auto; }
+.app-page-heading {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 12px 0 28px;
+  overflow: hidden;
+}
+.app-page-heading > div { position: relative; z-index: 1; flex-shrink: 0; max-width: 100%; }
+.app-page-heading h1 {
+  font-family: var(--app-display);
+  font-size: 2.25rem;
+  font-weight: 550;
+  line-height: 1.16;
+  letter-spacing: -0.035em;
+  text-wrap: pretty;
+}
+.app-page-heading p { margin-top: 8px; color: var(--ardoise); font-size: 0.875rem; line-height: 1.6; }
+.app-heading-curves { width: 40%; max-width: 520px; height: 100px; flex-shrink: 1; }
+.app-heading-curves path:first-child { stroke: var(--app-curve); stroke-width: 2; }
+.app-heading-curves path:last-child { stroke: var(--app-curve-warm); stroke-width: 1.5; }
+.app-period-picker { border: 0; padding: 18px 20px; gap: 16px; }
+.app-period-picker button { border-radius: 999px; }
+.app-mobile-navigation { padding-block: 4px 8px; }
+.app-mobile-navigation > div:first-child { border-radius: 999px; padding: 4px; background: var(--app-nav); }
+.app-mobile-navigation > div:first-child button { border-radius: 999px; min-height: 44px; }
+.app-mobile-navigation > div:first-child button[aria-pressed="true"] {
+  color: var(--app-selected-ink); background: var(--app-selected); box-shadow: none;
+}
+.app-content .carte { border-color: transparent; }
+.app-content .history-mobile [data-history-card] { border-radius: 16px; overflow: hidden; }
+.app-content .history-mobile [data-history-band] > td:first-child > div { padding-block: 16px; }
+.app-content .history-mobile [data-history-band] .font-semibold { font-size: 1rem; }
+html:has(.planora-workspace) [data-slot="sidebar-inner"] {
+  background: var(--surface); border-radius: 16px; box-shadow: var(--ombre-levee);
+}
+html:has(.planora-workspace) :is([data-slot="sheet-title"], [data-slot="drawer-title"]) {
+  font-family: var(--app-display); font-size: 1.25rem; letter-spacing: -0.025em;
+}
+@media (min-width: 640px) and (max-width: 1100px) {
+  .planora-workspace .app-topbar { padding-inline: 20px; column-gap: 10px; }
+  .app-topbar > a:first-child > span { font-size: 24px; }
+  .app-topbar nav a { padding-inline: 12px; }
+}
+@media (max-width: 639px) {
+  .planora-workspace .app-topbar { min-height: auto; padding: 16px 16px 10px; row-gap: 16px; column-gap: 12px; }
+  .app-topbar > a:first-child > span { font-size: 24px; }
+  .app-topbar nav { gap: 4px; }
+  .app-topbar nav a { height: 44px; font-size: 13px; }
+  .app-topbar button:not([role="switch"]) { min-width: 44px; min-height: 44px; }
+  .planora-workspace { background: var(--sol); }
+.app-content { padding: 12px 16px 32px; }
+  .app-page-heading { padding: 8px 0 24px; }
+  .app-page-heading h1 { font-size: 1.75rem; }
+  .app-page-heading p { font-size: 0.8125rem; max-width: 32ch; margin-top: 8px; }
+  .app-heading-curves { display: none; }
+  .app-period-picker { padding: 16px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .planora-workspace *, .planora-workspace *::before, .planora-workspace *::after { scroll-behavior: auto; }
+}
+
+/* Transaction filters read as one toolbar; labels remain visible while typing. */
+.app-transaction-filters { gap: 12px; padding: 20px; }
+.app-transaction-filters :is(input, select) { min-height: 40px; border-radius: 12px; }
+.app-transaction-filters > div:first-child { flex: 1; min-width: 200px; }
+.app-account-choice { background: var(--surface); border: 0; border-radius: 999px; padding: 10px 18px; }
+.planora-workspace .app-onboarding h2 { font-family: var(--app-display); font-weight: 550; }
+@media (max-width: 639px) {
+  .app-transaction-filters { padding: 16px; gap: 12px; }
+  .app-transaction-filters :is(input, select) { min-height: 44px; }
+  .app-mobile-navigation select { font-size: 16px; border-radius: 12px; }
+  .app-mobile-navigation > div:last-child > button { border-radius: 50%; }
+}
+/* The detail panel changes the available workspace width independently from
+   the viewport. Keep every navigation and utility action reachable. */
+.planora-workspace { container-type: inline-size; }
+@media (min-width: 640px) {
+@container (max-width: 1050px) {
+  .planora-workspace .app-topbar {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    padding: 14px 20px;
+  }
+  .app-topbar nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: center;
+    justify-self: center;
+    width: fit-content;
+  }
+  .app-topbar > div:last-child { grid-column: 2; grid-row: 1; }
+  .app-topbar > a:first-child > span { font-size: 24px; }
+  .app-topbar [data-app-tool-label] {
+    position: absolute; width: 1px; height: 1px; padding: 0;
+    margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+}
+
+}
+html:has(.planora-workspace) .bg-sarcelle.text-white { color: var(--primary-foreground); }
+html:has(.planora-workspace) .bg-sarcelle > .bg-white { background: var(--primary-foreground); }
+html.dark:has(.planora-workspace) .bg-tension.text-white { color: #3b2119; }
+.app-auth { container-type: normal; }
+.app-auth-layout { width: min(1120px, 100%); display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+.app-auth-art { position: relative; overflow: hidden; min-height: 620px; border-radius: 140px 16px 16px 16px; }
+.app-auth-art img { object-fit: cover; }
+.app-auth-welcome { position: absolute; inset: auto 24px 24px; padding: 24px; border-radius: 16px; background: #172d28; color: #f0f6f0; }
+.app-auth-welcome p { font-family: var(--app-display); font-size: 2rem; line-height: 1.15; letter-spacing: -0.03em; }
+.app-auth-form { display: flex; flex-direction: column; gap: 32px; align-items: flex-start; }
+.app-auth-form > a { font-family: var(--app-display); }
+.app-auth-form [data-slot="card"] { border: 0; box-shadow: none; background: transparent; max-width: none; }
+.app-auth-form :is([data-slot="card-header"], [data-slot="card-content"]) { padding-inline: 0; }
+html:has(.planora-workspace) .app-auth-form [data-slot="card-title"] { font-size: 1.75rem; font-weight: 550; }
+.app-auth-form :is([data-slot="input"], [data-slot="button"]) { min-height: 48px; }
+@media (max-width: 767px) {
+ .app-auth-layout { display: block; max-width: 400px; }
+ .app-auth-art { display: none; }
+ .app-auth-form { gap: 24px; }
+}

@@ -2,89 +2,56 @@
 version: 1
 slug: "src-app-app"
 primary_target: "src/app/app"
-related_targets: []
----
-
----
-version: 1
-slug: "src-app-app"
-primary_target: "src/app/app"
-related_targets: []
+related_targets: ["src/components/app-topbar.tsx", "src/components/app-page-heading.tsx", "src/app/app-theme.css"]
 ---
 
 ## Portée
-Toute l'app connectée sous `/app` : la barre produit, les transactions,
-l'historique, les réglages et le compte. L'accueil redirige vers l'historique.
-L'écran de connexion hérite des jetons de l'application. La landing publique
-possède depuis le 10 septembre 2026 son propre périmètre visuel, décrit dans
-`src-app-page-tsx.md` ; ses couleurs et sa police de titre ne modifient pas l'app.
+L’application connectée : budget, historique, transactions, réglages et compte.
+L’accueil redirige vers l’historique. La connexion partage la même identité ; son
+cadrage vit dans `src-app-connexion.md`. Les pages publiques gardent leurs briefs.
 
 ## Mode du visiteur
-Operate. Un indépendant à revenus irréguliers ouvre l'app quelques fois par mois,
-sur ordinateur comme sur téléphone, pour savoir s'il peut dépenser. La tâche prime :
-lisibilité des montants, états explicites, aucune surprise.
+Operate. Une personne seule ou en couple consulte son budget personnel sur ordinateur
+ou téléphone pour comprendre les dépenses et préparer les prochains mois. Les données
+et les actions doivent rester immédiatement lisibles. Ce contexte n’implique pas un
+compte partagé.
 
 ## Direction retenue
-« L'enveloppe » — direction épinglée par l'utilisateur (refonte complète, plus de
-tableau, des cartes, la famille des logiciels de travail sans en copier aucun).
+« La lumière en mouvement », adaptée de la landing à un espace de travail quotidien.
+Menthe, forêt et corail, marque et titres Bricolage, données et commandes Schibsted,
+cartes opaques de 16 px et capsules. Le titre et une phrase courte ouvrent chaque page.
+Deux courbes fines, statiques et décoratives le bordent sur ordinateur et disparaissent
+sur téléphone. La lecture financière garde sa structure.
 
-Un budget est une collection d'ENVELOPPES : chaque poste est une ligne à jauge —
-pleine, entamée, ou débordée. Le tableau de bord et les transactions sont des listes
-de cartes.
+## Composition et adaptation
+La barre produit repose sur le fond de l’application, sans séparation lourde. Les
+choix de navigation occupent une capsule, avec une destination active contrastée.
+Le contenu dispose de marges de 32 px, puis 16 px sous 640 px, sur 1600 px maximum.
+Chaque écran conserve ses limites internes de largeur.
 
-L'HISTORIQUE, LUI, RESTE UN GRAND TABLEAU à colonnes de mois. Il a été remplacé par
-une pile de mois, puis par un rail à deux colonnes, et l'utilisateur l'a rappelé :
-ce sont les couleurs qui devaient changer, pas la structure. On y compare les mois
-d'un regard, ce qu'aucune liste de cartes ne sait faire.
+Si un panneau réduit la largeur disponible à 1050 px ou moins, la navigation passe
+sur une seconde ligne dès 640 px de largeur d’écran. Les outils gardent leurs icônes,
+compteurs et noms accessibles ; seuls leurs libellés visuels se retirent. Sur téléphone,
+les commandes tactiles conservent leurs dimensions et leur ordre fonctionnel.
 
-## L'onglet Historique — ce qui a été essayé, et ce qui reste
-Trois compositions ont été rendues à fidélité réelle (composants et jetons du produit,
-données fabriquées) et mises devant l'utilisateur : `.impeccable/mocks/histo-a-rail-*`,
-`histo-b-tuiles-*`, `histo-c-postes-*`. Le rail a été choisi, construit — puis écarté
-avec les deux autres : L'UTILISATEUR A DEMANDÉ LE RETOUR DU GRAND TABLEAU, aux couleurs
-neuves.
+Le thème est appliqué au document lorsque l’espace de travail est présent : menus,
+notifications et panneaux rendus à l’extérieur du conteneur héritent de la palette.
+Les contrôles natifs suivent le mode sombre et les commandes menthe utilisent une
+encre sombre. Les filtres d’opérations gardent des libellés visibles pendant la saisie.
 
-Ce qui vit donc aujourd'hui : `src/components/history-grid.tsx`, la grille d'origine,
-retraduite dans le monde des cartes. Une carte qui la porte et coupe son défilement,
-une épine de noms figée à partir de 640 px, des familles de colonnes distinguées par la
-DENSITÉ d'une même ardoise (5 / 11 / 18 / 24 %) mélangée à la CARTE et non au sol, des
-bandes de section au voile du portant et de la tension, et un pied d'encre qui ferme le
-relevé — la seule masse sombre d'un écran clair, qui s'inverse en bande pâle sous la
-lumière éteinte.
+## Structure financière conservée
+Le grand tableau à colonnes de mois reste la présentation sur ordinateur. Sa colonne
+de noms figée, ses familles de colonnes, les bandes revenus/dépenses et les soldes
+contrastés conservent leur rôle. Sur mobile, « Par mois » et « Comparer » gardent les
+sections verticales et leurs choix d’indicateurs. Les revenus restent verts, les dépenses
+rouges et les soldes sombres, jusque dans leurs panneaux, dans les deux thèmes.
 
-Les trois comps restent dans `.impeccable/mocks/` : ce sont des routes déjà explorées,
-pas des propositions ouvertes. Ne pas les rejouer sans raison neuve.
+Créer et gérer une enveloppe ou une sous-enveloppe, corriger un budget daté, classer
+une opération, l’exclure, la commenter et ouvrir un calcul gardent leurs parcours.
+La jauge conserve sa géométrie : le dépassement se lit au-delà de la part budgétée.
+Le budget, le dépensé et le reste sont toujours écrits à côté.
 
-## Le moment mémorable : la jauge qui déborde
-La pièce signature, et la seule chose de l'écran qu'on doit voir avant tout le reste.
-Une barre de progression ordinaire s'arrête à cent pour cent : elle sait dire qu'un
-poste a rompu, pas de combien. Ici la barre entière vaut la DÉPENSE — la piste
-(l'enveloppe) n'en occupe que la part budgétée, et le trop-plein se pose à sa droite
-en rouge, séparé par une encoche. Un poste dépensé au double de son budget montre
-une demi-piste et un demi-débord. La géométrie vit dans `src/lib/jauge.ts`, testée ;
-le composant ne fait que placer.
-
-## Ce qui a été remplacé, et ce qu'on ne refait pas
-Le grand tableau de l'Historique (2 745 lignes, une épine figée à gauche, huit
-colonnes par mois, défilement horizontal) est parti. Il comparait bien les mois entre
-eux, mais sur téléphone il ne restait que deux colonnes de chiffres et l'état d'une
-enveloppe se déduisait en comparant trois nombres alignés.
-
-C'était l'analyse au moment de la refonte. Elle s'est révélée fausse sur le point
-décisif : le tableau tient parce qu'on y compare les mois, et aucune des trois
-compositions essayées ne remplaçait cela sans perte. Le grand tableau est revenu.
-
-Ce qui restait vrai, et qui a été corrigé sans toucher à sa structure : ses teintes
-tiraient sur un béton chaud qui n'existe plus, son pied était du carbone, et ses
-chiffres étaient en chasse fixe.
-
-Tous les calculs sont intacts (`src/lib` n'a pas bougé), et toutes les modifications
-qui se faisaient depuis le tableau vivent toujours dans la pile : créer un poste, le
-gérer, le découper en sous-postes, corriger un budget daté, rattacher une
-transaction, la sortir des calculs, la commenter. Le panneau de détail à droite
-s'ouvre au clic sur n'importe quel montant, comme avant.
-
-## Grammaire d'implémentation
+## Contrat d’interaction mobile
 
 ### Vue d’ensemble sur téléphone — décision du 7 septembre 2026
 
@@ -122,34 +89,12 @@ changement du mois consulté. Les références sont liées au compte et à la p�
 Le détail remplit la largeur du téléphone ; sélectionner un terme referme le
 panneau et révèle sa destination. L’ajout à la calculatrice dispose d’un bouton.
 
-Vérification : serveur local avec données fictives, largeurs 320/390/1440 px,
-navigation, huit indicateurs, détail, opérations, budget de démonstration et
-formulaire d’ajout. Aucun débordement horizontal du relevé mobile constaté.
 
-- Surfaces : une seule, la carte (`.carte`). Rien ne s'imbrique — ce qui vit DANS une
-  carte prend la surface creusée (`.creux`), jamais une deuxième carte.
-- Couleur : la sarcelle ne sert QU'À COMMANDER (bouton principal, lien, onglet actif,
-  destination courante, mise au point). Elle ne qualifie jamais un montant. Les trois
-  sens — portant, tension, attente — ne teintent que des montants et des pastilles.
-- Un montant négatif par nature (le « dépensé » d'une enveloppe) reste à l'encre :
-  le rouge posé sur chaque ligne ne veut plus rien dire. C'est le reste qui le porte.
-- Mouvement : aucun geste d'ouverture. Les seuls signaux sont ceux de l'attente — le
-  tirage des squelettes et le fil sous la barre produit.
+## Moyens et validation
+Les surfaces et contrastes viennent de `src/app/app-theme.css`, avec les composants
+existants du relevé. Le titre partagé utilise `src/components/app-page-heading.tsx`.
+Les icônes restent celles du produit. Aucune nouvelle image n’est ajoutée au relevé.
 
-## Inventaire des moyens
-| Région | Moyen |
-|---|---|
-| Horizon (colonnes, ligne du zéro) | HTML/CSS positionné en pourcentage |
-| Géométrie de l'horizon | `src/lib/plan-de-charge.ts`, testée |
-| Jauge d'enveloppe | `src/lib/jauge.ts`, testée + `src/components/jauge.tsx` |
-| Grand tableau de l'Historique | `src/components/history-grid.tsx` |
-| Cartes, pastilles, légendes, jauge | CSS `@layer components` dans globals.css |
-| Icônes | Lucide, existant |
-| Imagerie | aucune — le produit est un relevé, pas une vitrine |
-
-## Décisions ouvertes
-- La refonte de la landing est décrite dans `src-app-page-tsx.md`. Ses captures
-  de produit utilisent les données de démonstration et sont identifiées comme telles.
-- Les captures de la refonte ont été prises sur une route d'aperçu temporaire
-  (`src/app/apercu`, supprimée) avec des données fabriquées : les vrais écrans
-  demandent une session bancaire. À revoir sur les vraies données.
+Les aperçus de refonte utilisent des données fictives. Ce document décrit le code
+implémenté ; il ne constitue pas un verdict de revue ni une validation sur un compte
+bancaire réel. Les captures et résultats de contrôle vivent dans `.impeccable/review/`.

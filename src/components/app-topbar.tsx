@@ -104,7 +104,7 @@ export function AppTopbar({
       // deux lignes se lisent comme un seul bloc et le nom de la marque touche
       // l'onglet actif. D'où la respiration verticale, qui n'existe qu'ici : sur
       // grand écran tout tient sur une seule ligne de 56 px.
-      className="bg-barre border-barre-filet grid min-h-14 shrink-0 grid-cols-[auto_1fr_auto] items-center gap-y-2.5 border-b px-3 py-2.5 sm:flex sm:h-14 sm:gap-2 sm:gap-y-0 sm:px-4 sm:py-0"
+      className="app-topbar bg-barre border-barre-filet grid min-h-14 shrink-0 grid-cols-[auto_1fr_auto] items-center gap-y-2.5 border-b px-3 py-2.5 sm:flex sm:h-14 sm:gap-2 sm:gap-y-0 sm:px-4 sm:py-0"
       data-header-row="actions"
     >
       <Link
@@ -182,7 +182,7 @@ export function AppTopbar({
             className="text-barre-texte hover:bg-barre-appui hover:text-foreground flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-[0.8125rem] font-semibold transition-colors duration-150"
           >
             <BookOpen className="size-4" aria-hidden />
-            <span>Guide</span>
+            <span data-app-tool-label>Guide</span>
           </button>
           {outils}
           {alertes}

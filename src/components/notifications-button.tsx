@@ -184,7 +184,7 @@ export function NotificationsButton() {
       className="text-barre-texte hover:bg-barre-appui hover:text-foreground relative inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-[0.8125rem] font-semibold transition-colors duration-150 sm:px-2.5"
     >
       <Bell className="size-4" />
-      <span>Dépassements</span>
+      <span data-app-tool-label>Dépassements</span>
       {/* Le compte de ce qui reste à voir : c'est une rupture, donc c'est
           rouge, et posé contre le mot plutôt que perché sur l'icône — un
           nombre qu'on doit lire ne se met pas en exposant. */}

@@ -1,48 +1,48 @@
 ---
 name: Planora
-description: Un relevé en cartes claires — une sarcelle qui ne sert qu'à commander, une jauge qui déborde vraiment, et un pied d'encre qui ferme le grand tableau.
+description: La lumière en mouvement — menthe, forêt et corail, titres expressifs et relevés lisibles.
 colors:
-  encre: "#17222b"
-  sol: "#edf1f2"
-  surface: "#ffffff"
-  surface-creuse: "#f4f7f8"
-  surface-survol: "#f0f4f5"
-  sarcelle: "#0b6e75"
-  sarcelle-forte: "#095b61"
-  sarcelle-encre: "#0a656c"
-  sarcelle-voile: "#e2eff0"
-  portant: "#1c7a4e"
-  portant-voile: "#e2f1e8"
-  tension: "#c0392b"
-  tension-encre: "#a8332a"
-  tension-voile: "#fbe7e4"
-  attente: "#8a6410"
-  attente-voile: "#f7eedb"
-  ardoise: "#5a6b75"
-  ardoise-claire: "#64747c"
-  filet: "#dce4e7"
-  filet-fort: "#c3d0d5"
-  encre-nuit: "#e7edf0"
-  sol-nuit: "#12181c"
-  surface-nuit: "#1b2329"
-  surface-creuse-nuit: "#232c33"
-  surface-survol-nuit: "#29333a"
-  sarcelle-nuit: "#3fa8ae"
-  sarcelle-forte-nuit: "#55bcc2"
-  sarcelle-encre-nuit: "#5cbfc5"
-  sarcelle-voile-nuit: "#14313a"
-  portant-nuit: "#4cb87f"
-  portant-voile-nuit: "#14301f"
-  tension-nuit: "#e4695a"
-  tension-encre-nuit: "#f08b7d"
-  tension-voile-nuit: "#351a17"
-  attente-nuit: "#d8a94a"
-  attente-voile-nuit: "#302614"
-  ardoise-nuit: "#9aabb4"
-  ardoise-claire-nuit: "#7b8b94"
-  filet-nuit: "#2c363d"
-  filet-fort-nuit: "#3d4950"
-  commande-texte-nuit: "#06181a"
+  encre: "#172d28"
+  sol: "#edf5f0"
+  surface: "#fbfdfb"
+  surface-creuse: "#f1f6f2"
+  surface-survol: "#e6f0e9"
+  sarcelle: "#126b5b"
+  sarcelle-forte: "#0b5043"
+  sarcelle-encre: "#12614f"
+  sarcelle-voile: "#dcece1"
+  portant: "#236345"
+  portant-voile: "#dceee1"
+  tension: "#b94e39"
+  tension-encre: "#9e3e2c"
+  tension-voile: "#f7e2da"
+  attente: "#846019"
+  attente-voile: "#f6edda"
+  ardoise: "#496359"
+  ardoise-claire: "#5d7167"
+  filet: "#d6e4db"
+  filet-fort: "#b8cdc0"
+  encre-nuit: "#f0f6f0"
+  sol-nuit: "#132822"
+  surface-nuit: "#1b342b"
+  surface-creuse-nuit: "#213e32"
+  surface-survol-nuit: "#2a493b"
+  sarcelle-nuit: "#9fddbc"
+  sarcelle-forte-nuit: "#b9edcf"
+  sarcelle-encre-nuit: "#b2e1c6"
+  sarcelle-voile-nuit: "#294d3a"
+  portant-nuit: "#a3dfb7"
+  portant-voile-nuit: "#254b35"
+  tension-nuit: "#ee9d85"
+  tension-encre-nuit: "#f3ac97"
+  tension-voile-nuit: "#543329"
+  attente-nuit: "#e3c487"
+  attente-voile-nuit: "#433b27"
+  ardoise-nuit: "#bdcfc3"
+  ardoise-claire-nuit: "#a9bfb1"
+  filet-nuit: "#355345"
+  filet-fort-nuit: "#526e5e"
+  commande-texte-nuit: "#143328"
   landing-bg: "#edf5f0"
   landing-surface: "#fbfdfb"
   landing-ink: "#172d28"
@@ -114,13 +114,36 @@ colors:
   landing-audience-shadow: "#56302724"
   landing-audience-line: "#54816b"
   landing-audience-mint: "#b6dbc4"
+  barre: "#edf5f0"
+  app-curve: "#b8d5c4"
+  app-curve-warm: "#e9c9b7"
+  app-nav: "#dcece1"
+  app-selected: "#126b5b"
+  app-selected-ink: "#ffffff"
+  barre-nuit: "#132822"
+  sidebar-commande-texte-nuit: "#143328"
+  app-curve-nuit: "#345c47"
+  app-curve-warm-nuit: "#684f3e"
+  app-nav-nuit: "#213e32"
+  app-selected-nuit: "#9fddbc"
+  app-selected-ink-nuit: "#143328"
 typography:
   display:
-    fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "2rem"
-    fontWeight: 700
-    lineHeight: 1.15
-    letterSpacing: "-0.025em"
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "2.25rem"
+    fontWeight: 550
+    lineHeight: 1.16
+    letterSpacing: "-0.035em"
+  app-display-mobile:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "1.75rem"
+    fontWeight: 550
+    lineHeight: 1.16
+    letterSpacing: "-0.035em"
+  app-card-title:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "1.125rem"
+    letterSpacing: "-0.02em"
   headline:
     fontFamily: "Schibsted Grotesk, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.75rem"
@@ -382,6 +405,8 @@ typography:
     "85": "85px"
     "96": "96px"
 rounded:
+  app-card: "16px"
+  app-input: "12px"
   xs: "5px"
   sm: "0.375rem"
   md: "0.5rem"
@@ -406,6 +431,8 @@ rounded:
   landing-audience-proof-tablet: "16px 120px 16px 16px"
   landing-audience-proof-mobile: "16px 100px 16px 16px"
 spacing:
+  app-gutter: "32px"
+  app-gutter-mobile: "16px"
   xs: "4px"
   sm: "8px"
   md: "12px"
@@ -419,7 +446,7 @@ components:
   button-primary:
     backgroundColor: "{colors.sarcelle}"
     textColor: "{colors.surface}"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.full}"
     padding: "0 14px"
     height: "36px"
     typography: "{typography.body}"
@@ -428,7 +455,7 @@ components:
   button-outline:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.encre}"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.full}"
     padding: "0 14px"
     height: "36px"
     typography: "{typography.body}"
@@ -437,14 +464,14 @@ components:
   button-secondary:
     backgroundColor: "{colors.surface-creuse}"
     textColor: "{colors.encre}"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.full}"
     padding: "0 14px"
     height: "36px"
     typography: "{typography.body}"
   button-ghost:
     backgroundColor: "transparent"
     textColor: "{colors.ardoise}"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.full}"
     padding: "0 14px"
     height: "36px"
     typography: "{typography.body}"
@@ -454,21 +481,21 @@ components:
   button-link:
     backgroundColor: "transparent"
     textColor: "{colors.sarcelle-encre}"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.full}"
     padding: "0"
     height: "36px"
     typography: "{typography.body}"
   button-destructive:
     backgroundColor: "{colors.tension}"
     textColor: "#ffffff"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.full}"
     padding: "0 14px"
     height: "36px"
     typography: "{typography.body}"
   card:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.encre}"
-    rounded: "{rounded.lg}"
+    rounded: "{rounded.app-card}"
     padding: "12px 16px"
   card-inset:
     backgroundColor: "{colors.surface-creuse}"
@@ -476,9 +503,9 @@ components:
     rounded: "{rounded.md}"
     padding: "12px 16px"
   input-text:
-    backgroundColor: "{colors.surface-creuse}"
+    backgroundColor: "{colors.surface}"
     textColor: "{colors.encre}"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.app-input}"
     padding: "4px 12px"
     height: "36px"
     typography: "{typography.body}"
@@ -531,21 +558,21 @@ components:
   nav-item:
     backgroundColor: "transparent"
     textColor: "{colors.ardoise}"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.full}"
     padding: "0 12px"
     height: "36px"
     typography: "{typography.command}"
   nav-item-active:
-    backgroundColor: "{colors.sarcelle-voile}"
-    textColor: "{colors.sarcelle-encre}"
-    rounded: "{rounded.md}"
+    backgroundColor: "{colors.app-selected}"
+    textColor: "{colors.app-selected-ink}"
+    rounded: "{rounded.full}"
     padding: "0 12px"
     height: "36px"
     typography: "{typography.command}"
   tab-trigger-active:
-    backgroundColor: "transparent"
-    textColor: "{colors.sarcelle-encre}"
-    rounded: "{rounded.sm}"
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.encre}"
+    rounded: "{rounded.full}"
     padding: "0 12px"
     height: "36px"
     typography: "{typography.command}"
@@ -581,110 +608,63 @@ components:
 
 ## Overview
 
-**Creative North Star: « L’enveloppe » dans l’application ; « La lumière en mouvement » sur la page publique.**
+**Creative North Star: « La lumière en mouvement ».**
 
-Les règles ci-dessous décrivent l’application, sauf les paragraphes explicitement
-« Page publique ». Les jetons `landing-*` s’appliquent aux routes `/` et `/pour-qui` ;
-ils ne remplacent ni les jetons du relevé, ni ses règles mobiles. Le monde public associe
-verre courbe, lumière naturelle, fonds menthe et forêt, et une typographie expressive.
-Les chiffres reposent sur des surfaces opaques ; le verre appartient aux images.
-La composition et les preuves de chaque route vivent dans son brief de surface.
+Planora partage une identité continue entre les pages publiques, la connexion et
+l’application : fonds menthe et forêt, accents corail, titres expressifs et courbes
+souples. Dans le budget, cette identité encadre des données lisibles sur des surfaces
+opaques. La grille de comparaison conserve sa structure et les vues mobiles leurs
+repères financiers ; la marque accompagne la lecture quotidienne.
 
-### Application
-
-Un budget est une collection d'enveloppes. Chacune a un nom, une contenance, ce qu'on
-en a déjà sorti — et, quand ça a mal tourné, ce qui a débordé au-delà du bord. Le monde
-visuel de Planora n'a qu'un objet, la CARTE : tout ce qui est panneau, section, relevé,
-enveloppe ou grand tableau est posé dedans, et rien ne s'imbrique.
-
-L'Historique fait exception à la carte-liste et l'assume : c'est un RELEVÉ À COLONNES DE
-MOIS, avec son épine de noms figée à gauche et son défilement horizontal. Cette forme
-est celle du produit et elle ne se discute pas — on y compare les mois d'un regard, ce
-qu'aucune pile de cartes ne sait faire. Ce qui a changé n'est pas sa structure mais sa
-matière : il vit maintenant dans une carte, ses familles de colonnes se distinguent par
-la DENSITÉ d'une même ardoise et non par des teintes différentes, et il se ferme sur un
-pied d'encre — la seule masse sombre d'un écran clair.
-
-La matière est celle d'un logiciel de travail, pas d'une vitrine. Un sol clair
-légèrement cyan (#edf1f2), des cartes franchement blanches posées dessus, un filet d'un
-pixel, une ombre courte : le relief vient de la lumière, jamais d'une découpe ni d'un
-trait épais. Une seule fonte, Schibsted Grotesk, porte tout — titres, libellés,
-commandes et montants — parce qu'une chasse fixe posée sur des chiffres n'est qu'un
-costume de technicité, et que l'alignement des virgules s'obtient avec `tabular-nums`.
-La densité est celle d'un relevé : des lignes serrées, des montants toujours à droite,
-et rien qui ne soit ni un montant, ni une date, ni un libellé sans avoir à le justifier.
-
-La couleur est rationnée, et c'est le cœur du système. Une seule teinte de marque, une
-sarcelle profonde, qui ne sert QU'À COMMANDER : bouton principal, lien, onglet actif,
-destination courante, mise au point, sélection. Elle ne qualifie jamais une valeur.
-Face à elle, trois sens — le vert de ce qui rentre, le rouge de ce qui a rompu, le sable
-de ce qui attend encore — ne teintent que des montants, des pastilles d'état et la
-jauge. Tout le reste est de l'encre bleu-ardoise. Ce qui est refusé, explicitement : les
-capitales de chasse fixe gravées en titre, les blocs à découpe oblique, le zéro-rayon
-zéro-ombre, la poutre noire en haut de page, les camemberts et les jauges décoratives.
+Bricolage Grotesque porte la marque et les titres d’accueil des écrans ; Schibsted
+Grotesk porte les données, libellés et commandes. Les photographies de verre restent
+sur les surfaces d’accueil, dont la connexion sur ordinateur. Dans le relevé, deux
+courbes fines et statiques près du titre suffisent à rappeler cette matière.
+Les compositions propres aux routes vivent dans leurs briefs de surface.
 
 **Key Characteristics:**
-- Une seule surface : la carte blanche, arrondie à 12 px, filet d'un pixel, ombre courte.
-- Un seul tableau dense, celui de l'Historique, posé DANS une carte et fermé par un pied d'encre.
-- Une seule fonte, variable, servie localement ; aucun couple d'affichage.
-- Une seule couleur de commande, trois couleurs de sens, et rien d'autre.
-- Des montants tabulaires, alignés à droite, toujours écrits en toutes lettres.
-- Une jauge d'enveloppe qui déborde hors de sa piste au lieu de saturer à cent pour cent.
-- Aucun geste d'ouverture : les deux seuls mouvements du produit disent l'attente.
+- Une identité menthe, forêt et corail, adaptée aux thèmes clair et sombre.
+- Des titres Bricolage et des données Schibsted tabulaires.
+- Des cartes opaques de 16 px et des commandes en capsule.
+- Un tableau de comparaison sur ordinateur et des sections lisibles sur téléphone.
+- Des revenus verts, des dépenses rouges et des soldes sombres sur mobile.
+- Des courbes de titre statiques, discrètes et masquées sur téléphone.
 
 ## Colors
 
-Une palette de bureau : une encre bleu-ardoise, un sol cyanisé, deux gris de filet, une
-teinte de commande et trois teintes de sens. Chaque teinte de sens existe en deux
-valeurs — son encre, qui tient 4,5:1 et porte du texte, et son voile, qui ne fait que
-teinter un fond de pastille.
+Les jetons sans préfixe décrivent l’application et la connexion. Ils reprennent la
+palette publique avec des nuances adaptées aux lignes, champs et états du budget.
+Les jetons `landing-*` restent propres aux compositions publiques. L’application
+applique ses valeurs au document quand l’espace de travail est présent : les menus,
+notifications et panneaux rendus hors de son conteneur héritent du même thème.
 
 ### Primary
-- **Sarcelle profonde** (`{colors.sarcelle}`) : la couleur de la commande, et d'elle seule. Fond du bouton principal, texte des liens, trait de l'onglet actif, anneau de mise au point, fond de sélection de texte. Sa variante **appuyée** (`{colors.sarcelle-forte}`) sert au survol et à l'enfoncement ; sa variante **encre** (`{colors.sarcelle-encre}`) est la seule autorisée à porter du texte sur un fond clair ; son **voile** (`{colors.sarcelle-voile}`) remplit la pastille de la destination courante et les bandeaux d'information.
+- **Vert forêt** (`{colors.sarcelle}`) : commande principale, lien et destination active. Le nom historique du jeton reste stable ; sa couleur appartient désormais à la famille forêt.
+- **Voile menthe** (`{colors.sarcelle-voile}`) : support des choix et des messages d’information.
 
 ### Secondary
-- **Vert portant** (`{colors.portant}`) : ce qui rentre et ce qui est acquis. Encre d'un montant reçu, texte de la pastille « acquis », remplissage de la jauge d'entrée.
-- **Rouge tension** (`{colors.tension}`) : ce qui a rompu. Réservé au débord de la jauge, au bouton destructeur et au mois qui plonge sous la ligne du zéro. Son **encre** (`{colors.tension-encre}`) porte les montants négatifs et la part budgétée d'une enveloppe rompue ; son **voile** (`{colors.tension-voile}`) remplit la pastille « dépassé » et le bandeau d'alerte.
-- **Sable attente** (`{colors.attente}`) : ce qui est prévu mais pas encore arrivé. Pastille « attendu », bandeau d'attente. Jamais un avertissement — l'attente n'est pas une faute.
+- **Vert portant** : revenus, acquis et jauges d’entrée.
+- **Corail de tension** : dépassements, erreurs et actions destructrices ; les nuances pâles portent les supports de dépenses.
+- **Sable attente** : prévu ou attendu, sans assimiler l’attente à une faute.
+- **Courbes menthe et corail** (`app-curve`, `app-curve-warm`) : rappel décoratif du monde public, jamais un graphique financier.
 
 ### Neutral
-- **Encre bleu-ardoise** (`{colors.encre}`) : tout le texte porteur, les colonnes de l'horizon du mois en cours, le carré de la marque, le fond des infobulles.
-- **Sol cyanisé** (`{colors.sol}`) : le fond du document, sous les cartes. Ce n'est pas du blanc — c'est ce demi-ton qui décolle les cartes.
-- **Blanc de carte** (`{colors.surface}`) et **surface creusée** (`{colors.surface-creuse}`) : la carte, et ce qui s'enfonce dedans (pied de totaux, champ de saisie, piste de jauge, tirage). Le **survol** (`{colors.surface-survol}`) est le troisième ton, réservé aux états de passage.
-- **Ardoise** (`{colors.ardoise}`) : le texte secondaire et les légendes en petites capitales. **Ardoise claire** (`{colors.ardoise-claire}`) porte les dates d'opération, les montants à zéro et le texte d'invite des champs — elle a valu 3,4:1 avant d'être remontée ; un ton « clair » ne dispense pas de se lire.
-- **Filet** (`{colors.filet}`) et **filet fort** (`{colors.filet-fort}`) : le cerclage des cartes et les séparateurs de lignes ; le second pour les contours de champ, la ligne du zéro et le survol d'une carte ouvrable.
+- **Encre forêt** et **sol menthe** : texte principal et fond de travail.
+- **Surface claire**, **creux** et **survol** : cartes, regroupements internes et états interactifs.
+- **Ardoise verte**, **filet** et **filet fort** : textes secondaires, séparations et contours de champs.
 
-Le pendant sombre est le même bureau, la lampe éteinte : le sol s'enfonce
-(`{colors.sol-nuit}`), les cartes remontent d'un cran (`{colors.surface-nuit}`), et les
-quatre teintes s'éclaircissent juste assez pour rester lisibles. Les rôles ne changent
-pas d'un thème à l'autre ; seules les valeurs bougent.
+Les variantes `-nuit` conservent ces rôles sur fond forêt. Les commandes menthe
+prennent une encre sombre ; une commande destructrice claire reçoit également une
+encre sombre. Les contrôles natifs suivent le thème du document.
 
-### Named Rules
+**La règle du sens financier.** La couleur de marque ne remplace pas les repères de données. Sur téléphone, revenus, dépenses et soldes conservent respectivement leurs fonds verts, rouges et sombres, y compris dans les panneaux associés. Un texte et un montant explicites accompagnent chaque état.
 
-**La règle de la sarcelle.** La sarcelle ne commande que. Bouton principal, lien, onglet
-actif, destination courante, anneau de mise au point, sélection : rien d'autre. Aucun
-montant n'est jamais sarcelle, aucune commande secondaire non plus — une commande
-secondaire se distingue par sa matière (fond blanc, filet, ombre courte), pas par une
-teinte plus pâle de la même couleur. Test : masquez tous les éléments cliquables de
-l'écran ; il ne doit plus rester un seul pixel sarcelle.
+**La règle du négatif par nature.** Le dépensé d’une enveloppe reste à l’encre ; son signe attendu ne constitue pas à lui seul un dépassement. Le reste et la jauge portent le signal d’écart.
 
-**La règle des trois sens.** Le portant, la tension et l'attente ne teintent que des
-montants, des pastilles — et la jauge. La jauge est la seule et unique exception à
-l'interdit du sens en aplat : sa piste remplie prend le vert portant ou l'encre de
-tension, son débord prend le rouge de tension. Elle est écrite ici plutôt que passée
-sous silence, parce qu'une règle qu'on prétend sans exception se fait contourner
-partout.
-
-**La règle du négatif par nature.** Un montant négatif par nature reste à l'encre. Le
-« dépensé » d'une enveloppe est négatif sur chaque ligne sans exception ; le peindre en
-rouge rendait le rouge muet. Seuls le reste et la jauge portent la couleur — c'est-à-dire
-les deux endroits où le signe est une information et non une fatalité.
-
-### Page publique — palette isolée
+### Page publique — palette de composition
 
 Le fond menthe et l’encre verte portent la lecture ; le vert d’action sert aussi
-aux mots accentués des titres. Cette page ne suit donc pas la restriction sarcelle
-réservée aux commandes de l’application. Le bloc de démonstration est forêt ;
+aux mots accentués des titres. Le bloc de démonstration est forêt ;
 l’offre est sauge ; les photographies apportent le corail et la lumière.
 
 Les sept rôles `landing-bg`, `surface`, `ink`, `muted`, `green`, `line`, `soft`
@@ -707,40 +687,17 @@ locaux ne modifient ni les sens financiers ni la palette de l’application.
 
 ## Typography
 
-**Fonte unique dans l’application :** Schibsted Grotesk (variable, sous-ensemble latin, servie par
-next/font ; repli `ui-sans-serif, system-ui, sans-serif`).
+Bricolage Grotesque porte le mot-symbole, les titres de page, les titres des cartes
+standard et les titres de panneaux. Schibsted Grotesk reste la voix du texte courant,
+des commandes, des libellés de tableaux et des montants. Les deux familles sont servies
+par next/font ; les valeurs précises figurent dans le frontmatter.
 
-**Caractère :** un grotesque de presse — formes ouvertes, hauteur d'x généreuse, un
-caractère qui n'est ni l'anonymat d'une fonte système ni le maniérisme d'une fonte de
-marque. Elle tient à 11 px comme à 44 px, ses chiffres s'alignent, et elle porte seule
-les titres, les libellés, les commandes et les montants. Un logiciel de travail n'a pas
-besoin d'un couple d'affichage : il a besoin d'une famille qui tienne partout.
+Le titre d’une page de travail passe de `display` à `app-display-mobile` sous
+640 px. Les titres des cartes standard utilisent `app-card-title` ; les libellés
+denses du relevé conservent le rôle `title`. Les chiffres gardent leur alignement à
+droite et ne se coupent pas. La présence de Bricolage ne change pas leur métrique.
 
-### Hierarchy
-- **Display** (700, 2rem, interlettrage -0.025em) : ancien jeton Schibsted conservé ; la page publique utilise désormais les rôles `landing-*`.
-- **Headline** (600, 1.75rem, montant à 2.25rem dès 640 px, tabulaire) : la mesure de tête du relevé — le seul chiffre de l'écran qui réponde directement à « est-ce que je peux dépenser ? ».
-- **Title** (600, 0.9375rem, interligne 1.3) : le titre d'une carte. Une phrase en casse normale, pas une inscription. L'ancien monde gravait ses titres en capitales de chasse fixe ; celui-ci les écrit.
-- **Body** (400, 0.875rem, interligne 1.5) : le texte courant, les libellés de transaction, les phrases d'explication. Le texte creux passe à 0.8125rem.
-- **Numeric** (600, 0.875rem par défaut, tabulaire, interlettrage -0.012em) : tout montant. Toujours à droite, jamais coupé (`white-space: nowrap`). Les trois sens ne changent que son encre.
-- **Command** (600, 0.8125rem) : les onglets, les destinations de la barre produit, les liens d'action en tête de carte. Les boutons montent à 0.875rem.
-- **Label** (600, 0.6875rem, interlettrage 0.06em, capitales) : la légende posée au-dessus d'un montant ou en tête de colonne. Ardoise, jamais de fond : c'est une cote, pas une étiquette.
-
-Les titres de niveau 1 à 3 portent un interlettrage de -0.012em et `text-wrap: balance` :
-un titre de carte tient sur une ligne ou se coupe proprement, il ne laisse pas un mot
-seul en bas.
-
-### Named Rules
-
-**La règle de la chasse tabulaire.** `tabular-nums` ne se pose que sur des chiffres :
-`.montant`, `.legende`, l'utilitaire `tabular-nums`, et rien d'autre — jamais sur
-`body`. Dans cette fonte, la fonctionnalité donne aussi à la virgule et au point la
-chasse d'un chiffre : posée sur le document entier, elle détachait la ponctuation de
-chaque phrase du produit, jusque dans le titre de la page d'accueil.
-
-**La règle de la fonte unique dans l’application.** Une seule famille, et pas de chasse fixe. Un montant
-n'a pas besoin d'être monospacé pour s'aligner ; il a besoin de `tabular-nums`. Toute
-demande de « fonte de chiffres » se règle par une variante numérique, pas par une
-deuxième famille.
+**La règle de la chasse tabulaire.** `tabular-nums` se pose sur les montants et les légendes chiffrées, jamais sur le texte courant ni sur `body` : la ponctuation des phrases doit garder son espacement naturel.
 
 ### Page publique — deux voix
 
@@ -761,25 +718,25 @@ est à 18 px, puis 16 px sur téléphone ; les bénéfices ont une phrase forte 
 
 ## Layout
 
-Une colonne unique qui descend. Le shell de l'app est une barre produit blanche de 56 px
-(`h-14`) avec un filet en pied, puis une zone de contenu qui défile seule — la barre ne
-bouge jamais. Les marges du contenu sont resserrées sur téléphone (12 px de chaque côté)
-et s'ouvrent à 24 px dès 640 px : tout ce qu'on prendrait de plus serait pris sur la
-largeur des cartes, là où vivent les montants.
+L’espace de travail conserve une barre produit et une zone de contenu qui défile.
+La barre adopte le fond menthe ou forêt, sans filet inférieur, avec une hauteur
+minimale de 84 px et des marges latérales de 32 px sur grand écran. La navigation
+vit dans une capsule ; le titre de page et sa courte explication précèdent le contenu.
+Le contenu possède une largeur maximale de 1600 px. Les écrans conservent leurs
+propres limites de largeur, notamment pour les formulaires.
 
-Le rythme d'espacement est un pas de 4 px, et il n'en sort pas : gouttières de 12 px
-entre les cartes d'un même écran, 16 px sur l'Historique où les mois doivent se séparer,
-padding de carte 12 px vertical / 16 px horizontal montant à 20 px dès 640 px. Le tableau
-de bord se borne à 1400 px, les écrans de réglages à 768 px (`max-w-3xl`) : un formulaire
-qui s'étale n'est pas plus lisible.
+Sous 640 px, les marges latérales passent à 16 px, le titre se réduit et les courbes
+disparaissent. Les actions tactiles du relevé conservent des cibles de 44 px.
+La comparaison reste un tableau sur ordinateur ; ses sections s’empilent sur mobile.
+Les espacements intérieurs du relevé préservent sa densité de données.
 
-Les points de bascule sont ceux de Tailwind, et trois seulement comptent. À 640 px les
-mesures d'appui passent de deux à quatre de front, les marges s'ouvrent, les libellés
-courts apparaissent. À 1024 px la mesure de tête du relevé se met à côté de ses appuis
-plutôt qu'au-dessus, et la barre produit affiche les noms de destination en entier. À
-1280 px les deux cartes de postes du mois se mettent côte à côte. Sur téléphone, une
-grille à deux colonnes réglée plutôt qu'un retour à la ligne libre : à 390 px, six champs
-de largeurs différentes retombent en escalier.
+Quand la largeur disponible de l’espace de travail descend à 1050 px ou moins,
+avec un écran d’au moins 640 px, la navigation occupe une seconde ligne. Cela couvre
+également l’ouverture du panneau latéral. Seuls les libellés des outils se masquent
+visuellement : icônes, compteurs et noms accessibles restent présents.
+
+La connexion utilise deux colonnes sur ordinateur : photographie à gauche, formulaire
+à droite. Sous 768 px, seul le formulaire reste visible. Son brief précise ce cadrage.
 
 ### Page publique — composition et adaptation
 
@@ -805,30 +762,21 @@ précède sa preuve. La conclusion reste centrée sur le fond public.
 
 ## Elevation & Depth
 
-Le système est hybride, mais l'ordre compte : d'abord la valeur, ensuite l'ombre. En
-lumière claire, une carte blanche sur un sol cyanisé est déjà décollée ; le filet d'un
-pixel la borne, et l'ombre courte ne fait que la poser. En lumière sombre, l'écart de
-valeur entre le sol et la carte porte tout le relief, et les ombres se contentent
-d'asseoir ce qui flotte vraiment.
+Les cartes opaques se détachent du fond par une différence de ton et une ombre douce.
+Les cartes du contenu n’ont plus de cerclage visible ; les séparateurs internes et
+les contours des champs conservent leur rôle. Les menus et panneaux flottants se
+séparent davantage du fond. Les boutons principaux restent sans ombre.
 
 ### Shadow Vocabulary
-- **Ombre de carte** (`0 1px 2px rgba(23,34,43,.06), 0 1px 3px rgba(23,34,43,.05)`) : l'état de repos de toute carte, de la barre produit et des boutons pleins.
-- **Ombre levée** (`0 2px 4px rgba(23,34,43,.06), 0 8px 20px -6px rgba(23,34,43,.14)`) : le survol d'une carte ouvrable, et rien d'autre. C'est le seul mouvement d'une carte.
-- **Ombre flottante** (`0 4px 8px rgba(23,34,43,.08), 0 18px 44px -10px rgba(23,34,43,.2)`) : ce qui sort du flux — menus, infobulles, panneaux latéraux, messages passagers.
+- **Carte** : `0 3px 12px -7px #173e2e20` en clair ; `0 4px 14px -8px #00000045` en sombre.
+- **Levée** : `0 8px 24px -12px #173e2e30` en clair ; `0 10px 24px -12px #00000065` en sombre.
+- **Flottante** : `0 18px 50px -16px #173e2e3d` en clair ; `0 18px 50px -16px #00000085` en sombre.
 
-### Named Rules
+**La règle des surfaces opaques.** Les chiffres et les formulaires reposent sur un fond lisible. Le verre appartient à la photographie ; il ne devient pas un effet de transparence sur les données.
 
-**La règle de la lumière.** La profondeur vient de la lumière. Les trois ombres sont
-décalées vers le bas et floues : une ombre sans décalage est un halo, c'est-à-dire une
-décoration. Elles sont teintées de l'encre du monde, jamais du noir pur — un noir pur
-sur un sol cyanisé donne une ombre grise et sale. Aucune ombre dure, aucun décalage sans
-flou, aucun contour lumineux.
-
-**La règle du non-emboîtement.** Rien ne s'imbrique. Il y a une surface et une seule,
-`.carte`. Ce qui vit DANS une carte prend la surface creusée (`.creux`) : un pied de
-totaux, une piste de jauge, un détail replié, un champ de saisie. Jamais une deuxième
-carte, jamais une deuxième ombre. Test : sur n'importe quel écran, aucun rectangle
-blanc à filet ne doit en contenir un autre.
+Les regroupements internes utilisent des tons de surface, sans empiler des cartes
+ombrées. Les courbes du titre sont statiques ; les attentes et les retours de commande
+conservent leurs comportements existants et respectent la réduction des animations.
 
 ### Page publique — profondeur et mouvement
 
@@ -847,19 +795,15 @@ Ces traitements appartiennent aux preuves de `/pour-qui`, pas aux cartes du budg
 
 ## Shapes
 
-Des rectangles arrondis, et une seule silhouette d'ovale. La carte est arrondie à 12 px
-(`{rounded.lg}`) ; les commandes, les champs, les menus et les blocs creusés à 8 px
-(`{rounded.md}`) ; les petits éléments — bouton minuscule, case cochable, onglet, tuile
-de mois de la frise — à 6 px (`{rounded.sm}`, la case à 5 px). Les panneaux qui sortent
-du flux, tiroir de téléphone compris, montent à 16 px (`{rounded.xl}`). Les pastilles
-d'état, les jauges, les tirages et le fil d'attente sont pleinement ovales (999 px) :
-c'est ce qui les distingue d'un bloc au premier coup d'œil.
+Les cartes du budget et les panneaux utilisent l’arrondi `app-card`. Les boutons,
+destinations et choix d’onglets sont des capsules ; les champs standard utilisent
+`app-input`. Les zones internes, petits contrôles et menus conservent les petits
+rayons déjà nécessaires à leur densité. Les traits fonctionnels restent fins et la
+mise au point garde un contour visible.
 
-Le trait est toujours un pixel, jamais deux : cerclage de carte, séparateur de ligne,
-contour de champ, filet sous la barre produit, filet sous une rangée d'onglets. Le seul
-trait de deux pixels du produit est l'anneau de mise au point, et le seul trait oblique
-est celui qu'on refuse : aucune découpe à 45°, aucun angle vif, aucune bordure épaisse
-en guise d'accent.
+Deux tracés menthe et corail bordent le titre de page sur ordinateur. Leur rôle est
+décoratif, sans interaction ni mouvement ; ils disparaissent sur téléphone. Les
+photographies d’accueil peuvent garder des découpes asymétriques plus amples.
 
 ### Page publique — arrondis et courbes
 
@@ -876,43 +820,42 @@ statique au-dessus du bloc forêt mesure 80 px, puis 48 px sur téléphone.
 
 ## Components
 
-### Buttons
-- **Forme :** coins arrondis à 8 px (`{rounded.md}`), hauteur 36 px par défaut (28 px en `sm`, 40 px en `lg`, 24 px en `xs`), casse normale, graisse 600.
-- **Principal :** fond sarcelle, texte blanc, ombre de carte ; au survol, la sarcelle appuyée.
-- **Secondaire (outline) :** une carte à hauteur de bouton — fond blanc, filet d'un pixel, ombre courte. Elle se distingue de la principale par sa matière, pas par une teinte plus pâle.
-- **Discret (secondary/ghost) :** fond creusé ou transparent, encre ardoise, qui passe à l'encre pleine au survol.
-- **Lien :** encre sarcelle, souligné au survol à 3 px de décalage.
-- **Destructeur :** rouge de tension plein, texte blanc, assombri de 5 % au survol.
-- **Mise au point :** l'anneau global, deux pixels de sarcelle détachés de deux pixels. Il est posé une fois pour toutes sur `:focus-visible` plutôt que composant par composant : ainsi il ne peut manquer nulle part.
+### Commandes et champs
 
-### Chips (pastilles d'état)
-- **Style :** un ovale plein en petites capitales (0.6875rem, graisse 600, interlettrage 0.02em), fond voilé, sans filet. La variante neutre garde un cerclage intérieur d'un pixel parce que le creux seul ne se voit pas.
-- **Rôles :** portant (acquis, reçu), tension (dépassé), attente (attendu), sarcelle (état de commande), encre (marqueur fort). Une pastille nomme un ÉTAT — jamais une valeur.
-- C'est le seul endroit du produit, avec la jauge, où une couleur de sens sert de fond.
+Les boutons standard gardent leurs tailles fonctionnelles et deviennent des capsules.
+Le bouton principal utilise le vert de commande, avec une encre adaptée au thème et
+sans ombre. Les variantes secondaire, discrète, lien et destructrice gardent leur
+hiérarchie. Le focus clavier reste visible, et un état d’erreur reste porté par
+`aria-invalid`.
 
-### Cards / Containers
-- **Coins :** 12 px. **Fond :** blanc de carte. **Filet :** un pixel de filet. **Ombre :** ombre de carte au repos.
-- **En-tête :** séparé du contenu par un filet — c'est ce qui lui donne son assise quand la carte porte une liste. Titre à gauche, mesure et lien d'action à droite, alignés sur la même ligne de base.
-- **Padding interne :** 12 px vertical, 16 px horizontal, montant à 20 px dès 640 px.
-- **Ouvrable :** la variante active se lève d'un cran au survol (ombre levée, filet renforcé) en 160 ms. Une carte qui ne mène nulle part ne s'allume pas — un fond qui s'éclaire au passage promet un geste qui n'existe pas.
+Les champs standard ont un fond de surface opaque et des coins de 12 px. Les filtres
+d’opérations se lisent comme une barre unique, avec des libellés persistants et des
+contrôles hauts d’au moins 40 px, puis 44 px sur téléphone. Les champs et boutons de
+connexion atteignent 48 px. Les sélecteurs natifs conservent leurs groupes et leur
+comportement mobile ; les contrôles natifs suivent aussi le thème sombre.
 
-### Inputs / Fields
-- **Style :** fond creusé, filet fort d'un pixel, coins à 8 px, hauteur 36 px.
-- **Mise au point :** le champ s'éclaire en blanc et prend le filet sarcelle avec un halo de 25 % — un champ actif est une surface qui s'ouvre, pas un contour qui change de couleur.
-- **Erreur :** découle de `aria-invalid`, jamais d'une classe posée à la main : c'est d'abord une information d'accessibilité.
-- **Téléphone :** le texte reste à 16 px sous 768 px, sans quoi iOS zoome à la mise au point.
+### Navigation et panneaux
 
-### Navigation
-- La barre produit est blanche, haute de 56 px, séparée du contenu par un filet en pied : elle surplombe, elle ne pèse pas. La navigation n'est pas le sujet de l'écran, les enveloppes le sont.
-- Une destination porte son icône et son nom, en 0.8125rem graisse 600, encre ardoise. **La destination courante prend une pastille sarcelle pleine** (fond voilé, encre sarcelle), pas un trait sous le pied.
-- Le trait sous le pied est le repère des onglets DANS une page : deux repères identiques à deux niveaux ne se distinguent plus. Un onglet actif passe à l'encre sarcelle et fait apparaître son trait de 2 px en fondu.
-- Sur téléphone, seule la destination courante dit son nom : trois libellés ne tiennent pas, et trois icônes muettes ne disent pas où l'on est.
-- Réglages et déconnexion vivent sous le nom du compte, marqué par les initiales : ce sont des choses qu'on fait à soi, pas des destinations.
+La marque et la navigation partagent l’identité publique. La destination active est
+pleine forêt en clair, menthe en sombre ; les onglets de page sélectionnés utilisent
+une capsule de surface sur un support menthe. Les fonctions de synchronisation,
+historique des modifications, notifications, calculatrice et menu du compte restent
+accessibles lorsque le panneau latéral réduit la largeur disponible.
+
+Les panneaux de détail reprennent les surfaces et la typographie du thème. Sur
+mobile, les panneaux des revenus, dépenses et soldes gardent leur couleur financière.
+La fermeture rend le focus au déclencheur selon les interactions existantes.
+
+### Cartes et états
+
+Les cartes sont opaques et arrondies à 16 px, avec une ombre douce. Les titres des
+cartes standard utilisent Bricolage ; les noms de postes et mesures du relevé restent
+Schibsted. Les pastilles nomment un état et le rendent compréhensible sans dépendre
+de la couleur seule. Une carte non interactive ne promet pas une action au survol.
 
 ### La jauge d'enveloppe (composant signature)
 
-La seule chose de l'écran qu'on doit voir avant tout le reste, et la pièce qui justifie
-le monde entier.
+La jauge rend l’ampleur d’un dépassement lisible sans remplacer les montants.
 
 Une barre de progression ordinaire se remplit puis s'arrête à cent pour cent : elle sait
 dire qu'un poste a rompu, pas de combien. Ici, **la largeur totale de la barre vaut la
@@ -1012,11 +955,10 @@ Sur mobile, le libellé et le montant partagent une ligne. Le calcul reste cliqu
   teinte. Les colonnes de mouvement du mois partagent le fond le plus clair (ardoise à
   5 %), Balance a le sien (11 %), les trois chaînes de solde partagent le plus dense
   (18 %), les lignes de totaux montent à 24 %. Toutes ces teintes se mélangent à la
-  CARTE, jamais au sol : le tableau est posé dans une carte blanche, et une teinte
+  CARTE, jamais au sol : le tableau est posé dans une carte claire, et une teinte
   mélangée au sol tomberait à côté de la surface qui la porte.
 - **Ses bandes de section :** pleine largeur, le nom dans l'épine. Ce qui rentre prend
-  le voile du portant, ce qui sort celui de la tension. C'est le seul endroit du produit
-  où une couleur de sens teinte une rangée entière.
+  le voile du portant, ce qui sort celui de la tension. Ces bandes conservent le sens financier de chaque section.
 - **Ses teintes se posent sur les CELLULES, jamais sur la ligne :** un fond de cellule
   recouvre celui de sa ligne, donc peinte sur la ligne une teinte de colonne
   disparaîtrait au survol et ne resterait visible que dans les trous.
@@ -1141,30 +1083,18 @@ reste sur un fond opaque, avec sa mention d’exemple toujours visible.
 
 ## Do's and Don'ts
 
-Les listes ci-dessous restent les règles de l’application. Pour la page publique :
-conserver les jetons isolés, les chiffres opaques et lisibles, les adaptations
-claire/sombre/mobile et la réduction des animations. Ne pas transposer les grandes
-découpes photographiques ni Bricolage aux écrans de gestion.
-
 ### Do:
-- **Do** poser tout panneau, section, relevé ou enveloppe sur `.carte` — blanche, 12 px, filet d'un pixel, ombre de carte — et donner à ce qui vit dedans la surface creusée `.creux`.
-- **Do** réserver la sarcelle aux commandes : bouton principal, lien, onglet actif, destination courante, anneau de mise au point, sélection.
-- **Do** qualifier un montant par son sens uniquement quand le sens est une information : le reste d'une enveloppe, un solde sous zéro, une entrée reçue.
-- **Do** écrire chaque montant en toutes lettres à côté du dessin qui le représente ; un écran doit rester lisible sans ses jauges et sans son horizon.
-- **Do** poser `tabular-nums` sur les montants et les légendes chiffrées, et là seulement.
-- **Do** faire d'un squelette la structure exacte de la page qu'il attend, aux mêmes places et aux mêmes largeurs.
-- **Do** utiliser un `<select>` natif pour tout menu déroulant de saisie, habillé des jetons du champ.
-- **Do** distinguer un état par une pastille ovale en petites capitales, jamais par une couleur de texte seule.
+- Conserver la palette menthe, forêt et corail en clair et en sombre, jusque dans les panneaux et menus.
+- Utiliser Bricolage pour la marque et les titres d’accueil, Schibsted pour les données et commandes.
+- Préserver le tableau sur ordinateur, les sections mobiles et toutes les actions de budget.
+- Écrire chaque montant à côté du dessin qui le représente et garder les chiffres tabulaires.
+- Conserver les repères revenus verts, dépenses rouges et soldes sombres sur téléphone.
+- Garder les noms accessibles, les compteurs et le retour du focus quand les outils se resserrent.
 
 ### Don't:
-- **Don't** teinter un montant en sarcelle, ni une commande secondaire : elle se distingue par sa matière, pas par une teinte plus pâle.
-- **Don't** peindre en rouge un montant négatif par nature — le « dépensé » d'une enveloppe est négatif sur chaque ligne, et le rouge y perd tout sens.
-- **Don't** imbriquer une carte dans une carte, ni empiler deux ombres.
-- **Don't** poser `tabular-nums` sur `body` ni sur du texte courant : dans cette fonte, la virgule et le point y prennent la chasse d'un chiffre.
-- **Don't** donner un traitement particulier à une enveloppe pleine mais intacte ; sa piste remplie jusqu'au bout le dit déjà.
-- **Don't** laisser une jauge rompue plus discrète qu'une jauge pleine : ce qui a rompu est la marque la plus lourde de la carte.
-- **Don't** ajouter un geste d'entrée, un fondu d'apparition ou une animation de largeur ; les seuls mouvements du produit disent l'attente.
-- **Don't** teinter les familles de colonnes du grand tableau : elles se distinguent par la DENSITÉ d'une même ardoise, jamais par des couleurs différentes.
-- **Don't** mélanger une teinte de colonne au SOL : le tableau vit dans une carte, et une teinte prise sur le sol tombe à côté de la surface qui la porte.
-- **Don't** introduire une deuxième famille de caractères, ni une chasse fixe pour les chiffres.
-- **Don't** utiliser d'ombre dure, de découpe oblique, de bordure épaisse en guise d'accent, ni de camembert ou de jauge décorative.
+- Ne pas poser de chiffres sur du verre translucide ni transformer les courbes décoratives en graphiques.
+- Ne pas remplacer la grille de comparaison par des cartes qui empêchent de comparer les mois.
+- Ne pas appliquer Bricolage ou une chasse fixe aux montants et aux lignes de données.
+- Ne pas masquer un compteur en masquant le libellé visuel d’un outil.
+- Ne pas attribuer une nouvelle règle de calcul à un changement de couleur ou de présentation.
+- Ne pas ajouter de mouvement décoratif dans le relevé ; respecter la réduction des animations.

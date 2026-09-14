@@ -58,7 +58,7 @@ export function HistoryMobileControls({ navigation, min, max, disabled = false }
   const months = monthRange(min, max);
   const index = months.indexOf(month);
   return (
-    <div className="carte flex min-w-0 flex-col gap-3 p-3" aria-label="Navigation du relevé" aria-busy={disabled || undefined}>
+    <div className="app-mobile-navigation carte flex min-w-0 flex-col gap-3 p-3" aria-label="Navigation du relevé" aria-busy={disabled || undefined}>
       <div className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1" role="group" aria-label="Présentation du relevé">
         {[{ label: "Par mois", compare: false }, { label: "Comparer", compare: true }].map((mode) => (
           <button key={mode.label} type="button" disabled={disabled} aria-pressed={(metric !== null) === mode.compare}

@@ -1,94 +1,99 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-10T20:19:47.386736+00:00",
-  "title": "Design System: Plia",
+  "generatedAt": "2026-09-14T17:50:43.414689+00:00",
+  "title": "Design System: Planora",
   "extensions": {
     "colorMeta": {
       "encre": {
         "role": "neutral",
-        "displayName": "Encre bleu-ardoise",
-        "canonical": "#17222b",
-        "darkValue": "#e7edf0",
+        "displayName": "Encre forêt",
+        "canonical": "#172d28",
+        "darkValue": "#f0f6f0",
         "tonalRamp": [
-          "oklch(15% 0.02 235)",
-          "oklch(25% 0.02 235)",
-          "oklch(35% 0.02 235)",
-          "oklch(45% 0.02 235)",
-          "oklch(55% 0.02 235)",
-          "oklch(68% 0.02 235)",
-          "oklch(82% 0.015 235)",
-          "oklch(95% 0.008 235)"
-        ]
+          "#132822",
+          "#172d28",
+          "#1b342b",
+          "#355345",
+          "#526e5e",
+          "#a9bfb1",
+          "#edf5f0",
+          "#fbfdfb"
+        ],
+        "scope": "app-and-connexion"
       },
       "sol": {
         "role": "neutral",
-        "displayName": "Sol cyanisé",
-        "canonical": "#edf1f2",
-        "darkValue": "#12181c",
+        "displayName": "Sol menthe",
+        "canonical": "#edf5f0",
+        "darkValue": "#132822",
         "tonalRamp": [
-          "oklch(15% 0.008 210)",
-          "oklch(25% 0.008 210)",
-          "oklch(35% 0.008 210)",
-          "oklch(45% 0.008 210)",
-          "oklch(58% 0.007 210)",
-          "oklch(72% 0.006 210)",
-          "oklch(86% 0.005 210)",
-          "oklch(96% 0.004 210)"
-        ]
+          "#132822",
+          "#172d28",
+          "#1b342b",
+          "#355345",
+          "#526e5e",
+          "#a9bfb1",
+          "#edf5f0",
+          "#fbfdfb"
+        ],
+        "scope": "app-and-connexion"
       },
       "surface": {
         "role": "neutral",
         "displayName": "Blanc de carte",
-        "canonical": "#ffffff",
-        "darkValue": "#1b2329",
+        "canonical": "#fbfdfb",
+        "darkValue": "#1b342b",
         "tonalRamp": [
-          "oklch(15% 0.006 215)",
-          "oklch(25% 0.006 215)",
-          "oklch(35% 0.006 215)",
-          "oklch(45% 0.005 215)",
-          "oklch(58% 0.004 215)",
-          "oklch(73% 0.003 215)",
-          "oklch(88% 0.002 215)",
-          "oklch(100% 0 0)"
-        ]
+          "#132822",
+          "#172d28",
+          "#1b342b",
+          "#355345",
+          "#526e5e",
+          "#a9bfb1",
+          "#edf5f0",
+          "#fbfdfb"
+        ],
+        "scope": "app-and-connexion"
       },
       "surface-creuse": {
         "role": "neutral",
         "displayName": "Surface creusée",
-        "canonical": "#f4f7f8",
-        "darkValue": "#232c33",
+        "canonical": "#f1f6f2",
+        "darkValue": "#213e32",
         "tonalRamp": [
-          "oklch(16% 0.007 212)",
-          "oklch(26% 0.007 212)",
-          "oklch(36% 0.006 212)",
-          "oklch(46% 0.006 212)",
-          "oklch(59% 0.005 212)",
-          "oklch(74% 0.004 212)",
-          "oklch(88% 0.004 212)",
-          "oklch(97.5% 0.003 212)"
-        ]
+          "#132822",
+          "#172d28",
+          "#1b342b",
+          "#355345",
+          "#526e5e",
+          "#a9bfb1",
+          "#edf5f0",
+          "#fbfdfb"
+        ],
+        "scope": "app-and-connexion"
       },
       "sarcelle": {
         "role": "primary",
-        "displayName": "Sarcelle profonde",
-        "canonical": "#0b6e75",
-        "darkValue": "#3fa8ae",
+        "displayName": "Vert forêt de commande",
+        "canonical": "#126b5b",
+        "darkValue": "#9fddbc",
         "tonalRamp": [
-          "oklch(20% 0.045 196)",
-          "oklch(30% 0.06 196)",
-          "oklch(40% 0.07 196)",
-          "oklch(50% 0.075 196)",
-          "oklch(60% 0.075 196)",
-          "oklch(72% 0.065 196)",
-          "oklch(85% 0.04 196)",
-          "oklch(95% 0.018 196)"
-        ]
+          "#0b5043",
+          "#126b5b",
+          "#236345",
+          "#526e5e",
+          "#79aa8f",
+          "#9fddbc",
+          "#b9edcf",
+          "#edf5f0"
+        ],
+        "scope": "app-and-connexion"
       },
       "portant": {
         "role": "secondary",
         "displayName": "Vert portant",
-        "canonical": "#1c7a4e",
-        "darkValue": "#4cb87f",
+        "canonical": "#236345",
+        "darkValue": "#a3dfb7",
         "tonalRamp": [
           "oklch(20% 0.06 155)",
           "oklch(30% 0.08 155)",
@@ -98,13 +103,14 @@
           "oklch(74% 0.085 155)",
           "oklch(86% 0.05 155)",
           "oklch(95% 0.022 155)"
-        ]
+        ],
+        "scope": "app-and-connexion"
       },
       "tension": {
         "role": "secondary",
         "displayName": "Rouge tension",
-        "canonical": "#c0392b",
-        "darkValue": "#e4695a",
+        "canonical": "#b94e39",
+        "darkValue": "#ee9d85",
         "tonalRamp": [
           "oklch(20% 0.07 28)",
           "oklch(30% 0.10 28)",
@@ -114,13 +120,14 @@
           "oklch(72% 0.12 28)",
           "oklch(86% 0.06 28)",
           "oklch(96% 0.025 28)"
-        ]
+        ],
+        "scope": "app-and-connexion"
       },
       "attente": {
         "role": "tertiary",
         "displayName": "Sable attente",
-        "canonical": "#8a6410",
-        "darkValue": "#d8a94a",
+        "canonical": "#846019",
+        "darkValue": "#e3c487",
         "tonalRamp": [
           "oklch(20% 0.04 80)",
           "oklch(30% 0.055 80)",
@@ -130,39 +137,42 @@
           "oklch(75% 0.085 80)",
           "oklch(87% 0.055 80)",
           "oklch(96% 0.025 80)"
-        ]
+        ],
+        "scope": "app-and-connexion"
       },
       "ardoise": {
         "role": "neutral",
         "displayName": "Ardoise",
-        "canonical": "#5a6b75",
-        "darkValue": "#9aabb4",
+        "canonical": "#496359",
+        "darkValue": "#bdcfc3",
         "tonalRamp": [
-          "oklch(18% 0.015 232)",
-          "oklch(28% 0.018 232)",
-          "oklch(38% 0.02 232)",
-          "oklch(48% 0.02 232)",
-          "oklch(58% 0.02 232)",
-          "oklch(70% 0.018 232)",
-          "oklch(84% 0.012 232)",
-          "oklch(95% 0.006 232)"
-        ]
+          "#132822",
+          "#172d28",
+          "#1b342b",
+          "#355345",
+          "#526e5e",
+          "#a9bfb1",
+          "#edf5f0",
+          "#fbfdfb"
+        ],
+        "scope": "app-and-connexion"
       },
       "filet": {
         "role": "neutral",
         "displayName": "Filet",
-        "canonical": "#dce4e7",
-        "darkValue": "#2c363d",
+        "canonical": "#d6e4db",
+        "darkValue": "#355345",
         "tonalRamp": [
-          "oklch(17% 0.01 218)",
-          "oklch(27% 0.01 218)",
-          "oklch(37% 0.011 218)",
-          "oklch(47% 0.011 218)",
-          "oklch(60% 0.011 218)",
-          "oklch(74% 0.01 218)",
-          "oklch(88% 0.008 218)",
-          "oklch(96% 0.005 218)"
-        ]
+          "#132822",
+          "#172d28",
+          "#1b342b",
+          "#355345",
+          "#526e5e",
+          "#a9bfb1",
+          "#edf5f0",
+          "#fbfdfb"
+        ],
+        "scope": "app-and-connexion"
       },
       "landing-bg": {
         "role": "neutral",
@@ -302,12 +312,28 @@
         "displayName": "Pour qui · mint",
         "scope": "src/app/pour-qui/page.tsx",
         "purpose": "Accent des titres et coches du récit couple sur forêt."
+      },
+      "app-curve": {
+        "role": "secondary",
+        "displayName": "Courbe menthe",
+        "canonical": "#b8d5c4",
+        "darkValue": "#345c47",
+        "scope": "app",
+        "purpose": "Courbe décorative statique près du titre sur ordinateur."
+      },
+      "app-curve-warm": {
+        "role": "secondary",
+        "displayName": "Courbe corail",
+        "canonical": "#e9c9b7",
+        "darkValue": "#684f3e",
+        "scope": "app",
+        "purpose": "Courbe décorative statique près du titre sur ordinateur."
       }
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Display",
-        "purpose": "Le titre de la landing, et lui seul. N'existe pas sous la porte de session."
+        "displayName": "Titre de page Bricolage",
+        "purpose": "Titre d’accueil des pages de travail ; version mobile sous 640 px."
       },
       "headline": {
         "displayName": "Mesure de tête",
@@ -315,7 +341,7 @@
       },
       "title": {
         "displayName": "Titre de carte",
-        "purpose": "Une phrase en casse normale, pas une inscription gravée."
+        "purpose": "Libellés de section denses du relevé, en Schibsted."
       },
       "body": {
         "displayName": "Corps",
@@ -382,6 +408,10 @@
         "displayName": "Page publique · audience-comparison",
         "purpose": "Phrase de la comparaison sur forêt.",
         "scope": "src/app/pour-qui/page.tsx"
+      },
+      "app-card-title": {
+        "displayName": "Titre de carte Bricolage",
+        "purpose": "Titres des cartes standard ; les libellés du relevé restent Schibsted."
       }
     },
     "roundedMeta": {
@@ -418,42 +448,22 @@
     },
     "shadows": [
       {
-        "name": "ombre-carte",
-        "value": "0 1px 2px rgba(23, 34, 43, 0.06), 0 1px 3px rgba(23, 34, 43, 0.05)",
-        "darkValue": "0 1px 2px rgba(0, 0, 0, 0.4)",
-        "purpose": "L'état de repos de toute carte, de la barre produit et des boutons pleins."
+        "name": "carte",
+        "value": "0 3px 12px -7px #173e2e20",
+        "darkValue": "0 4px 14px -8px #00000045",
+        "purpose": "Carte opaque au repos."
       },
       {
-        "name": "ombre-levee",
-        "value": "0 2px 4px rgba(23, 34, 43, 0.06), 0 8px 20px -6px rgba(23, 34, 43, 0.14)",
-        "darkValue": "0 6px 18px -6px rgba(0, 0, 0, 0.55)",
-        "purpose": "Le survol d'une carte ouvrable, et rien d'autre. Le seul mouvement d'une carte."
+        "name": "levee",
+        "value": "0 8px 24px -12px #173e2e30",
+        "darkValue": "0 10px 24px -12px #00000065",
+        "purpose": "Carte ouvrable et panneau."
       },
       {
-        "name": "ombre-flottante",
-        "value": "0 4px 8px rgba(23, 34, 43, 0.08), 0 18px 44px -10px rgba(23, 34, 43, 0.2)",
-        "darkValue": "0 18px 44px -10px rgba(0, 0, 0, 0.65)",
-        "purpose": "Ce qui sort du flux : menus, infobulles, panneaux latéraux, messages passagers."
-      },
-      {
-        "name": "landing-balance",
-        "value": "0 16px 38px #122e2729",
-        "purpose": "Cartouche illustratif opaque sur la photographie."
-      },
-      {
-        "name": "landing-demo",
-        "value": "0 20px 45px #071c1a30",
-        "purpose": "Captures de produit sur fond forêt."
-      },
-      {
-        "name": "landing-audience-detail",
-        "value": "0 16px 32px #56302724",
-        "purpose": "Capture du détail sur support corail, /pour-qui uniquement."
-      },
-      {
-        "name": "landing-audience-comparison",
-        "value": "0 20px 40px #071c1a30",
-        "purpose": "Capture de comparaison sur forêt, /pour-qui uniquement."
+        "name": "flottante",
+        "value": "0 18px 50px -16px #173e2e3d",
+        "darkValue": "0 18px 50px -16px #00000085",
+        "purpose": "Menu et panneau flottant."
       }
     ],
     "motion": [
@@ -505,20 +515,17 @@
     ],
     "breakpoints": [
       {
-        "name": "sm",
+        "name": "app-mobile",
         "value": "640px"
       },
       {
-        "name": "md",
+        "name": "app-header-container",
+        "value": "1050px",
+        "purpose": "Largeur du conteneur, avec viewport >= 640 px."
+      },
+      {
+        "name": "connexion-columns",
         "value": "768px"
-      },
-      {
-        "name": "lg",
-        "value": "1024px"
-      },
-      {
-        "name": "xl",
-        "value": "1280px"
       },
       {
         "name": "landing-tablet",
@@ -640,25 +647,25 @@
       "name": "Bouton principal",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "La commande principale d'un écran. Le seul aplat de sarcelle avec la pastille de destination.",
+      "description": "Commande en capsule avec un focus clavier visible.",
       "html": "<button class='ds-btn-primary'>Synchroniser</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 14px; border: none; border-radius: 0.5rem; background: var(--sarcelle, #0b6e75); color: #fff; font-family: inherit; font-size: 0.875rem; font-weight: 600; box-shadow: 0 1px 2px rgba(23,34,43,.06), 0 1px 3px rgba(23,34,43,.05); cursor: pointer; transition: background-color 150ms, box-shadow 150ms; } .ds-btn-primary:hover { background: var(--sarcelle-forte, #095b61); } .ds-btn-primary:focus-visible { outline: 2px solid var(--sarcelle, #0b6e75); outline-offset: 2px; } .ds-btn-primary:active { background: var(--sarcelle-forte, #095b61); }"
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 20px; border: none; border-radius: 999px; background: var(--sarcelle, #126b5b); color: var(--primary-foreground, #fff); font-family: inherit; font-size: 0.875rem; font-weight: 600; box-shadow: none; cursor: pointer; transition: background-color 150ms, box-shadow 150ms; } .ds-btn-primary:hover { background: var(--sarcelle-forte, #0b5043); } .ds-btn-primary:focus-visible { outline: 2px solid var(--sarcelle, #126b5b); outline-offset: 2px; } .ds-btn-primary:active { background: var(--sarcelle-forte, #0b5043); }"
     },
     {
       "name": "Bouton secondaire",
       "kind": "button",
       "refersTo": "button-outline",
-      "description": "Une carte à hauteur de bouton. Elle se distingue de la principale par sa matière, pas par une teinte plus pâle.",
+      "description": "Commande en capsule avec un focus clavier visible.",
       "html": "<button class='ds-btn-outline'>Expliquer le calcul</button>",
-      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid var(--filet, #dce4e7); border-radius: 0.5rem; background: var(--surface, #fff); color: var(--encre, #17222b); font-family: inherit; font-size: 0.875rem; font-weight: 600; box-shadow: 0 1px 2px rgba(23,34,43,.06), 0 1px 3px rgba(23,34,43,.05); cursor: pointer; transition: background-color 150ms, border-color 150ms; } .ds-btn-outline:hover { background: var(--surface-survol, #f0f4f5); border-color: var(--filet-fort, #c3d0d5); } .ds-btn-outline:focus-visible { outline: 2px solid var(--sarcelle, #0b6e75); outline-offset: 2px; }"
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid var(--filet, #d6e4db); border-radius: 999px; background: var(--surface, #fbfdfb); color: var(--encre, #172d28); font-family: inherit; font-size: 0.875rem; font-weight: 600; box-shadow: var(--ombre-carte, 0 3px 12px -7px #173e2e20); cursor: pointer; transition: background-color 150ms, border-color 150ms; } .ds-btn-outline:hover { background: var(--surface-survol, #e6f0e9); border-color: var(--filet-fort, #b8cdc0); } .ds-btn-outline:focus-visible { outline: 2px solid var(--sarcelle, #126b5b); outline-offset: 2px; }"
     },
     {
       "name": "Champ de saisie",
       "kind": "input",
       "refersTo": "input-text",
-      "description": "Fond creusé au repos ; à la mise au point il s'éclaire en blanc et prend le filet sarcelle. Un champ actif est une surface qui s'ouvre.",
+      "description": "Champ opaque, arrondi à 12 px, avec focus visible.",
       "html": "<input class='ds-input' type='text' placeholder='Rechercher un libellé…' />",
-      "css": ".ds-input { height: 36px; width: 100%; max-width: 280px; padding: 4px 12px; border: 1px solid var(--filet-fort, #c3d0d5); border-radius: 0.5rem; background: var(--surface-creuse, #f4f7f8); color: var(--encre, #17222b); font-family: inherit; font-size: 0.875rem; outline: none; transition: background-color 150ms, border-color 150ms, box-shadow 150ms; } .ds-input::placeholder { color: var(--ardoise-claire, #64747c); } .ds-input:focus-visible { background: var(--surface, #fff); border-color: var(--sarcelle, #0b6e75); box-shadow: 0 0 0 2px color-mix(in oklab, var(--sarcelle, #0b6e75) 25%, transparent); }"
+      "css": ".ds-input { height: 36px; width: 100%; max-width: 280px; padding: 4px 12px; border: 1px solid var(--filet-fort, #b8cdc0); border-radius: 12px; background: var(--surface, #fbfdfb); color: var(--encre, #172d28); font-family: inherit; font-size: 0.875rem; outline: none; transition: background-color 150ms, border-color 150ms, box-shadow 150ms; } .ds-input::placeholder { color: var(--ardoise-claire, #5d7167); } .ds-input:focus-visible { background: var(--surface, #fbfdfb); border-color: var(--sarcelle, #126b5b); box-shadow: 0 0 0 2px color-mix(in oklab, var(--sarcelle, #126b5b) 25%, transparent); }"
     },
     {
       "name": "Menu déroulant natif",
@@ -666,23 +673,23 @@
       "refersTo": "select-native",
       "description": "Tout menu déroulant du produit est un <select> natif habillé des jetons du champ : optgroup et ergonomie mobile.",
       "html": "<select class='ds-select'><optgroup label='Dépenses'><option>Courses</option><option>Loyer</option></optgroup><optgroup label='Entrées'><option>Missions</option></optgroup></select>",
-      "css": ".ds-select { height: 36px; padding: 0 12px; border: 1px solid var(--filet-fort, #c3d0d5); border-radius: 0.5rem; background: var(--surface-creuse, #f4f7f8); color: var(--encre, #17222b); font-family: inherit; font-size: 0.875rem; outline: none; transition: background-color 150ms, border-color 150ms, box-shadow 150ms; } .ds-select:hover { background: var(--surface-survol, #f0f4f5); } .ds-select:focus-visible { border-color: var(--sarcelle, #0b6e75); box-shadow: 0 0 0 2px color-mix(in oklab, var(--sarcelle, #0b6e75) 25%, transparent); }"
+      "css": ".ds-select { height: 36px; padding: 0 12px; border: 1px solid var(--filet-fort, #b8cdc0); border-radius: 0.5rem; background: var(--surface-creuse, #f1f6f2); color: var(--encre, #172d28); font-family: inherit; font-size: 0.875rem; outline: none; transition: background-color 150ms, border-color 150ms, box-shadow 150ms; } .ds-select:hover { background: var(--surface-survol, #e6f0e9); } .ds-select:focus-visible { border-color: var(--sarcelle, #126b5b); box-shadow: 0 0 0 2px color-mix(in oklab, var(--sarcelle, #126b5b) 25%, transparent); }"
     },
     {
       "name": "Carte",
       "kind": "card",
       "refersTo": "card",
-      "description": "La surface du produit, et la seule. Rien ne s'imbrique : ce qui vit dedans prend la surface creusée.",
+      "description": "Carte opaque de 16 px sur le fond menthe ou forêt, avec une ombre douce.",
       "html": "<div class='ds-carte'><div class='ds-carte-tete'><span class='ds-titre'>Dépenses prévues</span><span class='ds-montant'>1 240,00 €</span></div><div class='ds-carte-corps'><div class='ds-creux'>Reste 312,50 € sur 4 postes</div></div></div>",
-      "css": ".ds-carte { background: var(--surface, #fff); border: 1px solid var(--filet, #dce4e7); border-radius: 0.75rem; box-shadow: 0 1px 2px rgba(23,34,43,.06), 0 1px 3px rgba(23,34,43,.05); color: var(--encre, #17222b); font-family: inherit; max-width: 420px; overflow: hidden; } .ds-carte-tete { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--filet, #dce4e7); } .ds-titre { font-size: 0.9375rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.006em; } .ds-montant { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.9375rem; letter-spacing: -0.012em; white-space: nowrap; } .ds-carte-corps { padding: 16px; } .ds-creux { background: var(--surface-creuse, #f4f7f8); border-radius: 0.5rem; padding: 10px 12px; font-size: 0.8125rem; color: var(--ardoise, #5a6b75); }"
+      "css": ".ds-carte { background: var(--surface, #fbfdfb); border: 1px solid transparent; border-radius: 16px; box-shadow: var(--ombre-carte, 0 3px 12px -7px #173e2e20); color: var(--encre, #172d28); font-family: inherit; max-width: 420px; overflow: hidden; } .ds-carte-tete { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--filet, #d6e4db); } .ds-titre { font-family: var(--app-display, \"Bricolage Grotesque\", sans-serif); font-size: 0.9375rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.006em; } .ds-montant { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.9375rem; letter-spacing: -0.012em; white-space: nowrap; } .ds-carte-corps { padding: 16px; } .ds-creux { background: var(--surface-creuse, #f1f6f2); border-radius: 0.5rem; padding: 10px 12px; font-size: 0.8125rem; color: var(--ardoise, #496359); }"
     },
     {
       "name": "Pastille d'état",
       "kind": "chip",
       "refersTo": "badge-portant",
-      "description": "Un ovale plein en petites capitales qui nomme un état — jamais une valeur. Avec la jauge, le seul endroit où une couleur de sens sert de fond.",
+      "description": "Pastille qui nomme un état financier, avec une encre et un fond adaptés au thème.",
       "html": "<span class='ds-pastille'>engagé</span> <span class='ds-pastille ds-pastille-portant'>acquis</span> <span class='ds-pastille ds-pastille-attente'>attendu</span> <span class='ds-pastille ds-pastille-tension'>dépassé</span>",
-      "css": ".ds-pastille { display: inline-flex; align-items: center; gap: 0.3em; border-radius: 999px; padding: 0.2em 0.62em; font-family: inherit; font-size: 0.6875rem; font-weight: 600; line-height: 1.35; letter-spacing: 0.02em; white-space: nowrap; background: var(--surface-creuse, #f4f7f8); color: var(--ardoise, #5a6b75); box-shadow: inset 0 0 0 1px var(--filet, #dce4e7); } .ds-pastille-portant { background: var(--portant-voile, #e2f1e8); color: var(--portant, #1c7a4e); box-shadow: none; } .ds-pastille-attente { background: var(--attente-voile, #f7eedb); color: var(--attente, #8a6410); box-shadow: none; } .ds-pastille-tension { background: var(--tension-voile, #fbe7e4); color: var(--tension-encre, #a8332a); box-shadow: none; }"
+      "css": ".ds-pastille { display: inline-flex; align-items: center; gap: 0.3em; border-radius: 999px; padding: 0.2em 0.62em; font-family: inherit; font-size: 0.6875rem; font-weight: 600; line-height: 1.35; letter-spacing: 0.02em; white-space: nowrap; background: var(--surface-creuse, #f1f6f2); color: var(--ardoise, #496359); box-shadow: inset 0 0 0 1px var(--filet, #d6e4db); } .ds-pastille-portant { background: var(--portant-voile, #dceee1); color: var(--portant, #236345); box-shadow: none; } .ds-pastille-attente { background: var(--attente-voile, #f6edda); color: var(--attente, #846019); box-shadow: none; } .ds-pastille-tension { background: var(--tension-voile, #f7e2da); color: var(--tension-encre, #9e3e2c); box-shadow: none; }"
     },
     {
       "name": "Jauge d'enveloppe",
@@ -690,15 +697,15 @@
       "refersTo": "gauge-envelope",
       "description": "La pièce signature. La largeur totale vaut la DÉPENSE, pas le budget : la piste n'occupe que la part budgétée et le débord se pose à sa droite, séparé par une encoche. Rompue, la barre passe entièrement au rouge.",
       "html": "<div class='ds-jauge'><div class='ds-jauge-piste' style='width:62%'><div class='ds-jauge-part' style='width:100%'></div></div><div class='ds-jauge-debord' style='width:38%'></div></div><div class='ds-jauge' style='margin-top:14px'><div class='ds-jauge-piste' style='width:100%'><div class='ds-jauge-part ds-jauge-part-neutre' style='width:44%'></div></div></div>",
-      "css": ".ds-jauge { position: relative; display: flex; height: 8px; width: 100%; max-width: 320px; align-items: stretch; border-radius: 999px; background: color-mix(in oklab, var(--filet-fort, #c3d0d5) 45%, var(--surface-creuse, #f4f7f8)); overflow: visible; } .ds-jauge-piste { position: relative; height: 100%; border-radius: 999px; background: color-mix(in oklab, var(--filet-fort, #c3d0d5) 45%, var(--surface-creuse, #f4f7f8)); overflow: hidden; } .ds-jauge-part { height: 100%; border-radius: 999px; background: var(--tension-encre, #a8332a); } .ds-jauge-part-neutre { background: var(--ardoise, #5a6b75); } .ds-jauge-debord { height: 100%; min-width: 6px; border-radius: 999px; background: var(--tension, #c0392b); box-shadow: -2px 0 0 0 var(--surface, #fff); }"
+      "css": ".ds-jauge { position: relative; display: flex; height: 8px; width: 100%; max-width: 320px; align-items: stretch; border-radius: 999px; background: color-mix(in oklab, var(--filet-fort, #b8cdc0) 45%, var(--surface-creuse, #f1f6f2)); overflow: visible; } .ds-jauge-piste { position: relative; height: 100%; border-radius: 999px; background: color-mix(in oklab, var(--filet-fort, #b8cdc0) 45%, var(--surface-creuse, #f1f6f2)); overflow: hidden; } .ds-jauge-part { height: 100%; border-radius: 999px; background: var(--tension-encre, #9e3e2c); } .ds-jauge-part-neutre { background: var(--ardoise, #496359); } .ds-jauge-debord { height: 100%; min-width: 6px; border-radius: 999px; background: var(--tension, #b94e39); box-shadow: -2px 0 0 0 var(--surface, #fbfdfb); }"
     },
     {
       "name": "Destination de la barre produit",
       "kind": "nav",
       "refersTo": "nav-item-active",
-      "description": "La destination courante prend une pastille sarcelle pleine, jamais un trait sous le pied — le trait est réservé aux onglets dans une page.",
-      "html": "<nav class='ds-barre'><a class='ds-nav ds-nav-active' href='#' aria-current='page'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='7' height='9'/><rect x='14' y='3' width='7' height='5'/><rect x='14' y='12' width='7' height='9'/><rect x='3' y='16' width='7' height='5'/></svg>Tableau de bord</a><a class='ds-nav' href='#'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M8 3 4 7l4 4'/><path d='M4 7h16'/><path d='m16 21 4-4-4-4'/><path d='M20 17H4'/></svg>Transactions</a></nav>",
-      "css": ".ds-barre { display: flex; align-items: center; gap: 2px; height: 56px; padding: 0 16px; background: var(--surface, #fff); border-bottom: 1px solid var(--filet, #dce4e7); font-family: inherit; } .ds-nav { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 0.5rem; color: var(--ardoise, #5a6b75); font-size: 0.8125rem; font-weight: 600; text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-nav:hover { background: var(--surface-survol, #f0f4f5); color: var(--encre, #17222b); } .ds-nav-active { background: var(--sarcelle-voile, #e2eff0); color: var(--sarcelle-encre, #0a656c); } .ds-nav:focus-visible { outline: 2px solid var(--sarcelle, #0b6e75); outline-offset: 2px; }"
+      "description": "Navigation en capsule ; la destination active utilise le fond forêt ou menthe du thème.",
+      "html": "<nav class='ds-barre'><a class='ds-nav ds-nav-active' href='#' aria-current='page'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='7' height='9'/><rect x='14' y='3' width='7' height='5'/><rect x='14' y='12' width='7' height='9'/><rect x='3' y='16' width='7' height='5'/></svg>Budget</a><a class='ds-nav' href='#'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M8 3 4 7l4 4'/><path d='M4 7h16'/><path d='m16 21 4-4-4-4'/><path d='M20 17H4'/></svg>Transactions</a></nav>",
+      "css": ".ds-barre { display: flex; align-items: center; gap: 2px; padding: 5px; background: var(--app-nav, #dcece1); border-radius: 999px; font-family: inherit; } .ds-nav { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 999px; color: var(--ardoise, #496359); font-size: 0.8125rem; font-weight: 600; text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-nav:hover { background: var(--surface-survol, #e6f0e9); color: var(--encre, #172d28); } .ds-nav-active { background: var(--app-selected, #126b5b); color: var(--app-selected-ink, #fff); } .ds-nav:focus-visible { outline: 2px solid var(--sarcelle, #126b5b); outline-offset: 2px; }"
     },
     {
       "name": "Bandeau de section",
@@ -706,7 +713,7 @@
       "refersTo": "bandeau",
       "description": "Un message posé en tête d'une carte : fond voilé, filet d'un pixel à gauche, jamais plus.",
       "html": "<div class='ds-bandeau ds-bandeau-tension'>Deux enveloppes ont dépassé leur budget ce mois-ci.</div>",
-      "css": ".ds-bandeau { display: flex; gap: 0.625rem; border-radius: 0.5rem; border-left: 1px solid currentColor; padding: 0.625rem 0.875rem; font-family: inherit; font-size: 0.8125rem; line-height: 1.45; max-width: 420px; } .ds-bandeau-tension { background: var(--tension-voile, #fbe7e4); color: var(--tension-encre, #a8332a); }"
+      "css": ".ds-bandeau { display: flex; gap: 0.625rem; border-radius: 0.5rem; border-left: 1px solid currentColor; padding: 0.625rem 0.875rem; font-family: inherit; font-size: 0.8125rem; line-height: 1.45; max-width: 420px; } .ds-bandeau-tension { background: var(--tension-voile, #f7e2da); color: var(--tension-encre, #9e3e2c); }"
     },
     {
       "name": "Tirage (squelette)",
@@ -714,7 +721,7 @@
       "refersTo": "skeleton",
       "description": "Tient la place d'une valeur pas encore arrivée, à l'emplacement et à la largeur exacte de ce qui la remplacera. Un des deux seuls mouvements du produit.",
       "html": "<div class='ds-tirage' style='height:14px;width:180px'></div><div class='ds-tirage' style='height:8px;width:100%;max-width:320px;margin-top:10px'></div>",
-      "css": ".ds-tirage { position: relative; overflow: hidden; border-radius: 999px; background: var(--surface-creuse, #f4f7f8); } .ds-tirage::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--filet-fort, #c3d0d5) 55%, transparent), transparent); animation: ds-tirage-passer 1500ms ease-in-out infinite; } @keyframes ds-tirage-passer { from { transform: translateX(-100%); } to { transform: translateX(100%); } } @media (prefers-reduced-motion: reduce) { .ds-tirage::after { animation: none; background: color-mix(in oklab, var(--filet-fort, #c3d0d5) 40%, transparent); } }"
+      "css": ".ds-tirage { position: relative; overflow: hidden; border-radius: 999px; background: var(--surface-creuse, #f1f6f2); } .ds-tirage::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--filet-fort, #b8cdc0) 55%, transparent), transparent); animation: ds-tirage-passer 1500ms ease-in-out infinite; } @keyframes ds-tirage-passer { from { transform: translateX(-100%); } to { transform: translateX(100%); } } @media (prefers-reduced-motion: reduce) { .ds-tirage::after { animation: none; background: color-mix(in oklab, var(--filet-fort, #b8cdc0) 40%, transparent); } }"
     },
     {
       "name": "Landing · Bouton principal",
@@ -749,84 +756,68 @@
     }
   ],
   "narrative": {
-    "northStar": "La pile d'enveloppes",
-    "overview": "Un budget n'est pas une grille, c'est une pile d'enveloppes. Chacune a un nom, une contenance, ce qu'on en a déjà sorti — et, quand ça a mal tourné, ce qui a débordé au-delà du bord. Le monde visuel de Plia n'a qu'un objet, la carte, et il empile ces cartes de haut en bas : les mois se descendent, ils ne se poussent plus vers la droite. La refonte a supprimé le grand tableau à colonnes de mois et son défilement horizontal ; tout ce qui ressemblerait à une carte avec une colonne par mois serait ce tableau-là avec des coins arrondis, et est refusé pour cette seule raison.\n\nLa matière est celle d'un logiciel de travail, pas d'une vitrine. Un sol clair légèrement cyan (#edf1f2), des cartes franchement blanches posées dessus, un filet d'un pixel, une ombre courte : le relief vient de la lumière, jamais d'une découpe ni d'un trait épais. Une seule fonte, Schibsted Grotesk, porte tout — titres, libellés, commandes et montants — parce qu'une chasse fixe posée sur des chiffres n'est qu'un costume de technicité, et que l'alignement des virgules s'obtient avec tabular-nums. La densité est celle d'un relevé : des lignes serrées, des montants toujours à droite, et rien qui ne soit ni un montant, ni une date, ni un libellé sans avoir à le justifier.\n\nLa couleur est rationnée, et c'est le cœur du système. Une seule teinte de marque, une sarcelle profonde, qui ne sert QU'À COMMANDER : bouton principal, lien, onglet actif, destination courante, mise au point, sélection. Elle ne qualifie jamais une valeur. Face à elle, trois sens — le vert de ce qui rentre, le rouge de ce qui a rompu, le sable de ce qui attend encore — ne teintent que des montants, des pastilles d'état et la jauge. Tout le reste est de l'encre bleu-ardoise. Ce qui est refusé, explicitement : les capitales de chasse fixe gravées en titre, les blocs à découpe oblique, le zéro-rayon zéro-ombre, la poutre noire en haut de page, les camemberts et les jauges décoratives.",
+    "northStar": "La lumière en mouvement",
+    "overview": "Planora partage une identité continue entre les pages publiques, la connexion et\nl’application : fonds menthe et forêt, accents corail, titres expressifs et courbes\nsouples. Dans le budget, cette identité encadre des données lisibles sur des surfaces\nopaques. La grille de comparaison conserve sa structure et les vues mobiles leurs\nrepères financiers ; la marque accompagne la lecture quotidienne.\n\nBricolage Grotesque porte la marque et les titres d’accueil des écrans ; Schibsted\nGrotesk porte les données, libellés et commandes. Les photographies de verre restent\nsur les surfaces d’accueil, dont la connexion sur ordinateur. Dans le relevé, deux\ncourbes fines et statiques près du titre suffisent à rappeler cette matière.\nLes compositions propres aux routes vivent dans leurs briefs de surface.",
     "keyCharacteristics": [
-      "Une seule surface : la carte blanche, arrondie à 12 px, filet d'un pixel, ombre courte.",
-      "Une seule fonte, variable, servie localement ; aucun couple d'affichage.",
-      "Une seule couleur de commande, trois couleurs de sens, et rien d'autre.",
-      "Des montants tabulaires, alignés à droite, toujours écrits en toutes lettres.",
-      "Une jauge d'enveloppe qui déborde hors de sa piste au lieu de saturer à cent pour cent.",
-      "Aucun geste d'ouverture : les deux seuls mouvements du produit disent l'attente."
+      "Une identité menthe, forêt et corail, adaptée aux thèmes clair et sombre.",
+      "Des titres Bricolage et des données Schibsted tabulaires.",
+      "Des cartes opaques de 16 px et des commandes en capsule.",
+      "Un tableau de comparaison sur ordinateur et des sections lisibles sur téléphone.",
+      "Des revenus verts, des dépenses rouges et des soldes sombres sur mobile.",
+      "Des courbes de titre statiques, discrètes et masquées sur téléphone."
     ],
     "rules": [
       {
-        "name": "La règle de la sarcelle",
-        "body": "La sarcelle ne commande que. Bouton principal, lien, onglet actif, destination courante, anneau de mise au point, sélection : rien d'autre. Aucun montant n'est jamais sarcelle, aucune commande secondaire non plus — une commande secondaire se distingue par sa matière (fond blanc, filet, ombre courte), pas par une teinte plus pâle de la même couleur. Test : masquez tous les éléments cliquables de l'écran ; il ne doit plus rester un seul pixel sarcelle.",
-        "section": "colors"
-      },
-      {
-        "name": "La règle des trois sens",
-        "body": "Le portant, la tension et l'attente ne teintent que des montants, des pastilles — et la jauge. La jauge est la seule et unique exception à l'interdit du sens en aplat : sa piste remplie prend le vert portant ou l'encre de tension, son débord prend le rouge de tension. Elle est écrite ici plutôt que passée sous silence, parce qu'une règle qu'on prétend sans exception se fait contourner partout.",
+        "name": "La règle du sens financier",
+        "body": "La couleur de marque ne remplace pas les repères de données. Sur téléphone, revenus, dépenses et soldes conservent respectivement leurs fonds verts, rouges et sombres, y compris dans les panneaux associés. Un texte et un montant explicites accompagnent chaque état.",
         "section": "colors"
       },
       {
         "name": "La règle du négatif par nature",
-        "body": "Un montant négatif par nature reste à l'encre. Le « dépensé » d'une enveloppe est négatif sur chaque ligne sans exception ; le peindre en rouge rendait le rouge muet. Seuls le reste et la jauge portent la couleur — c'est-à-dire les deux endroits où le signe est une information et non une fatalité.",
+        "body": "Le dépensé d’une enveloppe reste à l’encre ; son signe attendu ne constitue pas à lui seul un dépassement. Le reste et la jauge portent le signal d’écart.",
         "section": "colors"
       },
       {
         "name": "La règle de la chasse tabulaire",
-        "body": "tabular-nums ne se pose que sur des chiffres : .montant, .legende, l'utilitaire tabular-nums, et rien d'autre — jamais sur body. Dans cette fonte, la fonctionnalité donne aussi à la virgule et au point la chasse d'un chiffre : posée sur le document entier, elle détachait la ponctuation de chaque phrase du produit, jusque dans le titre de la page d'accueil.",
+        "body": "`tabular-nums` se pose sur les montants et les légendes chiffrées, jamais sur le texte courant ni sur `body` : la ponctuation des phrases doit garder son espacement naturel.",
         "section": "typography"
       },
       {
-        "name": "La règle de la fonte unique",
-        "body": "Une seule famille, et pas de chasse fixe. Un montant n'a pas besoin d'être monospacé pour s'aligner ; il a besoin de tabular-nums. Toute demande de « fonte de chiffres » se règle par une variante numérique, pas par une deuxième famille.",
-        "section": "typography"
+        "name": "La règle des surfaces opaques",
+        "body": "Les chiffres et les formulaires reposent sur un fond lisible. Le verre appartient à la photographie ; il ne devient pas un effet de transparence sur les données.",
+        "section": "elevation & depth"
       },
       {
-        "name": "La règle de la lumière",
-        "body": "La profondeur vient de la lumière. Les trois ombres sont décalées vers le bas et floues : une ombre sans décalage est un halo, c'est-à-dire une décoration. Elles sont teintées de l'encre du monde, jamais du noir pur — un noir pur sur un sol cyanisé donne une ombre grise et sale. Aucune ombre dure, aucun décalage sans flou, aucun contour lumineux.",
-        "section": "elevation"
-      },
-      {
-        "name": "La règle du non-emboîtement",
-        "body": "Rien ne s'imbrique. Il y a une surface et une seule, .carte. Ce qui vit DANS une carte prend la surface creusée (.creux) : un pied de totaux, une piste de jauge, un détail replié, un champ de saisie. Jamais une deuxième carte, jamais une deuxième ombre. Test : sur n'importe quel écran, aucun rectangle blanc à filet ne doit en contenir un autre.",
-        "section": "elevation"
-      },
-      {
-        "name": "La règle du silence à l'ouverture",
-        "body": "Aucun geste d'ouverture. C'est une surface de travail : rien n'entre en scène, rien ne monte en fondu, rien ne se décale à l'apparition. Les deux seuls mouvements du produit sont les signaux d'attente — le tirage et le fil — et tous deux s'arrêtent sous prefers-reduced-motion (le tirage devient une barre pleine, le fil un câble tendu d'un bord à l'autre). Les seules autres transitions durent 150 à 160 ms et ne portent que sur la couleur, l'ombre et le filet.",
+        "name": "Aucune transition de largeur",
+        "body": "La jauge ne change de valeur qu'au retour d'un rendu serveur, où elle est reconstruite de toute façon : l'animation n'aurait jamais lieu, et animer une propriété de mise en page pour rien fait travailler le navigateur à chaque passage.",
         "section": "components"
       },
       {
-        "name": "La règle du select natif",
-        "body": "Un <select> natif partout. La primitive Select de shadcn a été supprimée ; chaque menu déroulant du produit est un <select> HTML habillé des jetons du champ (fond creusé, filet fort, 8 px, 36 px de haut, mise au point sarcelle). Deux raisons, toutes deux décisives ici : le regroupement par optgroup, dont les listes de postes ont besoin, et l'ergonomie du sélecteur natif sur téléphone. Un seul vocabulaire, écrit noir sur blanc pour qu'il ne se redéfausse pas.",
+        "name": "La règle du silence à l'ouverture",
+        "body": "Aucun geste d'ouverture. C'est une surface de",
+        "section": "components"
+      },
+      {
+        "name": "La règle du `<select>` natif",
+        "body": "Un `<select>` natif partout. La primitive `Select` de",
         "section": "components"
       }
     ],
     "dos": [
-      "Do poser tout panneau, section, relevé ou enveloppe sur .carte — blanche, 12 px, filet d'un pixel, ombre de carte — et donner à ce qui vit dedans la surface creusée .creux.",
-      "Do réserver la sarcelle aux commandes : bouton principal, lien, onglet actif, destination courante, anneau de mise au point, sélection.",
-      "Do qualifier un montant par son sens uniquement quand le sens est une information : le reste d'une enveloppe, un solde sous zéro, une entrée reçue.",
-      "Do écrire chaque montant en toutes lettres à côté du dessin qui le représente ; un écran doit rester lisible sans ses jauges et sans son horizon.",
-      "Do poser tabular-nums sur les montants et les légendes chiffrées, et là seulement.",
-      "Do faire d'un squelette la structure exacte de la page qu'il attend, aux mêmes places et aux mêmes largeurs.",
-      "Do utiliser un <select> natif pour tout menu déroulant de saisie, habillé des jetons du champ.",
-      "Do distinguer un état par une pastille ovale en petites capitales, jamais par une couleur de texte seule."
+      "Conserver la palette menthe, forêt et corail en clair et en sombre, jusque dans les panneaux et menus.",
+      "Utiliser Bricolage pour la marque et les titres d’accueil, Schibsted pour les données et commandes.",
+      "Préserver le tableau sur ordinateur, les sections mobiles et toutes les actions de budget.",
+      "Écrire chaque montant à côté du dessin qui le représente et garder les chiffres tabulaires.",
+      "Conserver les repères revenus verts, dépenses rouges et soldes sombres sur téléphone.",
+      "Garder les noms accessibles, les compteurs et le retour du focus quand les outils se resserrent."
     ],
     "donts": [
-      "Don't teinter un montant en sarcelle, ni une commande secondaire : elle se distingue par sa matière, pas par une teinte plus pâle.",
-      "Don't peindre en rouge un montant négatif par nature — le « dépensé » d'une enveloppe est négatif sur chaque ligne, et le rouge y perd tout sens.",
-      "Don't imbriquer une carte dans une carte, ni empiler deux ombres.",
-      "Don't poser tabular-nums sur body ni sur du texte courant : dans cette fonte, la virgule et le point y prennent la chasse d'un chiffre.",
-      "Don't donner un traitement particulier à une enveloppe pleine mais intacte ; sa piste remplie jusqu'au bout le dit déjà.",
-      "Don't laisser une jauge rompue plus discrète qu'une jauge pleine : ce qui a rompu est la marque la plus lourde de la carte.",
-      "Don't ajouter un geste d'entrée, un fondu d'apparition ou une animation de largeur ; les seuls mouvements du produit disent l'attente.",
-      "Don't reconstruire une carte à une colonne par mois : ce serait le tableau d'avant avec des coins arrondis.",
-      "Don't introduire une deuxième famille de caractères, ni une chasse fixe pour les chiffres.",
-      "Don't utiliser d'ombre dure, de découpe oblique, de bordure épaisse en guise d'accent, ni de camembert ou de jauge décorative."
+      "Ne pas poser de chiffres sur du verre translucide ni transformer les courbes décoratives en graphiques.",
+      "Ne pas remplacer la grille de comparaison par des cartes qui empêchent de comparer les mois.",
+      "Ne pas appliquer Bricolage ou une chasse fixe aux montants et aux lignes de données.",
+      "Ne pas masquer un compteur en masquant le libellé visuel d’un outil.",
+      "Ne pas attribuer une nouvelle règle de calcul à un changement de couleur ou de présentation.",
+      "Ne pas ajouter de mouvement décoratif dans le relevé ; respecter la réduction des animations."
     ]
   }
 }
