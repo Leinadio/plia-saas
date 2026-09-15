@@ -2,7 +2,7 @@
 version: 1
 slug: "src-app-app"
 primary_target: "src/app/app"
-related_targets: ["src/components/app-topbar.tsx", "src/components/app-page-heading.tsx", "src/app/app-theme.css", "src/components/history-treasury.tsx", "src/components/history-treasury.css", "src/components/history-reading.tsx", "src/components/history-reading.css", "src/components/history-grid.tsx", "src/components/history-mobile-columns.tsx", "src/components/history-comparison.tsx", "src/lib/history-columns.ts"]
+related_targets: ["src/components/app-topbar.tsx", "src/components/app-page-heading.tsx", "src/app/app-theme.css", "src/components/history-treasury.tsx", "src/components/history-treasury.css", "src/components/history-reading.tsx", "src/components/history-reading.css", "src/components/history-grid.tsx", "src/components/history-section-heading.css", "src/components/history-mobile-columns.tsx", "src/components/history-comparison.tsx", "src/lib/history-columns.ts"]
 ---
 
 ## Portée
@@ -41,10 +41,11 @@ encre sombre. Les filtres d’opérations gardent des libellés visibles pendant
 
 ## Structure financière conservée
 Le grand tableau à colonnes de mois reste la présentation sur ordinateur. Sa colonne
-de noms figée, ses familles de colonnes, les bandes revenus/dépenses et les soldes
-contrastés conservent leur rôle. Sur mobile, « Par mois » et « Comparer » gardent les
-sections verticales et leurs choix d’indicateurs. Les revenus restent verts, les dépenses
-rouges et les soldes sombres, jusque dans leurs panneaux, dans les deux thèmes.
+de noms figée, ses familles de colonnes et les soldes contrastés conservent leur rôle.
+Les en-têtes revenus/dépenses partagent le fond de la carte. Sur mobile, « Par mois »
+et « Comparer » gardent les sections verticales et leurs choix d’indicateurs. Le corps,
+les totaux et les panneaux gardent les revenus verts, les dépenses rouges et les
+soldes sombres dans les deux thèmes.
 
 Créer et gérer une enveloppe ou une sous-enveloppe, corriger un budget daté, classer
 une opération, l’exclure, la commenter et ouvrir un calcul gardent leurs parcours.
@@ -89,11 +90,12 @@ Chaque parcours de trésorerie conserve ses 10,5 rem.
 La reprise des espacements utilise 4 / 8 / 12 / 16 / 24 / 32 px, sans changer
 les couleurs. Les cellules ont 12 px de marge intérieure et un alignement
 vertical commun ; les lignes d’enveloppes mesurent au moins 80 px. Les noms
-occupent 320 px, ou 256 px entre 640 et 1023 px. Les titres réservent deux lignes
-avant leur explication. Le mois mesure au moins 96 px, les sections s’écartent
-de 24 px, les détails dépliés regroupent leurs éléments avec 12 px d’écart.
+occupent 320 px, ou 256 px entre 640 et 1023 px. Les titres de colonnes des sections
+réservent deux lignes, puis 8 px avant leur explication. Le mois mesure au moins
+96 px, les sections s’écartent de 24 px, les détails dépliés regroupent leurs
+éléments avec 12 px d’écart.
 Sur mobile : retraits latéraux de 16 px, lignes de montants d’au moins 48 px,
-8 px autour des boutons de section de 44 px. Ces rôles sont définis dans
+boutons de section de 44 px. Ces rôles sont définis dans
 `src/components/history-layout.css` et les feuilles locales de lecture/mobile.
 
 Le reste est plus fort visuellement. Sa mention décrit le vrai montant du modèle
@@ -105,6 +107,23 @@ au clic reprend ces sommes et nomme les budgets clôturés dans le calcul du res
 Les prévisions ne changent pas. Sur téléphone, les libellés gardent le même ordre
 et les opérateurs décoratifs, sans changer les noms accessibles. Les trois choix
 de comparaison restent indépendants.
+
+## En-têtes ouverts — réalisation du 15 septembre 2026
+
+Le brief `docs/superpowers/specs/2026-09-15-entetes-ouverts-design.md` réunit chaque
+en-tête sur une seule rangée de fond de carte, en clair comme en sombre. Sur
+ordinateur, titre de niveau 2 Bricolage de 20 px, sous-titre et ajout occupent la
+gauche ; les colonnes expliquées occupent la droite. Des filets fins séparent les
+données, sans pavés colorés ni zone vide teintée au-dessus des colonnes.
+La largeur de 32 rem, les teintes du corps et des totaux et les calculs sont conservés.
+
+Revenus et dépenses restent visibles sur ordinateur et téléphone, sans chevron
+ni action sur le titre. Les enveloppes et sous-enveloppes restent dépliables ;
+une opération visée depuis un calcul est toujours révélée. Sur mobile, le titre
+mesure 18 px, sans sous-titre, avec 16 px de retrait ; les actions de 44 × 44 px
+restent à droite. En comparaison, le titre garde l’indicateur courant. Les filtres
+et formulaires conservent leurs panneaux colorés et le mois ciblé.
+La présentation vit dans `src/components/history-section-heading.css`.
 
 ## Contrat d’interaction mobile
 
@@ -125,7 +144,8 @@ montants des revenus et dépenses, sans remplacer leurs indicateurs respectifs.
 En vue mensuelle, ce parcours suit les opérations réelles pour un mois passé ou
 courant, et les budgets pour un mois futur. Les étapes sans mouvement net restent
 absentes. Le panneau reprend le fond
-vert, rouge ou noir du bloc. Le repli et l’ajout restent des actions indépendantes.
+vert, rouge ou noir des données. Le titre n’est pas un bouton ; filtre et ajout
+gardent leurs commandes propres.
 Les icônes du relevé ont une taille de 18 px dans des boutons de 44 × 44 px.
 Les « + » et crayons sont sans fond ni bordure, et sans libellé visible. Dans les
 deux vues mobiles, les ajouts d’enveloppes, de revenus et de sous-enveloppes,
@@ -136,8 +156,8 @@ Le solde réel du mois courant porte son estimation
 cliquable juste dessous, sans deuxième liste de mois. Les estimations visées
 depuis un calcul sont révélées sous le mois correspondant. Le bloc d’ouverture porte
 le titre « Argent de départ ». Chaque poste aligne ses mois verticalement ; les
-mois sans indicateur applicable sont nommés, sans montant inventé. Le total suit
-le choix de sa section, même repliée, et les montants restent cliquables.
+mois sans indicateur applicable sont nommés, sans montant inventé. Le total reste
+visible et suit le choix de sa section ; les montants restent cliquables.
 Les trois choix sont conservés au changement de période et lors des allers-retours
 entre « Par mois » et « Comparer ». Les anciens liens avec `mobileMetric` restent
 compatibles. Les jetons et les couleurs de section sont conservés.
@@ -172,3 +192,18 @@ Le contrôle `/private/tmp/planora-table-design-check.json` retourne `[]`.
 Les routes temporaires sont supprimées ; la route de capture répond 404.
 La passe documentaire lit ces preuves sans relancer les vérifications applicatives.
 Ces validations ne portent pas sur un compte bancaire réel.
+
+Pour les en-têtes ouverts, les 11 captures `section-*.png` ont été inspectées lors
+de la revue indépendante, dont `section-desktop.png`, `section-dark.png`,
+`section-mobile.png` et `section-mobile-dark-compare.png`. Verdict « ship », sans
+défaut matériel dans cette refonte locale ; ce n’est pas une certification de
+toute l’application. Les largeurs 1600 / 2048 / 980 / 390 / 320 px ne présentent
+ni erreur de navigateur ni débordement du document ; les fonds d’en-tête sont
+uniformes par thème et les commandes mobiles mesurent 44 × 44 px.
+Les preuves de l’agent principal confirment 55 tests ciblés puis 1 150 tests dans
+117 fichiers réussis, lint et build réussis. Elles vivent dans
+`/private/tmp/planora-section-header-{tests,lint,build}.log` et
+`/private/tmp/planora-section-heading-browser.json` ;
+`/private/tmp/planora-section-header-design-check.json` retourne `[]`.
+La route temporaire a été retirée avant le build. Cette passe documentaire lit
+les sources, journaux et captures existants, sans relancer les contrôles.

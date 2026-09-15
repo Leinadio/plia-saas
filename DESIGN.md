@@ -918,8 +918,12 @@ vocabulaire, écrit noir sur blanc pour qu'il ne se redéfausse pas.
 La pièce la plus dense du produit, et la seule qui ne soit pas une liste de cartes.
 
 Une seule introduction « Votre trésorerie, étape par étape » ouvre le relevé,
-sans se répéter par section ou par mois. Sur ordinateur, les revenus et les dépenses
-ont chacun leurs en-têtes expliqués en une phrase : Attendu et Reçu pour les revenus ;
+sans se répéter par section ou par mois. Sur ordinateur, chaque section commence
+par une seule rangée continue sur le fond de la carte, en clair comme en sombre.
+À gauche, un titre de niveau 2 en Bricolage (20 px, graisse 550), un bref sous-titre
+et l’ajout ; à droite, les colonnes expliquées en une phrase. « Ce qui rentre »
+et « Ce qui sort » sont des titres sans chevron ni action de repli. Les colonnes
+présentent Attendu et Reçu pour les revenus ;
 Budget, − Dépensé, + Remboursements / apports, = Reste / manque pour les dépenses.
 Les parcours « Opérations
 réelles », « Selon vos budgets » et « Dépassements inclus » gardent leur alignement
@@ -937,9 +941,9 @@ occupent 7 + 7 rem suivis de 18 rem libres. Chaque parcours de trésorerie mesur
 Les espacements suivent une échelle de 4, 8, 12, 16, 24 et 32 px. Les cellules
 de chiffres ont 12 px de marge intérieure ; noms et montants sont centrés sur
 une même ligne, haute d’au moins 80 px pour les enveloppes. Le nom occupe 320 px,
-puis 256 px entre 640 et 1023 px. Les titres de colonnes réservent deux lignes,
-avec 4 px avant leur explication. L’en-tête du mois mesure au moins 96 px et les
-sections sont séparées de 24 px. Les détails dépliés regroupent leurs commandes
+puis 256 px entre 640 et 1023 px. Les titres de colonnes des sections réservent
+deux lignes, avec 8 px avant leur explication. L’en-tête du mois mesure au moins
+96 px et les sections sont séparées de 24 px. Les détails dépliés regroupent leurs commandes
 avec 12 px d’écart. Sur téléphone, les cartes gardent 16 px de retrait latéral,
 les montants une ligne d’au moins 48 px, les boutons icône une zone de 44 px.
 
@@ -982,8 +986,10 @@ Sur mobile, le libellé et le montant partagent une ligne. Le calcul reste cliqu
   (18 %), les lignes de totaux montent à 24 %. Toutes ces teintes se mélangent à la
   CARTE, jamais au sol : le tableau est posé dans une carte claire, et une teinte
   mélangée au sol tomberait à côté de la surface qui la porte.
-- **Ses bandes de section :** pleine largeur, le nom dans l'épine. Ce qui rentre prend
-  le voile du portant, ce qui sort celui de la tension. Ces bandes conservent le sens financier de chaque section.
+- **Ses en-têtes de section :** une surface continue de carte, séparée des données
+  par un filet fin. Le titre et l’ajout restent dans l’épine ; les colonnes et
+  l’espace libre après Reçu partagent ce même fond. Les teintes financières du
+  corps et des totaux restent inchangées.
 - **Ses teintes se posent sur les CELLULES, jamais sur la ligne :** un fond de cellule
   recouvre celui de sa ligne, donc peinte sur la ligne une teinte de colonne
   disparaîtrait au survol et ne resterait visible que dans les trous.
@@ -1020,9 +1026,11 @@ pas les fonds des soldes ni la surbrillance de sélection.
 Le reste / manque figure dans le total des dépenses. Les libellés suivent le même
 ordre de lecture que sur ordinateur : Budget, − Dépensé, + Remboursements / apports,
 = Reste / manque. Les opérateurs sont décoratifs ; les noms accessibles restent intacts.
-« Ce qui rentre » et « Ce qui sort » se replient indépendamment, en gardant
-leur total visible. Sur mobile, sélectionner une opération dans le détail
-rouvre sa section pour la montrer.
+« Ce qui rentre » et « Ce qui sort » restent affichés en permanence, sur ordinateur
+et téléphone. Seules les enveloppes et sous-enveloppes se déplient pour montrer
+leurs opérations ; sélectionner une opération depuis un calcul la révèle toujours.
+Sur mobile, les en-têtes de revenus et dépenses partagent le fond de la carte :
+titre Bricolage de 18 px, actions à droite et retraits de 16 px, sans sous-titre.
 Le bloc récapitulatif bancaire en attente est retiré sur ordinateur et mobile,
 sans retirer les transactions en attente des enveloppes ni modifier les calculs.
 L'écart bancaire reste expliqué dans le détail des soldes, sans lien vers l'ancien bloc.
@@ -1052,14 +1060,14 @@ choisir conserve l’indicateur. Le focus revient au bouton de filtre.
 Les revenus proposent « Attendu » et « Reçu » ; les dépenses « Budget », « Dépensé »,
 « Reste » et « Remboursements » ; la trésorerie « Opérations réelles »,
 « Selon vos budgets » et « Dépassements inclus ».
-Les actions pour replier le bloc et ajouter un poste restent indépendantes.
+Le titre reste sans action ; le filtre et l’ajout gardent leurs boutons propres.
 Chaque mois occupe une ligne ; sous le solde réel du mois courant, l’estimation
 reste cliquable. Les autres mois ne répètent pas une liste d’estimations. Une
 estimation visée depuis un calcul reste révélée sous le mois correspondant.
 Le fond du panneau reprend celui de sa section : vert pour les revenus,
 rouge pour les dépenses, noir pour les soldes, y compris dans le thème sombre. L’argent
 de départ conserve un bloc nommé « Argent de départ ». Les mois se lisent de haut
-en bas pour chaque poste ; le total garde le choix de sa section, même repliée.
+en bas pour chaque poste ; le total reste visible et garde le choix de sa section.
 Les montants restent cliquables. Les trois choix sont conservés au changement de
 période et lors des allers-retours entre « Par mois » et « Comparer » ; les anciens
 liens de comparaison restent utilisables. Les jetons et les couleurs de section

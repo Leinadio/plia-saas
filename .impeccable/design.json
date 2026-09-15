@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-15T12:28:43.474275+00:00",
+  "generatedAt": "2026-09-15T14:11:05Z",
   "title": "Design System: Planora",
   "extensions": {
     "colorMeta": {
@@ -670,16 +670,35 @@
         "src/components/history-reading.css",
         "src/components/history-layout.css",
         "src/components/history-grid.tsx",
+        "src/components/history-section-heading.css",
         "src/components/history-mobile-columns.tsx",
         "src/components/history-treasury.css",
         "src/lib/history-columns.ts"
       ],
       "headings": "Attendu / Reçu côté revenus ; Budget, − Dépensé, + Remboursements / apports, = Reste / manque côté dépenses. Chaque en-tête a une courte explication. Une seule introduction pour tout le relevé.",
       "layout": "Dépenses : 7 + 7 + 9 + 9 rem = 32 rem. Revenus : 7 + 7 rem puis 18 rem libres. Trésorerie : 10,5 rem par parcours. Noms : 320 px, 256 px de 640 à 1023 px, pleine largeur sur mobile. Chiffres alignés à droite et centrés verticalement avec les noms ; filets fins entre familles.",
-      "spacing": "Échelle de 4 / 8 / 12 / 16 / 24 / 32 px. Cellules : 12 px ; enveloppes : 80 px minimum ; mois : 96 px minimum ; séparations : 24 px ; détails : 12 px. Titres sur une réserve de deux lignes, puis 4 px avant l’explication. Mobile : 16 px latéraux, lignes de montants de 48 px minimum, boutons de 44 px. Couleurs et calculs conservés.",
+      "spacing": "Échelle de 4 / 8 / 12 / 16 / 24 / 32 px. Cellules : 12 px ; enveloppes : 80 px minimum ; mois : 96 px minimum ; séparations : 24 px ; détails : 12 px. Titres de colonnes des sections sur une réserve de deux lignes, puis 8 px avant l’explication. Mobile : 16 px latéraux, lignes de montants de 48 px minimum, boutons de 44 px. Couleurs des données et calculs conservés.",
       "remainder": "Résultat visuellement renforcé, issu de MonthCell.balance. Mentions selon le montant et le contexte : encore disponibles, de dépassement, budget utilisé, entièrement remboursé, d’excédent reçu ou budget à venir. Budget clôturé après remboursement précise une réservation terminée ; le remboursement intégral ne recrée pas de budget.",
       "totals": "Dépensé et Remboursements / apports additionnent les montants bruts des lignes ; Reçu fait de même pour les revenus. Le détail au clic reprend ces sommes et explicite les budgets clôturés dans le calcul du reste. Les règles des prévisions sont conservées.",
-      "mobile": "Même ordre des libellés et des opérateurs décoratifs ; noms accessibles conservés. Les indicateurs de revenus, dépenses et trésorerie restent indépendants en comparaison."
+      "mobile": "Même ordre des libellés et des opérateurs décoratifs ; noms accessibles conservés. Les indicateurs de revenus, dépenses et trésorerie restent indépendants en comparaison.",
+      "sectionHeading": {
+        "approvedBrief": "docs/superpowers/specs/2026-09-15-entetes-ouverts-design.md",
+        "desktop": "Une seule rangée continue sur le fond de la carte dans les deux thèmes : titre de niveau 2 Bricolage en casse normale, sous-titre et ajout à gauche ; colonnes expliquées à droite. Filets fins, même fond dans l’espace libre après Reçu. Aucun bandeau financier coloré au-dessus des colonnes.",
+        "mobile": "Titre sans sous-titre et actions à droite, sur le fond de la carte. L’indicateur courant reste dans le titre en comparaison. Retraits de 16 px, boutons icône de 44 × 44 px sans fond ni bordure ; filtres et formulaires gardent leurs panneaux colorés et le mois ciblé.",
+        "interaction": "Revenus et dépenses toujours visibles sur ordinateur et téléphone. Titres sans chevron ni action de repli. Les enveloppes et sous-enveloppes restent dépliables ; la sélection depuis un calcul révèle toujours l’opération correspondante.",
+        "preserved": "Identité, palette, largeur de 32 rem, choix de comparaison, teintes financières du corps et des totaux, calculs et montants conservés.",
+        "review": {
+          "disposition": "ship",
+          "verdictScope": "Revue indépendante des 11 captures finales sans défaut matériel pour cette refonte locale des en-têtes ; aucune certification de toute l’application.",
+          "evidence": [
+            ".impeccable/review/section-desktop.png",
+            ".impeccable/review/section-dark.png",
+            ".impeccable/review/section-mobile.png",
+            ".impeccable/review/section-mobile-dark-compare.png"
+          ],
+          "validation": "Agent principal : 55 tests ciblés puis 1 150 tests dans 117 fichiers réussis, lint et build de production réussis. Aucun débordement du document ni erreur de navigateur à 1600 / 2048 / 980 / 390 / 320 px ; fonds d’en-tête uniformes par thème et commandes mobiles de 44 × 44 px. Journaux /private/tmp/planora-section-header-{tests,lint,build}.log et /private/tmp/planora-section-heading-browser.json ; contrôle /private/tmp/planora-section-header-design-check.json : []. Route temporaire retirée avant le build. Données fictives ; aucun test ni rendu relancé par la passe documentaire."
+        }
+      }
     }
   },
   "components": [

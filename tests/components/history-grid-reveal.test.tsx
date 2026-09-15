@@ -134,14 +134,14 @@ function grille(...args: Parameters<typeof elementGrille>) {
   return renderToStaticMarkup(elementGrille(...args));
 }
 
-describe("repli des revenus", () => {
+describe("sections toujours visibles", () => {
   const nonRanges: HistorySection = {
     kind: "uncategorized", uncatDirection: "in", rows: [],
     txns: [{ ...recette, id: "recette-non-rangee", groupId: null }],
     totals: [cell({ recu: 4.5 })],
   };
 
-  it.each([false, true])("replie et rouvre les revenus sans toucher aux dépenses ni au total (mobile : %s)", async (isMobile) => {
+  it.each([false, true])("garde revenus, dépenses et totaux visibles sans commande de repli (mobile : %s)", async (isMobile) => {
     (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
     const container = document.createElement("div");
     document.body.append(container);
@@ -149,19 +149,17 @@ describe("repli des revenus", () => {
     const mobile = isMobile ? { month: "2026-08", metric: null, onMonthChange: () => {} } : undefined;
     try {
       await act(async () => root.render(elementGrille([], [revenus, nonRanges, depenses], { mobile })));
-      const fold = Array.from(container.querySelectorAll("button")).find(button => button.textContent === "Ce qui rentre");
-      expect(fold).toBeDefined();
-      const total = container.querySelector('[data-history-total="income"]')!.textContent;
-      await act(async () => fold!.click());
-      expect(fold!.getAttribute("aria-expanded")).toBe("false");
-      expect(container.querySelector('[data-cellkey="group:7::recu::0"]')).toBeNull();
-      expect(container.querySelector('[data-cellkey="section:uncat-in::recu::0"]')).toBeNull();
-      expect(container.querySelector('[data-cellkey="group:8::depense::0"]')).not.toBeNull();
-      expect(container.querySelector('[data-history-total="income"]')!.textContent).toBe(total);
-      await act(async () => fold!.click());
-      expect(fold!.getAttribute("aria-expanded")).toBe("true");
+      for (const name of ["Ce qui rentre", "Ce qui sort"]) {
+        const title = Array.from(container.querySelectorAll("h2")).find(el => el.textContent === name);
+        expect(title).toBeDefined();
+        expect(title!.closest("button")).toBeNull();
+        expect(Array.from(container.querySelectorAll("button")).find(el => el.textContent === name)).toBeUndefined();
+      }
       expect(container.querySelector('[data-cellkey="group:7::recu::0"]')).not.toBeNull();
       expect(container.querySelector('[data-cellkey="section:uncat-in::recu::0"]')).not.toBeNull();
+      expect(container.querySelector('[data-cellkey="group:8::depense::0"]')).not.toBeNull();
+      expect(container.querySelector('[data-history-total="income"]')).not.toBeNull();
+      expect(container.querySelector('[data-history-total="expense"]')).not.toBeNull();
     } finally {
       await act(async () => root.unmount());
       container.remove();
@@ -171,7 +169,7 @@ describe("repli des revenus", () => {
   it.each([
     { section: revenusAPostes, reference: `txn:${recetteDePoste.id}::recu::0` },
     { section: nonRanges, reference: "txn:recette-non-rangee::recu::0" },
-  ])("révèle $reference désigné dans le détail malgré le repli", async ({ section, reference }) => {
+  ])("révèle $reference désigné dans le détail en dépliant son enveloppe", async ({ section, reference }) => {
     (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
     const container = document.createElement("div");
     document.body.append(container);
@@ -179,12 +177,8 @@ describe("repli des revenus", () => {
     const mobile = { month: "2026-08", metric: null, onMonthChange: () => {} };
     try {
       await act(async () => root.render(elementGrille([], [section], { mobile })));
-      const fold = Array.from(container.querySelectorAll("button")).find(button => button.textContent === "Ce qui rentre");
-      expect(fold).toBeDefined();
-      await act(async () => fold!.click());
-      expect(fold!.getAttribute("aria-expanded")).toBe("false");
+      expect(container.querySelector(`[data-cellkey="${reference}"]`)).toBeNull();
       await act(async () => root.render(elementGrille([reference], [section], { mobile })));
-      expect(fold!.getAttribute("aria-expanded")).toBe("true");
       expect(container.querySelector(`[data-cellkey="${reference}"]`)).not.toBeNull();
     } finally {
       await act(async () => root.unmount());
@@ -600,7 +594,7 @@ describe("le relevé mobile conserve les montants et leurs références", () => 
     }
   });
 
-  it("rouvre les dépenses repliées pour montrer l’opération désignée", async () => {
+  it("déplie l’enveloppe de dépenses pour montrer l’opération désignée", async () => {
     (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
     const container = document.createElement("div");
     document.body.append(container);
@@ -608,8 +602,7 @@ describe("le relevé mobile conserve les montants et leurs références", () => 
     const mobile = { month: "2026-08", metric: null, onMonthChange: () => {} };
     try {
       await act(async () => root.render(elementGrille([], [depenses], { mobile })));
-      const fold = Array.from(container.querySelectorAll("button")).find(button => button.textContent === "Ce qui sort")!;
-      await act(async () => fold.click());
+      expect(container.querySelector(`[data-cellkey="txn:${sortie.id}::depense::0"]`)).toBeNull();
       await act(async () => root.render(elementGrille([`txn:${sortie.id}::depense::0`], [depenses], { mobile })));
       expect(container.querySelector(`[data-cellkey="txn:${sortie.id}::depense::0"]`)).not.toBeNull();
     } finally {

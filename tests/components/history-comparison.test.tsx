@@ -91,7 +91,8 @@ describe("comparaison mobile par section", () => {
     await act(async () => dialog().dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })));
     expect(dialog()).toBeNull();
     expect(chosen("Comparer les dépenses")).toBe("dep");
-    expect(button("Ce qui sort").getAttribute("aria-expanded")).toBe("true");
+    expect(heading.querySelector("h2")?.textContent).toContain("Ce qui sort");
+    expect(heading.querySelector("h2")!.closest("button")).toBeNull();
     await change("Comparer les dépenses", "reste");
     expect(heading.textContent).toContain("Reste");
     expect(heading.textContent).not.toContain("Dépensé");
@@ -109,8 +110,7 @@ describe("comparaison mobile par section", () => {
     expect(card("income").querySelector('[data-mobile-column="budgetRem"]')).not.toBeNull();
     await act(async () => container.querySelector<HTMLButtonElement>('[data-cellkey="group:-20002::budget::1"] .history-mobile-number button')!.click());
     expect(mocks.onSelect.mock.calls.at(-1)?.[0].cellRef).toBe("group:-20002::budget::1");
-    await act(async () => button("Ce qui sort").click());
-    expect(card("expense").querySelector('[data-cellkey="group:-20002::budget::1"]')).toBeNull();
+    expect(card("expense").querySelector('[data-cellkey="group:-20002::budget::1"]')).not.toBeNull();
     expect(card("expense").querySelector('[data-history-total] [data-mobile-column="budgetDep"]')).not.toBeNull();
     expect(chosen("Comparer les dépenses")).toBe("budgetDep");
     await act(async () => button("Par mois").click());

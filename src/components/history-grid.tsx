@@ -20,10 +20,11 @@ import "@/components/history-mobile.css";
 import "@/components/history-treasury.css";
 import "@/components/history-reading.css";
 import "@/components/history-layout.css";
+import "@/components/history-section-heading.css";
 import { EnvelopeRemainder, HistoryColumnHeading, HistoryReadingIntro, historyColumnReading } from "@/components/history-reading";
 import { TreasuryAmount, TreasuryOutcome } from "@/components/history-treasury";
 import { HistoryMobileActions, type HistoryMobileAction } from "@/components/history-mobile-actions";
-import { HistoryComparisonControl, HistoryComparisonLabel, HistoryMetricScope, type ComparisonSection } from "@/components/history-comparison";
+import { HistoryComparisonControl, HistoryComparisonLabel, HistoryMetricScope } from "@/components/history-comparison";
 import { Fragment, cloneElement, createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, ArrowDownRight, ChevronDown, ChevronRight, Plus, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -202,8 +203,6 @@ const BLOC_EPINE = "sm:sticky sm:left-0 sm:z-20";
 // traverse tous les mois — c'est ce qui fait lire le tableau par bandes horizontales
 // et non par colonnes.
 const BANDE = "bg-[color-mix(in_oklab,var(--ardoise)_12%,var(--card))]";
-const BANDE_TENSION = "bg-tension-voile";
-const BANDE_PORTANT = "bg-portant-voile";
 
 // Le pied du tableau, en ENCRE pleine. Les trois dernières lignes sont ce qu'on
 // vient chercher ; elles ferment le relevé comme un tampon.
@@ -1803,9 +1802,6 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     );
   // Le formulaire ouvert dans ce tableau-ci, ou null : le même état sert les N mois.
   const addingHere = (month: string) => (adding?.month === month ? adding.kind : null);
-  // Chaque section se replie indépendamment, en conservant son total visible.
-  const [depensesRepliees, setDepensesRepliees] = useState(false);
-  const [revenusReplies, setRevenusReplies] = useState(false);
   // Idem pour un sous-poste, mais la question porte sur une dépense précise.
   const addingLineHere = (groupId: number, month: string) =>
     adding?.kind === "line" && adding.groupId === groupId && adding.month === month;
@@ -1841,15 +1837,6 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
   const mobileRevealAncestors = useMemo(() => new Set(isMobileView
     ? [...selectedRows].flatMap(row => row ? revealOpenKeys.get(row) ?? [] : [])
     : []), [isMobileView, selectedRows, revealOpenKeys]);
-  const revealExpenses = isMobileView && sections.some(section => section.kind === "expense" && section.rows.some(row =>
-    selectedRows.has(groupRow(row.id)) || mobileRevealAncestors.has(rowOpenKey(row.id))));
-  const expensesClosed = depensesRepliees && !revealExpenses;
-  const revealIncome = isMobileView && sections.some(section =>
-    section.kind === "income"
-      ? section.rows.some(row => selectedRows.has(groupRow(row.id)) || mobileRevealAncestors.has(rowOpenKey(row.id)))
-      : section.kind === "uncategorized" && section.uncatDirection === "in"
-        && (selectedRows.has(sectionRowKey(section)) || mobileRevealAncestors.has(uncatOpenKey("in"))));
-  const incomeClosed = revenusReplies && !revealIncome;
 
   // Vers quelle case renvoie le « Solde précédent » de chaque ligne, colonne par
   // colonne (cf. src/lib/history-nav.ts).
@@ -2395,86 +2382,63 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     const secs = sections;
     const comparing = Boolean(mobile?.metric && mobile.comparison);
 
-    // Une bande de section : son nom dans l'épine, sa teinte en travers de tous les
-    // mois, et ce qu'elle porte de commandes (replier, créer).
-    const bande = (cle: string, titre: string, tint: string, opts?: {
-      comparisonSection?: ComparisonSection;
-      replie?: boolean;
-      onToggle?: () => void;
-      action?: React.ReactNode;
-      onboardingTarget?: string;
-    }) => (
-      <TableRow key={cle} data-history-band="" data-history-comparison={comparing ? opts?.comparisonSection : undefined} data-onboarding-target={opts?.onboardingTarget} className="hover:bg-transparent">
+    // Les sous-sections non catégorisées gardent leur repère dans les données.
+    const bande = (cle: string, titre: string, tint: string) => (
+      <TableRow key={cle} data-history-band="" className="hover:bg-transparent">
         <TableCell className={cn(COL1_STICKY, tint, "h-px p-0")}>
-          {/* Le titre et les commandes partagent une ligne. Les commandes mobiles
-              gardent leur zone tactile de 44 px. */}
-          <div className={cn("history-section-title border-border/60 flex h-full items-center gap-2 border-r font-sans", COL1_W)}>
-            {opts?.onToggle ? (
-              <button
-                type="button"
-                onClick={opts.onToggle}
-                aria-label={comparing ? titre : undefined}
-                aria-expanded={!opts.replie}
-                className="flex min-w-0 flex-1 cursor-pointer items-center gap-1"
-              >
-                {opts.replie ? <ChevronRight className="size-3.5 shrink-0" /> : <ChevronDown className="size-3.5 shrink-0" />}
-                <span className="legende min-w-0 text-left leading-tight">{titre}{opts.comparisonSection && <HistoryComparisonLabel section={opts.comparisonSection} />}</span>
-              </button>
-            ) : (
-              <span className="legende min-w-0 leading-tight">{titre}</span>
-            )}
-            {opts?.comparisonSection && <HistoryComparisonControl section={opts.comparisonSection} />}
-            {opts?.action}
+          <div className={cn("history-section-title border-border/60 flex h-full items-center border-r font-sans", COL1_W)}>
+            <span className="legende min-w-0 leading-tight">{titre}</span>
           </div>
         </TableCell>
-        {/* La bande suit la même règle de colonnes que les lignes de données : sa
-            couleur ne lave que ce qui est à gauche de Balance. Balance garde son
-            gris et les trois soldes le leur, sinon la bande couperait en travers
-            les deux seules colonnes qu'on lit de haut en bas. */}
-        {months.map((m) => {
-          const cols = monthColumns(monthType(m, currentMonth));
-          return <Fragment key={m}>{renderCols(m, cols, blankSlots(), undefined, tint)}</Fragment>;
-        })}
+        {months.map(m => <Fragment key={m}>{renderCols(m, monthColumns(monthType(m, currentMonth)), blankSlots(), undefined, tint)}</Fragment>)}
       </TableRow>
     );
 
-    const sectionHeaders = (kind: "income" | "expense") => !mobile && (
-      <TableRow className="hover:bg-transparent">
-        <TableHead className={cn(COL1_STICKY, "bg-card")} />
+    // Une seule rangée continue : titre et ajout à gauche, explications à droite.
+    // Les sections restent visibles ; seul le détail d’une enveloppe se déplie.
+    const sectionHeaders = (kind: "income" | "expense", action: React.ReactNode, onboardingTarget?: string) => {
+      const title = <div className="history-section-heading">
+        <div className="history-section-heading-copy">
+          <h2>{kind === "income" ? "Ce qui rentre" : "Ce qui sort"}{mobile && <HistoryComparisonLabel section={kind} />}</h2>
+          {!mobile && <p>{kind === "income" ? "Vos revenus attendus et reçus." : "Vos enveloppes de dépenses."}</p>}
+        </div>
+        <div className="history-section-heading-actions">
+          {mobile && <HistoryComparisonControl section={kind} />}
+          {action}
+        </div>
+      </div>;
+      if (mobile) return <TableRow data-history-band="" data-history-section-heading={kind}
+        data-history-comparison={comparing ? kind : undefined} data-onboarding-target={onboardingTarget}>
+        <TableCell colSpan={totalCols} className="p-0">{title}</TableCell>
+      </TableRow>;
+      return <TableRow data-history-section-heading={kind} data-onboarding-target={onboardingTarget} className="hover:bg-transparent">
+        <TableHead className={cn(COL1_STICKY, "history-section-heading-cell p-0")}>{title}</TableHead>
         {months.flatMap(month => sectionColumns(kind, monthColumns(monthType(month, currentMonth))).map((column, index) => {
           const receipt = kind === "expense" && column === "recu";
           const reading = historyColumnReading(column, kind, month, currentMonth);
           return <Fragment key={`${month}-${column}`}><TableHead scope="col"
-            className={cn(COL_TINT[column], "history-reading-heading", column.startsWith("solde") && "history-treasury-cell", column === "soldeReel" && "history-treasury-start", column === "reste" && "history-reading-remainder", index === 0 && MONTH_RULE, "h-auto whitespace-normal px-3 py-3 text-right")}>
+            className={cn("history-reading-heading", column === "soldeReel" && "history-treasury-start", index === 0 && MONTH_RULE, "h-auto whitespace-normal px-3 py-3 text-right")}>
             <button type="button" aria-label={`Comprendre : ${reading.label}`}
               onClick={() => onSelect(makeInfo(reading.label, receipt ? EXPENSE_RECEIPTS_INFO : COL_INFO[column]))}>
               <HistoryColumnHeading reading={reading} />
             </button>
           </TableHead>
-          {kind === "income" && column === "recu" && <TableCell aria-hidden="true" className={cn(COL_TINT[column], "p-0")} />}
+          {kind === "income" && column === "recu" && <TableCell aria-hidden="true" className="p-0" />}
           </Fragment>;
         }))}
-      </TableRow>
-    );
+      </TableRow>;
+    };
 
-    // En-tête unique de toutes les sorties : son nom, la flèche qui replie les lignes,
-    // le bouton d'ajout et le formulaire quand il est ouvert.
+    // L’ajout reste associé à sa section et au mois consulté.
     const enTeteDepense = () => {
       return (
         <>
-          {bande("bloc-expenses", "Ce qui sort", BANDE_TENSION, {
-            comparisonSection: "expense",
-            replie: expensesClosed,
-            onToggle: () => setDepensesRepliees((value) => !value),
-            onboardingTarget: onboarding?.expensesTarget,
-            action: !demo ? (
-              <Button type="button" size="xs" variant="outline" className="history-mobile-icon shrink-0 cursor-pointer sm:ml-auto" onClick={(event) => mobile ? openMobileAction({ kind: "new-group", direction: "out", month: moisDeTravail }, event.currentTarget) : toggleAdding("expense", moisDeTravail)}>
-                <Plus />
-                <span className={mobile ? "sr-only" : undefined}>Dépense</span>
-              </Button>
-            ) : null,
-          })}
-          {sectionHeaders("expense")}
+          {sectionHeaders("expense", !demo ? (
+            <Button type="button" size="xs" variant="ghost" className="history-section-add history-mobile-icon shrink-0 cursor-pointer" onClick={(event) => mobile ? openMobileAction({ kind: "new-group", direction: "out", month: moisDeTravail }, event.currentTarget) : toggleAdding("expense", moisDeTravail)}>
+              <Plus />
+              <span className={mobile ? "sr-only" : undefined}>Dépense</span>
+            </Button>
+          ) : null, onboarding?.expensesTarget)}
           {!demo && addingHere(moisDeTravail) === "expense" && (
             <TableRow className="hover:bg-transparent">
               <HistorySpanCell colSpan={totalCols} className="p-0">
@@ -2504,19 +2468,12 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     // qu'on en reçoit, et c'est leur durée qui dit lesquels se reproduisent.
     const enTeteRevenu = () => (
       <>
-        {bande("bloc-revenu", "Ce qui rentre", BANDE_PORTANT, {
-          comparisonSection: "income",
-          replie: incomeClosed,
-          onToggle: () => setRevenusReplies((value) => !value),
-          onboardingTarget: onboarding?.incomeTarget,
-          action: !demo ? (
-            <Button type="button" size="xs" variant="outline" className="history-mobile-icon shrink-0 cursor-pointer sm:ml-auto" onClick={(event) => mobile ? openMobileAction({ kind: "new-group", direction: "in", month: moisDeTravail }, event.currentTarget) : toggleAdding("income", moisDeTravail)}>
-              <Plus />
-              <span className={mobile ? "sr-only" : undefined}>Revenu</span>
-            </Button>
-          ) : null,
-        })}
-        {sectionHeaders("income")}
+        {sectionHeaders("income", !demo ? (
+          <Button type="button" size="xs" variant="ghost" className="history-section-add history-mobile-icon shrink-0 cursor-pointer" onClick={(event) => mobile ? openMobileAction({ kind: "new-group", direction: "in", month: moisDeTravail }, event.currentTarget) : toggleAdding("income", moisDeTravail)}>
+            <Plus />
+            <span className={mobile ? "sr-only" : undefined}>Revenu</span>
+          </Button>
+        ) : null, onboarding?.incomeTarget)}
         {!demo && addingHere(moisDeTravail) === "income" && (
           <TableRow className="hover:bg-transparent">
             <HistorySpanCell colSpan={totalCols} className="p-0">
@@ -2631,10 +2588,10 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         return (
           <Fragment key={sec.kind}>
             {enTeteRevenu()}
-            {!incomeClosed && <TeinteSection.Provider value={INCOME_TINT}>
+            <TeinteSection.Provider value={INCOME_TINT}>
               {sec.rows.map((r) => renderGroup(r, true))}
-            </TeinteSection.Provider>}
-            {!incomeClosed && uncatIn && (
+            </TeinteSection.Provider>
+            {uncatIn && (
               <TeinteSection.Provider value={INCOME_TINT}>
                 {renderUncatRows(uncatIn, secs)}
               </TeinteSection.Provider>
@@ -2654,7 +2611,6 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         // Les reçus non catégorisés sont rendus dans la section Rémunérations
         // (ci-dessus) quand elle existe ; sinon ils s'affichent ici, à leur place.
         if (sec.uncatDirection === "in" && secs.some((s) => s.kind === "income")) return null;
-        if (sec.uncatDirection === "in" && incomeClosed) return null;
         // Un espace au-dessus des dépenses non catégorisées : elles suivent le
         // « Total Dépenses », qui clôt les enveloppes, et se
         // lisent mal collées à eux. Les reçus non catégorisés, eux, restent
@@ -2676,11 +2632,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       return (
         <Fragment key={sec.kind}>
           {enTeteDepense()}
-          {!expensesClosed && (
-            <TeinteSection.Provider value={EXPENSE_TINT}>
-              {sec.rows.map((r) => renderGroup(r))}
-            </TeinteSection.Provider>
-          )}
+          <TeinteSection.Provider value={EXPENSE_TINT}>
+            {sec.rows.map((r) => renderGroup(r))}
+          </TeinteSection.Provider>
           <TableRow data-history-total="expense" className="font-medium">
             <TableCell className={cn(EXPENSE_TOTAL_TINT, COL1_STICKY, "h-px p-0")}>
               <FirstColBox>Total Dépenses</FirstColBox>
