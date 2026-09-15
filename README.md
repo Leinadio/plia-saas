@@ -3,7 +3,7 @@
 Application web **locale et personnelle** de suivi de budget. Elle se connecte à ton
 compte CIC via l'agrégateur Open Banking **Enable Banking**, range tes dépenses dans
 des enveloppes de budget, et t'affiche solde, dépenses et alertes — le tout sur ton
-ordinateur, tes données ne quittent pas ta machine.
+ordinateur, tes données ne quittent pas ta machine
 
 > **Rappel honnêteté** : ce ne sera jamais du « temps réel à la seconde ». Les données
 > sont rafraîchies quand tu cliques sur « Synchroniser » (offre gratuite = quelques
