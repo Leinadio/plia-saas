@@ -33,19 +33,20 @@
 .history-reading-heading > button {
   display: flex;
   width: 100%;
-  min-height: 5.5rem;
+  min-height: 5rem;
   flex-direction: column;
   align-items: flex-end;
   justify-content: flex-start;
-  gap: 0.5rem;
-  padding: 0.625rem 0;
+  gap: 0.25rem;
+  padding: 0;
   text-align: right;
   cursor: pointer;
 }
 
 .history-reading-column-title {
   display: flex;
-  align-items: baseline;
+  min-height: 2.25rem;
+  align-items: flex-start;
   justify-content: flex-end;
   gap: 0.375rem;
   color: var(--foreground);
@@ -80,11 +81,9 @@
   border-radius: var(--radius-sm);
 }
 
-[data-history-section-table] .history-reading-data,
-[data-history-section-table] .history-reading-remainder {
-  vertical-align: top;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+[data-history-section-table] td.history-reading-data,
+[data-history-section-table] td.history-reading-remainder {
+  vertical-align: middle;
 }
 
 [data-history-section-table] .history-reading-data { font-size: 0.9375rem; }
@@ -103,7 +102,7 @@
 .history-envelope-result-value { font-size: 0.9375rem; font-weight: 600; }
 .history-envelope-result-caption,
 .history-envelope-result-note {
-  max-width: 18ch;
+  max-width: 100%;
   color: var(--muted-foreground);
   font-size: 0.6875rem;
   font-weight: 400;

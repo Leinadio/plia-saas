@@ -82,9 +82,19 @@ Le brief `docs/superpowers/specs/2026-09-15-tableau-guide-design.md` précise la
 prévision → opérations → résultat, en mode Operate. Les en-têtes Attendu et Reçu
 expliquent les revenus. Les dépenses suivent « Budget », « − Dépensé »,
 « + Remboursements / apports », « = Reste / manque », chacun avec une courte explication.
-Sur ordinateur, ces quatre colonnes occupent 7 + 7 + 9 + 7 rem ; Attendu et Reçu
-occupent 7 rem chacun, suivis de 16 rem libres pour aligner la trésorerie.
+Sur ordinateur, ces quatre colonnes occupent 7 + 7 + 9 + 9 rem ; Attendu et Reçu
+occupent 7 rem chacun, suivis de 18 rem libres pour aligner la trésorerie.
 Chaque parcours de trésorerie conserve ses 10,5 rem.
+
+La reprise des espacements utilise 4 / 8 / 12 / 16 / 24 / 32 px, sans changer
+les couleurs. Les cellules ont 12 px de marge intérieure et un alignement
+vertical commun ; les lignes d’enveloppes mesurent au moins 80 px. Les noms
+occupent 320 px, ou 256 px entre 640 et 1023 px. Les titres réservent deux lignes
+avant leur explication. Le mois mesure au moins 96 px, les sections s’écartent
+de 24 px, les détails dépliés regroupent leurs éléments avec 12 px d’écart.
+Sur mobile : retraits latéraux de 16 px, lignes de montants d’au moins 48 px,
+8 px autour des boutons de section de 44 px. Ces rôles sont définis dans
+`src/components/history-layout.css` et les feuilles locales de lecture/mobile.
 
 Le reste est plus fort visuellement. Sa mention décrit le vrai montant du modèle
 (`MonthCell.balance`) : encore disponibles, de dépassement, budget utilisé,

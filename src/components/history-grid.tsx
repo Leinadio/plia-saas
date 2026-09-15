@@ -19,6 +19,7 @@ import { HistoryExpandableRows, HistoryMobileColumns, HistorySectionColumnsConte
 import "@/components/history-mobile.css";
 import "@/components/history-treasury.css";
 import "@/components/history-reading.css";
+import "@/components/history-layout.css";
 import { EnvelopeRemainder, HistoryColumnHeading, HistoryReadingIntro, historyColumnReading } from "@/components/history-reading";
 import { TreasuryAmount, TreasuryOutcome } from "@/components/history-treasury";
 import { HistoryMobileActions, type HistoryMobileAction } from "@/components/history-mobile-actions";
@@ -165,19 +166,14 @@ function OverspendTag() {
   );
 }
 
-// Largeur fixe de la première colonne. Un conteneur interne à largeur fixe (et non
-// un max-width sur la cellule, ignoré en table-auto) garantit que la colonne ne
-// bouge pas quand on déroule des transactions à long libellé.
-// Deux largeurs : 320 px partout, 176 px sur téléphone. À 320 px, la colonne des
-// noms mangeait un écran de 375 px entier et il ne restait rien pour les chiffres,
-// qui sont ce qu'on vient lire. Les noms trop longs se coupent, et un tap les
-// déplie (cf. TruncatedText).
-// 176 px sur téléphone, 320 au-delà. L'épine mange la largeur qui reste aux
-// chiffres, mais on ne la rétrécit pas davantage : un poste qu'on n'arrive plus
-// à nommer ne sert à rien. Ce sont les DEUX autres locataires de cette colonne
-// qu'on renvoie sur téléphone — la flèche de sens et l'étiquette de durée — et
-// c'est là qu'on récupère de la place, pas sur le nom.
-const COL1_W = "w-44 sm:w-80";
+// La largeur des noms est commune au cadre et aux sections : 320 px sur grand
+// écran, 256 px sur tablette, puis toute la carte sur téléphone. Elle reste
+// stable quand on déplie des transactions à long libellé.
+const COL1_W = "w-[var(--history-name-width)]";
+// Les sections et le cadre réservent la même largeur de données par mois.
+const HISTORY_DATA_WIDTH_REM = 32;
+const HISTORY_FRAME_COLUMN_REM = HISTORY_DATA_WIDTH_REM / 5;
+const HISTORY_TREASURY_WIDTH_REM = 10.5;
 
 // À partir de 640 px, la colonne des noms reste collée au bord gauche pendant que
 // les mois défilent sous elle. C'est la contrepartie du tableau unique : les noms ne
@@ -405,8 +401,8 @@ function blankSlots(): ColSlots {
 function FirstColBox({ children, indent = 0 }: { children: React.ReactNode; indent?: number }) {
   return (
     <div
-      className={cn("border-border/60 flex h-full items-center gap-1.5 overflow-hidden border-r py-2 pr-2 font-sans sm:border-r-0", COL1_W)}
-      style={{ paddingLeft: `${0.5 + indent * 1.25}rem` }}
+      className={cn("history-name-cell border-border/60 flex h-full items-center overflow-hidden border-r font-sans sm:border-r-0", COL1_W)}
+      style={{ paddingLeft: `calc(var(--history-name-inset) + ${indent} * var(--history-indent-step))` }}
     >
       {children}
     </div>
@@ -1544,13 +1540,13 @@ function TxnRow({ txn, months, currentMonth, groups, indent, onSelect, selCellKe
     <TableRow data-history-transaction="" className="align-top text-sm text-muted-foreground">
       <TableCell className={cn(COL1_STICKY, "bg-background h-px p-0")}>
         <div
-          className={cn("border-border/60 flex h-full flex-col gap-1 border-r py-2 pr-2 font-sans", COL1_W)}
-          style={{ paddingLeft: `${0.5 + indent * 1.25}rem` }}
+          className={cn("history-transaction-content border-border/60 flex h-full flex-col border-r font-sans", COL1_W)}
+          style={{ paddingLeft: `calc(var(--history-name-inset) + ${indent} * var(--history-indent-step))` }}
         >
           {/* La date au-dessus, le libellé en dessous : côte à côte, la date mangeait
               un tiers de la colonne et coupait presque tous les libellés. Empilés, le
               libellé dispose de toute la largeur et déborde bien plus rarement. */}
-          <div className="group/txn flex flex-col gap-0.5 overflow-hidden">
+          <div className="group/txn flex flex-col gap-1 overflow-hidden">
             {/* La date reste en chasse fixe : c'est une donnée, elle s'aligne
                 d'une ligne à l'autre comme les montants. */}
             <div className={mobile ? "flex items-center justify-between gap-2" : "contents"}>
@@ -1620,8 +1616,8 @@ function HistorySectionTable({ kind, months, currentMonth, children }: {
       <colgroup>
         <col className={COL1_W} />
         {columns.flatMap((cols, index) => cols.flatMap(column => [
-          <col key={`${months[index]}-${column}`} style={{ width: column.startsWith("solde") ? "10.5rem" : kind === "expense" && column === "recu" ? "9rem" : "7rem" }} />,
-          ...(kind === "income" && column === "recu" ? [<col key={`${months[index]}-space`} style={{ width: "16rem" }} />] : []),
+          <col key={`${months[index]}-${column}`} style={{ width: column.startsWith("solde") ? `${HISTORY_TREASURY_WIDTH_REM}rem` : kind === "expense" && (column === "recu" || column === "reste") ? "9rem" : "7rem" }} />,
+          ...(kind === "income" && column === "recu" ? [<col key={`${months[index]}-space`} style={{ width: "18rem" }} />] : []),
         ]))}
       </colgroup>
       <TableBody>{children}</TableBody>
@@ -1646,7 +1642,7 @@ function HistorySectionBody({ name, children }: { name: string; children: React.
 function SpacerRow({ cols }: { cols: number }) {
   return (
     <TableRow aria-hidden="true" data-history-spacer="" className="hover:bg-transparent">
-      <TableCell colSpan={cols} className="h-8 border-0 p-0" />
+      <TableCell colSpan={cols} className="h-6 border-0 p-0" />
     </TableRow>
   );
 }
@@ -1960,13 +1956,11 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             { subtitle: monthLabel(months[i]), result: solde.openings[i] },
           );
   };
-  const dataCols = totalCols - 1;
-  // Les données occupent 6 rem, les étapes de trésorerie 10,5 rem. En-têtes,
-  // tableaux de section et résultats utilisent les mêmes largeurs fixes.
-  const treasuryWidth = months.reduce((sum, month) => sum + monthColumns(monthType(month, currentMonth)).filter(column => column.startsWith("solde")).length * 4.5, 0);
+  // La largeur du cadre correspond exactement aux sections et à leurs soldes.
+  const columnsWidth = months.reduce((sum, month) => sum + monthColumns(monthType(month, currentMonth))
+    .reduce((width, column) => width + (column.startsWith("solde") ? HISTORY_TREASURY_WIDTH_REM : HISTORY_FRAME_COLUMN_REM), 0), 0);
   const tableWidths = {
-    "--history-table-width": `${11 + dataCols * 6 + treasuryWidth}rem`,
-    "--history-table-width-desktop": `${20 + dataCols * 6 + treasuryWidth}rem`,
+    "--history-table-width": `calc(var(--history-name-width) + ${columnsWidth}rem)`,
   } as React.CSSProperties;
 
   // Amener la case choisie dans le panneau sous les yeux (après dépliage éventuel :
@@ -2412,11 +2406,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     }) => (
       <TableRow key={cle} data-history-band="" data-history-comparison={comparing ? opts?.comparisonSection : undefined} data-onboarding-target={opts?.onboardingTarget} className="hover:bg-transparent">
         <TableCell className={cn(COL1_STICKY, tint, "h-px p-0")}>
-          {/* Sur téléphone le nom du bloc et son bouton de création ne tiennent pas
-              côte à côte dans 176 px : « Dépenses non prévues » passait SOUS le
-              bouton, et on lisait « Dépenses [+ Dépense] és ». Ils s'empilent donc,
-              le titre d'abord, le bouton dessous. */}
-          <div className={cn("border-border/60 flex h-full flex-col items-start gap-1 border-r py-2 pr-2 pl-2 font-sans sm:flex-row sm:items-center sm:gap-2", COL1_W)}>
+          {/* Le titre et les commandes partagent une ligne. Les commandes mobiles
+              gardent leur zone tactile de 44 px. */}
+          <div className={cn("history-section-title border-border/60 flex h-full items-center gap-2 border-r font-sans", COL1_W)}>
             {opts?.onToggle ? (
               <button
                 type="button"
@@ -2453,7 +2445,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
           const receipt = kind === "expense" && column === "recu";
           const reading = historyColumnReading(column, kind, month, currentMonth);
           return <Fragment key={`${month}-${column}`}><TableHead scope="col"
-            className={cn(COL_TINT[column], "history-reading-heading", column.startsWith("solde") && "history-treasury-cell", column === "soldeReel" && "history-treasury-start", column === "reste" && "history-reading-remainder", index === 0 && MONTH_RULE, "h-auto whitespace-normal px-2 py-2 text-right")}>
+            className={cn(COL_TINT[column], "history-reading-heading", column.startsWith("solde") && "history-treasury-cell", column === "soldeReel" && "history-treasury-start", column === "reste" && "history-reading-remainder", index === 0 && MONTH_RULE, "h-auto whitespace-normal px-3 py-3 text-right")}>
             <button type="button" aria-label={`Comprendre : ${reading.label}`}
               onClick={() => onSelect(makeInfo(reading.label, receipt ? EXPENSE_RECEIPTS_INFO : COL_INFO[column]))}>
               <HistoryColumnHeading reading={reading} />
@@ -2720,7 +2712,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
     <Table
       style={tableWidths}
       className={cn(
-        "table-fixed w-[var(--history-table-width)] text-[13px] tabular-nums sm:w-[var(--history-table-width-desktop)] [&_td]:overflow-hidden [&_td]:align-top [&_th]:overflow-hidden",
+        "table-fixed w-[var(--history-table-width)] text-[13px] tabular-nums [&_td]:overflow-hidden [&_th]:overflow-hidden",
         // Le serrage de téléphone. Il ne touche QUE les cases de chiffres —
         // reconnaissables à leur tabular-nums — parce que l'épine, elle, porte du
         // texte : la rétrécir aussi rendrait les noms de postes illisibles. Onze
@@ -2733,9 +2725,9 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       {/* Le colgroup ne porte plus de teinte : il ne reste que la structure des
           colonnes, qui sert au calage des largeurs. */}
       <colgroup>
-        <col className="w-44 sm:w-80" />
+        <col className={COL1_W} />
         {months.flatMap((m) =>
-          monthColumns(monthType(m, currentMonth)).map((col) => <col key={`${m}-${col}`} style={{ width: col.startsWith("solde") ? "10.5rem" : "6rem" }} />),
+          monthColumns(monthType(m, currentMonth)).map((col) => <col key={`${m}-${col}`} style={{ width: `${col.startsWith("solde") ? HISTORY_TREASURY_WIDTH_REM : HISTORY_FRAME_COLUMN_REM}rem` }} />),
         )}
       </colgroup>
       {!mobile && <TableHeader>
@@ -2757,7 +2749,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
                 data-current-month={m === currentMonth ? "" : undefined}
                 data-onboarding-target={m === onboarding?.month ? onboarding?.timeTarget : undefined}
                 data-onboarding-month={m === onboarding?.month ? onboarding?.month : undefined}
-                className={cn(mi > 0 && MONTH_RULE, "h-[7.75rem] px-2 py-2 text-left align-middle sm:px-4 sm:text-center")}
+                className={cn(mi > 0 && MONTH_RULE, "h-24 px-4 py-4 text-left align-middle sm:text-center")}
               >
                 {/* Le nom du mois se pose À GAUCHE de son bloc sur téléphone. Centré, il
                     tombait au milieu de six cents pixels de colonnes : on arrivait sur
@@ -2946,7 +2938,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
           de l'intérieur laisse une seule zone, la bonne. */}
       <MobileHistoryContext.Provider value={mobile ? { ...mobile, currentMonth, treasuryMetric: mobile.metric ? mobile.comparison?.metrics.balance ?? (mobile.metric.startsWith("solde") ? mobile.metric : "soldeReel") : mobile.month > currentMonth ? "soldePrevu" : "soldeReel", selected: selCellKey, onSelect } : null}>
       {!mobile && <HistoryReadingIntro />}
-      <div ref={gridRef} data-history-mobile={mobile ? (mobile.metric ? "compare" : "month") : undefined} className={cn(mobile ? "history-mobile w-full" : "w-max", "[&_[data-slot=table-container]]:overflow-visible")}>
+      <div ref={gridRef} data-history-mobile={mobile ? (mobile.metric ? "compare" : "month") : undefined} className={cn("history-layout", mobile ? "history-mobile w-full" : "w-max", "[&_[data-slot=table-container]]:overflow-visible")}>
         {grandTableau()}
       </div>
       {mobile && <HistoryMobileActions action={mobileAction} open={mobileActionOpen && mobileAction?.scope === mobileActionScope} onClose={() => setMobileActionOpen(false)}

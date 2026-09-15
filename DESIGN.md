@@ -930,9 +930,18 @@ une surbrillance limitée à la case Reçu, sans inclure cet espace vide, et
 la navigation entre les mois. Sur mobile, les cartes verticales restent en place.
 Le libellé Remboursements / apports s'applique aussi aux sommes reçues dans les
 enveloppes de dépenses sur mobile.
-Les colonnes de dépenses occupent 7 + 7 + 9 + 7 rem, soit 30 rem ; les revenus
-occupent 7 + 7 rem suivis de 16 rem libres. Chaque parcours de trésorerie mesure
+Les colonnes de dépenses occupent 7 + 7 + 9 + 9 rem, soit 32 rem ; les revenus
+occupent 7 + 7 rem suivis de 18 rem libres. Chaque parcours de trésorerie mesure
 10,5 rem. Les chiffres s’alignent à droite, avec des filets fins entre les familles.
+
+Les espacements suivent une échelle de 4, 8, 12, 16, 24 et 32 px. Les cellules
+de chiffres ont 12 px de marge intérieure ; noms et montants sont centrés sur
+une même ligne, haute d’au moins 80 px pour les enveloppes. Le nom occupe 320 px,
+puis 256 px entre 640 et 1023 px. Les titres de colonnes réservent deux lignes,
+avec 4 px avant leur explication. L’en-tête du mois mesure au moins 96 px et les
+sections sont séparées de 24 px. Les détails dépliés regroupent leurs commandes
+avec 12 px d’écart. Sur téléphone, les cartes gardent 16 px de retrait latéral,
+les montants une ligne d’au moins 48 px, les boutons icône une zone de 44 px.
 
 Le résultat de l’enveloppe est plus fort que les autres chiffres. Sa mention explique
 le montant affiché : « encore disponibles », « de dépassement », « budget utilisé »,

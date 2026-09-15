@@ -67,7 +67,7 @@ export function HistoryWithDetail(props: {
     to: props.months.at(-1) ?? props.currentMonth, current: props.currentMonth });
   const mobile = frameNavigation ?? localNavigation;
   return (
-    <div className="flex flex-col gap-3 pb-[calc(8rem+env(safe-area-inset-bottom))] sm:pb-0">
+    <div className="flex flex-col gap-4 pb-[calc(8rem+env(safe-area-inset-bottom))] sm:pb-0">
       {isMobile && !frameNavigation && <HistoryMobileControls navigation={mobile}
         min={props.months[0] ?? props.currentMonth} max={props.months.at(-1) ?? props.currentMonth} />}
       {/* Sur ordinateur, une carte entoure tout le tableau. Sur mobile, chaque

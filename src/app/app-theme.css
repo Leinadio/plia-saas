@@ -181,7 +181,7 @@ html:has(.planora-workspace) [data-slot="tabs-trigger"][data-state="active"] {
 }
 .app-content .carte { border-color: transparent; }
 .app-content .history-mobile [data-history-card] { border-radius: 16px; overflow: hidden; }
-.app-content .history-mobile [data-history-band] > td:first-child > div { padding-block: 16px; }
+.app-content .history-mobile [data-history-band] > td:first-child > div { padding-block: 8px; }
 .app-content .history-mobile [data-history-band] .font-semibold { font-size: 1rem; }
 html:has(.planora-workspace) [data-slot="sidebar-inner"] {
   background: var(--surface); border-radius: 16px; box-shadow: var(--ombre-levee);
