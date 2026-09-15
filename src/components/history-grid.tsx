@@ -698,29 +698,23 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
             : r ? makeDetail("Reçu", txnsDuSens(r, month, "in", i) ?? [], { subtitle, result: rentre })
             : null;
 
-        // Reste affiche c.balance sauf pour une entrée (case vide) : cliquable même à
-        // 0,00. Décomposition Budget − Dépensé quand l'invariant tient, sinon aucune.
+        // Les remboursements partiels créent de la marge ; un remboursement
+        // intégral termine la réservation de budget, explicitée dans le calcul.
+        const reste = resteParts(c);
         const resteDetail: CellDetail | null =
           mode !== "in" && r
             ? makeDetail(
                 "Reste",
-                Math.abs(c.budgeted - c.depense - c.balance) < 0.005
-                  ? (() => {
-                      // Budget − ce qui est sorti + ce qui est revenu (cf. resteParts).
-                      // Trois termes et non deux : les colonnes montrent le brut, et
-                      // « Budget − Dépensé » ne retomberait plus sur le Reste dès qu'un
-                      // remboursement est passé. Le troisième terme ne s'affiche que
-                      // s'il existe — sans retour, le calcul reste celui d'avant.
-                      const p = resteParts(c);
-                      return [
-                        { label: "Budget", amount: p.budget, ref: ck("budget") },
-                        { label: "Dépensé", amount: -p.sorti, children: txnsDuSens(r, month, "out", i)?.map(negateNode), ref: ck("depense") },
-                        ...(p.rentre > 0.005
-                          ? [{ label: "Remboursé", amount: p.rentre, children: txnsDuSens(r, month, "in", i), ref: ck("recu") }]
-                          : []),
-                      ];
-                    })()
-                  : [],
+                [
+                  { label: "Budget", amount: reste.budget, ref: ck("budget") },
+                  { label: "Dépensé", amount: -reste.sorti, children: txnsDuSens(r, month, "out", i)?.map(negateNode), ref: ck("depense") },
+                  ...(reste.rentre > 0.005
+                    ? [{ label: "Remboursé", amount: reste.rentre, children: txnsDuSens(r, month, "in", i), ref: ck("recu") }]
+                    : []),
+                  ...(reste.released
+                    ? [{ label: "Budget terminé après remboursement", amount: -reste.released, ref: ck("budget") }]
+                    : []),
+                ],
                 { subtitle, result: c.balance },
               )
             : null;
@@ -788,7 +782,7 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
         // Mouvement prévu du mois de cette ligne = revenus projeté − budget (même
         // net que la chaîne « solde prévu »).
         const revenusProj = mode === "in" ? c.budgeted : 0;
-        const budgetProj = mode === "out" ? c.budgeted : 0;
+        const budgetProj = mode === "out" ? (c.plannedExpense ?? c.budgeted) : 0;
         const mouvementPrevu = revenusProj - budgetProj;
         // Décomposition du mouvement prévu : pour une dépense, les postes du budget
         // (négatifs) ; pour une entrée, le revenu projeté. Chaque enfant pointe vers
@@ -799,6 +793,9 @@ function AmountCells({ cells, mode, solde, soldePrevu, soldeDepass, onSelect, su
             : mode === "in" && r
               ? [{ label: r.name, amount: revenusProj, ref: ck("revenus") }]
               : [];
+        if (mode === "out" && c.plannedExpense != null) {
+          mouvementChildren.push({ label: "Dépense remboursée — réservation libérée", amount: c.budgeted - c.plannedExpense, ref: ck("recu") });
+        }
         const sp = soldePrevu?.[i];
         const soldePrevuDetail: CellDetail | null =
           sp != null && r
@@ -998,6 +995,7 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
         // catégorisés (provision + reçus sans groupe − dépensé) : la grille ne la
         // recalcule pas de son côté.
         const resteVal = c.balance;
+        const releasedBudget = resteParts(c).released;
         // Balance toujours affichée → toujours cliquable. Décomposition : Reçu (ligne
         // des reçus non catégorisés) − Dépensé pour les non catégorisés, Budget −
         // Dépensé pour les autres sections (quand l'invariant tient).
@@ -1018,8 +1016,7 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
                   children: (depNodes ?? []).map(negateNode),
                 },
               ]
-            : Math.abs(c.budgeted - c.depense - c.balance) < 0.005
-              ? [
+            : [
                   { label: "Budget", amount: c.budgeted, ref: ck("budget") },
                   {
                     label: "Dépensé",
@@ -1027,8 +1024,10 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
                     ref: ck("depense"),
                     children: (depNodes ?? []).map(negateNode),
                   },
-                ]
-              : [],
+                  ...(releasedBudget
+                    ? [{ label: "Budgets terminés après remboursement", amount: -releasedBudget }]
+                    : []),
+                ],
           { subtitle, result: resteVal },
         );
         // Étiquette et bandeau des non catégorisés côté dépenses : même lecture de la
@@ -1344,6 +1343,13 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
           children: [
             { label: "Revenus prévus", amount: budgetRemTotal, ref: ck("revenus"), children: revenusChildren },
             { label: "Budget", amount: -expenseBudget, ref: ck("budget"), children: budgetChildren },
+            ...allRows
+              .filter(r => r.direction === "out" && r.cells[i].plannedExpense != null)
+              .map((r): DetailNode => ({
+                label: `${r.name} — dépense remboursée`,
+                amount: r.cells[i].budgeted - r.cells[i].plannedExpense!,
+                ref: cellKey(groupRow(r.id), "recu", i),
+              })),
             ...(solde.pending?.[i] ? [{ label: "Opérations bancaires en attente", amount: solde.pending[i] }] : []),
           ],
         };

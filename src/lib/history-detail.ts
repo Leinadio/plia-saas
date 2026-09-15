@@ -86,14 +86,15 @@ export function txnsDuSens(r: HistoryRow, month: string, sens: "in" | "out", i: 
 // et Reçu montrent le BRUT : écrire « Budget − Dépensé » avec le brut ne retomberait
 // plus sur la Balance dès qu'un remboursement est passé par là.
 //
-// Le compte est le même qu'avant, seulement dit en entier : budget − (net + revenu)
-// + revenu = budget − net. La Balance ne bouge donc pas d'un centime, et chaque
-// terme renvoie vers une case que le tableau affiche vraiment.
-export function resteParts(c: MonthCell): { budget: number; sorti: number; rentre: number } {
+// Une dépense entièrement remboursée termine sa réservation. Le terme optionnel
+// released l'explique sans masquer le budget d'origine ni les mouvements bruts.
+export function resteParts(c: MonthCell): { budget: number; sorti: number; rentre: number; released?: number } {
+  const released = c.budgeted - c.depense - c.balance;
   return {
     budget: c.budgeted,
     sorti: c.depenseBrute ?? c.depense,
     rentre: c.recuBrut ?? c.recu,
+    ...(released > 0.005 ? { released } : {}),
   };
 }
 

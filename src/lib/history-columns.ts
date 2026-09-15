@@ -61,6 +61,7 @@ export const COL_INFO: Record<ColKey, string[]> = {
     "Si le chiffre est positif, c'est ce qu'il te reste à dépenser avant d'épuiser le budget. S'il est négatif et en rouge, c'est que tu as dépensé plus que prévu, et le chiffre te dit de combien tu as débordé.",
     "Par exemple : un budget de 250 € où tu as dépensé 144 €, il te reste 106 €. Un budget de 85 € où tu as dépensé 100 €, tu es à −15 € : tu as débordé de 15 €.",
     "Quand de l'argent est revenu dans le poste, il compte ici aussi : le calcul est le budget, moins ce qui est sorti, plus ce qui est revenu. Un budget de 1 200 € entièrement dépensé dont un ami te rend 200 € : il te reste 200 €.",
+    "Si la dépense est intégralement remboursée, elle est terminée : le reste revient à zéro, sans recréer de budget à dépenser. Un remboursement supérieur à la dépense laisse uniquement l'excédent reçu.",
   ],
   soldeReel: [
     "C'est l'argent que tu as vraiment sur ton compte, reconstitué étape par étape.",
@@ -72,6 +73,7 @@ export const COL_INFO: Record<ColKey, string[]> = {
     "Ça répond à : combien me restera-t-il si je dépense pile ce que j'ai prévu, sans aucun dérapage ?",
     "On prend ce que tu as au départ, on ajoute ce que tu comptes recevoir, on enlève ce que tu comptes dépenser, et on enchaîne mois après mois : ce qui reste à la fin d'un mois devient ton point de départ pour le suivant.",
     "Sur le mois en cours, il peut être différent du solde réel. Le solde réel tient compte de ce que tu as déjà fait, alors que celui-ci applique ton plan en entier. Comparer les deux te dit si tu es en avance ou en retard sur ton plan.",
+    "Une dépense intégralement remboursée est terminée : son budget n'est plus retiré du solde prévu pour ce mois. Les budgets des mois suivants restent ceux que tu as définis.",
     "Par exemple : tu démarres à −120 €, tu attends 650 €, tu prévois 555 € de dépenses. Il te resterait −25 € en fin de mois.",
   ],
   soldeDepass: [

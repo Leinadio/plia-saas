@@ -2,6 +2,7 @@ import { resolveOwnership, partDansLePoste, type OwnableGroup, type OwnedTxn } f
 import { type Group, type Txn, isGroupAlive, isLineAlive } from "./forecast";
 import { moisBudget } from "./txn-mois";
 import { ORIGIN_MONTH } from "./lifespan";
+import { expenseBudgetPosition } from "./expense-budget";
 
 // Montants en vigueur (budgets et lignes datés) : déplacés dans budget-in-force.ts
 // pour éviter un cycle d'import avec forecast.ts (qui a aussi besoin de ces
@@ -22,15 +23,17 @@ import {
 // (une entrée d'argent n'a pas de budget, donc pas de reste).
 export type MonthCell = {
   budgeted: number; depense: number; recu: number; balance: number;
+  // Réservation corrigée lorsqu'une dépense (ou sous-enveloppe) est entièrement
+  // remboursée. Le budget saisi reste visible ; il n'est plus réservé à dépenser.
+  // Absent = budgeted, notamment pour les mois futurs sans remboursement.
+  plannedExpense?: number;
   // Ce qui est venu à CONTRE-SENS du poste : un remboursement encaissé sur une
   // dépense, un trop-perçu rendu sur un revenu. Déjà retranché de `depense` (ou de
   // `recu`) — c'est la même somme, montrée d'un autre côté.
   //
-  // Il vit à part et n'entre dans AUCUN calcul : ni le mouvement du mois, ni la
-  // chaîne de soldes, ni les dépassements. Les y verser compterait l'argent deux
-  // fois, une fois en moins du réalisé et une fois en plus des rentrées. Sa seule
-  // raison d'être est la case du tableau qui l'affiche, en face du poste, pour que
-  // l'écart entre les transactions listées dessous et le dépensé se lise.
+  // Ne pas l'ajouter au mouvement net : ce serait compter l'argent deux fois.
+  // Il permet aussi de reconnaître une dépense entièrement remboursée, dont
+  // la réservation de budget est terminée (cf. expenseBudgetPosition).
   //
   // Facultatif : toutes les cases fabriquées ailleurs (fixtures, sous-totaux) valent
   // zéro sans avoir à le dire.
@@ -47,7 +50,7 @@ export type MonthCell = {
   // rentré, quel que soit le sens du poste. Ils ne servent QU'À L'AFFICHAGE des
   // deux colonnes — aucun calcul ne les lit — et ils s'additionnent comme les
   // autres, pour que le pied d'une colonne dise bien la somme de ses lignes.
-  // La synthèse, elle, reste la Balance : budget − sorti + rentré.
+  // La Balance retire aussi la réservation d'une dépense entièrement remboursée.
   //
   // Facultatifs pour la même raison que `rembourse` : une case fabriquée ailleurs
   // retombe sur `depense` / `recu`, qui valent alors déjà le brut.
@@ -213,7 +216,7 @@ export function computeHistory(
 
   // Ce qui, dans un poste, va à contre-sens : les encaissements d'une dépense, les
   // sorties d'un revenu. Somme positive, déjà retranchée du réalisé ci-dessus — elle
-  // ne sert qu'à l'affichage (cf. MonthCell.rembourse).
+  // permet de reconnaître une dépense remboursée (cf. MonthCell.rembourse).
   const contreSens = (txns: Txn[], direction: "in" | "out", m: string) =>
     txns
       .filter((t) => moisBudget(t) === m && partDansLePoste(t.amount, direction) < 0)
@@ -248,6 +251,7 @@ export function computeHistory(
       const budgeted = budgetedOf(m);
       const realized = m > currentMonth ? 0 : realizedOf(m);
       const contre = m > currentMonth ? 0 : contreSensOf(m);
+      const position = expenseBudgetPosition(budgeted, realized, contre);
       return {
         budgeted,
         depense: isOut ? realized : 0,
@@ -261,7 +265,8 @@ export function computeHistory(
         // Le Reste ne concerne que les dépenses (budget − dépensé). Une entrée
         // d'argent n'a pas de budget, donc son Reste est nul : le reçu ne doit
         // jamais être soustrait d'un « reste de budget ».
-        balance: isOut ? budgeted - realized : 0,
+        balance: isOut ? position.balance : 0,
+        ...(isOut && position.plannedExpense !== budgeted ? { plannedExpense: position.plannedExpense } : {}),
       };
     });
 
@@ -305,6 +310,21 @@ export function computeHistory(
     // Transactions directement sous le groupe : enveloppe (pas de lignes) ou
     // récurrent dont la transaction ne matche aucune ligne.
     const groupTxns = mine.filter((t) => lineOf(g, t) === null && inRange(t)).map(toHistoryTxn);
+
+    // Une sous-enveloppe remboursée termine SON budget, pas celui des autres
+    // sous-enveloppes encore à payer. Le net du groupe contient déjà tous les
+    // mouvements : on lui retire uniquement les réservations terminées.
+    if (isOut && subRows.length > 0) {
+      cells.forEach((c, i) => {
+        if (!mine.some(t => lineOf(g, t) != null && moisBudget(t) === months[i])) return;
+        const subCells = subRows.map(s => s.cells[i]);
+        const released = subCells.reduce((sum, s) => sum + s.budgeted - s.depense - s.balance, 0);
+        c.balance = c.budgeted - c.depense - released;
+        const plannedExpense = c.budgeted + subCells.reduce((sum, s) => sum + (s.plannedExpense ?? s.budgeted) - s.budgeted, 0);
+        if (plannedExpense !== c.budgeted) c.plannedExpense = plannedExpense;
+        else delete c.plannedExpense;
+      });
+    }
 
     return {
       id: g.id, name: g.name, direction: g.direction, cells, aliveMonths, subRows,
@@ -643,7 +663,7 @@ export function rowRevenus(r: HistoryRow, i: number): number {
 // Budget de dépense d'une ligne (0 pour une entrée), au mois d'index i : il varie
 // d'un mois à l'autre, chaque groupe portant une suite de montants datés.
 function rowBudget(r: HistoryRow, i: number): number {
-  return r.direction === "out" ? r.cells[i].budgeted : 0;
+  return r.direction === "out" ? (r.cells[i].plannedExpense ?? r.cells[i].budgeted) : 0;
 }
 
 // Dépassement d'une ligne au mois d'index ci : part dépensée au-delà du budget.
@@ -653,7 +673,7 @@ export function rowOverspend(r: HistoryRow, ci: number): number {
   if (r.direction !== "out") return 0;
   const c = r.cells[ci];
   if (!c) return 0;
-  return Math.max(0, c.depense - c.budgeted);
+  return Math.max(0, c.depense - (c.plannedExpense ?? c.budgeted));
 }
 
 export type PlannedSoldes = {
@@ -739,8 +759,8 @@ export function slicePlannedSoldes(p: PlannedSoldes, k: number, j = 0): PlannedS
 
 // Estimé de fin du mois courant, aligné sur le tableau : solde réel actuel, plus
 // les rémunérations restant à recevoir (budget affiché − déjà reçu), moins les
-// Balances vertes non nulles (budget restant des groupes de dépense, qu'on suppose
-// dépensé d'ici la fin du mois). null si le mois courant n'est pas dans la plage.
+// réservations encore à dépenser. Un excédent reçu sur une dépense terminée reste
+// dans le solde et n'est pas redépensé. null si le mois courant est hors plage.
 export type EstimateStep = { id: number; name: string; amount: number };
 export function computeTableEstimate(
   sections: HistorySection[], months: string[], currentMonth: string, balance: number,
@@ -755,7 +775,8 @@ export function computeTableEstimate(
         const due = rowRevenus(r, ci) - r.cells[ci].recu;
         if (due > 0.005) incomeSteps.push({ id: r.id, name: r.name, amount: due });
       } else {
-        const rest = r.cells[ci].balance;
+        const c = r.cells[ci];
+        const rest = (c.plannedExpense ?? c.budgeted) - c.depense;
         if (rest > 0.005) spendSteps.push({ id: r.id, name: r.name, amount: rest });
       }
     }

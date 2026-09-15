@@ -2,6 +2,7 @@ import { moisBudget } from "./txn-mois";
 import { resolveOwnership, partDansLePoste, type OwnableGroup, type OwnedTxn } from "./ownership";
 import { budgetInForce, lineAmountInForce, type DatedBudgets, type DatedLineAmounts } from "./budget-in-force";
 import { aliveInMonth } from "./lifespan";
+import { expenseBudgetPosition } from "./expense-budget";
 
 export type Direction = "in" | "out";
 
@@ -173,7 +174,11 @@ export function computeForecast(
       const amount = budgetInForce(g, month, dated, datedLines);
       const nextAmount = budgetInForce(g, nextMonthKey(month), dated, datedLines);
       const spent = spentIn(g, month);
-      const remaining = Math.max(0, amount - spent);
+      const refunded = ownedBy(g.id).reduce((sum, t) => sum + Math.max(0, t.amount), 0);
+      const plannedAmount = g.direction === "out"
+        ? expenseBudgetPosition(amount, spent, refunded).plannedExpense
+        : amount;
+      const remaining = Math.max(0, plannedAmount - spent);
       if (aliveNow) {
         // Le sens compte : une sortie retire, une entrée ajoute.
         current += sign * remaining;
