@@ -17,12 +17,12 @@ vi.mock("next/navigation", () => ({
 import { HistoryGrid } from "../../src/components/history-grid";
 import { TooltipProvider } from "../../src/components/ui/tooltip";
 
-function grid(onSelect: (detail: CellDetail) => void = () => {}) {
+function grid(onSelect: (detail: CellDetail) => void = () => {}, budget = 1622, spent = 1622, refunded = 1622) {
   const months = ["2026-09"];
-  const groups: Group[] = [{ id: 2, accountId: "a1", name: "Taxe foncière", direction: "out", monthlyAmount: 1622, lines: [] }];
+  const groups: Group[] = [{ id: 2, accountId: "a1", name: "Taxe foncière", direction: "out", monthlyAmount: budget, lines: [] }];
   const txns: Txn[] = [
-    { id: "tax", accountId: "a1", groupId: 2, date: "2026-09-03", label: "Taxe foncière", amount: -1622 },
-    { id: "refund", accountId: "a1", groupId: 2, date: "2026-09-04", label: "Remboursement", amount: 1622 },
+    { id: "tax", accountId: "a1", groupId: 2, date: "2026-09-03", label: "Taxe foncière", amount: -spent },
+    ...(refunded > 0 ? [{ id: "refund", accountId: "a1", groupId: 2, date: "2026-09-04", label: "Remboursement", amount: refunded }] : []),
   ];
   const { dated, datedLines } = seedDated(groups);
   const sections = computeHistory(groups, txns, months, "2026-09", dated, datedLines);
@@ -45,7 +45,30 @@ it("garde les montants bruts visibles mais vide les trois cases de solde d'une d
   }
   for (const col of ["solde", "soldePrevu", "soldeDepass"]) {
     expect(container.querySelector(`[data-cellkey="group:2::${col}::0"]`)?.textContent).toBe("");
-    expect(container.querySelector(`[data-cellkey="grand::${col}::0"]`)?.textContent?.replace(/\s/g, "")).toBe("458,74");
+    expect(container.querySelector(`[data-cellkey="grand::${col}::0"] [data-treasury-value]`)?.textContent?.replace(/\s/g, "")).toBe("458,74€");
+  }
+});
+
+it.each([
+  [100, 150, 80, "30,00", "encore disponibles"],
+  [100, 100, 100, "0,00", "entièrement remboursé"],
+  [100, 120, 0, "-20,00", "de dépassement"],
+  [100, 100, 0, "0,00", "budget utilisé"],
+  [100, 100, 130, "30,00", "d’excédent reçu"],
+] as const)("explique le reste sans confondre marge et remboursement : %s / %s / %s", (budget, spent, refunded, amount, caption) => {
+  const container = document.createElement("div");
+  container.innerHTML = renderToStaticMarkup(grid(undefined, budget, spent, refunded));
+  const cell = container.querySelector('[data-cellkey="group:2::reste::0"]')!;
+  expect(cell.querySelector('[data-budget-remaining]')?.textContent?.replace(/\s/g, "")).toBe(amount);
+  expect(cell.textContent).toContain(caption);
+  expect(cell.querySelector("button")).not.toBeNull();
+});
+
+it("additionne les dépenses et remboursements bruts dans leurs propres colonnes", () => {
+  const container = document.createElement("div");
+  container.innerHTML = renderToStaticMarkup(grid());
+  for (const col of ["depense", "recu"]) {
+    expect(container.querySelector(`[data-cellkey="section:expense::${col}::0"]`)?.textContent?.replace(/\s/g, "")).toBe("1622,00");
   }
 });
 
@@ -65,7 +88,7 @@ it("explique le reste et les soldes de fin de mois avec des montants qui s'addit
   };
   try {
     await act(async () => root.render(grid(detail => details.push(detail))));
-    for (const key of ["group:2::reste::0", "section:expense::reste::0", "grand::soldePrevu::0", "grand::soldeDepass::0"]) {
+    for (const key of ["group:2::reste::0", "section:expense::reste::0", "section:expense::depense::0", "section:expense::recu::0", "grand::soldePrevu::0", "grand::soldeDepass::0"]) {
       const cell = container.querySelector<HTMLElement>(`[data-cellkey="${key}"]`)!;
       expect(cell).not.toBeNull();
       await act(async () => cell.querySelector<HTMLButtonElement>("button")!.click());

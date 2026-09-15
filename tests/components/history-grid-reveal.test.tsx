@@ -201,9 +201,9 @@ describe("balance dans le total des dépenses", () => {
     const expense = el.querySelector('[data-history-section-table="expense"]')!;
     expect(income).not.toBeNull();
     expect(expense).not.toBeNull();
-    const headings = (table: Element) => Array.from(table.querySelectorAll("th")).map(th => th.textContent);
-    expect(headings(income)).toEqual(["", "Attendu", "Reçu", "Réel", "Prévu", "Si dép."]);
-    expect(headings(expense)).toEqual(["", "Budget", "Dépensé", "Remboursements / apports", "Balance", "Réel", "Prévu", "Si dép."]);
+    const headings = (table: Element) => Array.from(table.querySelectorAll("th")).map(th => th.querySelector("button")?.getAttribute("aria-label")?.replace("Comprendre : ", "") ?? "");
+    expect(headings(income)).toEqual(["", "Attendu", "Reçu", "Opérations réelles", "Selon vos budgets", "Dépassements inclus"]);
+    expect(headings(expense)).toEqual(["", "Budget", "Dépensé", "Remboursements / apports", "Reste / manque", "Opérations réelles", "Selon vos budgets", "Dépassements inclus"]);
     expect(income.querySelector('[data-cellkey="group:7::budget::0"]')).toBeNull();
     expect(income.querySelector('[data-cellkey="group:7::depense::0"]')).toBeNull();
     expect(expense.querySelector('[data-cellkey="group:8::revenus::0"]')).toBeNull();
@@ -248,15 +248,15 @@ describe("balance dans le total des dépenses", () => {
 describe("cartes des sections sur mobile", () => {
   const mobile = { month: "2026-08", metric: null, onMonthChange: () => {} };
 
-  it("réunit les montants en cinq cartes et conserve les opérations non catégorisées", () => {
+  it("réunit les montants en six cartes et conserve les opérations non catégorisées", () => {
     const uncat: HistorySection = { kind: "uncategorized", uncatDirection: "out", rows: [], totals: [cell({ depense: 3, balance: -3 })], txns: [{ ...sortie, id: "uncat-1", groupId: null, amount: -3 }] };
     const el = document.createElement("div");
     el.innerHTML = grille([], [revenus, depenses, uncat], { mobile });
     const cards = el.querySelectorAll("[data-history-card]");
-    expect(cards).toHaveLength(5);
+    expect(cards).toHaveLength(6);
     expect(cards[0].textContent).toContain("Août 2026");
-    expect(cards[0].textContent).toContain("Solde de fin de mois");
-    expect(cards[0].textContent).toContain("Estimé fin de mois");
+    expect(cards[0].textContent).toContain("Votre trésorerie");
+    expect(cards[4].textContent).toContain("Estimé fin de mois");
     expect(cards[1].textContent).toContain("Argent de départ");
     expect(cards[2].textContent).toContain("Ce qui rentre");
     expect(cards[2].textContent).toContain("Total revenus");
@@ -264,7 +264,7 @@ describe("cartes des sections sur mobile", () => {
     expect(cards[3].textContent).toContain("Total Dépenses");
     expect(cards[3].textContent).toContain("Dépenses non catégorisées");
     expect(cards[4].textContent).not.toContain("Total du mois");
-    expect(cards[4].textContent).toContain("Total dépassement hors budget");
+    expect(cards[5].textContent).toContain("Total dépassement hors budget");
     expect(el.querySelector("tbody tbody")).toBeNull();
   });
 
@@ -378,7 +378,7 @@ describe("désigner une transaction depuis le panneau", () => {
       ...(mobile ? { mobile: { month: "2026-08", metric: null, onMonthChange: () => {} } } : {}),
     });
     expect(el.textContent).not.toContain("Total du mois");
-    for (const label of ["Total revenus", "Total Dépenses", "Solde de fin de mois", "Estimé fin de mois", "Total dépassement hors budget"]) {
+    for (const label of ["Total revenus", "Total Dépenses", "Votre trésorerie", "Estimé fin de mois", "Total dépassement hors budget"]) {
       expect(el.textContent).toContain(label);
     }
     expect(el.querySelector('[data-cellkey="grand::solde::0"]')).not.toBeNull();

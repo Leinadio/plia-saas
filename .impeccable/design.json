@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-14T17:50:43.414689+00:00",
+  "generatedAt": "2026-09-15T12:28:43.474275+00:00",
   "title": "Design System: Planora",
   "extensions": {
     "colorMeta": {
@@ -640,6 +640,44 @@
         "interaction": "Photo anchors #en-solo and #a-deux; visible keyboard focus; personal access and demo/estimate caveats; connexion and home demo/offer links.",
         "localDecisions": "Only the audience scope accepts the intentional 64px hero clamp minimum, coral and brown roles, detail shadow, note divider and 80px mobile photo corners/desktop separator height. No blanket application exception."
       }
+    },
+    "applicationTreasury": {
+      "scope": "src/app/app/historique",
+      "surfaceBrief": ".impeccable/surfaces/src-app-app.md",
+      "approvedBrief": "docs/superpowers/specs/2026-09-15-tresorerie-design.md",
+      "direction": "Évolution locale du relevé ; identité, jetons et calculs existants conservés.",
+      "reading": "Une seule introduction globale « Votre trésorerie, étape par étape ». Mouvement net signé puis montant restant avec son propre signe, filet vertical. Opérations réelles / Selon vos budgets / Dépassements inclus ; Estimation prolongée pour le réel futur. Les remboursements neutres gardent leurs cases de trésorerie vides.",
+      "mobile": "Introduction et filtre de trésorerie en haut, argent de départ, revenus, dépenses, résultat après les enveloppes. Un parcours accompagne les indicateurs des sections : réel pour un mois passé ou courant, budget pour un mois futur, choix du filtre en comparaison.",
+      "outcome": "Pied entier sombre dans les deux thèmes : résultat, estimation et dépassement, avec sélection préservée. Résultat courant à la dernière synchronisation, résultat passé et prévisions explicitement nommés. À découvert pour le réel passé ou courant négatif ; Découvert prévu pour une prévision négative.",
+      "review": {
+        "disposition": "ship",
+        "verdictScope": "Finding P2 sur la mention textuelle du découvert final résolu ; verdict limité à ce point après une revue complète précédente sans autre défaut matériel.",
+        "evidence": [
+          ".impeccable/review/treasury-desktop-closing.png",
+          ".impeccable/review/treasury-mobile-closing.png",
+          ".impeccable/review/treasury-mobile-compare.png",
+          ".impeccable/review/treasury-mobile-dark-negative.png"
+        ],
+        "validation": "Agent principal : 1 144 tests réussis, TypeScript, lint ciblé et build de production post-correction réussis. Captures relues pour la documentation ; contrôle /private/tmp/planora-treasury-design-check.json lu : []. Aucun test ni rendu relancé par la passe documentaire. Données fictives."
+      }
+    },
+    "applicationReading": {
+      "scope": "src/app/app/historique",
+      "surfaceBrief": ".impeccable/surfaces/src-app-app.md",
+      "approvedBrief": "docs/superpowers/specs/2026-09-15-tableau-guide-design.md",
+      "sources": [
+        "src/components/history-reading.tsx",
+        "src/components/history-reading.css",
+        "src/components/history-grid.tsx",
+        "src/components/history-mobile-columns.tsx",
+        "src/components/history-treasury.css",
+        "src/lib/history-columns.ts"
+      ],
+      "headings": "Attendu / Reçu côté revenus ; Budget, − Dépensé, + Remboursements / apports, = Reste / manque côté dépenses. Chaque en-tête a une courte explication. Une seule introduction pour tout le relevé.",
+      "layout": "Dépenses : 7 + 7 + 9 + 7 rem = 30 rem. Revenus : 7 + 7 rem puis 16 rem libres. Trésorerie : 10,5 rem par parcours. Chiffres alignés à droite et filets fins entre familles.",
+      "remainder": "Résultat visuellement renforcé, issu de MonthCell.balance. Mentions selon le montant et le contexte : encore disponibles, de dépassement, budget utilisé, entièrement remboursé, d’excédent reçu ou budget à venir. Budget clôturé après remboursement précise une réservation terminée ; le remboursement intégral ne recrée pas de budget.",
+      "totals": "Dépensé et Remboursements / apports additionnent les montants bruts des lignes ; Reçu fait de même pour les revenus. Le détail au clic reprend ces sommes et explicite les budgets clôturés dans le calcul du reste. Les règles des prévisions sont conservées.",
+      "mobile": "Même ordre des libellés et des opérateurs décoratifs ; noms accessibles conservés. Les indicateurs de revenus, dépenses et trésorerie restent indépendants en comparaison."
     }
   },
   "components": [

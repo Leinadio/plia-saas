@@ -5,7 +5,6 @@ import type { MonthCell, HistorySection, SoldeColumn, PlannedSoldes, Overspend, 
 import { CenterScroll } from "@/components/center-scroll";
 import { HistoryGrid, type SelectGroup } from "@/components/history-grid";
 import { useDetailSidebar } from "@/components/detail-sidebar";
-import { useSoldeDetailleOptional } from "@/components/solde-detaille";
 import { VoileDAttente } from "@/components/mise-a-jour";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { HistoryMobileControls, useHistoryMobileNavigation, useHistoryMobileState } from "@/components/history-mobile-navigation";
@@ -67,15 +66,6 @@ export function HistoryWithDetail(props: {
   const localNavigation = useHistoryMobileState({ from: props.months[0] ?? props.currentMonth,
     to: props.months.at(-1) ?? props.currentMonth, current: props.currentMonth });
   const mobile = frameNavigation ?? localNavigation;
-  // Mode détaillé des colonnes de solde. Ici et non dans la grille : la case doit
-  // rester en place quand on fait défiler le tableau de gauche à droite, donc elle vit
-  // en dehors du conteneur de défilement.
-  // Le réglage vient de la barre d'outils, au-dessus de la frise (cf.
-  // solde-detaille.tsx). Sans fournisseur — la démonstration, une page d'essai — le
-  // tableau reste au mode simple : il n'y aurait de toute façon aucun bouton pour en
-  // sortir.
-  const soldeDetaille = useSoldeDetailleOptional();
-  const showDeltas = soldeDetaille?.detaille ?? false;
   return (
     <div className="flex flex-col gap-3 pb-[calc(8rem+env(safe-area-inset-bottom))] sm:pb-0">
       {isMobile && !frameNavigation && <HistoryMobileControls navigation={mobile}
@@ -94,7 +84,6 @@ export function HistoryWithDetail(props: {
           onSelect={(detail) => setDetail(detail, viewScope)}
           selected={sameScope ? selected : null}
           anchor={sameScope ? anchor : null}
-          showDeltas={showDeltas}
           onDetailOpened={onDetailOpened}
           mobile={isMobile ? mobile : undefined}
         />

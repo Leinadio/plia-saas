@@ -20,7 +20,6 @@ import { accountLabel, effectiveBalance } from "../../../lib/account";
 import { pendingAsTransactions } from "../../../lib/bank-pending";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HistoryWithDetail } from "@/components/history-with-detail";
-import { SoldeDetailleProvider, SoldeDetailleToggle } from "@/components/solde-detaille";
 import { HistoryPeriodFrame } from "@/components/history-period-frame";
 import { FirstAccountOnboarding } from "@/components/first-account-onboarding";
 import { ConnexionReussie } from "@/components/connexion-reussie";
@@ -193,13 +192,6 @@ export default async function HistoriquePage({
 
           return (
             <TabsContent key={a.id} value={a.id} className="flex flex-col gap-4">
-            {/* Le fournisseur englobe la barre d'outils ET le tableau : le bouton est
-                au-dessus de la frise, le tableau qui obéit en dessous. */}
-            <SoldeDetailleProvider>
-              {/* Le réglage des mouvements reste au-dessus de la frise sur ordinateur. */}
-              <div className="hidden flex-wrap items-center justify-end gap-2 sm:flex">
-                <SoldeDetailleToggle />
-              </div>
               <HistoryPeriodFrame
                 key={`${a.id}:${from}:${to}`}
                 min={stripMin}
@@ -231,7 +223,6 @@ export default async function HistoriquePage({
                   overspendsByMonth={overspendsByMonth}
                 />
               </HistoryPeriodFrame>
-            </SoldeDetailleProvider>
             </TabsContent>
           );
         })}

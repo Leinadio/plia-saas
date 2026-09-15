@@ -7,9 +7,10 @@ import { makeInfo, type CellDetail } from "@/lib/history-explain";
 import { monthLabel } from "@/lib/transactions-view";
 import { cn } from "@/lib/utils";
 import type { HistoryComparison } from "@/components/history-comparison";
+import { treasuryColumnLabel } from "@/components/history-treasury";
 
-export const EXPENSE_RECEIPTS_LABEL = "Remboursements / apports";
-export const EXPENSE_RECEIPTS_INFO = ["L’argent reçu pour couvrir ces dépenses : remboursements, participation d’un proche ou apport depuis un autre compte. Il augmente le reste disponible sans réduire le montant affiché dans Dépensé."];
+import { EXPENSE_RECEIPTS_LABEL, EXPENSE_RECEIPTS_INFO, historyColumnReading } from "@/components/history-reading";
+export { EXPENSE_RECEIPTS_LABEL, EXPENSE_RECEIPTS_INFO } from "@/components/history-reading";
 export const HistorySectionColumnsContext = createContext<{
   kind: "income" | "expense";
   table: boolean;
@@ -30,7 +31,8 @@ export type MobileHistoryView = {
 };
 
 export const MobileHistoryContext = createContext<(MobileHistoryView & {
-  showDeltas: boolean;
+  currentMonth?: string;
+  treasuryMetric?: ColKey;
   selected: ReadonlySet<string>;
   onSelect: (detail: CellDetail) => void;
 }) | null>(null);
@@ -61,14 +63,15 @@ export function HistoryExpandableRows({ heading, amounts, expanded, className, c
 
 export const MOBILE_COLUMN_LABELS: Record<ColKey, string> = {
   budgetRem: "Attendu", budgetDep: "Budget", dep: "Dépensé", recu: "Reçu",
-  reste: "Reste / manque", soldeReel: "Solde réel", soldePrevu: "Solde prévu",
-  soldeDepass: "Si dépassement",
+  reste: "Reste / manque", soldeReel: COL_LABEL.soldeReel, soldePrevu: COL_LABEL.soldePrevu,
+  soldeDepass: COL_LABEL.soldeDepass,
 };
 
 export type HistoryColumnElement = ReactElement<{
   className?: string;
   children?: ReactNode;
   cellKey?: string;
+  treasuryMovement?: number | null;
   "data-mobile-column"?: string;
   "data-mobile-month"?: string;
 }>;
@@ -109,8 +112,13 @@ export function HistoryMobileColumns({ month, cells, keepBalances = false, trans
     </MobileColumnContext.Provider>}
     {cells.map(({ column, element }) => {
     const selected = !!element.props.cellKey && mobile.selected.has(element.props.cellKey);
-    if (mobile.metric && column !== mobile.metric && !selected && !transaction) return null;
-    if (!mobile.metric && column.startsWith("solde") && !keepBalances && !mobile.showDeltas && !selected) return null;
+    const movement = element.props.treasuryMovement;
+    const treasuryStep = column.startsWith("solde") && movement != null;
+    if (treasuryStep && Math.abs(movement) < 0.005) return null;
+    const chosenStep = treasuryStep && column === (mobile.treasuryMetric ?? "soldeReel");
+    if (treasuryStep && !chosenStep && !selected) return null;
+    if (mobile.metric && column !== mobile.metric && !chosenStep && !selected && !transaction) return null;
+    if (!mobile.metric && column.startsWith("solde") && !keepBalances && !chosenStep && !selected) return null;
     const empty = element.props.children == null || element.props.children === "";
     if ((!mobile.metric || transaction) && empty) return null;
     const value = empty ? <span aria-label="Sans montant">—</span> : element.props.children;
@@ -134,7 +142,10 @@ export function MobileCellContents({ children, label: override, supplement }: { 
   const section = useContext(HistorySectionColumnsContext);
   if (!mobile || !cell) return <>{children}</>;
   const expenseReceipt = section?.kind === "expense" && cell.column === "recu";
-  const columnLabel = expenseReceipt ? EXPENSE_RECEIPTS_LABEL : MOBILE_COLUMN_LABELS[cell.column];
+  const columnLabel = expenseReceipt ? EXPENSE_RECEIPTS_LABEL : cell.column.startsWith("solde")
+    ? treasuryColumnLabel(cell.column, cell.month, mobile.currentMonth)
+    : MOBILE_COLUMN_LABELS[cell.column];
+  const reading = historyColumnReading(cell.column, section?.kind, cell.month, mobile.currentMonth);
   const label = mobile.metric
     ? `${monthLabel(cell.month)}${cell.column !== mobile.metric ? ` · ${columnLabel}` : ""}`
     : override ?? columnLabel;
@@ -144,7 +155,7 @@ export function MobileCellContents({ children, label: override, supplement }: { 
       className="history-mobile-label"
       aria-label={`Comprendre : ${columnLabel}`}
       onClick={() => mobile.onSelect(makeInfo(expenseReceipt ? EXPENSE_RECEIPTS_LABEL : COL_LABEL[cell.column], expenseReceipt ? EXPENSE_RECEIPTS_INFO : COL_INFO[cell.column]))}
-    >{label}</button>
+    >{!mobile.metric && !override && reading.operator && <span className="history-reading-operator" aria-hidden="true">{reading.operator}</span>}{label}</button>
     <div className="history-mobile-number">{children}{supplement}</div>
   </div>;
 }

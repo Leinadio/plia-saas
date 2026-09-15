@@ -88,7 +88,7 @@ describe("DemoHistory", () => {
       `<td(?=[^>]*data-onboarding-target="open-amount-detail")(?=[^>]*data-onboarding-group-id="${DEMO_IDS.courses}")(?=[^>]*data-onboarding-month="${currentMonth}")(?=[^>]*data-cellkey="[^"]*::depense::[^"]*")[^>]*>.*?<\\/td>`,
     ))?.[0] ?? "";
     const endingBalanceRow = html.match(new RegExp(
-      `<tr(?=[^>]*data-onboarding-target="overview-ending-balance")[^>]*>(?:(?!<\\/tr>)[\\s\\S])*?Solde de fin de mois`,
+      `<tr(?=[^>]*data-onboarding-target="overview-ending-balance")[^>]*>(?:(?!<\\/tr>)[\\s\\S])*?Votre trésorerie`,
     ))?.[0] ?? "";
 
     for (const target of [
@@ -108,7 +108,7 @@ describe("DemoHistory", () => {
     expect(html).not.toContain("Dépenses non prévues");
     expect(transportBudgetCell).toContain(">120,00<");
     expect(coursesSpentCell).toContain(">216,30<");
-    expect(endingBalanceRow).toContain("Solde de fin de mois");
+    expect(endingBalanceRow).toContain("Votre trésorerie");
     expect(currentMonthHeader.toLocaleLowerCase("fr-FR")).toContain(currentMonthName);
     expect(currentMonthHeader).toContain(currentMonth.slice(0, 4));
     expect(html).not.toContain("Ajouter une transaction");

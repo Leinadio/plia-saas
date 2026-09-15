@@ -19,9 +19,9 @@ const OPTIONS = {
     { value: "recu", label: "Remboursements", description: "Les remboursements et apports reçus dans vos postes de dépenses.", accessibleLabel: EXPENSE_RECEIPTS_LABEL },
   ],
   balance: [
-    { value: "soldeReel", label: "Réel", description: "Le solde réel ; pour les mois à venir, l’estimation actuelle." },
-    { value: "soldePrevu", label: "Prévu", description: "Le solde si vos revenus et vos budgets suivent le plan." },
-    { value: "soldeDepass", label: "Si dépassement", description: "Le solde prévu, diminué des dépassements constatés dans le mois." },
+    { value: "soldeReel", label: "Opérations réelles", description: "La trésorerie calculée avec les opérations connues. Pour les mois futurs, l’estimation est prolongée sans nouvelles opérations." },
+    { value: "soldePrevu", label: "Selon vos budgets", description: "La trésorerie prévue après les revenus attendus et les budgets de chaque enveloppe." },
+    { value: "soldeDepass", label: "Dépassements inclus", description: "La prévision après déduction des dépassements déjà constatés. Ils ne sont pas reconduits sur les mois futurs." },
   ],
 } as const;
 

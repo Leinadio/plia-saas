@@ -917,16 +917,32 @@ vocabulaire, écrit noir sur blanc pour qu'il ne se redéfausse pas.
 ### Le grand tableau de l'Historique
 La pièce la plus dense du produit, et la seule qui ne soit pas une liste de cartes.
 
-Sur ordinateur, les revenus et les dépenses ont désormais chacun leur tableau et
-leurs en-têtes : Attendu et Reçu pour les revenus ; Budget, Dépensé,
-Remboursements / apports et Balance pour les dépenses. Les colonnes Réel, Prévu
-et Si dép. gardent leur présentation et leur alignement commun. Le cadre conserve
+Une seule introduction « Votre trésorerie, étape par étape » ouvre le relevé,
+sans se répéter par section ou par mois. Sur ordinateur, les revenus et les dépenses
+ont chacun leurs en-têtes expliqués en une phrase : Attendu et Reçu pour les revenus ;
+Budget, − Dépensé, + Remboursements / apports, = Reste / manque pour les dépenses.
+Les parcours « Opérations
+réelles », « Selon vos budgets » et « Dépassements inclus » gardent leur alignement
+commun. Le réel des mois futurs porte le nom « Estimation prolongée ». Le cadre conserve
 Attendu et Reçu aux mêmes positions que Budget et Dépensé, avec l'espace restant
 après Reçu pour maintenir les soldes en place. Il conserve aussi
 une surbrillance limitée à la case Reçu, sans inclure cet espace vide, et
 la navigation entre les mois. Sur mobile, les cartes verticales restent en place.
 Le libellé Remboursements / apports s'applique aussi aux sommes reçues dans les
 enveloppes de dépenses sur mobile.
+Les colonnes de dépenses occupent 7 + 7 + 9 + 7 rem, soit 30 rem ; les revenus
+occupent 7 + 7 rem suivis de 16 rem libres. Chaque parcours de trésorerie mesure
+10,5 rem. Les chiffres s’alignent à droite, avec des filets fins entre les familles.
+
+Le résultat de l’enveloppe est plus fort que les autres chiffres. Sa mention explique
+le montant affiché : « encore disponibles », « de dépassement », « budget utilisé »,
+« entièrement remboursé », « d’excédent reçu » ou « budget à venir ».
+« Budget clôturé après remboursement » précise la réservation terminée ; un remboursement
+intégral ne recrée pas de budget à dépenser. Les totaux Dépensé, Remboursements / apports
+et Reçu des revenus additionnent les montants entiers des lignes. Leur détail au clic
+reprend ces sommes et explicite les budgets clôturés dans le calcul du reste.
+Le reste d’une enveloppe se distingue ainsi de la trésorerie ; les prévisions gardent
+leurs règles.
 
 L'argent de départ affiche un seul montant. Sur ordinateur, son libellé et son
 montant sont regroupés sous le nom du mois, à côté du solde du mois. Le bloc
@@ -953,7 +969,7 @@ Sur mobile, le libellé et le montant partagent une ligne. Le calcul reste cliqu
   fixes sépare les noms des montants, même pendant le défilement.
 - **Ses familles de colonnes :** trois, et elles se lisent à la DENSITÉ, pas à la
   teinte. Les colonnes de mouvement du mois partagent le fond le plus clair (ardoise à
-  5 %), Balance a le sien (11 %), les trois chaînes de solde partagent le plus dense
+  5 %), Reste / manque a le sien (11 %), les trois chaînes de solde partagent le plus dense
   (18 %), les lignes de totaux montent à 24 %. Toutes ces teintes se mélangent à la
   CARTE, jamais au sol : le tableau est posé dans une carte claire, et une teinte
   mélangée au sol tomberait à côté de la surface qui la porte.
@@ -962,21 +978,27 @@ Sur mobile, le libellé et le montant partagent une ligne. Le calcul reste cliqu
 - **Ses teintes se posent sur les CELLULES, jamais sur la ligne :** un fond de cellule
   recouvre celui de sa ligne, donc peinte sur la ligne une teinte de colonne
   disparaîtrait au survol et ne resterait visible que dans les trous.
-- **Son pied :** trois lignes d'encre pleine — total du mois, solde de fin de mois,
-  estimé, total dépassement. C'est la seule masse d'encre d'un écran de cartes claires,
-  et en lumière éteinte, l'encre étant claire, le tampon s'inverse en bande pâle sur un
-  tableau sombre. Dans les deux thèmes, il reste le bloc le plus contrasté de l'écran.
-  Ses couleurs ne sont pas réécrites case par case : on y redéfinit les jetons que les
-  cellules utilisent déjà (`--foreground`, `--muted-foreground`, `--tension-encre`,
-  `--border`), et l'encre claire se pose sur la LIGNE et non sur les cellules, sans quoi
-  elle écraserait le rouge d'un montant négatif.
+- **Son pied :** « Votre trésorerie » clôt les enveloppes, avec l’estimation et le
+  dépassement total lorsqu’ils s’appliquent. Le résultat distingue la trésorerie
+  actuelle à la dernière synchronisation, la fin d’un mois passé et les prévisions.
+  Le pied entier reste sombre dans les deux thèmes : résultat, estimation et dépassement.
+  Le texte, les filets et les montants négatifs restent lisibles, avec la sélection
+  préservée. Un résultat négatif porte « À découvert »
+  pour les opérations connues, ou « Découvert prévu » pour une prévision.
+
+Un filet vertical accompagne chaque colonne de trésorerie. Une étape sépare le mouvement
+net signé, « ajoutés » ou « retirés », du montant restant, précédé de « = » et gardant
+son propre signe. La légende précise « restants à cette étape » ou « à découvert ».
+L’ordre est celui des enveloppes, pas celui des dates d’opération. Les cases d’une
+dépense intégralement remboursée restent vides ; un mouvement qui aboutit à zéro
+affiche bien zéro. Les montants gardent leur calcul au clic et leurs références.
 
 ### Vue d’ensemble mobile
 
-Sous 640 px, le relevé se répartit en cinq cartes séparées de 16 px, comme l’espace
-sous le sélecteur du mois : le mois avec
-ses soldes et son estimation, l’argent de départ, les revenus, les dépenses, puis
-le dépassement total hors budget. La ligne « Total du mois » est retirée sur
+Sous 640 px, le relevé se répartit en cartes séparées de 16 px, comme l’espace
+sous le sélecteur du mois : l’introduction au parcours, l’argent de départ, les
+revenus, les dépenses, puis « Votre trésorerie » avec ses résultats et son estimation,
+et le dépassement total hors budget. La ligne « Total du mois » est retirée sur
 ordinateur et mobile ; les totaux propres aux revenus et aux dépenses restent
 dans leurs sections. Les non catégorisés restent dans la carte de leur sens ; les
 opérations hors calcul, lorsqu’il y en a, disposent d’une carte supplémentaire.
@@ -986,14 +1008,21 @@ date, dans le même bloc, sans ligne « Dépensé » ou « Reçu » séparée. B
 dépensé et reste partagent le même fond clair ; le nom du poste est plus soutenu,
 puis les totaux revenus et dépenses encore davantage. Cette hiérarchie ne change
 pas les fonds des soldes ni la surbrillance de sélection.
-La balance des dépenses figure dans le total des dépenses.
+Le reste / manque figure dans le total des dépenses. Les libellés suivent le même
+ordre de lecture que sur ordinateur : Budget, − Dépensé, + Remboursements / apports,
+= Reste / manque. Les opérateurs sont décoratifs ; les noms accessibles restent intacts.
 « Ce qui rentre » et « Ce qui sort » se replient indépendamment, en gardant
 leur total visible. Sur mobile, sélectionner une opération dans le détail
 rouvre sa section pour la montrer.
 Le bloc récapitulatif bancaire en attente est retiré sur ordinateur et mobile,
 sans retirer les transactions en attente des enveloppes ni modifier les calculs.
-L'écart bancaire reste expliqué dans le détail des soldes, sans lien vers l'ancien bloc. Les soldes
-intermédiaires restent sous le contrôle du bouton de détail. Les commandes de gestion
+L'écart bancaire reste expliqué dans le détail des soldes, sans lien vers l'ancien bloc.
+Les étapes de trésorerie sont affichées en permanence ; le bouton de détail est retiré.
+Un seul parcours accompagne les montants de chaque enveloppe sur fond sombre :
+opérations réelles pour un mois passé ou courant, budgets pour un mois futur.
+En comparaison, le filtre placé dans l’introduction choisit ce parcours pour les
+revenus et les dépenses, en plus de l’indicateur propre à chaque section.
+Les commandes de gestion
 ne dépendent pas du survol. Une marge basse dégage le relevé du bouton flottant.
 Sur mobile, les boutons d’icône du relevé ont tous une cible de 44 × 44 px et une
 icône de 18 px, comme le filtre. Les ajouts et crayons restent sans fond, bordure
@@ -1012,7 +1041,8 @@ ancré en bas du téléphone. Chaque indicateur a une courte explication et le c
 actif est coché. Choisir ferme le panneau et met à jour le titre ; fermer sans
 choisir conserve l’indicateur. Le focus revient au bouton de filtre.
 Les revenus proposent « Attendu » et « Reçu » ; les dépenses « Budget », « Dépensé »,
-« Reste » et « Remboursements » ; les soldes « Réel », « Prévu » et « Si dépassement ».
+« Reste » et « Remboursements » ; la trésorerie « Opérations réelles »,
+« Selon vos budgets » et « Dépassements inclus ».
 Les actions pour replier le bloc et ajouter un poste restent indépendantes.
 Chaque mois occupe une ligne ; sous le solde réel du mois courant, l’estimation
 reste cliquable. Les autres mois ne répètent pas une liste d’estimations. Une
@@ -1023,8 +1053,8 @@ de départ conserve un bloc nommé « Argent de départ ». Les mois se lisent d
 en bas pour chaque poste ; le total garde le choix de sa section, même repliée.
 Les montants restent cliquables. Les trois choix sont conservés au changement de
 période et lors des allers-retours entre « Par mois » et « Comparer » ; les anciens
-liens de comparaison restent utilisables. Les jetons, les couleurs de section,
-la vue mensuelle et le tableau sur ordinateur restent identiques. Le panneau de
+liens de comparaison restent utilisables. Les jetons et les couleurs de section
+sont conservés. Le panneau de
 calcul occupe toute la largeur du téléphone et propose un retour explicite au relevé.
 
 ### Identité — logo
