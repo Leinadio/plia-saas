@@ -2,7 +2,7 @@
 version: 1
 slug: "src-app-app"
 primary_target: "src/app/app"
-related_targets: ["src/components/app-topbar.tsx", "src/components/app-page-heading.tsx", "src/app/app-theme.css", "src/components/history-treasury.tsx", "src/components/history-treasury.css", "src/components/history-reading.tsx", "src/components/history-reading.css", "src/components/history-grid.tsx", "src/components/history-section-heading.css", "src/components/history-mobile-columns.tsx", "src/components/history-comparison.tsx", "src/lib/history-columns.ts"]
+related_targets: ["src/components/app-topbar.tsx", "src/components/app-page-heading.tsx", "src/app/app-theme.css", "src/components/history-treasury.tsx", "src/components/history-treasury.css", "src/components/history-reading.tsx", "src/components/history-reading.css", "src/components/history-grid.tsx", "src/components/history-surfaces.css", "src/components/history-mobile.css", "src/components/history-section-heading.css", "src/components/history-mobile-columns.tsx", "src/components/history-comparison.tsx", "src/lib/history-columns.ts"]
 ---
 
 ## Portée
@@ -42,10 +42,11 @@ encre sombre. Les filtres d’opérations gardent des libellés visibles pendant
 ## Structure financière conservée
 Le grand tableau à colonnes de mois reste la présentation sur ordinateur. Sa colonne
 de noms figée, ses familles de colonnes et les soldes contrastés conservent leur rôle.
-Les en-têtes revenus/dépenses partagent le fond de la carte. Sur mobile, « Par mois »
-et « Comparer » gardent les sections verticales et leurs choix d’indicateurs. Le corps,
-les totaux et les panneaux gardent les revenus verts, les dépenses rouges et les
-soldes sombres dans les deux thèmes.
+Les titres et totaux distinguent revenus menthe et dépenses bleu brume. Sur mobile,
+« Par mois » et « Comparer » gardent les sections verticales et leurs indicateurs.
+Le relevé sépare données claires et trésorerie sauge, avec en-têtes et bilan forêt. Les panneaux
+mobiles gardent leurs repères vert pour les revenus, rouge pour les dépenses et sombre
+pour les soldes ; ils ne reprennent pas les nouveaux fonds du tableau.
 
 Créer et gérer une enveloppe ou une sous-enveloppe, corriger un budget daté, classer
 une opération, l’exclure, la commenter et ouvrir un calcul gardent leurs parcours.
@@ -72,9 +73,10 @@ Après les enveloppes, « Votre trésorerie » distingue « Trésorerie actuelle
 « Dernière synchronisation », « Trésorerie en fin de mois » et « Opérations connues »,
 puis les prévisions selon les budgets ou avec dépassements. Un résultat négatif
 porte aussi « À découvert » pour le réel passé ou courant, ou « Découvert prévu »
-pour une prévision. Les étapes mobiles et le pied entier (résultat, estimation et
-dépassement total) gardent un fond sombre dans les deux thèmes, avec la sélection
-préservée. Les montants restent cliquables et conservent leurs références
+pour une prévision. Le pied entier (résultat, estimation et dépassement total)
+reste forêt dans les deux thèmes, avec la sélection préservée. Les étapes mobiles
+utilisent une surface sauge séparée du titre teinté, selon la palette locale
+ci-dessous. Les montants restent cliquables et conservent leurs références
 pour le détail et la calculatrice.
 
 ## Lecture des enveloppes — mise à jour du 15 septembre 2026
@@ -87,8 +89,7 @@ Sur ordinateur, ces quatre colonnes occupent 7 + 7 + 9 + 9 rem ; Attendu et Reç
 occupent 7 rem chacun, suivis de 18 rem libres pour aligner la trésorerie.
 Chaque parcours de trésorerie conserve ses 10,5 rem.
 
-La reprise des espacements utilise 4 / 8 / 12 / 16 / 24 / 32 px, sans changer
-les couleurs. Les cellules ont 12 px de marge intérieure et un alignement
+La reprise des espacements utilise 4 / 8 / 12 / 16 / 24 / 32 px. Les cellules ont 12 px de marge intérieure et un alignement
 vertical commun ; les lignes d’enveloppes mesurent au moins 80 px. Les noms
 occupent 320 px, ou 256 px entre 640 et 1023 px. Les titres de colonnes des sections
 réservent deux lignes, puis 8 px avant leur explication. Le mois mesure au moins
@@ -110,12 +111,11 @@ de comparaison restent indépendants.
 
 ## En-têtes ouverts — réalisation du 15 septembre 2026
 
-Le brief `docs/superpowers/specs/2026-09-15-entetes-ouverts-design.md` réunit chaque
-en-tête sur une seule rangée de fond de carte, en clair comme en sombre. Sur
-ordinateur, titre de niveau 2 Bricolage de 20 px, sous-titre et ajout occupent la
-gauche ; les colonnes expliquées occupent la droite. Des filets fins séparent les
-données, sans pavés colorés ni zone vide teintée au-dessus des colonnes.
-La largeur de 32 rem, les teintes du corps et des totaux et les calculs sont conservés.
+Le brief `docs/superpowers/specs/2026-09-15-entetes-ouverts-design.md` fixe les titres
+toujours ouverts. Sur ordinateur, titre de niveau 2 Bricolage de 20 px, sous-titre
+et ajout occupent la gauche ; les colonnes expliquées occupent la droite.
+Le contrat courant ci-dessous fixe leurs groupes et couleurs. La largeur de 32 rem
+et les calculs sont conservés.
 
 Revenus et dépenses restent visibles sur ordinateur et téléphone, sans chevron
 ni action sur le titre. Les enveloppes et sous-enveloppes restent dépliables ;
@@ -124,6 +124,31 @@ mesure 18 px, sans sous-titre, avec 16 px de retrait ; les actions de 44 × 44 p
 restent à droite. En comparaison, le titre garde l’indicateur courant. Les filtres
 et formulaires conservent leurs panneaux colorés et le mois ciblé.
 La présentation vit dans `src/components/history-section-heading.css`.
+
+## Fonds du relevé — contrat courant du 15 septembre 2026
+
+Le contrat courant de `docs/superpowers/specs/2026-09-15-table-palette-design.md`
+sépare deux lectures. À gauche, les données d’enveloppe reposent sur blanc frais,
+forêt en sombre ; titres et totaux sont menthe pour les revenus, bleu brume pour les
+dépenses. À droite, une surface sauge continue relie les trois parcours de trésorerie,
+cases vides comprises, sous un groupe et des colonnes sur fond forêt.
+Les groupes portent « Ce revenu » ou « Cette enveloppe », puis « Trésorerie après
+ce revenu » ou « Trésorerie après cette enveloppe ». Le titre de section occupe
+les deux rangées d’en-tête (`rowSpan={2}`), sans bande vide.
+
+Les opérations ouvertes utilisent un léger creux neutre. Le reste garde un support
+neutre et le résultat de trésorerie un support sauge, même négatifs. Aucun fond rouge
+dans le relevé : signes, texte coloré et mentions explicitent les alertes.
+Les retraits ordinaires restent discrets ; les entrées gardent leur vert sémantique.
+Sur mobile, titre teinté et étape de trésorerie sauge restent séparés ; les noms
+reprennent une teinte légère de leur section. L’argent de départ utilise détail ;
+l’introduction, le mois et le bilan restent forêt. Sur ordinateur, introduction et
+mois extérieurs gardent le fond de carte existant.
+
+Les jetons `history-*` restent locaux à `src/components/history-surfaces.css`.
+Le survol distingue enveloppe et trésorerie ; la sélection garde son filet intérieur
+sarcelle et rend transparent le support interne du montant. Panneaux, thème global,
+calculs, sections ouvertes, largeurs et cibles mobiles de 44 × 44 px sont conservés.
 
 ## Contrat d’interaction mobile
 
@@ -143,8 +168,8 @@ Son filtre reste dans l’introduction en haut. Il choisit le parcours ajouté a
 montants des revenus et dépenses, sans remplacer leurs indicateurs respectifs.
 En vue mensuelle, ce parcours suit les opérations réelles pour un mois passé ou
 courant, et les budgets pour un mois futur. Les étapes sans mouvement net restent
-absentes. Le panneau reprend le fond
-vert, rouge ou noir des données. Le titre n’est pas un bouton ; filtre et ajout
+absentes. Le panneau conserve son repère financier
+vert, rouge ou sombre, indépendamment du papier des données. Le titre n’est pas un bouton ; filtre et ajout
 gardent leurs commandes propres.
 Les icônes du relevé ont une taille de 18 px dans des boutons de 44 × 44 px.
 Les « + » et crayons sont sans fond ni bordure, et sans libellé visible. Dans les
@@ -160,7 +185,8 @@ mois sans indicateur applicable sont nommés, sans montant inventé. Le total re
 visible et suit le choix de sa section ; les montants restent cliquables.
 Les trois choix sont conservés au changement de période et lors des allers-retours
 entre « Par mois » et « Comparer ». Les anciens liens avec `mobileMetric` restent
-compatibles. Les jetons et les couleurs de section sont conservés.
+compatibles. Les panneaux gardent leurs couleurs ; les fonds du relevé suivent
+le contrat courant décrit ci-dessus.
 
 Le grand tableau reste la présentation sur ordinateur. Les mêmes cellules et
 actions servent les deux dispositions ; leurs index ne sont pas recalculés au
@@ -170,11 +196,13 @@ panneau et révèle sa destination. L’ajout à la calculatrice dispose d’un 
 
 
 ## Moyens et validation
-Les surfaces et contrastes viennent de `src/app/app-theme.css`, avec les composants
-existants du relevé. Le titre partagé utilise `src/components/app-page-heading.tsx`.
+Le thème vient de `src/app/app-theme.css` ; les surfaces locales du relevé viennent
+de `src/components/history-surfaces.css`, avec les composants existants. Le titre partagé utilise `src/components/app-page-heading.tsx`.
 Les icônes restent celles du produit. Aucune nouvelle image n’est ajoutée au relevé.
 
-Les preuves finales utilisent les vrais composants avec des données fictives :
+### Revues antérieures : lecture et en-têtes
+
+Les preuves de la passe de lecture utilisent les vrais composants avec des données fictives :
 `.impeccable/review/reading-desktop-expense.png`, `reading-desktop-dark-expense.png`,
 `reading-mobile-expense.png`, `reading-mobile-dark-compare.png` et
 `reading-mobile-detail.png`, dans le même dossier. Ces cinq captures et neuf autres
@@ -207,3 +235,22 @@ Les preuves de l’agent principal confirment 55 tests ciblés puis 1 150 tests 
 `/private/tmp/planora-section-header-design-check.json` retourne `[]`.
 La route temporaire a été retirée avant le build. Cette passe documentaire lit
 les sources, journaux et captures existants, sans relancer les contrôles.
+
+
+### Revue courante : couleurs et groupes de colonnes
+
+Verdict indépendant « ship » : contrat et qualité visuelle validés, sans défaut
+matériel sur les couleurs et groupes de colonnes. Le réviseur a ouvert les deux
+captures utilisateur et les 18 captures finales `zones-*.png` de `.impeccable/review/`.
+Données fictives : mois courant et futur, remboursement intégral neutre, remboursement
+partiel laissant 30 € disponibles et long libellé. Aucun contrôle relancé par le réviseur.
+
+L’agent principal confirme 1 150 tests dans 117 fichiers avant (23,08 s) et après
+(38,24 s), échec observé sur les groupes absents, puis 47 tests ciblés réussis ; lint
+et build réussis (exit 0). Journaux `/private/tmp/planora-table-zones-{baseline,red,targeted,tests,lint,build}.log`.
+Le rapport `/private/tmp/planora-table-zones-browser.json` couvre 1600/390 px clair
+et sombre, puis 2048/980/320 px clair : aucune erreur navigateur ni débordement du
+document ; contrastes échantillonnés ≥ 5,35:1 clair / 5,20:1 sombre, icônes 44 × 44 px,
+survol distinct et sélection sarcelle. Route temporaire retirée avant le build.
+Cette passe documentaire valide uniquement son JSON ; la revue ne constitue pas
+une certification globale d’accessibilité.

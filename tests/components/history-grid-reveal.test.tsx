@@ -195,9 +195,12 @@ describe("balance dans le total des dépenses", () => {
     const expense = el.querySelector('[data-history-section-table="expense"]')!;
     expect(income).not.toBeNull();
     expect(expense).not.toBeNull();
-    const headings = (table: Element) => Array.from(table.querySelectorAll("th")).map(th => th.querySelector("button")?.getAttribute("aria-label")?.replace("Comprendre : ", "") ?? "");
-    expect(headings(income)).toEqual(["", "Attendu", "Reçu", "Opérations réelles", "Selon vos budgets", "Dépassements inclus"]);
-    expect(headings(expense)).toEqual(["", "Budget", "Dépensé", "Remboursements / apports", "Reste / manque", "Opérations réelles", "Selon vos budgets", "Dépassements inclus"]);
+    const headings = (table: Element) => Array.from(table.querySelectorAll('th[scope="col"]')).map(th => th.querySelector("button")?.getAttribute("aria-label")?.replace("Comprendre : ", "") ?? "");
+    expect(headings(income)).toEqual(["Attendu", "Reçu", "Opérations réelles", "Selon vos budgets", "Dépassements inclus"]);
+    expect(headings(expense)).toEqual(["Budget", "Dépensé", "Remboursements / apports", "Reste / manque", "Opérations réelles", "Selon vos budgets", "Dépassements inclus"]);
+    const zones = (table: Element) => Array.from(table.querySelectorAll('th[scope="colgroup"]')).map(th => [th.textContent, th.getAttribute("colspan")]);
+    expect(zones(income)).toEqual([["Ce revenu", "3"], ["Trésorerie après ce revenu", "3"]]);
+    expect(zones(expense)).toEqual([["Cette enveloppe", "4"], ["Trésorerie après cette enveloppe", "3"]]);
     expect(income.querySelector('[data-cellkey="group:7::budget::0"]')).toBeNull();
     expect(income.querySelector('[data-cellkey="group:7::depense::0"]')).toBeNull();
     expect(expense.querySelector('[data-cellkey="group:8::revenus::0"]')).toBeNull();
@@ -205,6 +208,9 @@ describe("balance dans le total des dépenses", () => {
     expect(expense.querySelector('[data-cellkey="group:8::solde::0"]')).not.toBeNull();
     expect(income.querySelector('[data-cellkey="group:7::recu::0"]')!.closest("tr")!.children).toHaveLength(7);
     expect(expense.querySelector('[data-cellkey="group:8::depense::0"]')!.closest("tr")!.children).toHaveLength(8);
+    el.innerHTML = grille([], undefined, { currentMonth: "2026-07" });
+    expect(zones(el.querySelector('[data-history-section-table="income"]')!)).toEqual([["Ce revenu", "3"], ["Trésorerie après ce revenu", "2"]]);
+    expect(zones(el.querySelector('[data-history-section-table="expense"]')!)).toEqual([["Cette enveloppe", "4"], ["Trésorerie après cette enveloppe", "2"]]);
   });
 
   it.each([false, true])("conserve le montant et son calcul dans le total (mobile : %s)", async (mobile) => {

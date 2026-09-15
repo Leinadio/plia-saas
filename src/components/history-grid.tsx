@@ -21,6 +21,7 @@ import "@/components/history-treasury.css";
 import "@/components/history-reading.css";
 import "@/components/history-layout.css";
 import "@/components/history-section-heading.css";
+import "@/components/history-surfaces.css";
 import { EnvelopeRemainder, HistoryColumnHeading, HistoryReadingIntro, historyColumnReading } from "@/components/history-reading";
 import { TreasuryAmount, TreasuryOutcome } from "@/components/history-treasury";
 import { HistoryMobileActions, type HistoryMobileAction } from "@/components/history-mobile-actions";
@@ -198,120 +199,27 @@ const COL1_STICKY = "sm:sticky sm:left-0 sm:z-10 sm:shadow-[inset_-1px_0_0_var(-
 // des noms, ils restent là où on les cherche.
 const BLOC_EPINE = "sm:sticky sm:left-0 sm:z-20";
 
-// La bande de section : une rangée pleine largeur qui nomme ce qui suit, comme un
-// titre de chapitre en travers du relevé. Le nom se pose dans l'épine, la teinte
-// traverse tous les mois — c'est ce qui fait lire le tableau par bandes horizontales
-// et non par colonnes.
-const BANDE = "bg-[color-mix(in_oklab,var(--ardoise)_12%,var(--card))]";
+// Les surfaces décrivent le rôle de la ligne, pas une famille de colonnes.
+// Les résultats portent leur propre accent dans history-surfaces.css.
+const BANDE = "history-surface-detail";
+const DATA_TINT = "history-surface-paper";
+const SOLDE_TINT = "history-surface-detail";
+const TOTAL_TINT = "history-surface-total";
+const INCOME_TINT = DATA_TINT;
+const EXPENSE_TINT = DATA_TINT;
+const EXPENSE_TOTAL_TINT = TOTAL_TINT;
+const INCOME_TOTAL_TINT = TOTAL_TINT;
 
-// Le pied du tableau, en ENCRE pleine. Les trois dernières lignes sont ce qu'on
-// vient chercher ; elles ferment le relevé comme un tampon.
-//
-// C'est la seule masse d'encre d'un écran de cartes blanches — et en lumière
-// éteinte, l'encre étant claire, le tampon s'inverse en bande pâle sur un tableau
-// sombre. Ce n'est pas un accident : dans les deux thèmes, le pied est le bloc le
-// plus contrasté de l'écran, et c'est cela qu'on veut, pas une couleur.
-//
-// Les couleurs ne sont pas réécrites case par case : on redéfinit ici les jetons que
-// les cellules utilisent déjà. Un montant négatif reste « text-tension-encre », mais
-// sur ce fond ce jeton vaut un rouge éclairci — sinon le rouge sombre disparaîtrait
-// dans l'encre. Même chose pour le texte et le filet de l'épine.
 const PIED_CARBONE = {
-  "--foreground": "var(--surface)",
-  "--muted-foreground": "color-mix(in oklab, var(--surface) 70%, var(--encre))",
-  // Le rouge du pied se mélange à la SURFACE, pas à du blanc en dur. En lumière
-  // claire le pied est une masse d'encre et la surface est blanche : le rouge
-  // s'éclaircit, sinon il disparaîtrait dans le noir. En lumière éteinte l'encre
-  // est claire, le pied s'inverse en bande pâle, et la même expression assombrit
-  // le rouge au lieu de le délaver. Une seule ligne pour les deux thèmes.
-  "--tension-encre": "color-mix(in oklab, var(--tension) 75%, var(--surface))",
-  "--border": "color-mix(in oklab, var(--surface) 26%, var(--encre))",
+  "--foreground": "var(--history-closing-ink)",
+  "--muted-foreground": "var(--history-closing-muted)",
+  "--tension-encre": "var(--history-closing-negative)",
+  "--border": "var(--history-closing-line)",
 } as React.CSSProperties;
-// L'encre doit être posée explicitement : une cellule hérite sa couleur du corps de
-// la page, elle ne relit pas le jeton --foreground qu'on redéfinit ici. Seuls les
-// éléments qui appellent un jeton (text-muted-foreground, text-tension-encre) suivent.
-// L'encre claire se pose sur la LIGNE, pas sur chaque cellule : posée sur les
-// cellules, elle écrasait le rouge d'un montant négatif, qui est justement ce qu'on
-// vient lire ici. Héritée, elle cède la place à toute cellule qui a son propre avis.
-const PIED_LIGNE = "text-[var(--surface)] [&>td]:bg-encre";
+const PIED_LIGNE = "history-surface-closing";
 
-
-// Le modèle de colonnes (quelles colonnes sous quel mois, leur libellé et leur
-// explication) vit dans src/lib/history-columns.ts : c'est une règle, pas du rendu.
-
-
-// Le fond ne dit plus qu'une chose, mais il la dit bien : à quelle famille appartient
-// une colonne. Trois familles, trois fonds — les colonnes de mouvement du mois (tout
-// ce qui est à gauche de Balance) en partagent un seul, Balance a le sien, et les
-// trois chaînes de solde partagent le dernier. Rien d'autre n'est teinté : ni la
-// nature du mois, ni le bloc entrant/sortant, ni les bandes de totaux.
-//
-// Posés sur CHAQUE cellule (via renderCols) plutôt que sur le <colgroup> : un fond de
-// cellule recouvre celui de sa ligne, si bien que la teinte reste lisible partout,
-// y compris sous une ligne survolée.
-//
-// Les familles ne se distinguent plus par la teinte mais par la DENSITÉ : c'est
-// la même ardoise, de plus en plus dense. La sarcelle de ce monde ne commande que —
-// elle n'a rien à faire dans un fond de colonne — et les deux couleurs de sens
-// n'entrent ici que pour les sections et pour les montants négatifs.
-const DATA_TINT = "bg-[color-mix(in_oklab,var(--ardoise)_5%,var(--card))]";
-const BALANCE_TINT = "bg-[color-mix(in_oklab,var(--ardoise)_11%,var(--card))]";
-const SOLDE_TINT = "bg-[color-mix(in_oklab,var(--ardoise)_18%,var(--card))]";
-// Fond des lignes de totaux (« Total revenus », « Total Dépenses », « Total »).
-// Posé sur les CELLULES et non sur la ligne : chaque cellule de données porte déjà le
-// fond de sa colonne, qui recouvrirait celui de la ligne et ne laisserait la teinte
-// visible que dans les trous. Plus soutenu que DATA_TINT, pour que l'œil trouve les
-// totaux sans avoir à lire les libellés.
-const TOTAL_TINT = "bg-[color-mix(in_oklab,var(--ardoise)_24%,var(--card))]";
-
-// Fond des deux grandes sections. Il ne remplace QUE DATA_TINT — les colonnes de
-// données et celle du nom : Balance et Solde gardent leur ambre et leur bleu, qui
-// disent autre chose et doivent rester lisibles d'une section à l'autre.
-// Plus pâles que les teintes de colonne, exprès : elles situent, elles ne signalent
-// rien. Le mélange se fait avec --background, donc elles suivent le thème.
-// Ce qui porte reste à l'encre neutre ; ce qui tire prend le rouge de tension,
-// très dilué. C'est la seule couleur du tableau, et elle ne dit qu'une chose.
-// La teinte d'une section ne lave QUE les colonnes de données — ce qu'on a prévu et
-// ce qu'on a fait. Deux couleurs, deux forces : ce qui PORTE (les rentrées) prend le
-// vert du portant, ce qui TIRE (les deux blocs de dépenses) prend le rouge de
-// tension. Très diluées toutes les deux : elles situent une ligne, elles ne jugent
-// pas un montant.
-const INCOME_TINT = "bg-[color-mix(in_oklab,var(--portant)_7%,var(--card))]";
-const EXPENSE_TINT = "bg-[color-mix(in_oklab,var(--tension)_5%,var(--card))]";
-// Trois crans par couleur, du plus clair au plus foncé : les lignes de données, le
-// sous-total d'un bloc de dépenses, le total de la section. La hiérarchie se lit à la
-// densité, pas à la teinte — c'est la même couleur qui s'assombrit, donc l'œil relie
-// chaque total à la section qu'il ferme.
-const EXPENSE_TOTAL_TINT = "bg-[color-mix(in_oklab,var(--tension)_15%,var(--card))]";
-const INCOME_TOTAL_TINT = "bg-[color-mix(in_oklab,var(--portant)_16%,var(--card))]";
-
-// La teinte de la section où l'on se trouve, portée par le contexte plutôt que passée
-// de main en main : les lignes s'imbriquent (groupe, sous-poste, transaction) et
-// chacune aurait dû la relayer.
+// Le contexte propage le rôle aux enveloppes imbriquées et aux opérations.
 const TeinteSection = createContext<string | undefined>(undefined);
-
-// LE MÉLANGE SE FAIT AVEC LA CARTE, PAS AVEC LE SOL. Le tableau vit dans une carte
-// blanche posée sur un sol clair : une teinte mélangée au sol tomberait, d'un pour
-// cent, à côté de la surface qui la porte, et chaque colonne se décollerait de sa
-// propre carte. L'ardoise fournit le gris — c'est le gris de texte du monde, donc
-// les fonds restent de la même famille que ce qu'ils portent.
-//
-// Trois familles de colonnes, trois densités. Ce qu'on a prévu et ce
-// qu'on a fait — tout ce qui est à gauche de Balance — partagent le fond le plus
-// clair ; Balance, qui tranche entre les deux, en a un à elle ; les trois chaînes
-// de solde, qui se lisent de haut en bas comme une opération posée, partagent le
-// plus dense. La hiérarchie se lit à la DENSITÉ et non à la teinte : c'est le même
-// ardoise qui s'assombrit, parce que l'accent de ce monde ne sert qu'à commander.
-const COL_TINT: Record<ColKey, string> = {
-  budgetRem: DATA_TINT,
-  budgetDep: DATA_TINT,
-  dep: DATA_TINT,
-  recu: DATA_TINT,
-  reste: BALANCE_TINT,
-  soldeReel: SOLDE_TINT,
-  soldePrevu: SOLDE_TINT,
-  soldeDepass: SOLDE_TINT,
-};
 
 // Séparation entre deux mois : un filet vertical plus du blanc tournant, posés sur
 // la première colonne de chaque mois. Surtout PAS une bande épaisse peinte à la
@@ -332,21 +240,12 @@ type ColCell = React.ReactElement<React.PropsWithChildren<{ className?: string; 
 // première colonne du mois » (bordure de séparation).
 export type ColSlots = Record<ColKey, (border: boolean) => ColCell>;
 
-// Rend les cellules d'un mois (une par colonne), chacune sur le fond de sa famille.
-// `tint` remplace ce fond pour toute la ligne : c'est ainsi qu'une ligne de totaux
-// prend une couleur d'un bout à l'autre au lieu de garder les familles de colonnes.
-// tint : une teinte qui couvre TOUTES les colonnes (les lignes de totaux).
-// sectionTint : la teinte de la section, qui ne remplace que le fond des colonnes de
-// données — Balance et Solde gardent le leur.
+// Une surface commune à la ligne. Les cellules restent opaques pour le défilement
+// sous la colonne fixe ; la sélection conserve sa priorité.
 function renderCols(month: string, cols: ColKey[], slots: ColSlots, tint?: string, sectionTint?: string, keepBalances = false, transaction = false): React.ReactNode {
   const cells = cols.map((col, idx) => {
     const cell = slots[col](idx === 0);
-    // Seules les colonnes de données changent de fond selon la ligne ou la section.
-    // Balance garde son gris et les trois soldes le leur d'un bout à l'autre du
-    // tableau, y compris sur les lignes de sous-total : ce sont des colonnes de
-    // lecture verticale, et un repère qui change de couleur tous les six rangs
-    // n'est plus un repère.
-    const fond = COL_TINT[col] === DATA_TINT ? (tint ?? sectionTint ?? DATA_TINT) : COL_TINT[col];
+    const fond = transaction ? "history-surface-detail" : tint ?? sectionTint ?? DATA_TINT;
     // Le fond est posé AVANT la className propre de la cellule, pour que l'anneau de
     // sélection et les bordures restent au-dessus.
     return { column: col, element: cloneElement(cell, { className: cn(fond, col.startsWith("solde") ? "history-treasury-cell" : col === "reste" ? "history-reading-remainder" : "history-reading-data", col === "soldeReel" && "history-treasury-start", cell.props.className) }) };
@@ -2394,7 +2293,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       </TableRow>
     );
 
-    // Une seule rangée continue : titre et ajout à gauche, explications à droite.
+    // Deux groupes nomment la lecture ; le titre de section les accompagne.
     // Les sections restent visibles ; seul le détail d’une enveloppe se déplie.
     const sectionHeaders = (kind: "income" | "expense", action: React.ReactNode, onboardingTarget?: string) => {
       const title = <div className="history-section-heading">
@@ -2411,12 +2310,27 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
         data-history-comparison={comparing ? kind : undefined} data-onboarding-target={onboardingTarget}>
         <TableCell colSpan={totalCols} className="p-0">{title}</TableCell>
       </TableRow>;
-      return <TableRow data-history-section-heading={kind} data-onboarding-target={onboardingTarget} className="hover:bg-transparent">
-        <TableHead className={cn(COL1_STICKY, "history-section-heading-cell p-0")}>{title}</TableHead>
+      return <>
+      <TableRow data-history-section-heading={kind} data-history-zone-groups="" data-onboarding-target={onboardingTarget} className="hover:bg-transparent">
+        <TableHead rowSpan={2} className={cn(COL1_STICKY, "history-section-heading-cell p-0")}>{title}</TableHead>
+        {months.map(month => {
+          const columns = sectionColumns(kind, monthColumns(monthType(month, currentMonth)));
+          const treasuryCount = columns.filter(column => column.startsWith("solde")).length;
+          return <Fragment key={month}>
+            <TableHead scope="colgroup" colSpan={columns.length - treasuryCount + (kind === "income" ? 1 : 0)} data-history-column-zone="envelope" className={cn("history-zone-heading", MONTH_RULE)}>
+              {kind === "income" ? "Ce revenu" : "Cette enveloppe"}
+            </TableHead>
+            <TableHead scope="colgroup" colSpan={treasuryCount} data-history-column-zone="treasury" className="history-zone-heading history-treasury-start">
+              {kind === "income" ? "Trésorerie après ce revenu" : "Trésorerie après cette enveloppe"}
+            </TableHead>
+          </Fragment>;
+        })}
+      </TableRow>
+      <TableRow data-history-section-heading={kind} className="hover:bg-transparent">
         {months.flatMap(month => sectionColumns(kind, monthColumns(monthType(month, currentMonth))).map((column, index) => {
           const receipt = kind === "expense" && column === "recu";
           const reading = historyColumnReading(column, kind, month, currentMonth);
-          return <Fragment key={`${month}-${column}`}><TableHead scope="col"
+          return <Fragment key={`${month}-${column}`}><TableHead scope="col" data-history-column-zone={column.startsWith("solde") ? "treasury" : "envelope"}
             className={cn("history-reading-heading", column === "soldeReel" && "history-treasury-start", index === 0 && MONTH_RULE, "h-auto whitespace-normal px-3 py-3 text-right")}>
             <button type="button" aria-label={`Comprendre : ${reading.label}`}
               onClick={() => onSelect(makeInfo(reading.label, receipt ? EXPENSE_RECEIPTS_INFO : COL_INFO[column]))}>
@@ -2426,7 +2340,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
           {kind === "income" && column === "recu" && <TableCell aria-hidden="true" className="p-0" />}
           </Fragment>;
         }))}
-      </TableRow>;
+      </TableRow></>;
     };
 
     // L’ajout reste associé à sa section et au mois consulté.
@@ -2528,7 +2442,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
 
     const closingRows = (!mobile?.metric || mobile.metric.startsWith("solde") || selectedRows.has("grand") || selectedRows.has("estime")) && (<>
         <TableRow data-history-summary="" data-history-treasury-closing="" data-history-treasury-footer="" data-history-comparison={comparing ? "balance" : undefined} data-onboarding-target={onboarding?.endingBalanceTarget} style={PIED_CARBONE} className={cn(PIED_LIGNE, "font-semibold")}>
-          <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
+          <TableCell className={cn(COL1_STICKY, "history-surface-closing h-px p-0")}>
             <FirstColBox>{comparing ? <div className="history-comparison-heading">
               <span>Votre trésorerie<HistoryComparisonLabel section="balance" /></span>
             </div> : "Votre trésorerie"}</FirstColBox>
@@ -2544,7 +2458,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             fin du mois) ; autres mois = leur solde de clôture (même détail que la
             ligne « Total » pour ce mois — cf. soldeActuelDetail). */}
         {!compactEstimate && (!mobile || (!mobile.metric && mobile.month <= currentMonth) || mobile.metric === "soldeReel" || selectedRows.has("estime")) && <TableRow data-history-summary="" data-history-treasury-footer="" style={PIED_CARBONE} className={cn(PIED_LIGNE, "text-sm")}>
-          <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
+          <TableCell className={cn(COL1_STICKY, "history-surface-closing h-px p-0")}>
             <FirstColBox><span className="text-muted-foreground">Estimé fin de mois</span></FirstColBox>
           </TableCell>
           {months.map((m, i) => {
@@ -2829,7 +2743,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             Balance (groupes qui débordent + Non catégorisés), sans compter
             le total des dépenses qui agrège déjà ces montants. */}
         {(!mobile?.metric || mobile.comparison || mobile.metric === "reste" || selectedRows.has("overspend")) && <TableRow data-history-summary="" data-history-treasury-footer="" style={PIED_CARBONE} className={cn(PIED_LIGNE, "text-sm")}>
-          <TableCell className={cn(COL1_STICKY, "bg-encre h-px p-0")}>
+          <TableCell className={cn(COL1_STICKY, "history-surface-closing h-px p-0")}>
             <FirstColBox><span className="text-muted-foreground">Total dépassement hors budget</span></FirstColBox>
           </TableCell>
           {months.map((m, i) => {

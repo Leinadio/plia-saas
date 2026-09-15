@@ -75,24 +75,6 @@
   border-radius: var(--radius-sm);
 }
 
-/* Les étapes restent sombres comme les résultats, dans les deux thèmes. */
-.history-mobile [data-treasury-step] {
-  --foreground: var(--surface);
-  --muted-foreground: color-mix(in oklab, var(--surface) 78%, var(--encre));
-  --tension-encre: color-mix(in oklab, var(--tension) 65%, var(--surface));
-  --treasury-in: color-mix(in oklab, var(--portant) 45%, var(--surface));
-  color: var(--foreground);
-  background: var(--encre);
-}
-
-.dark .history-mobile [data-treasury-step] {
-  --foreground: var(--encre);
-  --muted-foreground: var(--ardoise);
-  --tension-encre: var(--tension-encre-base);
-  --treasury-in: var(--portant);
-  background: var(--sol);
-}
-
 .history-mobile [data-treasury-step] .history-mobile-value {
   min-height: 5.25rem;
   gap: 1rem;
@@ -105,13 +87,3 @@
 
 .history-mobile [data-treasury-step] .history-mobile-number { flex-shrink: 0; }
 .history-mobile .history-treasury-outcome { min-height: 5rem; max-width: 13rem; }
-
-.dark [data-history-treasury-footer] {
-  --foreground: var(--encre) !important;
-  --muted-foreground: var(--ardoise) !important;
-  --tension-encre: var(--tension-encre-base) !important;
-  --border: var(--filet) !important;
-  color: var(--encre);
-}
-
-.dark [data-history-treasury-footer] > td:not(.case-active) { background: var(--sol); }

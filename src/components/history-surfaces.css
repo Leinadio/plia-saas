@@ -1,0 +1,137 @@
+/* Deux sens financiers ; deux espaces de lecture : l’enveloppe, puis la trésorerie. */
+.history-layout {
+  --history-paper: #fafcfc;
+  --history-detail: #f0f5f5;
+  --history-income: #e0f0e7;
+  --history-income-ink: #245d46;
+  --history-income-detail: #eef7f1;
+  --history-expense: #e3edf3;
+  --history-expense-ink: #345867;
+  --history-expense-detail: #f0f5f8;
+  --history-treasury: #eaf2ee;
+  --history-treasury-hover: #dfece5;
+  --history-result: #dcebe2;
+  --history-hover: #f0f6f3;
+  --history-line: #dce6e2;
+  --history-rule: #bbcec4;
+  --history-closing: #193b30;
+  --history-closing-ink: #f4f8f5;
+  --history-closing-muted: #c3d6ca;
+  --history-closing-negative: #ffb59f;
+  --history-closing-line: #426153;
+  --card: var(--history-paper);
+  --background: var(--history-paper);
+  --filet: var(--history-line);
+  --filet-fort: var(--history-rule);
+  --border: var(--history-line);
+}
+
+.dark .history-layout {
+  --history-paper: #1b302a;
+  --history-detail: #243d34;
+  --history-income: #2b4c3b;
+  --history-income-ink: #b9e3ca;
+  --history-income-detail: #233e30;
+  --history-expense: #2b414d;
+  --history-expense-ink: #c2dce8;
+  --history-expense-detail: #24363f;
+  --history-treasury: #233f32;
+  --history-treasury-hover: #2c4b3b;
+  --history-result: #2c4a39;
+  --history-hover: #294237;
+  --history-line: #354d43;
+  --history-rule: #536f60;
+  --history-closing: #10271e;
+  --history-closing-ink: #edf5ef;
+  --history-closing-muted: #b9cebf;
+  --history-closing-negative: #ffb59f;
+  --history-closing-line: #3c5947;
+}
+
+.history-layout :is([data-history-section-table="income"], [data-history-card="income"]) {
+  --history-section: var(--history-income);
+  --history-section-ink: var(--history-income-ink);
+  --history-section-detail: var(--history-income-detail);
+}
+
+.history-layout :is([data-history-section-table="expense"], [data-history-card="expense"]) {
+  --history-section: var(--history-expense);
+  --history-section-ink: var(--history-expense-ink);
+  --history-section-detail: var(--history-expense-detail);
+}
+
+.history-surface-paper:not(.case-active) { background: var(--history-paper); }
+.history-surface-detail:not(.case-active) { background: var(--history-detail); }
+.history-surface-total:not(.case-active) { background: var(--history-section, var(--history-detail)); }
+
+.history-layout [data-history-transaction] > td:not(.case-active) { background: var(--history-detail); }
+.history-layout [data-history-total] > td:not(.case-active) { background: var(--history-section); }
+
+/* La couleur de section situe les revenus et les dépenses, sans juger leurs montants. */
+.history-layout [data-history-section-heading] > .history-section-heading-cell,
+.history-mobile [data-history-section-heading] > td:not(.case-active) {
+  background: var(--history-section);
+}
+
+.history-layout .history-section-heading :is(h2, .history-section-add) { color: var(--history-section-ink); }
+.history-layout .history-section-heading p { color: var(--history-section-ink); }
+.history-mobile [data-history-heading] > td:first-child:not(.case-active) { background: var(--history-section-detail); }
+
+/* Une seule surface relie les trois parcours, y compris leurs cellules vides. */
+.history-layout [data-history-section-table] td.history-treasury-cell:not(.case-active),
+.history-mobile [data-treasury-step]:not(.case-active) { background: var(--history-treasury); }
+
+.history-layout [data-history-column-zone="treasury"] {
+  --foreground: var(--history-closing-ink);
+  --muted-foreground: var(--history-closing-muted);
+  --ring: var(--history-closing-ink);
+  background: var(--history-closing);
+  color: var(--history-closing-ink);
+  border-color: var(--history-closing-line);
+}
+
+.history-layout .history-zone-heading {
+  height: auto;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: normal;
+}
+
+.history-layout [data-history-zone-groups] { border-bottom: 0; }
+.history-layout [data-history-zone-groups] > th { border-bottom: 0; }
+.history-layout:not(.history-mobile) [data-history-section-heading] .history-reading-heading { padding-block: 0.75rem 1.25rem; }
+.history-layout [data-history-column-zone="envelope"] { background: var(--history-paper); }
+
+.history-layout .history-surface-closing {
+  --filet: var(--history-closing-line);
+  --filet-fort: var(--history-closing-line);
+  color: var(--history-closing-ink);
+  background: var(--history-closing);
+}
+
+.history-layout :is(.history-surface-closing, [data-history-summary]) > td:not(.case-active) { background: var(--history-closing); }
+.history-mobile [data-history-summary] { color: var(--history-closing-ink); }
+
+/* Le signe et la mention portent l’alerte, jamais un fond rouge. */
+.history-layout .history-envelope-result-value,
+.history-layout .history-treasury-remaining {
+  width: fit-content;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.375rem;
+  background: var(--history-detail);
+}
+
+.history-layout .history-treasury-remaining { background: var(--history-result); }
+.history-layout .history-treasury-out { color: var(--muted-foreground); }
+.history-layout .pastille-tension { background: transparent; padding-inline: 0; }
+.history-layout [data-history-total] .history-envelope-result-value,
+.history-layout .case-active :is(.history-envelope-result-value, .history-treasury-remaining) { background: transparent; }
+
+@media (hover: hover) {
+  .history-layout [data-history-heading]:hover > td:not(.case-active) { background: var(--history-hover); }
+  .history-layout [data-history-heading]:hover > td.history-treasury-cell:not(.case-active) { background: var(--history-treasury-hover); }
+}

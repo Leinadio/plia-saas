@@ -43,6 +43,44 @@ colors:
   filet-nuit: "#355345"
   filet-fort-nuit: "#526e5e"
   commande-texte-nuit: "#143328"
+  history-paper: "#fafcfc"
+  history-detail: "#f0f5f5"
+  history-income: "#e0f0e7"
+  history-income-ink: "#245d46"
+  history-income-detail: "#eef7f1"
+  history-expense: "#e3edf3"
+  history-expense-ink: "#345867"
+  history-expense-detail: "#f0f5f8"
+  history-treasury: "#eaf2ee"
+  history-treasury-hover: "#dfece5"
+  history-result: "#dcebe2"
+  history-hover: "#f0f6f3"
+  history-line: "#dce6e2"
+  history-rule: "#bbcec4"
+  history-closing: "#193b30"
+  history-closing-ink: "#f4f8f5"
+  history-closing-muted: "#c3d6ca"
+  history-closing-negative: "#ffb59f"
+  history-closing-line: "#426153"
+  history-paper-nuit: "#1b302a"
+  history-detail-nuit: "#243d34"
+  history-income-nuit: "#2b4c3b"
+  history-income-ink-nuit: "#b9e3ca"
+  history-income-detail-nuit: "#233e30"
+  history-expense-nuit: "#2b414d"
+  history-expense-ink-nuit: "#c2dce8"
+  history-expense-detail-nuit: "#24363f"
+  history-treasury-nuit: "#233f32"
+  history-treasury-hover-nuit: "#2c4b3b"
+  history-result-nuit: "#2c4a39"
+  history-hover-nuit: "#294237"
+  history-line-nuit: "#354d43"
+  history-rule-nuit: "#536f60"
+  history-closing-nuit: "#10271e"
+  history-closing-ink-nuit: "#edf5ef"
+  history-closing-muted-nuit: "#b9cebf"
+  history-closing-negative-nuit: "#ffb59f"
+  history-closing-line-nuit: "#3c5947"
   landing-bg: "#edf5f0"
   landing-surface: "#fbfdfb"
   landing-ink: "#172d28"
@@ -627,14 +665,15 @@ Les compositions propres aux routes vivent dans leurs briefs de surface.
 - Des titres Bricolage et des données Schibsted tabulaires.
 - Des cartes opaques de 16 px et des commandes en capsule.
 - Un tableau de comparaison sur ordinateur et des sections lisibles sur téléphone.
-- Des revenus verts, des dépenses rouges et des soldes sombres sur mobile.
+- Un relevé blanc frais, des sections menthe ou bleu brume et une trésorerie sauge, adaptés au sombre.
 - Des courbes de titre statiques, discrètes et masquées sur téléphone.
 
 ## Colors
 
 Les jetons sans préfixe décrivent l’application et la connexion. Ils reprennent la
 palette publique avec des nuances adaptées aux lignes, champs et états du budget.
-Les jetons `landing-*` restent propres aux compositions publiques. L’application
+Les jetons `history-*` portent uniquement les surfaces du relevé ; les jetons
+`landing-*` restent propres aux compositions publiques. L’application
 applique ses valeurs au document quand l’espace de travail est présent : les menus,
 notifications et panneaux rendus hors de son conteneur héritent du même thème.
 
@@ -644,7 +683,7 @@ notifications et panneaux rendus hors de son conteneur héritent du même thème
 
 ### Secondary
 - **Vert portant** : revenus, acquis et jauges d’entrée.
-- **Corail de tension** : dépassements, erreurs et actions destructrices ; les nuances pâles portent les supports de dépenses.
+- **Corail de tension** : dépassements, erreurs et actions destructrices ; les nuances pâles portent les panneaux de dépenses. Dans le relevé, le négatif garde son texte coloré, sans fond rouge.
 - **Sable attente** : prévu ou attendu, sans assimiler l’attente à une faute.
 - **Courbes menthe et corail** (`app-curve`, `app-curve-warm`) : rappel décoratif du monde public, jamais un graphique financier.
 
@@ -657,7 +696,25 @@ Les variantes `-nuit` conservent ces rôles sur fond forêt. Les commandes menth
 prennent une encre sombre ; une commande destructrice claire reçoit également une
 encre sombre. Les contrôles natifs suivent le thème du document.
 
-**La règle du sens financier.** La couleur de marque ne remplace pas les repères de données. Sur téléphone, revenus, dépenses et soldes conservent respectivement leurs fonds verts, rouges et sombres, y compris dans les panneaux associés. Un texte et un montant explicites accompagnent chaque état.
+**La règle du sens financier.** Le relevé distingue revenus, dépenses et trésorerie par ses surfaces ; signes et mentions explicitent les résultats. Les panneaux mobiles conservent leurs fonds vert pour les revenus, rouge pour les dépenses et sombre pour les soldes. Un texte et un montant explicites accompagnent chaque état.
+
+### Surfaces locales du relevé
+
+Les rôles `history-*` viennent de `src/components/history-surfaces.css` et restent
+limités au relevé. **Papier** porte les données d’enveloppe sur blanc frais en clair,
+forêt en sombre. **Revenu** et **dépense** teintent les titres et les totaux côté
+enveloppe en menthe et bleu brume ; leurs variantes de détail portent les noms mobiles.
+**Détail** creuse les opérations ouvertes, l’argent de départ mobile et le reste.
+**Trésorerie** relie les trois parcours sur une surface sauge continue, cases vides
+comprises. **Résultat** souligne le montant restant sur sauge, même négatif.
+Aucun fond rouge dans le relevé : signes, texte et mentions portent les alertes.
+
+**Bilan** et les deux rangées d’en-tête de trésorerie sont forêt ; leur encre,
+mentions et filets utilisent `history-closing-*`. **Survol** et **survol trésorerie**
+gardent les deux espaces distincts ; **ligne** et **filet fort** les séparent.
+L’introduction et le mois extérieurs gardent leur fond de carte ; sur mobile,
+ils restent forêt. Le thème global et les panneaux de filtres et formulaires
+conservent leurs couleurs.
 
 **La règle du négatif par nature.** Le dépensé d’une enveloppe reste à l’encre ; son signe attendu ne constitue pas à lui seul un dépassement. Le reste et la jauge portent le signal d’écart.
 
@@ -980,30 +1037,29 @@ Sur mobile, le libellé et le montant partagent une ligne. Le calcul reste cliqu
   Leur cellule d'accueil laisse le débordement visible pour conserver l'unique
   zone de défilement extérieure. Un filet intérieur continu à droite des cellules
   fixes sépare les noms des montants, même pendant le défilement.
-- **Ses familles de colonnes :** trois, et elles se lisent à la DENSITÉ, pas à la
-  teinte. Les colonnes de mouvement du mois partagent le fond le plus clair (ardoise à
-  5 %), Reste / manque a le sien (11 %), les trois chaînes de solde partagent le plus dense
-  (18 %), les lignes de totaux montent à 24 %. Toutes ces teintes se mélangent à la
-  CARTE, jamais au sol : le tableau est posé dans une carte claire, et une teinte
-  mélangée au sol tomberait à côté de la surface qui la porte.
-- **Ses en-têtes de section :** une surface continue de carte, séparée des données
-  par un filet fin. Le titre et l’ajout restent dans l’épine ; les colonnes et
-  l’espace libre après Reçu partagent ce même fond. Les teintes financières du
-  corps et des totaux restent inchangées.
-- **Ses teintes se posent sur les CELLULES, jamais sur la ligne :** un fond de cellule
-  recouvre celui de sa ligne, donc peinte sur la ligne une teinte de colonne
-  disparaîtrait au survol et ne resterait visible que dans les trous.
+- **Ses deux espaces :** données d’enveloppe sur papier, trésorerie sur sauge continu,
+  même dans les cases vides. Les titres et totaux côté enveloppe sont menthe pour
+  les revenus, bleu brume pour les dépenses ; les opérations ouvertes utilisent détail.
+- **Ses en-têtes :** « Ce revenu » ou « Cette enveloppe », puis « Trésorerie après
+  ce revenu » ou « Trésorerie après cette enveloppe » regroupent les colonnes.
+  Le titre et l’ajout restent dans l’épine sur deux rangées (`rowSpan={2}`), sans
+  bande vide. Le groupe et les colonnes de trésorerie partagent le fond forêt.
+- **Son survol et sa sélection :** le survol suit toute la ligne d’enveloppe. Les
+  fonds s’appliquent aux cellules pour rester continus ; la sélection est prioritaire,
+  avec son filet intérieur sarcelle et un fond transparent autour du montant choisi.
 - **Son pied :** « Votre trésorerie » clôt les enveloppes, avec l’estimation et le
   dépassement total lorsqu’ils s’appliquent. Le résultat distingue la trésorerie
   actuelle à la dernière synchronisation, la fin d’un mois passé et les prévisions.
-  Le pied entier reste sombre dans les deux thèmes : résultat, estimation et dépassement.
+  Le pied entier reste forêt dans les deux thèmes : résultat, estimation et dépassement.
   Le texte, les filets et les montants négatifs restent lisibles, avec la sélection
   préservée. Un résultat négatif porte « À découvert »
   pour les opérations connues, ou « Découvert prévu » pour une prévision.
 
 Un filet vertical accompagne chaque colonne de trésorerie. Une étape sépare le mouvement
 net signé, « ajoutés » ou « retirés », du montant restant, précédé de « = » et gardant
-son propre signe. La légende précise « restants à cette étape » ou « à découvert ».
+son propre signe, sur une petite plage sauge, même si négatif. Les retraits
+ordinaires restent discrets ; les entrées gardent leur vert sémantique. La légende
+précise « restants à cette étape » ou « à découvert ».
 L’ordre est celui des enveloppes, pas celui des dates d’opération. Les cases d’une
 dépense intégralement remboursée restent vides ; un mouvement qui aboutit à zéro
 affiche bien zéro. Les montants gardent leur calcul au clic et leurs références.
@@ -1020,22 +1076,23 @@ opérations hors calcul, lorsqu’il y en a, disposent d’une carte supplément
 Les noms et les montants libellés s’empilent. Les transactions apparaissent sous
 le nom du poste ouvert. Leur montant signé et cliquable apparaît à droite de la
 date, dans le même bloc, sans ligne « Dépensé » ou « Reçu » séparée. Budget,
-dépensé et reste partagent le même fond clair ; le nom du poste est plus soutenu,
-puis les totaux revenus et dépenses encore davantage. Cette hiérarchie ne change
-pas les fonds des soldes ni la surbrillance de sélection.
+dépensé et reste partagent le papier blanc frais ou forêt ; les noms reprennent une
+teinte légère de leur section, les transactions le creux de détail. Titres et totaux
+sont menthe pour les revenus, bleu brume pour les dépenses. La sélection reste sarcelle.
 Le reste / manque figure dans le total des dépenses. Les libellés suivent le même
 ordre de lecture que sur ordinateur : Budget, − Dépensé, + Remboursements / apports,
 = Reste / manque. Les opérateurs sont décoratifs ; les noms accessibles restent intacts.
 « Ce qui rentre » et « Ce qui sort » restent affichés en permanence, sur ordinateur
 et téléphone. Seules les enveloppes et sous-enveloppes se déplient pour montrer
 leurs opérations ; sélectionner une opération depuis un calcul la révèle toujours.
-Sur mobile, les en-têtes de revenus et dépenses partagent le fond de la carte :
+Sur mobile, les en-têtes de revenus et dépenses gardent leur teinte propre :
 titre Bricolage de 18 px, actions à droite et retraits de 16 px, sans sous-titre.
 Le bloc récapitulatif bancaire en attente est retiré sur ordinateur et mobile,
 sans retirer les transactions en attente des enveloppes ni modifier les calculs.
 L'écart bancaire reste expliqué dans le détail des soldes, sans lien vers l'ancien bloc.
 Les étapes de trésorerie sont affichées en permanence ; le bouton de détail est retiré.
-Un seul parcours accompagne les montants de chaque enveloppe sur fond sombre :
+Un seul parcours accompagne les montants de chaque enveloppe sur une surface
+sauge séparée du titre teinté, avec le résultat souligné de sauge :
 opérations réelles pour un mois passé ou courant, budgets pour un mois futur.
 En comparaison, le filtre placé dans l’introduction choisit ce parcours pour les
 revenus et les dépenses, en plus de l’indicateur propre à chaque section.
@@ -1046,8 +1103,8 @@ icône de 18 px, comme le filtre. Les ajouts et crayons restent sans fond, bordu
 ni ombre ; aucun « Gérer » sous le crayon. Les titres de revenus et dépenses
 portent uniquement un « + », dans « Par mois » comme dans « Comparer ».
 Ajouter une enveloppe, un revenu ou une sous-enveloppe, et gérer une enveloppe ou
-une sous-enveloppe, ouvre le même panneau du bas que le filtre, sur le fond de
-la section. Les formulaires conservent le mois consulté et le parent choisi ;
+une sous-enveloppe, ouvre le même panneau du bas que le filtre, sur le fond
+financier du panneau. Les formulaires conservent le mois consulté et le parent choisi ;
 la fermeture rend le focus au bouton d’origine. Les formulaires de création
 en ligne et la gestion latérale restent la présentation sur ordinateur.
 
@@ -1064,14 +1121,14 @@ Le titre reste sans action ; le filtre et l’ajout gardent leurs boutons propre
 Chaque mois occupe une ligne ; sous le solde réel du mois courant, l’estimation
 reste cliquable. Les autres mois ne répètent pas une liste d’estimations. Une
 estimation visée depuis un calcul reste révélée sous le mois correspondant.
-Le fond du panneau reprend celui de sa section : vert pour les revenus,
+Le panneau conserve son repère financier propre : vert pour les revenus,
 rouge pour les dépenses, noir pour les soldes, y compris dans le thème sombre. L’argent
 de départ conserve un bloc nommé « Argent de départ ». Les mois se lisent de haut
 en bas pour chaque poste ; le total reste visible et garde le choix de sa section.
 Les montants restent cliquables. Les trois choix sont conservés au changement de
 période et lors des allers-retours entre « Par mois » et « Comparer » ; les anciens
-liens de comparaison restent utilisables. Les jetons et les couleurs de section
-sont conservés. Le panneau de
+liens de comparaison restent utilisables. Les panneaux gardent leurs repères financiers ; le relevé suit les surfaces
+locales `history-*`. Le panneau de
 calcul occupe toute la largeur du téléphone et propose un retour explicite au relevé.
 
 ### Identité — logo
@@ -1135,7 +1192,7 @@ reste sur un fond opaque, avec sa mention d’exemple toujours visible.
 - Utiliser Bricolage pour la marque et les titres d’accueil, Schibsted pour les données et commandes.
 - Préserver le tableau sur ordinateur, les sections mobiles et toutes les actions de budget.
 - Écrire chaque montant à côté du dessin qui le représente et garder les chiffres tabulaires.
-- Conserver les repères revenus verts, dépenses rouges et soldes sombres sur téléphone.
+- Distinguer l’enveloppe claire de la trésorerie sauge et garder les repères financiers des panneaux mobiles.
 - Garder les noms accessibles, les compteurs et le retour du focus quand les outils se resserrent.
 
 ### Don't:

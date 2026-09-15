@@ -85,8 +85,9 @@ Cette identité relie désormais les pages publiques, la connexion et l’applic
 Bricolage Grotesque porte la marque et les titres ; Schibsted Grotesk garde les données,
 libellés et commandes. Les fonds menthe et forêt, les accents corail, les cartes arrondies
 et les commandes en capsule accompagnent le budget. Les chiffres restent sur des surfaces
-opaques. Les repères financiers et les parcours existants guident cette adaptation,
-notamment les revenus verts, dépenses rouges et soldes sombres sur téléphone.
+opaques. Les repères financiers et les parcours existants guident cette adaptation :
+le relevé distingue les revenus menthe, les dépenses bleu brume et la trésorerie
+sauge, sans fonds rouges ; les panneaux mobiles gardent leurs couleurs financières.
 Le système exact est documenté dans DESIGN.md.
 
 ## Evidence on Hand

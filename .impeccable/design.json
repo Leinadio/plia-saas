@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-15T14:11:05Z",
+  "generatedAt": "2026-09-15T14:50:37Z",
   "title": "Design System: Planora",
   "extensions": {
     "colorMeta": {
@@ -658,7 +658,8 @@
           ".impeccable/review/treasury-mobile-compare.png",
           ".impeccable/review/treasury-mobile-dark-negative.png"
         ],
-        "validation": "Agent principal : 1 144 tests réussis, TypeScript, lint ciblé et build de production post-correction réussis. Captures relues pour la documentation ; contrôle /private/tmp/planora-treasury-design-check.json lu : []. Aucun test ni rendu relancé par la passe documentaire. Données fictives."
+        "validation": "Agent principal : 1 144 tests réussis, TypeScript, lint ciblé et build de production post-correction réussis. Captures relues pour la documentation ; contrôle /private/tmp/planora-treasury-design-check.json lu : []. Aucun test ni rendu relancé par la passe documentaire. Données fictives.",
+        "status": "historical-treasury-review"
       }
     },
     "applicationReading": {
@@ -673,20 +674,22 @@
         "src/components/history-section-heading.css",
         "src/components/history-mobile-columns.tsx",
         "src/components/history-treasury.css",
-        "src/lib/history-columns.ts"
+        "src/lib/history-columns.ts",
+        "src/components/history-surfaces.css",
+        "src/components/history-mobile.css"
       ],
       "headings": "Attendu / Reçu côté revenus ; Budget, − Dépensé, + Remboursements / apports, = Reste / manque côté dépenses. Chaque en-tête a une courte explication. Une seule introduction pour tout le relevé.",
       "layout": "Dépenses : 7 + 7 + 9 + 9 rem = 32 rem. Revenus : 7 + 7 rem puis 18 rem libres. Trésorerie : 10,5 rem par parcours. Noms : 320 px, 256 px de 640 à 1023 px, pleine largeur sur mobile. Chiffres alignés à droite et centrés verticalement avec les noms ; filets fins entre familles.",
-      "spacing": "Échelle de 4 / 8 / 12 / 16 / 24 / 32 px. Cellules : 12 px ; enveloppes : 80 px minimum ; mois : 96 px minimum ; séparations : 24 px ; détails : 12 px. Titres de colonnes des sections sur une réserve de deux lignes, puis 8 px avant l’explication. Mobile : 16 px latéraux, lignes de montants de 48 px minimum, boutons de 44 px. Couleurs des données et calculs conservés.",
+      "spacing": "Échelle de 4 / 8 / 12 / 16 / 24 / 32 px. Cellules : 12 px ; enveloppes : 80 px minimum ; mois : 96 px minimum ; séparations : 24 px ; détails : 12 px. Titres de colonnes des sections sur une réserve de deux lignes, puis 8 px avant l’explication. Mobile : 16 px latéraux, lignes de montants de 48 px minimum, boutons de 44 px. Calculs conservés ; fonds actualisés par la palette locale.",
       "remainder": "Résultat visuellement renforcé, issu de MonthCell.balance. Mentions selon le montant et le contexte : encore disponibles, de dépassement, budget utilisé, entièrement remboursé, d’excédent reçu ou budget à venir. Budget clôturé après remboursement précise une réservation terminée ; le remboursement intégral ne recrée pas de budget.",
       "totals": "Dépensé et Remboursements / apports additionnent les montants bruts des lignes ; Reçu fait de même pour les revenus. Le détail au clic reprend ces sommes et explicite les budgets clôturés dans le calcul du reste. Les règles des prévisions sont conservées.",
       "mobile": "Même ordre des libellés et des opérateurs décoratifs ; noms accessibles conservés. Les indicateurs de revenus, dépenses et trésorerie restent indépendants en comparaison.",
       "sectionHeading": {
         "approvedBrief": "docs/superpowers/specs/2026-09-15-entetes-ouverts-design.md",
-        "desktop": "Une seule rangée continue sur le fond de la carte dans les deux thèmes : titre de niveau 2 Bricolage en casse normale, sous-titre et ajout à gauche ; colonnes expliquées à droite. Filets fins, même fond dans l’espace libre après Reçu. Aucun bandeau financier coloré au-dessus des colonnes.",
-        "mobile": "Titre sans sous-titre et actions à droite, sur le fond de la carte. L’indicateur courant reste dans le titre en comparaison. Retraits de 16 px, boutons icône de 44 × 44 px sans fond ni bordure ; filtres et formulaires gardent leurs panneaux colorés et le mois ciblé.",
+        "desktop": "Titre de niveau 2 Bricolage, sous-titre et ajout à gauche sur deux rangées (rowSpan=2). À droite, groupes « Ce revenu » / « Cette enveloppe », puis « Trésorerie après ce revenu » / « Trésorerie après cette enveloppe », au-dessus des colonnes expliquées. Couleurs définies par localPalette ; aucune bande vide.",
+        "mobile": "Titre teinté menthe ou bleu brume, sans sous-titre, actions à droite ; étape de trésorerie sur surface sauge séparée. Indicateur courant dans le titre en comparaison. Retraits de 16 px et boutons icône de 44 × 44 px ; panneaux et mois ciblé conservés.",
         "interaction": "Revenus et dépenses toujours visibles sur ordinateur et téléphone. Titres sans chevron ni action de repli. Les enveloppes et sous-enveloppes restent dépliables ; la sélection depuis un calcul révèle toujours l’opération correspondante.",
-        "preserved": "Identité, palette, largeur de 32 rem, choix de comparaison, teintes financières du corps et des totaux, calculs et montants conservés.",
+        "preserved": "Identité, largeur de 32 rem, choix de comparaison, calculs et montants conservés. Les groupes et surfaces suivent localPalette ; les panneaux gardent leurs couleurs financières.",
         "review": {
           "disposition": "ship",
           "verdictScope": "Revue indépendante des 11 captures finales sans défaut matériel pour cette refonte locale des en-têtes ; aucune certification de toute l’application.",
@@ -696,7 +699,64 @@
             ".impeccable/review/section-mobile.png",
             ".impeccable/review/section-mobile-dark-compare.png"
           ],
-          "validation": "Agent principal : 55 tests ciblés puis 1 150 tests dans 117 fichiers réussis, lint et build de production réussis. Aucun débordement du document ni erreur de navigateur à 1600 / 2048 / 980 / 390 / 320 px ; fonds d’en-tête uniformes par thème et commandes mobiles de 44 × 44 px. Journaux /private/tmp/planora-section-header-{tests,lint,build}.log et /private/tmp/planora-section-heading-browser.json ; contrôle /private/tmp/planora-section-header-design-check.json : []. Route temporaire retirée avant le build. Données fictives ; aucun test ni rendu relancé par la passe documentaire."
+          "validation": "Agent principal : 55 tests ciblés puis 1 150 tests dans 117 fichiers réussis, lint et build de production réussis. Aucun débordement du document ni erreur de navigateur à 1600 / 2048 / 980 / 390 / 320 px ; fonds d’en-tête uniformes par thème et commandes mobiles de 44 × 44 px. Journaux /private/tmp/planora-section-header-{tests,lint,build}.log et /private/tmp/planora-section-heading-browser.json ; contrôle /private/tmp/planora-section-header-design-check.json : []. Route temporaire retirée avant le build. Données fictives ; aucun test ni rendu relancé par la passe documentaire.",
+          "status": "historical-section-heading-review"
+        }
+      },
+      "localPalette": {
+        "scope": "Relevé uniquement ; aucune modification du thème global, des panneaux ni de la landing.",
+        "approvedBrief": "docs/superpowers/specs/2026-09-15-table-palette-design.md",
+        "source": "src/components/history-surfaces.css",
+        "authority": "Le contrat courant distingue revenus menthe, dépenses bleu brume et deux espaces : enveloppe claire, trésorerie sauge sous en-tête forêt. Aucun fond rouge dans le relevé.",
+        "colors": {
+          "paper": {"cssProperty": "--history-paper", "lightToken": "history-paper", "darkToken": "history-paper-nuit", "purpose": "Blanc frais des données et en-têtes d’enveloppe ; forêt en sombre."},
+          "detail": {"cssProperty": "--history-detail", "lightToken": "history-detail", "darkToken": "history-detail-nuit", "purpose": "Opérations ouvertes, argent de départ mobile et support neutre du reste."},
+          "income": {"cssProperty": "--history-income", "lightToken": "history-income", "darkToken": "history-income-nuit", "purpose": "Titres et totaux des revenus côté enveloppe, en menthe."},
+          "income-ink": {"cssProperty": "--history-income-ink", "lightToken": "history-income-ink", "darkToken": "history-income-ink-nuit", "purpose": "Texte des titres de revenus."},
+          "income-detail": {"cssProperty": "--history-income-detail", "lightToken": "history-income-detail", "darkToken": "history-income-detail-nuit", "purpose": "Teinte légère du nom des revenus sur mobile."},
+          "expense": {"cssProperty": "--history-expense", "lightToken": "history-expense", "darkToken": "history-expense-nuit", "purpose": "Titres et totaux des dépenses côté enveloppe, en bleu brume."},
+          "expense-ink": {"cssProperty": "--history-expense-ink", "lightToken": "history-expense-ink", "darkToken": "history-expense-ink-nuit", "purpose": "Texte des titres de dépenses."},
+          "expense-detail": {"cssProperty": "--history-expense-detail", "lightToken": "history-expense-detail", "darkToken": "history-expense-detail-nuit", "purpose": "Teinte légère du nom des dépenses sur mobile."},
+          "treasury": {"cssProperty": "--history-treasury", "lightToken": "history-treasury", "darkToken": "history-treasury-nuit", "purpose": "Surface sauge continue des parcours, même dans les cases vides ; étapes mobiles."},
+          "treasury-hover": {"cssProperty": "--history-treasury-hover", "lightToken": "history-treasury-hover", "darkToken": "history-treasury-hover-nuit", "purpose": "Survol des cellules de trésorerie, hors sélection."},
+          "result": {"cssProperty": "--history-result", "lightToken": "history-result", "darkToken": "history-result-nuit", "purpose": "Support sauge du montant restant de trésorerie, même négatif."},
+          "hover": {"cssProperty": "--history-hover", "lightToken": "history-hover", "darkToken": "history-hover-nuit", "purpose": "Survol des données d’enveloppe, hors sélection."},
+          "line": {"cssProperty": "--history-line", "lightToken": "history-line", "darkToken": "history-line-nuit", "purpose": "Séparations fines des cellules."},
+          "rule": {"cssProperty": "--history-rule", "lightToken": "history-rule", "darkToken": "history-rule-nuit", "purpose": "Séparations renforcées des familles et parcours."},
+          "closing": {"cssProperty": "--history-closing", "lightToken": "history-closing", "darkToken": "history-closing-nuit", "purpose": "Fond forêt du bilan et des groupes et colonnes de trésorerie."},
+          "closing-ink": {"cssProperty": "--history-closing-ink", "lightToken": "history-closing-ink", "darkToken": "history-closing-ink-nuit", "purpose": "Texte principal du bilan et des en-têtes de trésorerie."},
+          "closing-muted": {"cssProperty": "--history-closing-muted", "lightToken": "history-closing-muted", "darkToken": "history-closing-muted-nuit", "purpose": "Mentions du bilan et des en-têtes de trésorerie."},
+          "closing-negative": {"cssProperty": "--history-closing-negative", "lightToken": "history-closing-negative", "darkToken": "history-closing-negative-nuit", "purpose": "Texte des valeurs négatives du bilan."},
+          "closing-line": {"cssProperty": "--history-closing-line", "lightToken": "history-closing-line", "darkToken": "history-closing-line-nuit", "purpose": "Filets du bilan et des en-têtes de trésorerie."}
+        },
+        "reading": "Enveloppe sur blanc frais, forêt en sombre ; titres et totaux côté enveloppe menthe pour les revenus, bleu brume pour les dépenses. Trésorerie sur sauge continu, cases vides comprises ; groupe et colonnes sur forêt. Détails et reste sur neutre ; résultat de trésorerie sur sauge, même négatif. Aucun fond rouge : signes, texte et mentions portent les alertes.",
+        "mobile": "Titre teinté et étape de trésorerie sauge séparés ; noms sur la teinte légère de leur section. Argent de départ sur détail ; introduction, mois et bilan forêt. Panneaux de filtre et formulaire encore vert/rouge/sombre selon leur sens.",
+        "desktopBoundary": "L’introduction et le mois extérieurs gardent le fond de carte existant ; la palette reste locale au tableau.",
+        "interaction": "Survol distinct pour enveloppe et trésorerie ; sélection prioritaire avec filet intérieur sarcelle et support du montant transparent. Calculs, sections ouvertes, 32 rem de données, 18 rem libres après les revenus et icônes mobiles de 44 × 44 px conservés.",
+        "review": {
+          "disposition": "ship",
+          "verdictScope": "Revue indépendante SHIP : contrat et qualité visuelle validés, aucun défaut matériel sur les couleurs et groupes de colonnes. Deux captures utilisateur et 18 captures finales ouvertes. Données fictives ; aucune certification globale d’accessibilité. Aucun contrôle relancé par le réviseur.",
+          "evidence": [
+            ".impeccable/review/zones-dark.png",
+            ".impeccable/review/zones-desktop-expanded.png",
+            ".impeccable/review/zones-desktop-income.png",
+            ".impeccable/review/zones-desktop-overview.png",
+            ".impeccable/review/zones-desktop-selected.png",
+            ".impeccable/review/zones-desktop.png",
+            ".impeccable/review/zones-mobile-closing.png",
+            ".impeccable/review/zones-mobile-compare.png",
+            ".impeccable/review/zones-mobile-dark-closing.png",
+            ".impeccable/review/zones-mobile-dark-compare.png",
+            ".impeccable/review/zones-mobile-dark.png",
+            ".impeccable/review/zones-mobile-expanded.png",
+            ".impeccable/review/zones-mobile-income.png",
+            ".impeccable/review/zones-mobile-overview.png",
+            ".impeccable/review/zones-mobile.png",
+            ".impeccable/review/zones-small.png",
+            ".impeccable/review/zones-tablet.png",
+            ".impeccable/review/zones-user.png"
+          ],
+          "validation": "Agent principal : 1 150 tests dans 117 fichiers avant (23,08 s) et après (38,24 s), échec observé sur les groupes absents puis 47 tests ciblés réussis ; lint et build exit 0. Journaux /private/tmp/planora-table-zones-{baseline,red,targeted,tests,lint,build}.log. Rapport /private/tmp/planora-table-zones-browser.json : 1600/390 px clair et sombre, 2048/980/320 px clair, aucune erreur navigateur ni débordement ; contrastes échantillonnés ≥ 5,35:1 clair / 5,20:1 sombre, icônes 44 × 44 px, survol distinct et sélection sarcelle. Mois courant/futur, remboursement intégral neutre, remboursement partiel laissant 30 € disponibles et long libellé. Route temporaire retirée avant build. Passe documentaire : validation JSON uniquement."
         }
       }
     }
@@ -822,13 +882,13 @@
       "Des titres Bricolage et des données Schibsted tabulaires.",
       "Des cartes opaques de 16 px et des commandes en capsule.",
       "Un tableau de comparaison sur ordinateur et des sections lisibles sur téléphone.",
-      "Des revenus verts, des dépenses rouges et des soldes sombres sur mobile.",
+      "Un relevé blanc frais, des sections menthe ou bleu brume et une trésorerie sauge, adaptés au sombre.",
       "Des courbes de titre statiques, discrètes et masquées sur téléphone."
     ],
     "rules": [
       {
         "name": "La règle du sens financier",
-        "body": "La couleur de marque ne remplace pas les repères de données. Sur téléphone, revenus, dépenses et soldes conservent respectivement leurs fonds verts, rouges et sombres, y compris dans les panneaux associés. Un texte et un montant explicites accompagnent chaque état.",
+        "body": "Le relevé distingue revenus, dépenses et trésorerie par ses surfaces ; signes et mentions explicitent les résultats. Les panneaux mobiles conservent leurs fonds vert pour les revenus, rouge pour les dépenses et sombre pour les soldes. Un texte et un montant explicites accompagnent chaque état.",
         "section": "colors"
       },
       {
@@ -867,7 +927,7 @@
       "Utiliser Bricolage pour la marque et les titres d’accueil, Schibsted pour les données et commandes.",
       "Préserver le tableau sur ordinateur, les sections mobiles et toutes les actions de budget.",
       "Écrire chaque montant à côté du dessin qui le représente et garder les chiffres tabulaires.",
-      "Conserver les repères revenus verts, dépenses rouges et soldes sombres sur téléphone.",
+      "Distinguer l’enveloppe claire de la trésorerie sauge et garder les repères financiers des panneaux mobiles.",
       "Garder les noms accessibles, les compteurs et le retour du focus quand les outils se resserrent."
     ],
     "donts": [
