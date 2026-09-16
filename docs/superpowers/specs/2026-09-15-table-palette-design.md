@@ -1,5 +1,13 @@
 # Fonds du relevé — revenus, dépenses et trésorerie
 
+## En-têtes de l’enveloppe — 16 septembre
+Les titres et les deux rangées d’en-tête côté enveloppe prennent la couleur de leur
+section : menthe pour les revenus, bleu brume pour les dépenses, groupes et cases
+vides compris. Les en-têtes de trésorerie conservent leur fond forêt et leur texte
+clair. Les variantes sombres réutilisent les couleurs existantes. Cette précision
+remplace le fond blanc des en-têtes d’enveloppe ci-dessous ; données, totaux,
+espacements et calculs conservés.
+
 ## Évolution demandée à 16 h 58
 Les captures utilisateur montrent une chaleur perçue comme rouge et deux familles
 insuffisamment distinctes. La direction courante remplace l’ivoire par un blanc

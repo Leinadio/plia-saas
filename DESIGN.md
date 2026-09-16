@@ -702,14 +702,16 @@ encre sombre. Les contrôles natifs suivent le thème du document.
 
 Les rôles `history-*` viennent de `src/components/history-surfaces.css` et restent
 limités au relevé. **Papier** porte les données d’enveloppe sur blanc frais en clair,
-forêt en sombre. **Revenu** et **dépense** teintent les titres et les totaux côté
-enveloppe en menthe et bleu brume ; leurs variantes de détail portent les noms mobiles.
+forêt en sombre. **Revenu** et **dépense** teintent les titres et les deux rangées
+d’en-tête côté enveloppe en menthe et bleu brume, groupes, colonnes et cases vides
+compris. Les totaux côté enveloppe gardent ces couleurs ; les variantes de détail
+portent les noms mobiles.
 **Détail** creuse les opérations ouvertes, l’argent de départ mobile et le reste.
 **Trésorerie** relie les trois parcours sur une surface sauge continue, cases vides
 comprises. **Résultat** souligne le montant restant sur sauge, même négatif.
 Aucun fond rouge dans le relevé : signes, texte et mentions portent les alertes.
 
-**Bilan** et les deux rangées d’en-tête de trésorerie sont forêt ; leur encre,
+**Bilan** et les deux rangées d’en-tête de trésorerie restent forêt ; leur encre,
 mentions et filets utilisent `history-closing-*`. **Survol** et **survol trésorerie**
 gardent les deux espaces distincts ; **ligne** et **filet fort** les séparent.
 L’introduction et le mois extérieurs gardent leur fond de carte ; sur mobile,
@@ -1043,7 +1045,7 @@ Sur mobile, le libellé et le montant partagent une ligne. Le calcul reste cliqu
 - **Ses en-têtes :** « Ce revenu » ou « Cette enveloppe », puis « Trésorerie après
   ce revenu » ou « Trésorerie après cette enveloppe » regroupent les colonnes.
   Le titre et l’ajout restent dans l’épine sur deux rangées (`rowSpan={2}`), sans
-  bande vide. Le groupe et les colonnes de trésorerie partagent le fond forêt.
+  bande vide. Les groupes et colonnes côté enveloppe partagent le vert ou le bleu de la section ; la trésorerie reste forêt.
 - **Son survol et sa sélection :** le survol suit toute la ligne d’enveloppe. Les
   fonds s’appliquent aux cellules pour rester continus ; la sélection est prioritaire,
   avec son filet intérieur sarcelle et un fond transparent autour du montant choisi.

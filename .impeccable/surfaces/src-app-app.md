@@ -125,13 +125,16 @@ restent à droite. En comparaison, le titre garde l’indicateur courant. Les fi
 et formulaires conservent leurs panneaux colorés et le mois ciblé.
 La présentation vit dans `src/components/history-section-heading.css`.
 
-## Fonds du relevé — contrat courant du 15 septembre 2026
+## Fonds du relevé — en-têtes précisés le 16 septembre 2026
 
 Le contrat courant de `docs/superpowers/specs/2026-09-15-table-palette-design.md`
 sépare deux lectures. À gauche, les données d’enveloppe reposent sur blanc frais,
 forêt en sombre ; titres et totaux sont menthe pour les revenus, bleu brume pour les
 dépenses. À droite, une surface sauge continue relie les trois parcours de trésorerie,
-cases vides comprises, sous un groupe et des colonnes sur fond forêt.
+cases vides comprises, sous des en-têtes forêt. À gauche, les titres et les deux
+rangées d’en-tête côté enveloppe sont menthe pour les revenus, bleu brume pour les
+dépenses, y compris les groupes et cellules vides, sur tous les mois. La trésorerie
+conserve son texte clair sur forêt.
 Les groupes portent « Ce revenu » ou « Cette enveloppe », puis « Trésorerie après
 ce revenu » ou « Trésorerie après cette enveloppe ». Le titre de section occupe
 les deux rangées d’en-tête (`rowSpan={2}`), sans bande vide.
@@ -237,7 +240,7 @@ La route temporaire a été retirée avant le build. Cette passe documentaire li
 les sources, journaux et captures existants, sans relancer les contrôles.
 
 
-### Revue courante : couleurs et groupes de colonnes
+### Revue du 15 septembre : couleurs et groupes de colonnes
 
 Verdict indépendant « ship » : contrat et qualité visuelle validés, sans défaut
 matériel sur les couleurs et groupes de colonnes. Le réviseur a ouvert les deux
@@ -254,3 +257,12 @@ document ; contrastes échantillonnés ≥ 5,35:1 clair / 5,20:1 sombre, icônes
 survol distinct et sélection sarcelle. Route temporaire retirée avant le build.
 Cette passe documentaire valide uniquement son JSON ; la revue ne constitue pas
 une certification globale d’accessibilité.
+
+### Vérification des en-têtes d’enveloppe et de trésorerie — 16 septembre
+Contrôle direct sur les vrais composants : vert ou bleu côté enveloppe, forêt côté
+trésorerie, cellules vides et tous les mois compris, sur sept formats et deux thèmes.
+Deux captures de bureau `treasury-header-restore-*.png` inspectées. Aucun débordement
+ni erreur navigateur ; contrastes échantillonnés ≥ 5,35:1 clair / 5,20:1 sombre.
+Les 1 150 tests passent avant et après. Route temporaire retirée. Preuves :
+`/private/tmp/planora-table-treasury-header-restore-browser.json` et
+`/private/tmp/planora-treasury-header-restore-tests-final.log`.

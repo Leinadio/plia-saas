@@ -68,8 +68,7 @@
 .history-layout [data-history-total] > td:not(.case-active) { background: var(--history-section); }
 
 /* La couleur de section situe les revenus et les dépenses, sans juger leurs montants. */
-.history-layout [data-history-section-heading] > .history-section-heading-cell,
-.history-mobile [data-history-section-heading] > td:not(.case-active) {
+.history-layout [data-history-section-heading] > :is(th, td):not(.case-active, [data-history-column-zone="treasury"]) {
   background: var(--history-section);
 }
 
@@ -104,7 +103,6 @@
 .history-layout [data-history-zone-groups] { border-bottom: 0; }
 .history-layout [data-history-zone-groups] > th { border-bottom: 0; }
 .history-layout:not(.history-mobile) [data-history-section-heading] .history-reading-heading { padding-block: 0.75rem 1.25rem; }
-.history-layout [data-history-column-zone="envelope"] { background: var(--history-paper); }
 
 .history-layout .history-surface-closing {
   --filet: var(--history-closing-line);

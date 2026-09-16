@@ -707,14 +707,14 @@
         "scope": "Relevé uniquement ; aucune modification du thème global, des panneaux ni de la landing.",
         "approvedBrief": "docs/superpowers/specs/2026-09-15-table-palette-design.md",
         "source": "src/components/history-surfaces.css",
-        "authority": "Le contrat courant distingue revenus menthe, dépenses bleu brume et deux espaces : enveloppe claire, trésorerie sauge sous en-tête forêt. Aucun fond rouge dans le relevé.",
+        "authority": "Le contrat courant distingue revenus menthe, dépenses bleu brume et deux espaces : enveloppe claire, trésorerie sauge ; en-têtes d’enveloppe menthe ou bleu, en-têtes de trésorerie forêt. Aucun fond rouge dans le relevé.",
         "colors": {
-          "paper": {"cssProperty": "--history-paper", "lightToken": "history-paper", "darkToken": "history-paper-nuit", "purpose": "Blanc frais des données et en-têtes d’enveloppe ; forêt en sombre."},
+          "paper": {"cssProperty": "--history-paper", "lightToken": "history-paper", "darkToken": "history-paper-nuit", "purpose": "Blanc frais des données d’enveloppe ; forêt en sombre."},
           "detail": {"cssProperty": "--history-detail", "lightToken": "history-detail", "darkToken": "history-detail-nuit", "purpose": "Opérations ouvertes, argent de départ mobile et support neutre du reste."},
-          "income": {"cssProperty": "--history-income", "lightToken": "history-income", "darkToken": "history-income-nuit", "purpose": "Titres et totaux des revenus côté enveloppe, en menthe."},
+          "income": {"cssProperty": "--history-income", "lightToken": "history-income", "darkToken": "history-income-nuit", "purpose": "Titres, en-têtes et totaux côté enveloppe des revenus, en menthe."},
           "income-ink": {"cssProperty": "--history-income-ink", "lightToken": "history-income-ink", "darkToken": "history-income-ink-nuit", "purpose": "Texte des titres de revenus."},
           "income-detail": {"cssProperty": "--history-income-detail", "lightToken": "history-income-detail", "darkToken": "history-income-detail-nuit", "purpose": "Teinte légère du nom des revenus sur mobile."},
-          "expense": {"cssProperty": "--history-expense", "lightToken": "history-expense", "darkToken": "history-expense-nuit", "purpose": "Titres et totaux des dépenses côté enveloppe, en bleu brume."},
+          "expense": {"cssProperty": "--history-expense", "lightToken": "history-expense", "darkToken": "history-expense-nuit", "purpose": "Titres, en-têtes et totaux côté enveloppe des dépenses, en bleu brume."},
           "expense-ink": {"cssProperty": "--history-expense-ink", "lightToken": "history-expense-ink", "darkToken": "history-expense-ink-nuit", "purpose": "Texte des titres de dépenses."},
           "expense-detail": {"cssProperty": "--history-expense-detail", "lightToken": "history-expense-detail", "darkToken": "history-expense-detail-nuit", "purpose": "Teinte légère du nom des dépenses sur mobile."},
           "treasury": {"cssProperty": "--history-treasury", "lightToken": "history-treasury", "darkToken": "history-treasury-nuit", "purpose": "Surface sauge continue des parcours, même dans les cases vides ; étapes mobiles."},
@@ -729,11 +729,13 @@
           "closing-negative": {"cssProperty": "--history-closing-negative", "lightToken": "history-closing-negative", "darkToken": "history-closing-negative-nuit", "purpose": "Texte des valeurs négatives du bilan."},
           "closing-line": {"cssProperty": "--history-closing-line", "lightToken": "history-closing-line", "darkToken": "history-closing-line-nuit", "purpose": "Filets du bilan et des en-têtes de trésorerie."}
         },
-        "reading": "Enveloppe sur blanc frais, forêt en sombre ; titres et totaux côté enveloppe menthe pour les revenus, bleu brume pour les dépenses. Trésorerie sur sauge continu, cases vides comprises ; groupe et colonnes sur forêt. Détails et reste sur neutre ; résultat de trésorerie sur sauge, même négatif. Aucun fond rouge : signes, texte et mentions portent les alertes.",
+        "reading": "Enveloppe sur blanc frais, forêt en sombre ; titres et totaux côté enveloppe menthe pour les revenus, bleu brume pour les dépenses. Trésorerie sur sauge continu, cases vides comprises ; en-têtes de trésorerie forêt. Les groupes et colonnes côté enveloppe partagent le vert ou le bleu de la section, cases vides comprises. Détails et reste sur neutre ; résultat de trésorerie sur sauge, même négatif. Aucun fond rouge : signes, texte et mentions portent les alertes.",
         "mobile": "Titre teinté et étape de trésorerie sauge séparés ; noms sur la teinte légère de leur section. Argent de départ sur détail ; introduction, mois et bilan forêt. Panneaux de filtre et formulaire encore vert/rouge/sombre selon leur sens.",
         "desktopBoundary": "L’introduction et le mois extérieurs gardent le fond de carte existant ; la palette reste locale au tableau.",
         "interaction": "Survol distinct pour enveloppe et trésorerie ; sélection prioritaire avec filet intérieur sarcelle et support du montant transparent. Calculs, sections ouvertes, 32 rem de données, 18 rem libres après les revenus et icônes mobiles de 44 × 44 px conservés.",
+        "refinementVerification": "16 septembre : titres et colonnes d’enveloppe verts ou bleus ; en-têtes de trésorerie forêt avec texte clair. Contrôle des fonds sur 7 formats et deux thèmes, y compris les cellules vides. Deux captures treasury-header-restore-*.png de bureau inspectées. Rapport /private/tmp/planora-table-treasury-header-restore-browser.json : aucune erreur navigateur ni débordement, contrastes échantillonnés ≥ 5,35:1 clair / 5,20:1 sombre. 1 150 tests réussis avant et après ; /private/tmp/planora-treasury-header-restore-tests-final.log. Vérification directe ; revue indépendante du 15 septembre historique.",
         "review": {
+          "status": "historical-2026-09-15",
           "disposition": "ship",
           "verdictScope": "Revue indépendante SHIP : contrat et qualité visuelle validés, aucun défaut matériel sur les couleurs et groupes de colonnes. Deux captures utilisateur et 18 captures finales ouvertes. Données fictives ; aucune certification globale d’accessibilité. Aucun contrôle relancé par le réviseur.",
           "evidence": [
