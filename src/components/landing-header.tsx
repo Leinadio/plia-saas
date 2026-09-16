@@ -13,8 +13,8 @@ export function LandingBrand() {
   );
 }
 
-export function LandingHeader({ audience = false }: { audience?: boolean }) {
-  const home = audience ? "/" : "";
+export function LandingHeader({ audience = false, homeLinks = false }: { audience?: boolean; homeLinks?: boolean }) {
+  const home = audience || homeLinks ? "/" : "";
   return (
     <header className={`${styles.header} ${headerStyles.header}`}>
       <LandingBrand />
@@ -35,8 +35,11 @@ export function LandingHeader({ audience = false }: { audience?: boolean }) {
           >
             Fonctionnement <ArrowDown aria-hidden />
           </a>
-          <a href={`${home}#offre`} title="Voir l’offre sur l’accueil">
-            L’offre <ArrowDown aria-hidden />
+          <a href={`${home}#offre`} title="Voir les offres sur l’accueil">
+            Les offres <ArrowDown aria-hidden />
+          </a>
+          <a href={`${home}#contact`} title="Nous écrire sur l’accueil">
+            Contact <ArrowDown aria-hidden />
           </a>
         </nav>
         <div className={headerStyles.pageGroup}>

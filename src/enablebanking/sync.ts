@@ -1,3 +1,4 @@
+import { applyNewTransactions } from "../lib/automation-service";
 import type { Db } from "../db/pg";
 import { parseAmount } from "../lib/money";
 import { upsertAccount } from "../db/repositories/accounts";
@@ -187,6 +188,7 @@ export async function syncAll(
         await setTransactionBudgetMonth(t, id, choices.budgetMonth ?? null);
       }
       await t.run("UPDATE accounts SET pending_transactions = $1::jsonb WHERE id = $2", [JSON.stringify(reconciled.pending), uid]);
+      await applyNewTransactions(t, deps.userId, booked.map(op => op.id));
       return nouvelles;
     });
   }

@@ -34,13 +34,21 @@ via Enable Banking alimente cette lecture. L’anticipation n’est pas présent
 une exclusivité concurrentielle, ni le report des restes et dépassements comme une
 règle automatique universelle.
 
-La proposition commerciale est une offre complète à **29 € par mois**. L’ambition
-premium a été demandée par le créateur ; ce prix est une hypothèse, pas un tarif de
-souscription validé. La page porte la mention « Tarif envisagé. L’offre commerciale
-est en cours de finalisation. » Les boutons conduisent à l’accès Planora. Aucun paiement,
-essai gratuit, abonnement annuel, accompagnement personnel ou offre gratuite n’est
-promis. Le raisonnement et les repères tarifaires datés vivent dans
-[le positionnement de lancement](docs/landing-positionnement.md).
+Le pré-lancement retenu le 16 septembre prévoit deux offres : **9,90 € par mois sans
+connexion bancaire**, et **19,90 € par mois pendant les 12 premiers mois d’abonnement,
+puis 29 € par mois avec connexion bancaire**. La réservation proposée est gratuite, sans
+carte bancaire ; elle n’est ni un essai gratuit ni un abonnement actif. La volonté
+de payer reste à valider. Le parcours manuel autonome reste à
+préparer avant ouverture ; aucun import CSV, accès partagé ou accompagnement
+personnel n’est promis.
+
+La landing présente ces deux offres et mène au formulaire `/reservation`. Il
+conserve la formule choisie et demande une confirmation par e-mail ; les 12 mois
+promotionnels commencent avec le futur abonnement. L’intégration Resend et le
+schéma des réservations sont préparés mais leur configuration de production reste
+à effectuer avant la collecte. Aucun paiement ni e-mail réel n’a été déclenché.
+Le [brief de pré-lancement](docs/design/2026-09-16-prelaunch-shape.md) décrit les
+décisions ; le [guide d’installation](docs/prelaunch.md) décrit les limites et la mise en service.
 
 ## Operating Context
 
@@ -64,6 +72,35 @@ manuelles, des règles de catégorisation, des projections, des alertes de dépa
 et le détail des montants. Les données sont cloisonnées par utilisateur dans Postgres
 chez Supabase. L’interface est en français.
 
+La page « Automatisation » automatise le rattachement des nouvelles opérations à un budget
+du même compte, selon leur libellé, leur sens et des bornes de montant facultatives.
+Chaque rattachement apparaît dans la cloche, à côté des dépassements. Les règles
+se créent, se modifient, se mettent en pause et se suppriment ; la première règle
+active compatible est prioritaire. L’historique sans budget passe par un aperçu
+puis une application explicite. La démonstration reste en lecture seule.
+Le [guide des règles](docs/automatisations.md) précise les limites et la mise en service.
+
+L’inscription et la connexion proposent Google, en complément de l’adresse e-mail
+et du mot de passe. La première connexion Google crée le compte ; les suivantes
+retrouvent le même compte. Seule l’identité de base est demandée, sans accès à Gmail,
+Drive ou aux données bancaires. Un compte e-mail non vérifié ne peut pas être associé
+silencieusement à Google et conserve son accès par mot de passe ; aucun écran
+d’association manuelle n’est ajouté. Au 17 septembre 2026, le parcours et sa
+[mise en service](docs/google-auth.md) sont préparés, mais aucun identifiant Google
+n’a été fourni : le bouton reste désactivé avec une explication et l’accès par e-mail.
+La création et la reconnexion sont testées avec un échange Google simulé ; aucune
+connexion réelle au fournisseur ni aucun déploiement ne sont validés.
+
+Un formulaire commun à l’accueil public et à l’application permet d’écrire à
+Planora : adresse e-mail, sujet et message. Dans l’application, l’adresse du
+compte est proposée et reste modifiable. Resend transmet le message à une adresse
+privée, sans joindre les données du budget ni promettre un délai de réponse.
+En cas d’erreur, le texte reste dans le formulaire ouvert pour réessayer.
+Au 16 septembre 2026, le destinataire et les compteurs anti-abus sont installés
+sur l’environnement configuré ; l’envoi reste explicitement désactivé tant que
+Resend, l’expéditeur et l’origine publique ne sont pas configurés. Aucun e-mail
+réel ni déploiement n’a été validé. Voir [la mise en service du contact](docs/contact.md).
+
 Les chiffres reflètent la dernière synchronisation. Les prévisions sont des
 estimations dépendant des budgets, revenus prévus et opérations connues. La banque
 peut demander une nouvelle autorisation. Les banques disponibles dépendent du
@@ -83,11 +120,13 @@ Aucune maquette d’interface n’a été approuvée avant cette réalisation.
 
 Cette identité relie désormais les pages publiques, la connexion et l’application.
 Bricolage Grotesque porte la marque et les titres ; Schibsted Grotesk garde les données,
-libellés et commandes. Les fonds menthe et forêt, les accents corail, les cartes arrondies
-et les commandes en capsule accompagnent le budget. Les chiffres restent sur des surfaces
+libellés et commandes. Le fond est blanc en clair, vert forêt en sombre (préférence utilisateur du 16 septembre 2026). Les actions
+et revenus sont eucalyptus, les dépenses bleu brume ; la pêche accompagne les
+filtres, le contexte et les courbes. Les cartes arrondies et les commandes en
+capsule accompagnent le budget. Les chiffres restent sur des surfaces
 opaques. Les repères financiers et les parcours existants guident cette adaptation :
 le relevé distingue les revenus menthe, les dépenses bleu brume et la trésorerie
-sauge, sans fonds rouges ; les panneaux mobiles gardent leurs couleurs financières.
+gris neutre, sans fonds rouges ; les panneaux mobiles suivent les mêmes repères.
 Le système exact est documenté dans DESIGN.md.
 
 ## Evidence on Hand

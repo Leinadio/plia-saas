@@ -23,6 +23,24 @@ vi.mock("@/components/landing-page", () => ({
   LandingContent: () => null,
 }));
 
+// Next transforme les images importées en métadonnées ; Vitest renvoie une URL.
+// Reproduire cette frontière permet de rendre le vrai composant dans ce test.
+vi.mock("../../public/landing/plia-budget-desktop.png", () => ({
+  default: { src: "/landing/plia-budget-desktop.png", width: 1336, height: 1100 },
+}));
+vi.mock("../../public/landing/plia-enveloppes-mobile.png", () => ({
+  default: { src: "/landing/plia-enveloppes-mobile.png", width: 398, height: 706 },
+}));
+vi.mock("../../public/landing/plia-soldes-mobile.png", () => ({
+  default: { src: "/landing/plia-soldes-mobile.png", width: 396, height: 493 },
+}));
+vi.mock("../../public/landing/plia-detail-mobile.png", () => ({
+  default: { src: "/landing/plia-detail-mobile.png", width: 430, height: 540 },
+}));
+vi.mock("../../public/landing/plia-video-poster.jpg", () => ({
+  default: { src: "/landing/plia-video-poster.jpg", width: 1440, height: 810 },
+}));
+
 import { LandingContent } from "@/components/landing-page";
 import LandingPage from "@/app/page";
 

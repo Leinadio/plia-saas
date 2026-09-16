@@ -1,1 +1,1 @@
-Origin: local Playwright screenshot of actual Plia HistoryWithDetail and detail panel, built-in demo fixtures, September 2026. Synthetic demo data; not a customer account. Captured 2026-09-10.
+Origin: local Playwright screenshot of the actual Planora application components. Built-in demo fixtures only; no customer data. Captured 2026-09-16 after the approved white, eucalyptus, mist blue and soft peach palette, with anthracite treasury.

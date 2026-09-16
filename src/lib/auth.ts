@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { poolPostgres } from "../db/index";
+import { getGoogleProvider } from "./google-auth";
 
 // --- Qui utilise l'application -----------------------------------------------
 // L'app était mono utilisateur. Rien en base ne portait de propriétaire parce que
@@ -20,13 +21,27 @@ import { poolPostgres } from "../db/index";
 // qu'une option qui divergerait entre les deux donnerait des tables à côté de ce que
 // l'application attend.
 export const OPTIONS_AUTH = {
-  // Email et mot de passe pour commencer. Un fournisseur externe s'ajoute ici plus
-  // tard sans rien défaire de ce qui suit.
   emailAndPassword: { enabled: true },
+  account: {
+    encryptOAuthTokens: true,
+    accountLinking: {
+      enabled: true,
+      requireLocalEmailVerified: true,
+      allowDifferentEmails: false,
+      // Aucun fournisseur ne contourne la vérification de l’adresse.
+      trustedProviders: [] as string[],
+    },
+  },
+  onAPIError: { errorURL: "/connexion" },
 } as const;
 
 function construire() {
-  return betterAuth({ database: poolPostgres(), ...OPTIONS_AUTH });
+  const google = getGoogleProvider();
+  return betterAuth({
+    database: poolPostgres(),
+    ...OPTIONS_AUTH,
+    socialProviders: google ? { google } : {},
+  });
 }
 
 let instance: ReturnType<typeof construire> | null = null;

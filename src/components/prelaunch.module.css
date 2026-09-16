@@ -1,0 +1,124 @@
+.offers {
+  position: relative;
+  padding: 64px max(32px, calc((100vw - 1160px) / 2)) 64px;
+  background: var(--planora-warm-soft);
+  color: var(--planora-text);
+  scroll-margin-top: 28px;
+}
+.curve {
+  position: absolute;
+  bottom: calc(100% - 1px);
+  left: 0;
+  width: 100%;
+  height: 64px;
+  fill: var(--planora-warm-soft);
+}
+.offerIntro { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: end; }
+.offerIntro h2 { font-size: clamp(36px, 4vw, 56px); line-height: 1.1; font-weight: 500; }
+.offerIntro h2 span { color: var(--planora-warm-ink); }
+.offerIntro p { max-width: 42ch; font-size: 17px; line-height: 1.7; }
+.offerIntro .reassurance { margin-top: 16px; font-size: 14px; color: var(--planora-warm-ink); }
+.offerChoices { display: grid; grid-template-columns: 1fr 1fr; margin-top: 48px; border-block: 1px solid var(--planora-warm-line); }
+.offerChoice { min-width: 0; padding: 36px 44px 40px 0; }
+.offerChoice + .offerChoice { border-left: 1px solid var(--planora-warm-line); padding-inline: 44px 0; }
+.offerChoice h3 { display: flex; align-items: center; gap: 12px; font-size: 25px; line-height: 1.3; font-weight: 600; }
+.offerChoice h3 svg { width: 24px; height: 24px; flex: none; color: var(--planora-warm-ink); }
+.offerDescription { margin-top: 16px; max-width: 38ch; line-height: 1.6; color: var(--planora-warm-ink); }
+.amount { display: flex; align-items: baseline; gap: 12px; font: 500 72px/1.1 var(--font-landing-display), sans-serif; letter-spacing: -0.035em; margin-top: 28px; }
+.amount span { font: 400 17px/1.5 var(--font-ui), sans-serif; letter-spacing: 0; color: var(--planora-warm-ink); }
+.terms { min-height: 76px; margin: 16px 0 22px; line-height: 1.65; font-size: 15px; }
+.terms strong { font-weight: 600; }
+.included { display: flex; align-items: flex-start; gap: 36px; padding-block: 30px; }
+.included h3 { font: 600 15px/1.6 var(--font-ui), sans-serif; letter-spacing: 0; flex-shrink: 0; }
+.included ul { display: flex; flex-wrap: wrap; gap: 12px 28px; font-size: 14px; }
+.included li { display: flex; align-items: center; gap: 8px; }
+.included svg { width: 17px; height: 17px; flex: none; color: var(--planora-action); }
+.offerFootnote { max-width: 80ch; font-size: 13px; line-height: 1.7; color: var(--planora-warm-ink); }
+.reservation { max-width: 1260px; margin: 0 auto; padding: 64px 48px 100px; display: grid; grid-template-columns: 1fr 1.15fr; gap: 80px; align-items: start; }
+.reservationIntro h1 { font-size: clamp(36px, 3.5vw, 48px); line-height: 1.12; font-weight: 500; }
+.reservationIntro h1 span { color: var(--planora-action); }
+.reservationIntro > p { color: var(--planora-muted); line-height: 1.75; max-width: 42ch; margin-top: 24px; }
+.reservationArt { position: relative; height: 260px; border-radius: 120px 14px 14px 14px; overflow: hidden; margin-top: 36px; }
+.reservationArt img { object-fit: cover; object-position: 50% 70%; }
+.formPanel { min-width: 0; padding: 32px; border-radius: 16px; background: var(--planora-expense-soft); }
+.fields { border: 0; margin: 0; padding: 0; min-width: 0; }
+.fields legend { font: 600 26px/1.3 var(--font-landing-display), sans-serif; padding: 0 0 20px; }
+.radioGroup { display: grid; gap: 12px; }
+.radioChoice { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 12px; align-items: center; border: 1px solid var(--planora-control-line); border-radius: 12px; padding: 16px; cursor: pointer; background: var(--planora-surface); }
+.radioChoice:has(input:checked) { border-color: var(--planora-action); background: var(--planora-action-soft); }
+.radioChoice:has(input:focus-visible) { outline: 3px solid var(--planora-action); outline-offset: 3px; }
+.radioChoice input { width: 18px; height: 18px; accent-color: var(--planora-action); }
+.radioChoice strong { display: block; font-size: 15px; font-weight: 600; line-height: 1.4; }
+.radioChoice small { display: block; color: var(--planora-muted); font-size: 12px; line-height: 1.5; margin-top: 4px; }
+.radioPrice { white-space: nowrap; text-align: right; font-size: 19px; font-weight: 600; }
+.radioPrice small { font-weight: 400; margin: 0; }
+.chosenTerms { font-size: 13px; line-height: 1.65; margin-top: 16px; color: var(--planora-muted); }
+.field { display: grid; gap: 10px; margin-top: 28px; }
+.field label { font-size: 15px; font-weight: 500; line-height: 1.5; }
+.field label span { margin-left: 6px; font-size: 12px; color: var(--planora-muted); font-weight: 400; }
+.field input, .field textarea { width: 100%; min-height: 48px; padding: 12px 14px; background: var(--planora-surface); color: var(--planora-text); border: 1px solid var(--planora-control-line); border-radius: 8px; font: inherit; font-size: 16px; caret-color: var(--planora-action); }
+.field textarea { resize: vertical; min-height: 96px; }
+.field input::placeholder, .field textarea::placeholder { color: var(--planora-muted); opacity: 1; }
+.field input:focus-visible, .field textarea:focus-visible { outline: 3px solid var(--planora-action); outline-offset: 3px; }
+.privacy { font-size: 12px; line-height: 1.7; color: var(--planora-muted); margin-block: 20px; }
+.fields > button { width: 100%; justify-content: space-between; }
+.formNote { display: flex; align-items: flex-start; justify-content: center; gap: 6px; margin-top: 14px; color: var(--planora-muted); font-size: 12px; line-height: 1.6; }
+.formNote svg { width: 16px; height: 16px; flex: none; margin-top: 2px; }
+.formPanel button:disabled, .confirmation button:disabled { cursor: wait; opacity: 0.65; }
+.error { padding: 14px 16px; margin-top: 20px; background: var(--planora-negative-soft); color: var(--planora-negative); border-radius: 8px; font-size: 14px; line-height: 1.6; }
+.stateIcon { width: 36px; height: 36px; color: var(--planora-action); margin-bottom: 24px; }
+.formPanel h2 { font-size: 32px; font-weight: 500; line-height: 1.2; }
+.formPanel > p { margin-top: 20px; line-height: 1.7; }
+.email { overflow-wrap: anywhere; }
+.help { font-size: 14px; line-height: 1.7; color: var(--planora-muted); }
+.secondaryButton { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; border: 1px solid var(--planora-control-line); border-radius: 8px; padding: 10px 16px; margin-top: 24px; color: var(--planora-text); background: var(--planora-surface); font-size: 14px; }
+.secondaryButton:hover:not(:disabled) { background: var(--planora-hover); }
+.textButton { display: flex; width: fit-content; align-items: center; gap: 8px; min-height: 44px; margin-top: 16px; color: var(--planora-action); font-size: 14px; text-align: left; line-height: 1.5; }
+.textButton svg { width: 16px; height: 16px; flex-shrink: 0; }
+.textButton:hover { text-decoration: underline; text-underline-offset: 4px; }
+.nextStep { margin-top: 32px; border-top: 1px solid var(--planora-rule); padding-top: 24px; }
+.nextStep p { margin-bottom: 12px; line-height: 1.6; }
+.nextStep small { display: block; color: var(--planora-muted); margin-top: 8px; font-size: 12px; }
+.confirmation { max-width: 720px; margin: 0 auto; padding: 72px 32px 120px; min-height: calc(100svh - 104px); }
+.confirmation h1 { font-size: clamp(36px, 5vw, 52px); line-height: 1.1; font-weight: 500; }
+.confirmation > p { margin: 24px 0; max-width: 56ch; line-height: 1.75; }
+.confirmedOffer { background: var(--planora-action-soft); padding: 24px; border-radius: 12px; margin-block: 32px; }
+.confirmedOffer h2 { font-size: 23px; font-weight: 600; }
+.confirmedOffer p { margin-top: 12px; line-height: 1.7; }
+@media (max-width: 1000px) {
+  .reservation { gap: 40px; padding-inline: 32px; }
+  .formPanel { padding: 24px; }
+  .radioChoice { padding: 14px 12px; gap: 8px; }
+  .included { display: block; }
+  .included ul { margin-top: 16px; }
+}
+@media (max-width: 760px) {
+  .offers { padding: 44px 24px 48px; }
+  .curve { height: 32px; }
+  .offerIntro { grid-template-columns: 1fr; gap: 24px; }
+  .offerIntro p { font-size: 16px; }
+  .offerIntro .reassurance { margin-top: 12px; }
+  .offerChoices { grid-template-columns: 1fr; margin-top: 32px; }
+  .offerChoice, .offerChoice + .offerChoice { padding: 32px 0; border-left: 0; }
+  .offerChoice + .offerChoice { border-top: 1px solid var(--planora-warm-line); }
+  .offerChoice h3 { font-size: 23px; }
+  .offerDescription { font-size: 15px; }
+  .amount { font-size: 64px; }
+  .terms { min-height: 0; }
+  .offerChoice a { width: 100%; justify-content: space-between; }
+  .included ul { display: grid; }
+  .reservation { grid-template-columns: 1fr; gap: 32px; padding: 32px 24px 64px; }
+  .reservationIntro h1 { font-size: 36px; }
+  .reservationIntro > p { margin-top: 18px; font-size: 15px; }
+  .reservationArt { display: none; }
+  .formPanel { padding: 24px 18px; }
+  .radioChoice { grid-template-columns: 18px minmax(0, 1fr); }
+  .radioPrice { grid-column: 2; text-align: left; font-size: 20px; }
+  .radioPrice small { display: inline; margin-left: 4px; font-size: 12px; }
+  .formNote { justify-content: flex-start; }
+  .confirmation { padding: 40px 24px 72px; }
+  .confirmation > a:first-of-type, .confirmation > button { width: 100%; justify-content: space-between; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .radioChoice { transition: background-color 160ms ease-out, border-color 160ms ease-out; }
+}

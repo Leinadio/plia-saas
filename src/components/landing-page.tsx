@@ -3,14 +3,15 @@ import Link from "next/link";
 import {
   ArrowDown,
   ArrowUpRight,
-  Check,
   Link2,
   SlidersHorizontal,
   Sparkles,
 } from "lucide-react";
+import { LandingOffers } from "@/components/landing-offers";
 import { LandingHero } from "@/components/landing-hero";
 import { LandingDemo } from "@/components/landing-demo";
 import { LandingFaq } from "@/components/landing-faq";
+import { LandingContact } from "@/components/landing-contact";
 import { LandingVideo } from "@/components/landing-video";
 import { LandingBrand, LandingHeader } from "@/components/landing-header";
 import styles from "./landing.module.css";
@@ -82,10 +83,10 @@ export function LandingContent() {
         <div className={styles.steps}>
           <article>
             <Link2 aria-hidden />
-            <h3>Reliez votre banque.</h3>
+            <h3>Choisissez votre façon de suivre.</h3>
             <p>
-              Retrouvez votre solde et vos opérations grâce à Enable Banking.
-              Votre budget part de vos comptes.
+              Saisissez vos opérations ou choisissez la connexion bancaire avec
+              Enable Banking. Deux façons de construire votre budget.
             </p>
           </article>
           <article>
@@ -111,62 +112,9 @@ export function LandingContent() {
           <Link2 aria-hidden />
         </div>
       </section>
-      <section
-        id="offre"
-        className={styles.offer}
-        aria-labelledby="offer-heading"
-      >
-        <svg
-          className={styles.offerCurve}
-          viewBox="0 0 1440 100"
-          preserveAspectRatio="none"
-          aria-hidden
-        >
-          <path d="M0 65C310-50 585 110 915 38S1250 35 1440 0V100H0Z" />
-        </svg>
-        <div className={styles.offerInner}>
-          <div className={styles.offerCopy}>
-            <h2 id="offer-heading">
-              Une vue complète.
-              <br />
-              <span>Une seule offre.</span>
-            </h2>
-            <p>
-              Pour celles et ceux qui veulent donner à leur budget autant
-              d’attention qu’à leurs projets.
-            </p>
-            <ul>
-              {[
-                "Connexion bancaire et suivi des opérations",
-                "Enveloppes et sous-enveloppes personnalisées",
-                "Comparaison des mois et prévisions de solde",
-                "Détail des montants et suivi des dépassements",
-              ].map((text) => (
-                <li key={text}>
-                  <Check aria-hidden />
-                  {text}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className={styles.price}>
-            <h3>Planora</h3>
-            <p className={styles.priceAmount}>
-              29 <span>€ / mois</span>
-            </p>
-            <p className={styles.priceDescription}>
-              Votre budget, avec une vue d’avance.
-            </p>
-            <Link href="/connexion" className={styles.primary}>
-              Découvrir Planora <ArrowUpRight aria-hidden />
-            </Link>
-            <p className={styles.priceNote}>
-              Tarif envisagé. L’offre commerciale est en cours de finalisation.
-            </p>
-          </div>
-        </div>
-      </section>
+      <LandingOffers />
       <LandingFaq />
+      <LandingContact />
       <section className={styles.close} aria-labelledby="close-heading">
         <div>
           <h2 id="close-heading">
@@ -174,9 +122,9 @@ export function LandingContent() {
             <br />
             d’être plus claire.
           </h2>
-          <p>Commencez par voir ce que vos prochains mois vous réservent.</p>
-          <Link href="/connexion" className={styles.primary}>
-            Commencer avec Planora <ArrowUpRight aria-hidden />
+          <p>Choisissez votre formule. Nous vous préviendrons dès l’ouverture.</p>
+          <Link href="#offre" className={styles.primary}>
+            Réserver mon accès <ArrowUpRight aria-hidden />
           </Link>
         </div>
         <div className={styles.closeImage}>
@@ -191,6 +139,7 @@ export function LandingContent() {
       <footer className={styles.footer}>
         <LandingBrand />
         <p>Votre budget. Vos projets. Une vue d’avance.</p>
+        <a href="#contact">Nous contacter <ArrowUpRight aria-hidden /></a>
         <a href="#faq">
           Questions fréquentes <ArrowUpRight aria-hidden />
         </a>

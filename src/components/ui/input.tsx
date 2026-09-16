@@ -29,7 +29,7 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
       className={cn(
         champClass,
         "w-full min-w-0 py-1",
-        "selection:bg-sarcelle selection:text-white placeholder:text-ardoise-claire",
+        "selection:bg-sarcelle selection:text-primary-foreground placeholder:text-ardoise-claire",
         "file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
         className
       )}

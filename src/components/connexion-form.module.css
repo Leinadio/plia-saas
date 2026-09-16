@@ -1,0 +1,68 @@
+.google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid #747775;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1f1f1f;
+  /* Famille et couleurs du bouton Google, indépendantes de la marque Planora. */
+  font:
+    500 14px/1.5 Arial,
+    sans-serif;
+  cursor: pointer;
+}
+.google img {
+  flex: none;
+}
+.google:hover:not(:disabled) {
+  background: #f2f2f2;
+}
+.google:disabled {
+  cursor: not-allowed;
+}
+.google:focus-visible,
+.error:focus-visible {
+  outline: 3px solid var(--planora-action);
+  outline-offset: 4px;
+}
+.availability {
+  margin-top: 12px;
+  color: var(--planora-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.separator {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-block: 24px;
+  color: var(--planora-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.separator::before,
+.separator::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--planora-line);
+}
+.error {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  padding: 14px 16px;
+  color: var(--planora-negative);
+  background: var(--planora-negative-soft);
+  font-size: 14px;
+  line-height: 1.6;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .google {
+    transition: background-color 160ms ease-out;
+  }
+}

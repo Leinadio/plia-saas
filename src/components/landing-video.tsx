@@ -1,5 +1,6 @@
 import { HeroVideoDialog } from "@/components/ui/hero-video-dialog";
 import styles from "./landing-video.module.css";
+import videoPoster from "../../public/landing/plia-video-poster.jpg";
 
 export function LandingVideo() {
   return (
@@ -21,8 +22,8 @@ export function LandingVideo() {
           animationStyle="from-center"
           videoSrc="/videos/plia-visite-guidee.mp4?v=2"
           captionsSrc="/videos/plia-visite-guidee.vtt?v=2"
-          thumbnailSrc="/landing/plia-video-poster.jpg"
-          thumbnailAlt="Visite guidée de Planora : une enveloppe ouverte et le détail des achats à droite."
+          thumbnailSrc={videoPoster.src}
+          thumbnailAlt="Visite guidée de Planora : le tableau des revenus, dépenses et prévisions, avec des données de démonstration."
           className={styles.preview}
         />
         <figcaption>

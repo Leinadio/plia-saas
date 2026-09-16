@@ -101,6 +101,12 @@ header.header {
   }
 }
 @media (max-width: 420px) {
+  .sections svg {
+    display: none;
+  }
+  .sections {
+    gap: 8px;
+  }
   header.header {
     column-gap: 8px;
     padding-inline: 16px;

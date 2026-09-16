@@ -60,8 +60,8 @@
   align-items: center;
   gap: 36px;
   padding: 16px 20px;
-  background: #edf5f0;
-  color: #172d28;
+  background: var(--planora-surface);
+  color: var(--planora-text);
   border-radius: 12px;
   font-size: 24px;
   font-weight: 550;
@@ -79,13 +79,13 @@
   flex-shrink: 0;
 }
 .portrait:hover .portraitLink {
-  background: #dcece1;
+  background: var(--planora-warm-hover);
 }
 .couplePortrait .portraitLink {
-  background: #f5b5a2;
+  background: var(--planora-warm);
 }
 .couplePortrait:hover .portraitLink {
-  background: #ef9d87;
+  background: var(--planora-warm-hover);
 }
 .portrait:focus-visible {
   outline-offset: 8px;
@@ -147,10 +147,10 @@
   margin-bottom: 2px;
 }
 .soloProof {
-  background: #f5b5a2;
+  background: var(--planora-warm);
   padding: 40px 32px 24px;
   border-radius: 16px 160px 16px 16px;
-  color: #173e2e;
+  color: var(--planora-text);
   transform: rotate(2deg);
 }
 .soloProof > p,
@@ -163,7 +163,7 @@
   margin-bottom: 28px;
 }
 .soloProof > p span {
-  color: #654234;
+  color: var(--planora-warm-ink);
 }
 .detailImage {
   max-width: 330px;
@@ -171,7 +171,7 @@
   overflow: hidden;
   margin: auto;
   border-radius: 12px;
-  box-shadow: 0 16px 32px #56302724;
+  box-shadow: 0 16px 32px var(--planora-shadow);
   transform: rotate(-2deg);
 }
 .detailImage img {
@@ -188,8 +188,8 @@
 }
 .couple {
   position: relative;
-  background: #164c3c;
-  color: #edf5f0;
+  background: var(--planora-band);
+  color: var(--planora-band-ink);
   margin-top: 48px;
   scroll-margin-top: 80px;
 }
@@ -198,7 +198,7 @@
   bottom: calc(100% - 1px);
   height: 80px;
   width: 100%;
-  fill: #164c3c;
+  fill: var(--planora-band);
 }
 .coupleInner {
   padding-top: 64px;
@@ -208,38 +208,38 @@
   order: 2;
 }
 .couple .story h2 span {
-  color: #b6dbc4;
+  color: var(--planora-band-accent);
 }
 .couple .story > p,
 .couple .benefits li {
-  color: #c3ddce;
+  color: var(--planora-band-muted);
 }
 .couple .benefits strong {
-  color: #edf5f0;
+  color: var(--planora-band-ink);
 }
 .couple .benefits svg {
-  color: #b6dbc4;
+  color: var(--planora-band-accent);
 }
 .couple .story .note {
   font-size: 13px;
   line-height: 1.65;
   padding-top: 24px;
   margin-top: 24px;
-  border-top: 1px solid #54816b;
+  border-top: 1px solid var(--planora-band-line);
 }
 .couple a:focus-visible {
-  outline-color: #f1c94e;
+  outline-color: var(--planora-peach);
 }
 .coupleProof {
   padding: 40px 0;
 }
 .coupleProof > p {
   font-size: 60px;
-  color: #edf5f0;
+  color: var(--planora-band-ink);
   margin-bottom: 32px;
 }
 .coupleProof > p span {
-  color: #f5b5a2;
+  color: var(--planora-peach);
 }
 .coupleProof > img {
   display: block;
@@ -247,11 +247,11 @@
   max-width: 398px;
   height: auto;
   border-radius: 12px;
-  box-shadow: 0 20px 40px #071c1a30;
+  box-shadow: 0 20px 40px var(--planora-shadow);
 }
 .coupleProof figcaption {
   max-width: 398px;
-  color: #c3ddce;
+  color: var(--planora-band-muted);
   text-align: left;
 }
 .closing {
@@ -275,17 +275,6 @@
   justify-content: center;
   gap: 28px;
   flex-wrap: wrap;
-}
-@media (prefers-color-scheme: dark) {
-  .couple {
-    background: #103b2e;
-  }
-  .curve {
-    fill: #103b2e;
-  }
-  .soloProof {
-    background: #e5a18d;
-  }
 }
 @media (max-width: 1100px) {
   .cover {

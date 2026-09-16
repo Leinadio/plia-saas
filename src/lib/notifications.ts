@@ -23,7 +23,8 @@ export function notificationId(
   return `${accountId}::${cible}::${month}`;
 }
 
-export type Notification = {
+export type OverspendNotification = {
+  kind?: "overspend";
   id: string;
   accountName: string;
   name: string;   // ce qui a dépassé : une enveloppe, une ligne de récurrent, les non catégorisés
@@ -32,6 +33,15 @@ export type Notification = {
   // Acquittée (« Vu ») : elle reste dans le panneau, en gris. Voir plus bas.
   seen: boolean;
 };
+
+export type AutomationNotification = Omit<OverspendNotification, "kind"> & {
+  kind: "automation";
+  label: string;
+  ruleLabel: string;
+  date: string;
+  transactionId: string;
+};
+export type Notification = OverspendNotification | AutomationNotification;
 
 // Rassemble les dépassements de tous les comptes en une liste de bandeaux, du mois le
 // plus récent au plus ancien : c'est le récent qui appelle une réaction, l'ancien est

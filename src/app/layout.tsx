@@ -32,46 +32,17 @@ const landingDisplay = Bricolage_Grotesque({
 // app a décidé d'être, et ce qu'elle refuse d'être. Il survit à la construction,
 // donc il reste vérifiable après coup.
 const CONTRAT = `<!--
-THESIS: Un écran de cartes claires, et UNE masse d'encre : le pied du grand tableau.
-L'Historique reste un relevé à colonnes de mois — c'est la forme du produit et elle ne
-se discute pas — mais il vit désormais dans une carte, ses familles de colonnes se
-distinguent par la densité d'une même ardoise, et l'accent ne sert qu'à commander.
-Ailleurs, chaque poste est une ligne à jauge : ce qui est entamé, ce qui reste, et ce
-qui a débordé au-delà du bord.
-OWN-WORLD: Sol clair légèrement cyan #edf1f2, cartes blanches arrondies à 12 px
-cerclées d'un filet et posées sur une ombre courte, encre bleu-ardoise #17222b.
-Une sarcelle #0b6e75 qui ne sert QU'À COMMANDER, et trois sens qui ne teintent
-que des montants, des pastilles ovales et la jauge : vert portant, rouge tension,
-sable attente. Schibsted Grotesk seule, tabulaire.
-STORY: L'utilisateur voit quelles enveloppes ont débordé, de combien, et où le
-solde atterrit à la fin de chaque mois — puis il va corriger le poste responsable.
-FIRST VIEWPORT: Barre produit blanche (Planora, trois destinations, synchro,
-calculatrice, notifications) ; sur le tableau de bord, carte d'horizon — une colonne
-par mois posée sur la ligne du zéro, le montant écrit au-dessus — puis les relevés et
-les enveloppes du mois ; sur l'Historique, la frise des mois et le grand tableau dans
-sa carte, fermé par son pied d'encre.
-FORM: L'enveloppe. Direction épinglée par l'utilisateur — famille des logiciels de
-travail à cartes, sans copier aucun d'eux. Le grand tableau de l'Historique a été
-retiré puis rappelé, à sa demande : ce sont les couleurs qui devaient changer, pas lui.
-FINISH: unreviewed and undocumented is unfinished; this build ends with the finish
-review, the verdict, and DESIGN.md
--->`;
-
-const LANDING_CONTRAT = `<!--
-THESIS: La lumière en mouvement. Voir venir ses dépenses laisse de la place aux projets ; une photographie sculpturale remplace le héros logiciel générique.
-OWN-WORLD: Verre cintré vert et corail, lumière naturelle, menthe #edf5f0, encre #17222b, commandes #126b5b ; Bricolage Grotesque en titres, Schibsted pour lire. Courbes continues, chiffres sur fonds opaques.
-STORY: La personne qui pilote le budget du foyer découvre ses mois à venir, explore les vrais écrans, comprend les enveloppes et la connexion bancaire, puis commence. Offre premium proposée, prix explicitement provisoire.
-FIRST VIEWPORT: Promesse monumentale et action à gauche ; verre photographié à droite, aperçu chiffré au pied. Sur mobile, promesse et action précèdent l’image. Une lumière suit le changement de vue ; mouvement réduit respecté.
-FORM: Verre coloré des intérieurs contemporains, candidat 7 ; seed 29f966f4, direction choisie par l’utilisateur, code-led.
-FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
--->`;
-
-const AUDIENCE_CONTRAT = `<!--
-THESIS: La vie, à votre façon. La page Pour qui relie envies et budget par deux scènes de vie et des bénéfices courts.
-OWN-WORLD: Monde public Planora conservé : Bricolage, Schibsted, menthe, forêt ; le corail des photographies devient un fond de preuve opaque.
-STORY: Se reconnaître en solo ou à deux, comprendre les enveloppes et les mois à venir, puis découvrir ou commencer Planora. Pas d’accès partagé promis.
-FIRST VIEWPORT: Grand titre centré, promesse courte et action ; deux photographies originales décalées, courbes opposées et liens vers chaque usage.
-FORM: Diptyque de campagne photographique, refinement code-led du monde public existant, audience-art-v2. Pas de nouvelle animation.
+THESIS: Une même harmonie sur la vitrine et le budget, avec le blanc comme respiration.
+OWN-WORLD: Monde « La lumière en mouvement » conservé, seed 29f966f4.
+Eucalyptus #126b5b pour les actions et revenus, bleu brume #547c91 pour les dépenses,
+pêche #edc8b5 pour le contexte et les courbes. Texte et trésorerie anthracite.
+Blanc #ffffff en clair, vert forêt #102b24 en sombre. Couleurs opaques et contrastées.
+STORY: Repérer le mois, lire les enveloppes, suivre la trésorerie puis ouvrir un montant.
+FIRST VIEWPORT: Composition actuelle conservée ; l’accueil montre la promesse et le
+verre photographié, le budget ses commandes et son tableau. Accent franc pour agir,
+fonds légèrement teintés pour situer. Mêmes rôles sur téléphone et ordinateur.
+FORM: Adaptation chromatique approuvée, code-led, harmony-colors-20260916.
+Formes, fontes, espaces, textes, photos, mouvements et calculs conservés.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
 -->`;
 
@@ -106,7 +77,7 @@ export default function RootLayout({
         <div
           hidden
           dangerouslySetInnerHTML={{
-            __html: `${CONTRAT}${LANDING_CONTRAT}${AUDIENCE_CONTRAT}`,
+            __html: CONTRAT,
           }}
         />
         {children}

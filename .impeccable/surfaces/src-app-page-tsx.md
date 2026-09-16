@@ -2,17 +2,34 @@
 version: 1
 slug: "src-app-page-tsx"
 primary_target: "src/app/page.tsx"
-related_targets: ["src/components/landing-page.tsx","src/components/landing-hero.tsx","src/components/landing-demo.tsx","src/components/landing-faq.tsx","src/components/landing.module.css","src/components/landing-header.tsx","src/components/landing-header.module.css"]
+related_targets: ["src/components/landing-page.tsx","src/components/landing-hero.tsx","src/components/landing-demo.tsx","src/components/landing-faq.tsx","src/components/landing.module.css","src/components/landing-header.tsx","src/components/landing-header.module.css","src/components/landing-offers.tsx","src/components/prelaunch.module.css"]
 ---
+
+## Palette commune approuvée — 16 septembre 2026
+
+Cette révision chromatique fait autorité ; les revues antérieures ci-dessous
+restent des traces historiques. Blanc majoritaire en clair ; graphite neutre en sombre. Eucalyptus pour
+les actions et revenus, bleu brume pour les dépenses, pêche douce pour les filtres,
+le contexte et les courbes. Textes et trésorerie anthracite, cellules gris neutre.
+Les mêmes rôles s’appliquent à l’application, à la landing, à Pour qui et à la connexion.
+Cette passe couleur conservait formes, fontes, espacements, photos, textes et parcours.
+Le pré-lancement ci-dessous actualise ensuite l’offre et ses destinations.
+Source : `src/app/palette.css`. Brief : `docs/design/2026-09-16-harmony-colors-shape.md`.
+Revue indépendante finale : **ship**, sans défaut matériel pour cette passe couleur.
+La carte QUALITY BAR était indisponible ; ce verdict ne constitue pas un audit
+global d’accessibilité ou d’ergonomie. Revue et preuves :
+`.impeccable/review/harmony-colors-finish-review.md` et
+`.impeccable/review/harmony-colors-validation.md`.
+
 
 ## Portée et mode
 
 Page publique `/`, mode Persuade. Elle parle aux personnes seules et aux couples
 qui veulent suivre leur budget personnel, avec des charges et des projets.
 Ce choix de cible est confirmé par l’utilisateur ; il n’impose pas un niveau de
-revenus et ne vise pas les professionnels. La demande reste à valider sur le terrain. Les écrans
-connectés conservent leur propre monde « L’enveloppe », leurs jetons et leurs
-règles mobiles. Ce brief fait autorité pour la page publique.
+revenus et ne vise pas les professionnels. La demande reste à valider sur le terrain.
+Les écrans connectés partagent « La lumière en mouvement » et sa palette, avec
+leur structure financière et leurs règles mobiles. Ce brief décrit la page publique.
 
 ## Travail à accomplir
 
@@ -23,23 +40,27 @@ L’utilisateur conserve « L’outil pour gérer vos finances », sans la conjo
 Sa taille est réduite sur ordinateur et mobile. « finances » et « la vie »
 portent deux courbes vertes dessinées sur mesure, d’épaisseur variable ; un second
 trait léger prolonge le premier. Les mots restent dans la même phrase, sans animation.
-L’utilisateur retient le premier fond à larges rubans sauge et corail, sans sa
+L’utilisateur retient le premier fond à larges rubans, désormais bleu brume et pêche, sans sa
 partie haute. Les courbes inférieures et leur tracé fin d’accompagnement sont
 restaurés ; le titre et le bandeau restent sur fond uni. Les contours s’adaptent
 au téléphone, les teintes au mode sombre. Leur amplitude verticale est réduite
 de 40 % à la demande de l’utilisateur, pour des courbes plus plates.
 Le décor est statique et n’intercepte
 aucun clic ; les trois repères restent affichés au-dessus des courbes.
-L’action principale ouvre `/connexion` ; l’action secondaire rejoint la présentation
-par captures. Il n’y a ni paiement ni souscription simulée.
+L’action principale rejoint les deux offres en `#offre` ; chaque formule ouvre
+`/reservation` avec le choix conservé. L’action secondaire rejoint la présentation
+par captures. « Se connecter » garde `/connexion`. La réservation ne déclenche
+ni paiement ni abonnement.
 
 ## Direction retenue et autorité
 
 « La lumière en mouvement », direction choisie par l’utilisateur dans la page de
 décision : seed `29f966f4`, option `assigned`, candidat 7, réalisation en code.
 Aucune maquette d’interface approuvée : la direction artistique et son contrat
-ont guidé la composition. Verre cintré vert et corail, lumière naturelle, fonds
-menthe et forêt, titres Bricolage Grotesque et texte Schibsted Grotesk. Les chiffres
+ont guidé la composition. Le verre cintré vert et corail et sa lumière naturelle
+restent photographiques. Les fonds sont blancs ou graphite, les plages de
+démonstration anthracite et les accents eucalyptus, bleu brume et pêche, avec
+titres Bricolage Grotesque et texte Schibsted Grotesk. Les chiffres
 restent opaques et lisibles. Le CSS final et les jetons `landing-*` de DESIGN.md
 font foi pour les valeurs ; la couleur du prompt artistique n’est pas la couleur
 d’action de l’interface.
@@ -51,16 +72,21 @@ Un cartouche sombre posé au pied de l’image expose trois soldes prévus avec 
 mention d’exemple illustratif. Trois repères relient ce qui rentre, ce qui sort et
 ce qu’il restera. Une section « Planora, en action. » présente ensuite la visite
 guidée de 1 min 14, ouverte au clic dans Hero Video Dialog de Magic UI.
-Sur fond forêt, la démonstration alterne « Votre mois »,
+Sur fond anthracite, la démonstration alterne « Votre mois »,
 « Comparer » et « Le détail » ; la courbe lumineuse change avec la vue choisie.
 
 Une scène de départ en week-end relie ensuite le budget à un projet concret.
-Le fonctionnement présente connexion bancaire, enveloppes et comparaison, suivi
-d’un rappel que Planora ne déplace pas d’argent. L’offre unique est affichée à
-29 € / mois avec « Tarif envisagé. L’offre commerciale est en cours de finalisation. »
-L’ambition premium est autorisée ; le prix définitif reste à valider. La FAQ
-répond sur le budget, la banque, les prévisions, la synchronisation et le classement.
-Une dernière invitation à commencer reprend la photographie sculpturale.
+Le fonctionnement présente saisie manuelle ou connexion bancaire, enveloppes et
+comparaison, suivi d’un rappel que Planora ne déplace pas d’argent. Le bloc pêche
+compare deux offres : 9,90 € / mois sans banque ; 19,90 € / mois pendant les
+12 premiers mois d’abonnement puis 29 € / mois avec banque. La réservation est
+gratuite et sans carte. La FAQ précise les prix, le démarrage des 12 mois avec
+l’abonnement, la confirmation d’adresse et les limites bancaires. La dernière
+invitation à réserver reprend la photographie sculpturale.
+
+L’offre unique à 29 € avec la mention « Tarif envisagé » appartenait à la
+version du 10 septembre ; elle est remplacée par le cadrage du 16 septembre.
+La volonté de payer et les conditions de l’ouverture restent à valider.
 
 ## Preuve réelle et images livrées
 
@@ -73,7 +99,9 @@ de démonstration. Elle montre les achats, le détail d’un montant, l’ajuste
 budget et les prévisions. Sa légende signale les données fictives et la voix IA.
 La narration chaleureuse part des projets et du quotidien ; une musique originale
 de claviers et de percussion légère baisse de volume pendant la parole.
-Son aperçu est extrait de la vidéo à 26 secondes, avec provenance conservée à côté.
+L’affiche et les quatre captures publiques reprennent les vrais composants avec
+la palette actuelle et des données de démonstration. Leur provenance est conservée
+à côté et embarquée. Le film préenregistré conserve sa palette antérieure.
 Le MP4 se charge au clic ; le lecteur propose des sous-titres français, conserve
 le focus, se ferme avec Échap et tient dans un écran mobile en paysage. La lecture
 ne démarre pas automatiquement sous réduction des animations.
@@ -94,6 +122,11 @@ promis. Le détail commercial de référence est `docs/landing-positionnement.md
 ## Adaptation et interactions
 
 À 1100 px, les marges passent à 36 px ; à 700 px, à 24 px et les sections s’empilent.
+Le bloc des offres possède son seuil local à 760 px : deux colonnes et un filet
+vertical deviennent deux rangées séparées par un filet horizontal. Les prix,
+la période et le passage à 29 € restent visibles avant chaque bouton. Les
+commandes occupent la largeur disponible sur téléphone. La liste commune suit
+les deux formules ; aucune troisième offre ni fausse recommandation n’est ajoutée.
 Sur téléphone, promesse et action précèdent l’image. Le bandeau partagé avec
 `/pour-qui` distingue les sections de l’accueil (flèche vers le bas) des pages
 « Pour qui ? » et connexion (flèche diagonale). « Pour qui ? » reste dans le
@@ -105,12 +138,13 @@ sa capture mobile ; les choix d’aperçu défilent horizontalement. Les capture
 hautes peuvent défiler dans leur cadre. Le clavier accède aux choix et à la FAQ
 native ; l’état pressé et la description du panneau sont annoncés.
 
-Les thèmes clair et sombre suivent la préférence du navigateur. Les rôles de fond,
+Les thèmes clair et sombre suivent la classe du document commune à l’application.
+Les rôles de fond,
 encre et commande conservent leur contraste. Sous réduction des animations, la
 révélation d’image, la courbe lumineuse et les transitions sont supprimées. Ces
 adaptations ne changent pas la présentation du budget connecté.
 
-## Revue finale et persistance
+## Revue antérieure de la landing et persistance
 
 La revue indépendante initiale retient **fix**, avec un seul correctif matériel : rendre
 persistants la cible, le statut du prix et le système visuel effectivement livré.
@@ -131,7 +165,7 @@ Preuves du rendu, dans `.impeccable/review/` : `desktop.png`, `mobile.png`,
 ce ne sont pas des maquettes approuvées avant réalisation. Cette passe documentaire
 ne relance ni serveur, ni tests, ni détecteur.
 
-## Ajout de la page « Pour qui ? »
+## Historique de l’ajout de la page « Pour qui ? »
 
 Le lien de bandeau et la page dédiée prolongent le monde public existant. La page
 `/pour-qui` possède désormais deux photographies originales, un diptyque décalé,
@@ -139,9 +173,60 @@ des bénéfices courts et deux preuves du produit sur corail et forêt. Aucune
 animation n’est ajoutée. La revue de `audience-art-v2` conclut **ship**, sans défaut
 matériel, après inspection de seize captures sur ordinateur et téléphone, en
 clair et en sombre. Son brief conserve les preuves et les vérifications.
-L’offre et son statut provisoire restent ceux décrits ci-dessus.
+Cette passe artistique conservait l’offre unique alors provisoire ; le
+pré-lancement suivant la remplace par les deux formules décrites ci-dessus.
+
+## Pré-lancement livré — 16 septembre 2026
+
+Extension du monde « La lumière en mouvement », seed hérité `29f966f4`, sans
+nouvelle identité ni maquette à approuver. Le hero indique le pré-lancement et
+la gratuité de réservation. Le bandeau dit « Les offres » ; les actions
+publiques de conversion rejoignent les offres ou la réservation. Le lien de
+connexion garde sa destination existante. Le formulaire, la confirmation et
+leurs états sont décrits dans [le brief dédié](src-app-reservation.md).
+
+Le parcours et les prix suivent [le cadrage approuvé](../../docs/design/2026-09-16-prelaunch-shape.md).
+Resend et le schéma dédié sont préparés, mais ni configurés ni installés en
+production. Aucun e-mail réel ni paiement n’a été déclenché. Le parcours manuel
+autonome reste à construire avant l’abonnement ; voir [la mise en service](../../docs/prelaunch.md).
+
+La [revue indépendante finale](../review/prelaunch-finish-review.md) conclut
+**ship**, sans correction matérielle, pour le rendu et le parcours préparé.
+QUALITY BAR était indisponible ; ce verdict ne valide pas la mise en service
+de l’e-mail, de la base ni un déploiement. Les captures
+`prelaunch-{hero,offers}-{1440,390}-{light,dark}.png` de `../review/` remplacent
+les anciennes preuves pour ces deux blocs. Elles documentent le rendu livré,
+pas une maquette préalable.
+
+La [validation de cette passe](../review/prelaunch-validation.md) consigne
+120 fichiers et 1167 tests réussis, le build, TypeScript et le lint ciblé
+réussis ; le lint global reste en défaut hors périmètre. La présente mise à
+jour documentaire ne relance ni serveur, ni tests, ni détecteur.
+
+## Contact livré — 16 septembre 2026
+
+Le bandeau et le pied de page rejoignent `#contact`. Le bloc « Une question ?
+On vous écoute. » associe une introduction et un renvoi à la FAQ au formulaire
+e-mail, sujet et message. Deux colonnes sur ordinateur deviennent une colonne
+sous 760 px. Le fond gris doux, les champs blancs ou graphite, l’action eucalyptus
+en capsule et les fontes existantes prolongent le monde public sans nouvelle image.
+À 420 px et en dessous, les flèches du bandeau disparaissent pour garder les liens
+dans l’écran.
+
+Le [brief commun du contact](src-app-app-contact.md) décrit les états, l’accès
+connecté et les limites. L’envoi est actuellement désactivé avec une explication :
+le destinataire et les compteurs anti-abus du contact sont prêts, mais la
+configuration d’e-mail reste incomplète. Cette installation ne concerne pas le
+schéma des réservations, toujours à installer séparément.
+
+La [revue indépendante du contact](../review/contact-finish-review.md) conclut **ship**, sans correction matérielle,
+après inspection de 13 captures `contact-*` dans `../review/`. Les états d’envoi
+ont été simulés ; aucun e-mail réel ni déploiement n’a été validé. La
+[validation](../review/contact-validation.md) conserve le périmètre exact.
 
 ## Décisions ouvertes
 
-Valider la cible avec des utilisateurs concernés, mesurer inscriptions et activation,
-puis confirmer le prix et les conditions commerciales avant une souscription réelle.
+Valider la cible et la volonté de payer, mesurer les adresses confirmées par
+formule puis les échanges qualitatifs. Configurer la collecte, préciser les
+conditions et la date d’ouverture, puis construire le parcours manuel autonome
+avant une souscription réelle. Une réservation n’est pas un abonnement payé.

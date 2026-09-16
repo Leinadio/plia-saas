@@ -1,73 +1,16 @@
-/* Planora's public identity, adapted to a daily workspace. The scope includes
-   portals while keeping the landing's own palette and composition independent. */
+/* La palette commune accompagne aussi les menus et panneaux hors du shell. */
 html:has(.planora-workspace) {
-  color-scheme: light;
-  --encre: #172d28;
-  --sol: #edf5f0;
-  --surface: #fbfdfb;
-  --surface-creuse: #f1f6f2;
-  --surface-survol: #e6f0e9;
-  --sarcelle: #126b5b;
-  --sarcelle-forte: #0b5043;
-  --sarcelle-voile: #dcece1;
-  --sarcelle-encre: #12614f;
-  --portant: #236345;
-  --portant-voile: #dceee1;
-  --tension: #b94e39;
-  --tension-encre-base: #9e3e2c;
-  --tension-voile: #f7e2da;
-  --attente: #846019;
-  --attente-voile: #f6edda;
-  --ardoise: #496359;
-  --ardoise-claire: #5d7167;
-  --filet: #d6e4db;
-  --filet-fort: #b8cdc0;
-  --barre: #edf5f0;
   --radius: 1rem;
-  --ombre-carte: 0 3px 12px -7px #173e2e20;
-  --ombre-levee: 0 8px 24px -12px #173e2e30;
-  --ombre-flottante: 0 18px 50px -16px #173e2e3d;
-  --app-curve: #b8d5c4;
-  --app-curve-warm: #e9c9b7;
-  --app-nav: #dcece1;
-  --app-selected: #126b5b;
-  --app-selected-ink: #ffffff;
+  --ombre-carte: 0 3px 12px -7px var(--planora-shadow);
+  --ombre-levee: 0 8px 24px -12px var(--planora-shadow);
+  --ombre-flottante: 0 18px 50px -16px var(--planora-shadow);
+  --app-curve: var(--planora-ribbon-cool);
+  --app-curve-warm: var(--planora-ribbon-warm);
+  --app-nav: var(--planora-warm-soft);
+  --app-selected: var(--planora-action);
+  --app-selected-ink: var(--planora-action-ink);
   --app-display: var(--font-landing-display), var(--font-ui), sans-serif;
   scrollbar-color: var(--filet-fort) var(--sol);
-}
-html.dark:has(.planora-workspace) {
-  color-scheme: dark;
-  --encre: #f0f6f0;
-  --sol: #132822;
-  --surface: #1b342b;
-  --surface-creuse: #213e32;
-  --surface-survol: #2a493b;
-  --sarcelle: #9fddbc;
-  --sarcelle-forte: #b9edcf;
-  --sarcelle-voile: #294d3a;
-  --sarcelle-encre: #b2e1c6;
-  --portant: #a3dfb7;
-  --portant-voile: #254b35;
-  --tension: #ee9d85;
-  --tension-encre-base: #f3ac97;
-  --tension-voile: #543329;
-  --attente: #e3c487;
-  --attente-voile: #433b27;
-  --ardoise: #bdcfc3;
-  --ardoise-claire: #a9bfb1;
-  --filet: #355345;
-  --filet-fort: #526e5e;
-  --barre: #132822;
-  --primary-foreground: #143328;
-  --sidebar-primary-foreground: #143328;
-  --app-curve: #345c47;
-  --app-curve-warm: #684f3e;
-  --app-nav: #213e32;
-  --app-selected: #9fddbc;
-  --app-selected-ink: #143328;
-  --ombre-carte: 0 4px 14px -8px #00000045;
-  --ombre-levee: 0 10px 24px -12px #00000065;
-  --ombre-flottante: 0 18px 50px -16px #00000085;
 }
 html:has(.planora-workspace) ::selection {
   background: var(--sarcelle-voile);
@@ -106,6 +49,9 @@ html:has(.planora-workspace) [data-slot="tabs-trigger"][data-state="active"] {
   background: var(--surface);
   color: var(--encre);
   box-shadow: none;
+}
+html:has(.planora-workspace) [data-slot="tabs-trigger"]::after {
+  display: none;
 }
 .planora-workspace .app-topbar {
   min-height: 84px;
@@ -171,7 +117,7 @@ html:has(.planora-workspace) [data-slot="tabs-trigger"][data-state="active"] {
 .app-heading-curves { width: 40%; max-width: 520px; height: 100px; flex-shrink: 1; }
 .app-heading-curves path:first-child { stroke: var(--app-curve); stroke-width: 2; }
 .app-heading-curves path:last-child { stroke: var(--app-curve-warm); stroke-width: 1.5; }
-.app-period-picker { border: 0; padding: 18px 20px; gap: 16px; }
+.app-period-picker { background: var(--planora-warm-soft); border: 0; padding: 18px 20px; gap: 16px; }
 .app-period-picker button { border-radius: 999px; }
 .app-mobile-navigation { padding-block: 4px 8px; }
 .app-mobile-navigation > div:first-child { border-radius: 999px; padding: 4px; background: var(--app-nav); }
@@ -197,8 +143,10 @@ html:has(.planora-workspace) :is([data-slot="sheet-title"], [data-slot="drawer-t
 @media (max-width: 639px) {
   .planora-workspace .app-topbar { min-height: auto; padding: 16px 16px 10px; row-gap: 16px; column-gap: 12px; }
   .app-topbar > a:first-child > span { font-size: 24px; }
-  .app-topbar nav { gap: 4px; }
-  .app-topbar nav a { height: 44px; font-size: 13px; }
+  /* La largeur suit les mots : Automatisation ne tient pas dans un tiers fixe.
+     Le retour à la ligne reste possible si la taille du texte est agrandie. */
+  .app-topbar nav { flex-wrap: wrap; gap: 4px; }
+  .app-topbar nav a { flex: 1 0 auto; width: auto; min-width: 44px; height: 44px; padding-inline: 8px; font-size: 13px; white-space: nowrap; }
   .app-topbar button:not([role="switch"]) { min-width: 44px; min-height: 44px; }
   .planora-workspace { background: var(--sol); }
 .app-content { padding: 12px 16px 32px; }
@@ -213,7 +161,7 @@ html:has(.planora-workspace) :is([data-slot="sheet-title"], [data-slot="drawer-t
 }
 
 /* Transaction filters read as one toolbar; labels remain visible while typing. */
-.app-transaction-filters { gap: 12px; padding: 20px; }
+.app-transaction-filters { background: var(--planora-warm-soft); gap: 12px; padding: 20px; }
 .app-transaction-filters :is(input, select) { min-height: 40px; border-radius: 12px; }
 .app-transaction-filters > div:first-child { flex: 1; min-width: 200px; }
 .app-account-choice { background: var(--surface); border: 0; border-radius: 999px; padding: 10px 18px; }
@@ -253,12 +201,12 @@ html:has(.planora-workspace) :is([data-slot="sheet-title"], [data-slot="drawer-t
 }
 html:has(.planora-workspace) .bg-sarcelle.text-white { color: var(--primary-foreground); }
 html:has(.planora-workspace) .bg-sarcelle > .bg-white { background: var(--primary-foreground); }
-html.dark:has(.planora-workspace) .bg-tension.text-white { color: #3b2119; }
+html.dark:has(.planora-workspace) .bg-tension.text-white { color: var(--planora-canvas); }
 .app-auth { container-type: normal; }
 .app-auth-layout { width: min(1120px, 100%); display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
 .app-auth-art { position: relative; overflow: hidden; min-height: 620px; border-radius: 140px 16px 16px 16px; }
 .app-auth-art img { object-fit: cover; }
-.app-auth-welcome { position: absolute; inset: auto 24px 24px; padding: 24px; border-radius: 16px; background: #172d28; color: #f0f6f0; }
+.app-auth-welcome { position: absolute; inset: auto 24px 24px; padding: 24px; border-radius: 16px; background: var(--planora-band); color: var(--planora-band-ink); }
 .app-auth-welcome p { font-family: var(--app-display); font-size: 2rem; line-height: 1.15; letter-spacing: -0.03em; }
 .app-auth-form { display: flex; flex-direction: column; gap: 32px; align-items: flex-start; }
 .app-auth-form > a { font-family: var(--app-display); }

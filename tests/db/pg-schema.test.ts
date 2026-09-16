@@ -13,7 +13,7 @@
 import { expect, test } from "vitest";
 import { createTestDb } from "../helpers/pg";
 
-test("le schéma pose les dix tables du budget", async () => {
+test("le schéma pose les tables du budget et des automatisations", async () => {
   const db = await createTestDb();
   const { rows } = await db.query<{ table_name: string }>(
     `SELECT table_name FROM information_schema.tables
@@ -21,6 +21,8 @@ test("le schéma pose les dix tables du budget", async () => {
   );
   expect(rows.map((r) => r.table_name)).toEqual([
     "accounts",
+    "automation_events",
+    "automation_rules",
     "bank_connections",
     "budget_amounts",
     "dismissed_notifications",

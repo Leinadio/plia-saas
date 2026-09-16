@@ -43,8 +43,8 @@
 }
 
 .preview > button svg {
-  color: var(--land-bg);
-  fill: var(--land-bg);
+  color: var(--planora-action-ink);
+  fill: var(--planora-action-ink);
 }
 
 .preview > button > img {

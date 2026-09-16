@@ -3,7 +3,7 @@ import { useTransition } from "react";
 import Link from "next/link";
 import { PlanoraMark } from "./planora-mark";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowLeftRight, History, Settings, LogOut, User, ChevronDown, RefreshCw, BookOpen } from "lucide-react";
+import { ArrowLeftRight, History, Settings, LogOut, User, ChevronDown, RefreshCw, BookOpen, MessageSquare, Workflow } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { initiales } from "@/lib/account";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,7 @@ import { Switch } from "@/components/ui/switch";
 const NAV = [
   { href: "/app/historique", label: "Vue d’ensemble", court: "Vue", icon: History },
   { href: "/app/transactions", label: "Transactions", court: "Transactions", icon: ArrowLeftRight },
+  { href: "/app/automatisations", label: "Automatisation", court: "Automatisation", icon: Workflow },
 ] as const;
 
 // LA BARRE PRODUIT. Une surface blanche posée au-dessus du sol, séparée par un
@@ -34,7 +35,7 @@ const NAV = [
 // trait sous le pied : le trait est le repère des onglets DANS une page, et deux
 // repères identiques à deux niveaux ne se distinguent plus.
 //
-// SUR TÉLÉPHONE, la barre ne garde que le repérage : la marque, les deux
+// SUR TÉLÉPHONE, la barre ne garde que le repérage : la marque, les trois
 // destinations, rafraîchir, le compte. Rien d'autre. Les outils — démo, guide,
 // calculatrice, dépassements — descendent dans la roue flottante du coin bas droit
 // (cf. outils-flottants.tsx), là où le pouce arrive. Et le menu du compte n'est
@@ -66,18 +67,19 @@ export function AppTopbar({
   // Les destinations du compte. Une seule liste, deux habillages : le menu
   // déroulant du grand écran et le panneau latéral du téléphone. En démo il n'y
   // a ni compte ni réglages à ouvrir — les données ne sont pas les vôtres.
-  const destinationsCompte = demo
-    ? []
-    : [
+  const destinationsCompte = [
+    ...(demo ? [] : [
         { href: "/app/compte", label: "Mon compte", icon: User },
         { href: "/app/settings", label: "Réglages", icon: Settings },
-      ];
+      ]),
+    { href: "/app/contact", label: "Nous contacter", icon: MessageSquare },
+  ];
 
   const seDeconnecter = async () => {
     await signOut();
     // refresh en plus de push : la porte de session vit dans un layout
     // serveur, qui ne se rejoue pas sur une simple navigation.
-    router.push("/connexion");
+    router.push("/");
     router.refresh();
   };
 
@@ -117,7 +119,8 @@ export function AppTopbar({
         </span>
       </Link>
       <nav
-        className="col-span-3 row-start-2 grid grid-cols-2 gap-1 sm:flex sm:min-w-0 sm:items-center sm:gap-0.5"
+        aria-label="Navigation principale"
+        className="col-span-3 row-start-2 flex min-w-0 gap-1 sm:items-center sm:gap-0.5"
         data-header-row="navigation"
       >
         {NAV.map((n) => {
@@ -138,7 +141,7 @@ export function AppTopbar({
             >
               <Icon className="hidden size-4 shrink-0 sm:block" />
               <span className="hidden lg:inline">{n.label}</span>
-              <span className="sm:hidden">{n.label}</span>
+              <span className="sm:hidden">{n.court}</span>
               <span className="hidden sm:inline lg:hidden">{n.court}</span>
             </Link>
           );

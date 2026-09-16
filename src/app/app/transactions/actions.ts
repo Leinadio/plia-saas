@@ -1,4 +1,5 @@
 "use server";
+import { applyNewTransactions } from "@/lib/automation-service";
 import type { Db } from "../../../db/pg";
 import { pourMoi } from "../../../lib/current-user";
 import { ownsGroup, ownsLine, ownsTransaction, ownsAccount } from "../../../db/repositories/ownership";
@@ -153,7 +154,9 @@ export async function addTransaction(form: ManualFormInput) {
     const userId = moi;
     if (!(await ownsAccount(base, userId, form.accountId))) return;
     if (form.groupId !== null && !(await ownsGroup(base, userId, form.groupId))) return;
-    await insertManualTransaction(base, { ...toManualInput(form), groupId: await groupeTenable(base, form) });
+    const id = await insertManualTransaction(base, { ...toManualInput(form), groupId: await groupeTenable(base, form) });
+    if (form.groupId === null) await applyNewTransactions(base, moi, [id]);
+    revalidatePath("/app", "layout");
     revalidateAll();
   });
 }

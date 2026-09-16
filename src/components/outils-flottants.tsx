@@ -33,7 +33,7 @@ export function OutilsFlottants() {
       ? [
           {
             key: "alertes",
-            label: "Dépassements",
+            label: "Notifications",
             icon: <Bell />,
             badge: alertes.restants,
             badgeTon: "tension" as const,

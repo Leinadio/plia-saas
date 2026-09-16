@@ -42,15 +42,15 @@ export function LandingHero() {
           pour voir ce qu’il restera, avant de décider.
         </p>
         <div className={styles.heroActions}>
-          <Link className={styles.primary} href="/connexion">
-            Commencer avec Planora <ArrowUpRight aria-hidden />
+          <Link className={styles.primary} href="#offre">
+            Réserver mon accès <ArrowUpRight aria-hidden />
           </Link>
           <a className={styles.textLink} href="#demonstration">
             Voir Planora en action <ArrowDown aria-hidden />
           </a>
         </div>
         <p className={styles.connectionNote}>
-          <Link2 aria-hidden /> Relié à votre banque avec Enable Banking.
+          <Link2 aria-hidden /> Pré-lancement · Réservation gratuite, sans carte bancaire.
         </p>
       </div>
       <div className={styles.heroVisual}>

@@ -5,6 +5,8 @@ import { ArrowDown, ArrowUpRight, Check } from "lucide-react";
 import { LandingBrand, LandingHeader } from "@/components/landing-header";
 import landing from "@/components/landing.module.css";
 import styles from "./page.module.css";
+import detailMobile from "../../../public/landing/plia-detail-mobile.png";
+import balancesMobile from "../../../public/landing/plia-soldes-mobile.png";
 
 export const metadata: Metadata = {
   title: "En solo ou à deux, un budget à votre image — Planora",
@@ -112,7 +114,7 @@ export default function AudiencePage() {
               </span>
             </li>
           </ul>
-          <Link href="/connexion" className={landing.textLink}>
+          <Link href="/#offre" className={landing.textLink}>
             Préparer mon budget <ArrowUpRight aria-hidden />
           </Link>
         </div>
@@ -124,10 +126,10 @@ export default function AudiencePage() {
           </p>
           <div className={styles.detailImage}>
             <Image
-              src="/landing/plia-detail-mobile.png"
+              src={detailMobile}
               alt="Dans Planora, l’enveloppe Courses détaille un budget de 350 euros, 216,30 euros dépensés et 133,70 euros restants."
-              width={430}
-              height={480}
+              width={detailMobile.width}
+              height={detailMobile.height}
               sizes="(max-width: 700px) 80vw, 330px"
             />
           </div>
@@ -182,7 +184,7 @@ export default function AudiencePage() {
                 </span>
               </li>
             </ul>
-            <Link href="/connexion" className={landing.textLink}>
+            <Link href="/#offre" className={landing.textLink}>
               Préparer nos projets <ArrowUpRight aria-hidden />
             </Link>
             <p className={styles.note}>
@@ -197,10 +199,10 @@ export default function AudiencePage() {
               Et <span>après ?</span>
             </p>
             <Image
-              src="/landing/plia-soldes-mobile.png"
+              src={balancesMobile}
               alt="La vue Comparer de Planora présente les soldes de plusieurs mois et une estimation de fin de mois."
-              width={398}
-              height={294}
+              width={balancesMobile.width}
+              height={balancesMobile.height}
               sizes="(max-width: 700px) 88vw, 398px"
             />
             <figcaption>
@@ -220,11 +222,11 @@ export default function AudiencePage() {
         </h2>
         <p>Pour un petit plaisir. Pour un grand départ.</p>
         <div className={styles.actions}>
-          <Link href="/connexion" className={landing.primary}>
-            Commencer avec Planora <ArrowUpRight aria-hidden />
+          <Link href="/#offre" className={landing.primary}>
+            Réserver mon accès <ArrowUpRight aria-hidden />
           </Link>
           <Link href="/#offre" className={landing.textLink}>
-            Découvrir l’offre <ArrowUpRight aria-hidden />
+            Découvrir les offres <ArrowUpRight aria-hidden />
           </Link>
         </div>
       </section>

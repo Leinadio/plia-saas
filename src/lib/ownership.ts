@@ -20,9 +20,9 @@ export type Ownership =
   | { status: "manual"; groupId: number }
   | { status: "none" };
 
-// Rattachement 100 % manuel : une transaction appartient à un groupe seulement
-// si son group_id pointe un groupe du même compte. Plus aucune correspondance
-// automatique par mot-clé.
+// Une transaction appartient à un groupe seulement si son group_id pointe un
+// groupe du même compte. Le moteur de règles écrit ce rattachement à l’import ;
+// les calculs ne déduisent jamais une appartenance depuis un mot-clé.
 export function resolveOwnership(txn: OwnedTxn, groups: OwnableGroup[]): Ownership {
   if (txn.excluded) return { status: "none" };
   if (txn.groupId !== null) {

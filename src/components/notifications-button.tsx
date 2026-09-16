@@ -4,6 +4,7 @@ import { Bell, CheckCheck, Undo2 } from "lucide-react";
 import { notificationsByMonth, unseenIds, type Notification } from "@/lib/notifications";
 import { monthLabel } from "@/lib/transactions-view";
 import { dismissAllNotifications, restoreNotifications } from "@/app/app/notifications-actions";
+import { AutomationNotice } from "@/components/automation-notice";
 import { OverspendNotice } from "@/components/overspend-notice";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -99,13 +100,13 @@ export function NotificationsProvider({
         >
           <SheetContent side="right" className="w-full gap-0 sm:max-w-sm">
             <SheetHeader className="border-b">
-              <SheetTitle>Dépassements</SheetTitle>
+              <SheetTitle>Notifications</SheetTitle>
               <SheetDescription>
                 {affichees.length === 0
-                  ? "Aucun budget dépassé."
+                  ? "Aucune notification pour le moment."
                   : restants.length === 0
-                    ? `${affichees.length} budget${affichees.length > 1 ? "s" : ""} dépassé${affichees.length > 1 ? "s" : ""}, tous vus.`
-                    : `${restants.length} à voir sur ${affichees.length} budget${affichees.length > 1 ? "s" : ""} dépassé${affichees.length > 1 ? "s" : ""}.`}
+                    ? "Toutes vos notifications ont été vues."
+                    : `${restants.length} à voir sur ${affichees.length} notifications.`}
               </SheetDescription>
               {/* Tout acquitter d'un geste : quand une avalanche de dépassements arrive en
                   même temps (un mois qu'on rattrape après coup), les fermer un par un est
@@ -147,7 +148,9 @@ export function NotificationsProvider({
                   {/* Le mois en tête de son groupe : un dépassement se lit d'abord par
                       « quand ». Même micro-typographie que les étiquettes du tableau. */}
                   <p className="legende">{monthLabel(groupe.month)}</p>
-                  {groupe.items.map((n) => (
+                  {groupe.items.map((n) => n.kind === "automation" ? (
+                    <AutomationNotice key={n.id} notice={n} onDone={() => marquer([n.id], true)} onRestore={() => marquer([n.id], false)} onNavigate={() => { setOuvert(false); setDernierLot(null); }} />
+                  ) : (
                     <OverspendNotice
                       key={n.id}
                       id={n.id}
@@ -184,7 +187,7 @@ export function NotificationsButton() {
       className="text-barre-texte hover:bg-barre-appui hover:text-foreground relative inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-[0.8125rem] font-semibold transition-colors duration-150 sm:px-2.5"
     >
       <Bell className="size-4" />
-      <span data-app-tool-label>Dépassements</span>
+      <span data-app-tool-label>Notifications</span>
       {/* Le compte de ce qui reste à voir : c'est une rupture, donc c'est
           rouge, et posé contre le mot plutôt que perché sur l'icône — un
           nombre qu'on doit lire ne se met pas en exposant. */}

@@ -1,1 +1,1 @@
-Image extraite à 26 secondes de la visite guidée Plia du 11 septembre 2026. Capture des vrais composants du mode démonstration, données fictives, aucun compte personnel. Source : artifacts/plia-visite/plia-visite-guidee.mp4.
+Origin: local Playwright screenshot of the actual Planora application components. Built-in demo fixtures only; no customer data. Captured 2026-09-16 after the approved white, eucalyptus, mist blue and soft peach palette, with anthracite treasury.

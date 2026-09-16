@@ -1,333 +1,436 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-15T14:50:37Z",
+  "generatedAt": "2026-09-16T15:05:08Z",
   "title": "Design System: Planora",
   "extensions": {
     "colorMeta": {
       "encre": {
         "role": "neutral",
-        "displayName": "Encre forêt",
-        "canonical": "#172d28",
-        "darkValue": "#f0f6f0",
+        "displayName": "Encre anthracite",
+        "canonical": "#293331",
+        "darkValue": "#eef4f0",
         "tonalRamp": [
-          "#132822",
-          "#172d28",
-          "#1b342b",
-          "#355345",
-          "#526e5e",
-          "#a9bfb1",
-          "#edf5f0",
-          "#fbfdfb"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#293331"
         ],
-        "scope": "app-and-connexion"
+        "scope": "application-and-public-pages"
       },
       "sol": {
         "role": "neutral",
-        "displayName": "Sol menthe",
-        "canonical": "#edf5f0",
-        "darkValue": "#132822",
+        "displayName": "Blanc / vert forêt",
+        "canonical": "#ffffff",
+        "darkValue": "#102b24",
         "tonalRamp": [
-          "#132822",
-          "#172d28",
-          "#1b342b",
-          "#355345",
-          "#526e5e",
-          "#a9bfb1",
-          "#edf5f0",
-          "#fbfdfb"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff"
         ],
-        "scope": "app-and-connexion"
+        "scope": "application-and-public-pages"
       },
       "surface": {
         "role": "neutral",
         "displayName": "Blanc de carte",
-        "canonical": "#fbfdfb",
-        "darkValue": "#1b342b",
+        "canonical": "#ffffff",
+        "darkValue": "#262b29",
         "tonalRamp": [
-          "#132822",
-          "#172d28",
-          "#1b342b",
-          "#355345",
-          "#526e5e",
-          "#a9bfb1",
-          "#edf5f0",
-          "#fbfdfb"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff"
         ],
-        "scope": "app-and-connexion"
+        "scope": "application-and-public-pages"
       },
       "surface-creuse": {
         "role": "neutral",
         "displayName": "Surface creusée",
-        "canonical": "#f1f6f2",
-        "darkValue": "#213e32",
+        "canonical": "#f5f7f6",
+        "darkValue": "#2d3330",
         "tonalRamp": [
-          "#132822",
-          "#172d28",
-          "#1b342b",
-          "#355345",
-          "#526e5e",
-          "#a9bfb1",
-          "#edf5f0",
-          "#fbfdfb"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff"
         ],
-        "scope": "app-and-connexion"
+        "scope": "application-and-public-pages"
       },
       "sarcelle": {
         "role": "primary",
-        "displayName": "Vert forêt de commande",
+        "displayName": "Vert eucalyptus de commande",
         "canonical": "#126b5b",
-        "darkValue": "#9fddbc",
+        "darkValue": "#9bd8ba",
         "tonalRamp": [
-          "#0b5043",
-          "#126b5b",
-          "#236345",
-          "#526e5e",
-          "#79aa8f",
-          "#9fddbc",
-          "#b9edcf",
-          "#edf5f0"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#126b5b"
         ],
-        "scope": "app-and-connexion"
+        "scope": "application-and-public-pages"
       },
       "portant": {
         "role": "secondary",
         "displayName": "Vert portant",
-        "canonical": "#236345",
-        "darkValue": "#a3dfb7",
+        "canonical": "#245e49",
+        "darkValue": "#b2dfc5",
         "tonalRamp": [
-          "oklch(20% 0.06 155)",
-          "oklch(30% 0.08 155)",
-          "oklch(40% 0.09 155)",
-          "oklch(50% 0.10 155)",
-          "oklch(62% 0.10 155)",
-          "oklch(74% 0.085 155)",
-          "oklch(86% 0.05 155)",
-          "oklch(95% 0.022 155)"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#245e49"
         ],
-        "scope": "app-and-connexion"
+        "scope": "application-and-public-pages"
       },
       "tension": {
         "role": "secondary",
         "displayName": "Rouge tension",
-        "canonical": "#b94e39",
-        "darkValue": "#ee9d85",
+        "canonical": "#a83e30",
+        "darkValue": "#f4ad99",
         "tonalRamp": [
-          "oklch(20% 0.07 28)",
-          "oklch(30% 0.10 28)",
-          "oklch(40% 0.13 28)",
-          "oklch(50% 0.15 28)",
-          "oklch(60% 0.15 28)",
-          "oklch(72% 0.12 28)",
-          "oklch(86% 0.06 28)",
-          "oklch(96% 0.025 28)"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#a83e30"
         ],
-        "scope": "app-and-connexion"
+        "scope": "application-and-public-pages"
       },
       "attente": {
         "role": "tertiary",
-        "displayName": "Sable attente",
-        "canonical": "#846019",
-        "darkValue": "#e3c487",
+        "displayName": "Pêche attente",
+        "canonical": "#784e3a",
+        "darkValue": "#efcfb9",
         "tonalRamp": [
-          "oklch(20% 0.04 80)",
-          "oklch(30% 0.055 80)",
-          "oklch(40% 0.07 80)",
-          "oklch(50% 0.085 80)",
-          "oklch(62% 0.09 80)",
-          "oklch(75% 0.085 80)",
-          "oklch(87% 0.055 80)",
-          "oklch(96% 0.025 80)"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#784e3a"
         ],
-        "scope": "app-and-connexion"
+        "scope": "application-and-public-pages"
       },
       "ardoise": {
         "role": "neutral",
         "displayName": "Ardoise",
-        "canonical": "#496359",
-        "darkValue": "#bdcfc3",
+        "canonical": "#566460",
+        "darkValue": "#bdcdc3",
         "tonalRamp": [
-          "#132822",
-          "#172d28",
-          "#1b342b",
-          "#355345",
-          "#526e5e",
-          "#a9bfb1",
-          "#edf5f0",
-          "#fbfdfb"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#566460"
         ],
-        "scope": "app-and-connexion"
+        "scope": "application-and-public-pages"
       },
       "filet": {
         "role": "neutral",
         "displayName": "Filet",
-        "canonical": "#d6e4db",
-        "darkValue": "#355345",
+        "canonical": "#dfe5e2",
+        "darkValue": "#444d47",
         "tonalRamp": [
-          "#132822",
-          "#172d28",
-          "#1b342b",
-          "#355345",
-          "#526e5e",
-          "#a9bfb1",
-          "#edf5f0",
-          "#fbfdfb"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#dfe5e2"
         ],
-        "scope": "app-and-connexion"
+        "scope": "application-and-public-pages"
       },
       "landing-bg": {
         "role": "neutral",
         "displayName": "Page publique · bg",
-        "canonical": "#edf5f0",
-        "scope": "landing",
+        "canonical": "#ffffff",
+        "scope": "application-and-public-pages",
         "purpose": "Variation CSS du rôle bg sur la page publique uniquement.",
         "tonalRamp": [
-          "#132822",
-          "#172d28",
-          "#1b342b",
-          "#234234",
-          "#496359",
-          "#bdcfc3",
-          "#edf5f0",
-          "#fbfdfb"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff"
         ],
-        "darkValue": "#132822"
+        "darkValue": "#102b24"
       },
       "landing-green": {
         "role": "primary",
         "displayName": "Page publique · green",
         "canonical": "#126b5b",
-        "scope": "landing",
+        "scope": "application-and-public-pages",
         "purpose": "Variation CSS du rôle green sur la page publique uniquement.",
         "tonalRamp": [
-          "#0b5043",
-          "#126b5b",
-          "#164c3c",
-          "#276650",
-          "#70b18c",
-          "#9fddbc",
-          "#b9edcf",
-          "#edf5f0"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#126b5b"
         ],
-        "darkValue": "#9fddbc"
+        "darkValue": "#9bd8ba"
       },
       "landing-selection": {
         "role": "neutral",
         "displayName": "Page publique · selection",
-        "canonical": "#f1c94e",
-        "scope": "landing",
-        "purpose": "Variation CSS du rôle selection sur la page publique uniquement."
+        "canonical": "#edc8b5",
+        "scope": "application-and-public-pages",
+        "purpose": "Variation CSS du rôle selection sur la page publique uniquement.",
+        "darkValue": "#edc8b5",
+        "tonalRamp": [
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#edc8b5"
+        ]
       },
       "landing-balance-bg": {
         "role": "neutral",
         "displayName": "Page publique · balance-bg",
-        "canonical": "#17222b",
-        "scope": "landing",
+        "canonical": "#273330",
+        "scope": "application-and-public-pages",
         "purpose": "Variation CSS du rôle balance-bg sur la page publique uniquement.",
         "tonalRamp": [
-          "#17222b",
-          "#3c5a4d",
-          "#547a69",
-          "#83ae91",
-          "#b0c5b9",
-          "#b9d8c7",
-          "#c1d0c8",
-          "#f4f8f5"
-        ]
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#273330"
+        ],
+        "darkValue": "#151b17"
       },
       "landing-demo-bg": {
         "role": "neutral",
         "displayName": "Page publique · demo-bg",
-        "canonical": "#164c3c",
-        "scope": "landing",
+        "canonical": "#273330",
+        "scope": "application-and-public-pages",
         "purpose": "Variation CSS du rôle demo-bg sur la page publique uniquement.",
         "tonalRamp": [
-          "#103b2e",
-          "#164c3c",
-          "#276650",
-          "#70b18c",
-          "#b8ddc0",
-          "#c3ddce",
-          "#e5f0e8",
-          "#f4f9f1"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#273330"
         ],
-        "darkValue": "#103b2e"
+        "darkValue": "#151b17"
       },
       "landing-light-coral": {
         "role": "neutral",
-        "displayName": "Page publique · light-coral",
-        "canonical": "#ee806b",
-        "scope": "landing",
-        "purpose": "Variation CSS du rôle light-coral sur la page publique uniquement."
+        "displayName": "Lumière pêche",
+        "canonical": "#edc8b5",
+        "scope": "application-and-public-pages",
+        "purpose": "Variation CSS du rôle light-coral sur la page publique uniquement.",
+        "darkValue": "#edc8b5",
+        "tonalRamp": [
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#edc8b5"
+        ]
       },
       "landing-offer-bg": {
         "role": "neutral",
-        "displayName": "Page publique · offer-bg",
-        "canonical": "#d3e7d7",
-        "scope": "landing",
-        "purpose": "Variation CSS du rôle offer-bg sur la page publique uniquement.",
+        "displayName": "Offre pêche",
+        "canonical": "#fcf1eb",
+        "scope": "application-and-public-pages",
+        "purpose": "Surface pêche pâle des deux offres publiques ; réutilise planora-warm-soft, avec sa variante sombre.",
         "tonalRamp": [
-          "#173e2e",
-          "#274d39",
-          "#357458",
-          "#466453",
-          "#98bda4",
-          "#b2dcbe",
-          "#d3e7d7",
-          "#e5f2e7"
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#fcf1eb"
         ],
-        "darkValue": "#274d39"
+        "darkValue": "#352e27"
       },
       "landing-audience-coral": {
         "role": "secondary",
-        "displayName": "Pour qui · coral",
-        "scope": "src/app/pour-qui/page.tsx",
-        "purpose": "Support de la preuve solo, lien photographique couple et accent sur forêt."
+        "displayName": "Pêche de composition",
+        "scope": "application-and-public-pages",
+        "purpose": "Support de la preuve solo et lien photographique couple, selon le thème partagé.",
+        "canonical": "#f5ded1",
+        "darkValue": "#493a31",
+        "tonalRamp": [
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#f5ded1"
+        ]
       },
       "landing-audience-coral-hover": {
         "role": "secondary",
-        "displayName": "Pour qui · coral-hover",
-        "scope": "src/app/pour-qui/page.tsx",
-        "purpose": "Survol du lien photographique couple."
+        "displayName": "Pêche au survol",
+        "scope": "application-and-public-pages",
+        "purpose": "Survol du lien photographique couple.",
+        "canonical": "#efd2c1",
+        "darkValue": "#594436",
+        "tonalRamp": [
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#efd2c1"
+        ]
       },
       "landing-audience-coral-dark": {
         "role": "secondary",
-        "displayName": "Pour qui · coral-dark",
-        "scope": "src/app/pour-qui/page.tsx",
-        "purpose": "Support de la preuve solo en thème sombre."
+        "displayName": "Pêche en sombre",
+        "scope": "application-and-public-pages",
+        "purpose": "Support de la preuve solo et lien photographique couple en thème sombre.",
+        "canonical": "#493a31",
+        "darkValue": "#493a31",
+        "tonalRamp": [
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#f5ded1"
+        ]
       },
       "landing-audience-brown": {
         "role": "secondary",
-        "displayName": "Pour qui · brown",
-        "scope": "src/app/pour-qui/page.tsx",
-        "purpose": "Grand titre sur le support corail ; contraste vérifié pour du grand texte."
+        "displayName": "Encre chaude",
+        "scope": "application-and-public-pages",
+        "purpose": "Encre chaude du grand titre sur le support pêche, selon le thème partagé.",
+        "canonical": "#784e3a",
+        "darkValue": "#efcfb9",
+        "tonalRamp": [
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#784e3a"
+        ]
       },
       "landing-audience-line": {
         "role": "secondary",
         "displayName": "Pour qui · line",
-        "scope": "src/app/pour-qui/page.tsx",
-        "purpose": "Filet au-dessus de la limite de l’accès personnel."
+        "scope": "application-and-public-pages",
+        "purpose": "Filet au-dessus de la limite de l’accès personnel.",
+        "canonical": "#64796e",
+        "darkValue": "#607967",
+        "tonalRamp": [
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#64796e"
+        ]
       },
       "landing-audience-mint": {
         "role": "secondary",
-        "displayName": "Pour qui · mint",
-        "scope": "src/app/pour-qui/page.tsx",
-        "purpose": "Accent des titres et coches du récit couple sur forêt."
+        "displayName": "Accent pêche sur anthracite",
+        "scope": "application-and-public-pages",
+        "purpose": "Accent des titres et coches du récit couple sur anthracite.",
+        "canonical": "#edc8b5",
+        "darkValue": "#edc8b5",
+        "tonalRamp": [
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#edc8b5"
+        ]
       },
       "app-curve": {
         "role": "secondary",
-        "displayName": "Courbe menthe",
-        "canonical": "#b8d5c4",
-        "darkValue": "#345c47",
-        "scope": "app",
-        "purpose": "Courbe décorative statique près du titre sur ordinateur."
+        "displayName": "Courbe bleu brume",
+        "canonical": "#d7e5ed",
+        "darkValue": "#314b59",
+        "scope": "application-and-public-pages",
+        "purpose": "Courbe décorative statique près du titre sur ordinateur.",
+        "tonalRamp": [
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#d7e5ed"
+        ]
       },
       "app-curve-warm": {
         "role": "secondary",
-        "displayName": "Courbe corail",
-        "canonical": "#e9c9b7",
-        "darkValue": "#684f3e",
-        "scope": "app",
-        "purpose": "Courbe décorative statique près du titre sur ordinateur."
+        "displayName": "Courbe pêche",
+        "canonical": "#f2d7c8",
+        "darkValue": "#614739",
+        "scope": "application-and-public-pages",
+        "purpose": "Courbe décorative statique près du titre sur ordinateur.",
+        "tonalRamp": [
+          "#102b24",
+          "#262b29",
+          "#66736b",
+          "#b8c6bf",
+          "#f5f7f6",
+          "#ffffff",
+          "#f2d7c8"
+        ]
+      },
+      "brand-mist": {
+        "role": "secondary",
+        "displayName": "Bleu brume",
+        "canonical": "#547c91",
+        "scope": "application-and-public-pages",
+        "purpose": "Famille des dépenses et courbes froides ; les nuances fonctionnelles viennent de palette.css.",
+        "tonalRamp": [
+          "#26353d",
+          "#2b3e49",
+          "#3b6076",
+          "#547c91",
+          "#648593",
+          "#a7c1cc",
+          "#c0d6e2",
+          "#e9f0f5"
+        ]
       }
     },
     "typographyMeta": {
@@ -371,7 +474,7 @@
       },
       "landing-price": {
         "displayName": "Page publique · price",
-        "purpose": "Rôle price de la page publique ; tailles normatives dans DESIGN.md.",
+        "purpose": "Prix des deux offres publiques en Bricolage ; variante mobile sous 760 px. Les montants de budget gardent Schibsted.",
         "scope": "landing"
       },
       "landing-body": {
@@ -401,12 +504,12 @@
       },
       "landing-audience-proof": {
         "displayName": "Page publique · audience-proof",
-        "purpose": "Phrase de la preuve solo sur corail.",
+        "purpose": "Phrase de la preuve solo sur pêche.",
         "scope": "src/app/pour-qui/page.tsx"
       },
       "landing-audience-comparison": {
         "displayName": "Page publique · audience-comparison",
-        "purpose": "Phrase de la comparaison sur forêt.",
+        "purpose": "Phrase de la comparaison sur anthracite.",
         "scope": "src/app/pour-qui/page.tsx"
       },
       "app-card-title": {
@@ -449,20 +552,20 @@
     "shadows": [
       {
         "name": "carte",
-        "value": "0 3px 12px -7px #173e2e20",
-        "darkValue": "0 4px 14px -8px #00000045",
+        "value": "0 3px 12px -7px var(--planora-shadow)",
+        "darkValue": "0 3px 12px -7px var(--planora-shadow)",
         "purpose": "Carte opaque au repos."
       },
       {
         "name": "levee",
-        "value": "0 8px 24px -12px #173e2e30",
-        "darkValue": "0 10px 24px -12px #00000065",
+        "value": "0 8px 24px -12px var(--planora-shadow)",
+        "darkValue": "0 8px 24px -12px var(--planora-shadow)",
         "purpose": "Carte ouvrable et panneau."
       },
       {
         "name": "flottante",
-        "value": "0 18px 50px -16px #173e2e3d",
-        "darkValue": "0 18px 50px -16px #00000085",
+        "value": "0 18px 50px -16px var(--planora-shadow)",
+        "darkValue": "0 18px 50px -16px var(--planora-shadow)",
         "purpose": "Menu et panneau flottant."
       }
     ],
@@ -511,6 +614,11 @@
         "name": "landing-faq",
         "value": "transform 0.25s ease",
         "purpose": "Rotation du signe de FAQ à l’ouverture."
+      },
+      {
+        "name": "reservation-choice",
+        "value": "background-color 160ms ease-out, border-color 160ms ease-out",
+        "purpose": "Choix radio de formule, uniquement sous prefers-reduced-motion: no-preference."
       }
     ],
     "breakpoints": [
@@ -534,12 +642,22 @@
       {
         "name": "landing-mobile",
         "value": "700px"
+      },
+      {
+        "name": "reservation-tablet",
+        "value": "1000px",
+        "purpose": "Réduit les marges et espacements du formulaire public."
+      },
+      {
+        "name": "prelaunch-mobile",
+        "value": "760px",
+        "purpose": "Empile les offres et la réservation ; masque la photographie et place le prix sous le libellé radio."
       }
     ],
     "landing": {
       "scope": "src/app/page.tsx",
       "surfaceBrief": ".impeccable/surfaces/src-app-page-tsx.md",
-      "applicationRules": "Existing narrative, components and non-landing extensions remain scoped to the application.",
+      "applicationRules": "The public pages and workspace share palette.css semantic roles; compositions remain scoped.",
       "northStar": "La lumière en mouvement",
       "direction": {
         "seed": "29f966f4",
@@ -548,7 +666,7 @@
         "execution": "code-led",
         "approvedUiComp": false
       },
-      "focus": "3px solid current landing action color, offset 5px; yellow on forest demo choices.",
+      "focus": "Eucalyptus on light surfaces; peach on anthracite; shared document theme.",
       "reducedMotion": "All landing animations and transitions are disabled; scroll behavior is auto.",
       "tonalRamps": "Observed role families only; these strips group the actual CSS shades, not new interchangeable semantic tokens.",
       "review": {
@@ -569,19 +687,22 @@
           ".impeccable/review/desktop-offre.png",
           ".impeccable/review/desktop-compare.png",
           ".impeccable/review/desktop-detail.png"
-        ]
+        ],
+        "status": "historical-landing-persistence-review"
       },
       "narrative": {
-        "overview": "La page publique associe verre courbe, lumière naturelle, fonds menthe et forêt, et une typographie expressive. Les chiffres reposent sur des surfaces opaques ; le verre appartient aux images.",
+        "overview": "La page publique associe verre courbe, lumière naturelle, fonds blanc et graphite, accents eucalyptus, bleu brume et pêche, et une typographie expressive. Les chiffres reposent sur des surfaces opaques ; le verre appartient aux images.",
         "dos": [
-          "Conserver les jetons isolés, les chiffres opaques et lisibles, les adaptations claire/sombre/mobile et la réduction des animations."
+          "Conserver les rôles de couleur partagés, les chiffres opaques et lisibles, les adaptations claire/sombre/mobile et la réduction des animations."
         ],
         "donts": [
-          "Ne pas transposer les grandes découpes photographiques ni Bricolage aux écrans de gestion."
+          "Ne pas transposer les grandes découpes photographiques aux données du relevé ni appliquer Bricolage aux montants de budget."
         ]
       },
       "relatedScopes": [
-        "src/app/pour-qui/page.tsx"
+        "src/app/pour-qui/page.tsx",
+        "src/app/reservation/page.tsx",
+        "src/app/reservation/confirmer/page.tsx"
       ],
       "sharedHeader": {
         "targets": [
@@ -591,15 +712,15 @@
         "desktop": "Above 1100px: brand, centered group of home-section anchors / Pour qui ?, then login at right. Slash separator is aria-hidden; arrows retain their section/page meaning.",
         "compact": "At or below 1100px: brand, / Pour qui ? centered, login at right, all section anchors in second row. At or below 700px: 12px section and13px page text. At or below 360px:12px page text and tighter gaps.",
         "currentPage": "Pour qui ? uses aria-current=\"page\", the action color and an underline on /pour-qui.",
-        "destinations": "Le produit → #demonstration, Fonctionnement → #fonctionnement, L’offre → #offre. From /pour-qui these target home anchors. Pour qui ? → /pour-qui and login → /connexion. Section navigation keeps its accessible name; the decorative slash is hidden from screen readers.",
+        "destinations": "Le produit → #demonstration, Fonctionnement → #fonctionnement, Les offres → #offre. Depuis /pour-qui et les pages de réservation, les ancres rejoignent l’accueil. Pour qui ? → /pour-qui ; Se connecter → /connexion. Le nom accessible et le séparateur décoratif masqué sont conservés.",
         "scroll": "Native anchor navigation and history; smooth scrolling scoped to public pages, immediate with prefers-reduced-motion. Existing section scroll margins preserved."
       },
       "audience": {
         "scope": "src/app/pour-qui/page.tsx",
         "surfaceBrief": ".impeccable/surfaces/src-app-pour-qui-page-tsx.md",
-        "authority": "Inherits the public Bricolage/Schibsted, mint/forest world; original solo and couple imagery and surface-specific art direction. No approved UI comp.",
-        "layout": "Centered hero, 1440px cover; offset 1fr/1.12fr photo diptych, opposite curved corners, both photos remain side by side on mobile. Alternating 1312px stories in 1.08fr/1fr columns, 96/48px gap; text precedes proof at 700px. Coral detail plate and forest comparison section; centered final CTA.",
-        "theme": "Existing public light/dark roles; local coral proof changes to its dedicated dark variant, and forest uses the existing dark demo background.",
+        "authority": "Inherits La lumière en mouvement, shared white/graphite ground and eucalyptus, mist blue and peach roles, with Bricolage/Schibsted and original solo/couple imagery. No approved UI comp.",
+        "layout": "Centered hero, 1440px cover; offset 1fr/1.12fr photo diptych, opposite curved corners, both photos remain side by side on mobile. Alternating 1312px stories in 1.08fr/1fr columns, 96/48px gap; text precedes proof at 700px. Peach detail plate and anthracite comparison section; centered final CTA.",
+        "theme": "Shared document theme: the peach proof and couple photo link use warm dark variants; the comparison section uses the shared anthracite band.",
         "motion": "No new animation; shared command transitions and reduced-motion behavior only.",
         "review": {
           "disposition": "ship",
@@ -623,7 +744,8 @@
             ".impeccable/review/audience-art-390-dark-couple.png"
           ],
           "contrast": "Pass; brown on dark coral 4.12:1 for large text.",
-          "validation": "1119 tests passed in 114 files; ESLint and production build passed. Production HTML contract audience-art-v2 verified. Browser 320/390/768/1100/1440px and dark 390/1440px: four images loaded, no overflow, photo anchors, keyboard focus, connexion/demo links passed. Documentation pass did not repeat tests, browser or detector."
+          "validation": "1119 tests passed in 114 files; ESLint and production build passed. Production HTML contract audience-art-v2 verified. Browser 320/390/768/1100/1440px and dark 390/1440px: four images loaded, no overflow, photo anchors, keyboard focus, connexion/demo links passed. Documentation pass did not repeat tests, browser or detector.",
+          "status": "historical-audience-art-v2-review"
         },
         "contract": "audience-art-v2",
         "imagery": {
@@ -639,6 +761,57 @@
         },
         "interaction": "Photo anchors #en-solo and #a-deux; visible keyboard focus; personal access and demo/estimate caveats; connexion and home demo/offer links.",
         "localDecisions": "Only the audience scope accepts the intentional 64px hero clamp minimum, coral and brown roles, detail shadow, note divider and 80px mobile photo corners/desktop separator height. No blanket application exception."
+      },
+      "prelaunch": {
+        "scope": [
+          "src/components/landing-offers.tsx",
+          "src/app/reservation/page.tsx",
+          "src/app/reservation/confirmer/page.tsx"
+        ],
+        "surfaceBriefs": [
+          ".impeccable/surfaces/src-app-page-tsx.md",
+          ".impeccable/surfaces/src-app-reservation.md"
+        ],
+        "authority": "Extension locale code-led de La lumière en mouvement, seed hérité 29f966f4 ; aucune nouvelle identité ni maquette.",
+        "sources": [
+          "docs/design/2026-09-16-prelaunch-shape.md",
+          "docs/prelaunch.md",
+          ".impeccable/review/prelaunch-direction.md"
+        ],
+        "layout": "Offres en deux colonnes éditoriales sur pêche pâle, séparées par un filet. Réservation avec introduction et panneau bleu brume. Sous 760 px, empilement, commandes larges, photographie masquée et prix radio sous le libellé. La confirmation garde une colonne courte.",
+        "interaction": "Radios natifs visibles, états choisi et focus distincts. Champs opaques et focus de 3 px décalé de 3 px. Envoi en attente, erreur annoncée, renvoi après une minute, correction et confirmation par clic explicite. La démonstration reste identifiée comme fictive.",
+        "delivery": "Réservation gratuite sans carte ni abonnement actif. Resend et schéma préparés ; configuration et installation de production restantes. Aucun e-mail réel ni paiement. Parcours manuel autonome restant à construire avant abonnement.",
+        "review": {
+          "disposition": "ship",
+          "materialFindings": [],
+          "scope": "Rendu et parcours préparé seulement ; ne valide pas la mise en service de Resend, de la base ou un déploiement.",
+          "qualityBar": "Indisponible",
+          "roleSubstitution": "Agents génériques frais suivant les contrats Finish Reviewer et Documenter.",
+          "reviewFile": ".impeccable/review/prelaunch-finish-review.md",
+          "validationFile": ".impeccable/review/prelaunch-validation.md",
+          "evidence": [
+            ".impeccable/review/prelaunch-hero-1440-light.png",
+            ".impeccable/review/prelaunch-hero-1440-dark.png",
+            ".impeccable/review/prelaunch-hero-390-light.png",
+            ".impeccable/review/prelaunch-hero-390-dark.png",
+            ".impeccable/review/prelaunch-offers-1440-light.png",
+            ".impeccable/review/prelaunch-offers-1440-dark.png",
+            ".impeccable/review/prelaunch-offers-390-light.png",
+            ".impeccable/review/prelaunch-offers-390-dark.png",
+            ".impeccable/review/prelaunch-reservation-connected-1440-light.png",
+            ".impeccable/review/prelaunch-reservation-connected-1440-dark.png",
+            ".impeccable/review/prelaunch-reservation-connected-390-light.png",
+            ".impeccable/review/prelaunch-reservation-connected-390-dark.png",
+            ".impeccable/review/prelaunch-pending-1440-light.png",
+            ".impeccable/review/prelaunch-pending-1440-dark.png",
+            ".impeccable/review/prelaunch-pending-390-light.png",
+            ".impeccable/review/prelaunch-pending-390-dark.png",
+            ".impeccable/review/prelaunch-confirmed-1440-light.png",
+            ".impeccable/review/prelaunch-confirmed-1440-dark.png",
+            ".impeccable/review/prelaunch-confirmed-390-light.png",
+            ".impeccable/review/prelaunch-confirmed-390-dark.png"
+          ]
+        }
       }
     },
     "applicationTreasury": {
@@ -687,7 +860,7 @@
       "sectionHeading": {
         "approvedBrief": "docs/superpowers/specs/2026-09-15-entetes-ouverts-design.md",
         "desktop": "Titre de niveau 2 Bricolage, sous-titre et ajout à gauche sur deux rangées (rowSpan=2). À droite, groupes « Ce revenu » / « Cette enveloppe », puis « Trésorerie après ce revenu » / « Trésorerie après cette enveloppe », au-dessus des colonnes expliquées. Couleurs définies par localPalette ; aucune bande vide.",
-        "mobile": "Titre teinté menthe ou bleu brume, sans sous-titre, actions à droite ; étape de trésorerie sur surface sauge séparée. Indicateur courant dans le titre en comparaison. Retraits de 16 px et boutons icône de 44 × 44 px ; panneaux et mois ciblé conservés.",
+        "mobile": "Titre teinté menthe ou bleu brume, sans sous-titre, actions à droite ; étape de trésorerie sur surface gris neutre séparée. Indicateur courant dans le titre en comparaison. Retraits de 16 px et boutons icône de 44 × 44 px ; panneaux et mois ciblé conservés.",
         "interaction": "Revenus et dépenses toujours visibles sur ordinateur et téléphone. Titres sans chevron ni action de repli. Les enveloppes et sous-enveloppes restent dépliables ; la sélection depuis un calcul révèle toujours l’opération correspondante.",
         "preserved": "Identité, largeur de 32 rem, choix de comparaison, calculs et montants conservés. Les groupes et surfaces suivent localPalette ; les panneaux gardent leurs couleurs financières.",
         "review": {
@@ -704,36 +877,131 @@
         }
       },
       "localPalette": {
-        "scope": "Relevé uniquement ; aucune modification du thème global, des panneaux ni de la landing.",
+        "scope": "History aliases of the shared application/public palette.",
         "approvedBrief": "docs/superpowers/specs/2026-09-15-table-palette-design.md",
         "source": "src/components/history-surfaces.css",
-        "authority": "Le contrat courant distingue revenus menthe, dépenses bleu brume et deux espaces : enveloppe claire, trésorerie sauge ; en-têtes d’enveloppe menthe ou bleu, en-têtes de trésorerie forêt. Aucun fond rouge dans le relevé.",
+        "authority": "Income soft green, expense mist blue, envelope white, treasury neutral gray and anthracite. Peach filters and context. No red section background.",
         "colors": {
-          "paper": {"cssProperty": "--history-paper", "lightToken": "history-paper", "darkToken": "history-paper-nuit", "purpose": "Blanc frais des données d’enveloppe ; forêt en sombre."},
-          "detail": {"cssProperty": "--history-detail", "lightToken": "history-detail", "darkToken": "history-detail-nuit", "purpose": "Opérations ouvertes, argent de départ mobile et support neutre du reste."},
-          "income": {"cssProperty": "--history-income", "lightToken": "history-income", "darkToken": "history-income-nuit", "purpose": "Titres, en-têtes et totaux côté enveloppe des revenus, en menthe."},
-          "income-ink": {"cssProperty": "--history-income-ink", "lightToken": "history-income-ink", "darkToken": "history-income-ink-nuit", "purpose": "Texte des titres de revenus."},
-          "income-detail": {"cssProperty": "--history-income-detail", "lightToken": "history-income-detail", "darkToken": "history-income-detail-nuit", "purpose": "Teinte légère du nom des revenus sur mobile."},
-          "expense": {"cssProperty": "--history-expense", "lightToken": "history-expense", "darkToken": "history-expense-nuit", "purpose": "Titres, en-têtes et totaux côté enveloppe des dépenses, en bleu brume."},
-          "expense-ink": {"cssProperty": "--history-expense-ink", "lightToken": "history-expense-ink", "darkToken": "history-expense-ink-nuit", "purpose": "Texte des titres de dépenses."},
-          "expense-detail": {"cssProperty": "--history-expense-detail", "lightToken": "history-expense-detail", "darkToken": "history-expense-detail-nuit", "purpose": "Teinte légère du nom des dépenses sur mobile."},
-          "treasury": {"cssProperty": "--history-treasury", "lightToken": "history-treasury", "darkToken": "history-treasury-nuit", "purpose": "Surface sauge continue des parcours, même dans les cases vides ; étapes mobiles."},
-          "treasury-hover": {"cssProperty": "--history-treasury-hover", "lightToken": "history-treasury-hover", "darkToken": "history-treasury-hover-nuit", "purpose": "Survol des cellules de trésorerie, hors sélection."},
-          "result": {"cssProperty": "--history-result", "lightToken": "history-result", "darkToken": "history-result-nuit", "purpose": "Support sauge du montant restant de trésorerie, même négatif."},
-          "hover": {"cssProperty": "--history-hover", "lightToken": "history-hover", "darkToken": "history-hover-nuit", "purpose": "Survol des données d’enveloppe, hors sélection."},
-          "line": {"cssProperty": "--history-line", "lightToken": "history-line", "darkToken": "history-line-nuit", "purpose": "Séparations fines des cellules."},
-          "rule": {"cssProperty": "--history-rule", "lightToken": "history-rule", "darkToken": "history-rule-nuit", "purpose": "Séparations renforcées des familles et parcours."},
-          "closing": {"cssProperty": "--history-closing", "lightToken": "history-closing", "darkToken": "history-closing-nuit", "purpose": "Fond forêt du bilan et des groupes et colonnes de trésorerie."},
-          "closing-ink": {"cssProperty": "--history-closing-ink", "lightToken": "history-closing-ink", "darkToken": "history-closing-ink-nuit", "purpose": "Texte principal du bilan et des en-têtes de trésorerie."},
-          "closing-muted": {"cssProperty": "--history-closing-muted", "lightToken": "history-closing-muted", "darkToken": "history-closing-muted-nuit", "purpose": "Mentions du bilan et des en-têtes de trésorerie."},
-          "closing-negative": {"cssProperty": "--history-closing-negative", "lightToken": "history-closing-negative", "darkToken": "history-closing-negative-nuit", "purpose": "Texte des valeurs négatives du bilan."},
-          "closing-line": {"cssProperty": "--history-closing-line", "lightToken": "history-closing-line", "darkToken": "history-closing-line-nuit", "purpose": "Filets du bilan et des en-têtes de trésorerie."}
+          "paper": {
+            "cssProperty": "--history-paper",
+            "lightToken": "history-paper",
+            "darkToken": "history-paper-nuit",
+            "purpose": "Blanc frais des données d’enveloppe ; graphite en sombre."
+          },
+          "detail": {
+            "cssProperty": "--history-detail",
+            "lightToken": "history-detail",
+            "darkToken": "history-detail-nuit",
+            "purpose": "Opérations ouvertes, argent de départ mobile et support neutre du reste."
+          },
+          "income": {
+            "cssProperty": "--history-income",
+            "lightToken": "history-income",
+            "darkToken": "history-income-nuit",
+            "purpose": "Titres, en-têtes et totaux côté enveloppe des revenus, en menthe."
+          },
+          "income-ink": {
+            "cssProperty": "--history-income-ink",
+            "lightToken": "history-income-ink",
+            "darkToken": "history-income-ink-nuit",
+            "purpose": "Texte des titres de revenus."
+          },
+          "income-detail": {
+            "cssProperty": "--history-income-detail",
+            "lightToken": "history-income-detail",
+            "darkToken": "history-income-detail-nuit",
+            "purpose": "Teinte légère du nom des revenus sur mobile."
+          },
+          "expense": {
+            "cssProperty": "--history-expense",
+            "lightToken": "history-expense",
+            "darkToken": "history-expense-nuit",
+            "purpose": "Titres, en-têtes et totaux côté enveloppe des dépenses, en bleu brume."
+          },
+          "expense-ink": {
+            "cssProperty": "--history-expense-ink",
+            "lightToken": "history-expense-ink",
+            "darkToken": "history-expense-ink-nuit",
+            "purpose": "Texte des titres de dépenses."
+          },
+          "expense-detail": {
+            "cssProperty": "--history-expense-detail",
+            "lightToken": "history-expense-detail",
+            "darkToken": "history-expense-detail-nuit",
+            "purpose": "Teinte légère du nom des dépenses sur mobile."
+          },
+          "treasury": {
+            "cssProperty": "--history-treasury",
+            "lightToken": "history-treasury",
+            "darkToken": "history-treasury-nuit",
+            "purpose": "Surface gris neutre continue des parcours, même dans les cases vides ; étapes mobiles."
+          },
+          "treasury-hover": {
+            "cssProperty": "--history-treasury-hover",
+            "lightToken": "history-treasury-hover",
+            "darkToken": "history-treasury-hover-nuit",
+            "purpose": "Survol des cellules de trésorerie, hors sélection."
+          },
+          "result": {
+            "cssProperty": "--history-result",
+            "lightToken": "history-result",
+            "darkToken": "history-result-nuit",
+            "purpose": "Support gris neutre du montant restant de trésorerie, même négatif."
+          },
+          "hover": {
+            "cssProperty": "--history-hover",
+            "lightToken": "history-hover",
+            "darkToken": "history-hover-nuit",
+            "purpose": "Survol des données d’enveloppe, hors sélection."
+          },
+          "line": {
+            "cssProperty": "--history-line",
+            "lightToken": "history-line",
+            "darkToken": "history-line-nuit",
+            "purpose": "Séparations fines des cellules."
+          },
+          "rule": {
+            "cssProperty": "--history-rule",
+            "lightToken": "history-rule",
+            "darkToken": "history-rule-nuit",
+            "purpose": "Séparations renforcées des familles et parcours."
+          },
+          "closing": {
+            "cssProperty": "--history-closing",
+            "lightToken": "history-closing",
+            "darkToken": "history-closing-nuit",
+            "purpose": "Fond anthracite du bilan et des groupes et colonnes de trésorerie."
+          },
+          "closing-ink": {
+            "cssProperty": "--history-closing-ink",
+            "lightToken": "history-closing-ink",
+            "darkToken": "history-closing-ink-nuit",
+            "purpose": "Texte principal du bilan et des en-têtes de trésorerie."
+          },
+          "closing-muted": {
+            "cssProperty": "--history-closing-muted",
+            "lightToken": "history-closing-muted",
+            "darkToken": "history-closing-muted-nuit",
+            "purpose": "Mentions du bilan et des en-têtes de trésorerie."
+          },
+          "closing-negative": {
+            "cssProperty": "--history-closing-negative",
+            "lightToken": "history-closing-negative",
+            "darkToken": "history-closing-negative-nuit",
+            "purpose": "Texte des valeurs négatives du bilan."
+          },
+          "closing-line": {
+            "cssProperty": "--history-closing-line",
+            "lightToken": "history-closing-line",
+            "darkToken": "history-closing-line-nuit",
+            "purpose": "Filets du bilan et des en-têtes de trésorerie."
+          }
         },
-        "reading": "Enveloppe sur blanc frais, forêt en sombre ; titres et totaux côté enveloppe menthe pour les revenus, bleu brume pour les dépenses. Trésorerie sur sauge continu, cases vides comprises ; en-têtes de trésorerie forêt. Les groupes et colonnes côté enveloppe partagent le vert ou le bleu de la section, cases vides comprises. Détails et reste sur neutre ; résultat de trésorerie sur sauge, même négatif. Aucun fond rouge : signes, texte et mentions portent les alertes.",
-        "mobile": "Titre teinté et étape de trésorerie sauge séparés ; noms sur la teinte légère de leur section. Argent de départ sur détail ; introduction, mois et bilan forêt. Panneaux de filtre et formulaire encore vert/rouge/sombre selon leur sens.",
-        "desktopBoundary": "L’introduction et le mois extérieurs gardent le fond de carte existant ; la palette reste locale au tableau.",
+        "reading": "Enveloppe sur blanc frais, graphite en sombre ; titres et totaux côté enveloppe menthe pour les revenus, bleu brume pour les dépenses. Trésorerie sur gris neutre continu, cases vides comprises ; en-têtes de trésorerie anthracite. Les groupes et colonnes côté enveloppe partagent le vert ou le bleu de la section, cases vides comprises. Détails et reste sur neutre ; résultat de trésorerie sur gris neutre, même négatif. Aucun fond rouge : signes, texte et mentions portent les alertes.",
+        "mobile": "Titre teinté et étape de trésorerie gris neutre séparés ; noms sur la teinte légère de leur section. Argent de départ sur détail ; introduction, mois et bilan anthracite. Panneaux de filtre et formulaire vert/bleu/sombre selon leur sens.",
+        "desktopBoundary": "L’introduction et le mois extérieurs gardent le fond de carte existant ; les alias du tableau suivent la palette commune.",
         "interaction": "Survol distinct pour enveloppe et trésorerie ; sélection prioritaire avec filet intérieur sarcelle et support du montant transparent. Calculs, sections ouvertes, 32 rem de données, 18 rem libres après les revenus et icônes mobiles de 44 × 44 px conservés.",
-        "refinementVerification": "16 septembre : titres et colonnes d’enveloppe verts ou bleus ; en-têtes de trésorerie forêt avec texte clair. Contrôle des fonds sur 7 formats et deux thèmes, y compris les cellules vides. Deux captures treasury-header-restore-*.png de bureau inspectées. Rapport /private/tmp/planora-table-treasury-header-restore-browser.json : aucune erreur navigateur ni débordement, contrastes échantillonnés ≥ 5,35:1 clair / 5,20:1 sombre. 1 150 tests réussis avant et après ; /private/tmp/planora-treasury-header-restore-tests-final.log. Vérification directe ; revue indépendante du 15 septembre historique.",
+        "refinementVerification": "Historique antérieur à harmony-colors-20260916. 16 septembre : titres et colonnes d’enveloppe verts ou bleus ; en-têtes de trésorerie forêt avec texte clair. Contrôle des fonds sur 7 formats et deux thèmes, y compris les cellules vides. Deux captures treasury-header-restore-*.png de bureau inspectées. Rapport /private/tmp/planora-table-treasury-header-restore-browser.json : aucune erreur navigateur ni débordement, contrastes échantillonnés ≥ 5,35:1 clair / 5,20:1 sombre. 1 150 tests réussis avant et après ; /private/tmp/planora-treasury-header-restore-tests-final.log. Vérification directe ; revue indépendante du 15 septembre historique.",
         "review": {
           "status": "historical-2026-09-15",
           "disposition": "ship",
@@ -761,6 +1029,120 @@
           "validation": "Agent principal : 1 150 tests dans 117 fichiers avant (23,08 s) et après (38,24 s), échec observé sur les groupes absents puis 47 tests ciblés réussis ; lint et build exit 0. Journaux /private/tmp/planora-table-zones-{baseline,red,targeted,tests,lint,build}.log. Rapport /private/tmp/planora-table-zones-browser.json : 1600/390 px clair et sombre, 2048/980/320 px clair, aucune erreur navigateur ni débordement ; contrastes échantillonnés ≥ 5,35:1 clair / 5,20:1 sombre, icônes 44 × 44 px, survol distinct et sélection sarcelle. Mois courant/futur, remboursement intégral neutre, remboursement partiel laissant 30 € disponibles et long libellé. Route temporaire retirée avant build. Passe documentaire : validation JSON uniquement."
         }
       }
+    },
+    "sharedPalette": {
+      "source": "src/app/palette.css",
+      "approved": "2026-09-16 — explicit Shape approval: white canvas, eucalyptus, mist blue and soft peach; preserve existing forms and workflows.",
+      "brand": {
+        "eucalyptus": "#126b5b",
+        "mist": "#547c91",
+        "peach": "#edc8b5"
+      },
+      "light": {
+        "eucalyptus": "#126b5b",
+        "mist": "#547c91",
+        "peach": "#edc8b5",
+        "canvas": "#ffffff",
+        "surface": "#ffffff",
+        "soft": "#f5f7f6",
+        "hover": "#edf1ef",
+        "ink": "#293331",
+        "text": "#293331",
+        "muted": "#566460",
+        "subtle": "#5e6b67",
+        "line": "#dfe5e2",
+        "rule": "#b8c6bf",
+        "control-line": "#7e9189",
+        "action": "#126b5b",
+        "action-hover": "#0b5043",
+        "action-ink": "#ffffff",
+        "action-soft": "#e7f1ec",
+        "income": "#e7f2eb",
+        "income-ink": "#245e49",
+        "income-soft": "#f2f7f4",
+        "expense": "#e9f0f5",
+        "expense-ink": "#3b6076",
+        "expense-soft": "#f3f6f8",
+        "warm": "#f5ded1",
+        "warm-hover": "#efd2c1",
+        "warm-soft": "#fcf1eb",
+        "warm-ink": "#784e3a",
+        "warm-line": "#d9bba8",
+        "treasury": "#f1f4f2",
+        "treasury-hover": "#e6ede8",
+        "result": "#e0e8e3",
+        "band": "#273330",
+        "band-ink": "#f5f8f6",
+        "band-muted": "#c6d3cc",
+        "band-accent": "#edc8b5",
+        "band-line": "#64796e",
+        "band-hover": "#354b40",
+        "negative": "#a83e30",
+        "negative-soft": "#fae8e2",
+        "negative-on-dark": "#ffb59f",
+        "ribbon-cool": "#d7e5ed",
+        "ribbon-warm": "#f2d7c8",
+        "ribbon-line": "#a7c1cc",
+        "shadow": "#283a3126"
+      },
+      "dark": {
+        "eucalyptus": "#126b5b",
+        "mist": "#547c91",
+        "peach": "#edc8b5",
+        "canvas": "#102b24",
+        "surface": "#262b29",
+        "soft": "#2d3330",
+        "hover": "#373e3a",
+        "ink": "#293331",
+        "text": "#eef4f0",
+        "muted": "#bdcdc3",
+        "subtle": "#afc2b6",
+        "line": "#444d47",
+        "rule": "#66736b",
+        "control-line": "#7d9587",
+        "action": "#9bd8ba",
+        "action-hover": "#b8e8ce",
+        "action-ink": "#173a2b",
+        "action-soft": "#284536",
+        "income": "#294638",
+        "income-ink": "#b2dfc5",
+        "income-soft": "#253b30",
+        "expense": "#2b3e49",
+        "expense-ink": "#c0d6e2",
+        "expense-soft": "#26353d",
+        "warm": "#493a31",
+        "warm-hover": "#594436",
+        "warm-soft": "#352e27",
+        "warm-ink": "#efcfb9",
+        "warm-line": "#876c54",
+        "treasury": "#2b312d",
+        "treasury-hover": "#373f38",
+        "result": "#3b453d",
+        "band": "#151b17",
+        "band-ink": "#f0f6f2",
+        "band-muted": "#bdcdc3",
+        "band-accent": "#edc8b5",
+        "band-line": "#607967",
+        "band-hover": "#294333",
+        "negative": "#f4ad99",
+        "negative-soft": "#50342c",
+        "negative-on-dark": "#ffb59f",
+        "ribbon-cool": "#314b59",
+        "ribbon-warm": "#614739",
+        "ribbon-line": "#648593",
+        "shadow": "#00000055"
+      },
+      "scope": "Entire app, landing, audience and authentication. Preserve content, layout and calculations.",
+      "verification": "Ship for the approved color-only pass, with no material fixes. Baseline and final npm test: 117 files / 1150 tests passed; build, targeted ESLint and diff check passed. Browser: 24 base + 4 additional cases at 1440/390 light/dark, no errors, overflow or sampled text-contrast failure. Independent replacement reviewer inspected all 14 required screenshots. QUALITY BAR unavailable; not an exhaustive accessibility or whole-app UX audit.",
+      "review": {
+        "disposition": "ship",
+        "report": ".impeccable/review/harmony-colors-finish-review.md",
+        "validation": ".impeccable/review/harmony-colors-validation.md",
+        "materialFixes": [],
+        "substitution": "Dedicated reviewer unavailable; independent agent applied the degraded reviewer contract. Dedicated documenter unavailable; replacement agent applied the documenter contract.",
+        "preserved": "Existing typography, geometry, spacing, photographs, copy, pricing, calculations and workflows.",
+        "assets": "Five product stills updated; photographs untouched. Nine shipping public rasters have provenance. Prerecorded film retains its earlier palette."
+      }
     }
   },
   "components": [
@@ -778,7 +1160,7 @@
       "refersTo": "button-outline",
       "description": "Commande en capsule avec un focus clavier visible.",
       "html": "<button class='ds-btn-outline'>Expliquer le calcul</button>",
-      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid var(--filet, #d6e4db); border-radius: 999px; background: var(--surface, #fbfdfb); color: var(--encre, #172d28); font-family: inherit; font-size: 0.875rem; font-weight: 600; box-shadow: var(--ombre-carte, 0 3px 12px -7px #173e2e20); cursor: pointer; transition: background-color 150ms, border-color 150ms; } .ds-btn-outline:hover { background: var(--surface-survol, #e6f0e9); border-color: var(--filet-fort, #b8cdc0); } .ds-btn-outline:focus-visible { outline: 2px solid var(--sarcelle, #126b5b); outline-offset: 2px; }"
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid var(--filet, #dfe5e2); border-radius: 999px; background: var(--surface, #ffffff); color: var(--encre, #293331); font-family: inherit; font-size: 0.875rem; font-weight: 600; box-shadow: var(--ombre-carte, 0 3px 12px -7px var(--planora-shadow, #283a3126)); cursor: pointer; transition: background-color 150ms, border-color 150ms; } .ds-btn-outline:hover { background: var(--surface-survol, #edf1ef); border-color: var(--filet-fort, #7e9189); } .ds-btn-outline:focus-visible { outline: 2px solid var(--sarcelle, #126b5b); outline-offset: 2px; }"
     },
     {
       "name": "Champ de saisie",
@@ -786,7 +1168,7 @@
       "refersTo": "input-text",
       "description": "Champ opaque, arrondi à 12 px, avec focus visible.",
       "html": "<input class='ds-input' type='text' placeholder='Rechercher un libellé…' />",
-      "css": ".ds-input { height: 36px; width: 100%; max-width: 280px; padding: 4px 12px; border: 1px solid var(--filet-fort, #b8cdc0); border-radius: 12px; background: var(--surface, #fbfdfb); color: var(--encre, #172d28); font-family: inherit; font-size: 0.875rem; outline: none; transition: background-color 150ms, border-color 150ms, box-shadow 150ms; } .ds-input::placeholder { color: var(--ardoise-claire, #5d7167); } .ds-input:focus-visible { background: var(--surface, #fbfdfb); border-color: var(--sarcelle, #126b5b); box-shadow: 0 0 0 2px color-mix(in oklab, var(--sarcelle, #126b5b) 25%, transparent); }"
+      "css": ".ds-input { height: 36px; width: 100%; max-width: 280px; padding: 4px 12px; border: 1px solid var(--filet-fort, #7e9189); border-radius: 12px; background: var(--surface, #ffffff); color: var(--encre, #293331); font-family: inherit; font-size: 0.875rem; outline: none; transition: background-color 150ms, border-color 150ms, box-shadow 150ms; } .ds-input::placeholder { color: var(--ardoise-claire, #5e6b67); } .ds-input:focus-visible { background: var(--surface, #ffffff); border-color: var(--sarcelle, #126b5b); box-shadow: 0 0 0 2px color-mix(in oklab, var(--sarcelle, #126b5b) 25%, transparent); }"
     },
     {
       "name": "Menu déroulant natif",
@@ -794,15 +1176,15 @@
       "refersTo": "select-native",
       "description": "Tout menu déroulant du produit est un <select> natif habillé des jetons du champ : optgroup et ergonomie mobile.",
       "html": "<select class='ds-select'><optgroup label='Dépenses'><option>Courses</option><option>Loyer</option></optgroup><optgroup label='Entrées'><option>Missions</option></optgroup></select>",
-      "css": ".ds-select { height: 36px; padding: 0 12px; border: 1px solid var(--filet-fort, #b8cdc0); border-radius: 0.5rem; background: var(--surface-creuse, #f1f6f2); color: var(--encre, #172d28); font-family: inherit; font-size: 0.875rem; outline: none; transition: background-color 150ms, border-color 150ms, box-shadow 150ms; } .ds-select:hover { background: var(--surface-survol, #e6f0e9); } .ds-select:focus-visible { border-color: var(--sarcelle, #126b5b); box-shadow: 0 0 0 2px color-mix(in oklab, var(--sarcelle, #126b5b) 25%, transparent); }"
+      "css": ".ds-select { height: 36px; padding: 0 12px; border: 1px solid var(--filet-fort, #7e9189); border-radius: 0.5rem; background: var(--surface-creuse, #f5f7f6); color: var(--encre, #293331); font-family: inherit; font-size: 0.875rem; outline: none; transition: background-color 150ms, border-color 150ms, box-shadow 150ms; } .ds-select:hover { background: var(--surface-survol, #edf1ef); } .ds-select:focus-visible { border-color: var(--sarcelle, #126b5b); box-shadow: 0 0 0 2px color-mix(in oklab, var(--sarcelle, #126b5b) 25%, transparent); }"
     },
     {
       "name": "Carte",
       "kind": "card",
       "refersTo": "card",
-      "description": "Carte opaque de 16 px sur le fond menthe ou forêt, avec une ombre douce.",
+      "description": "Carte opaque de 16 px sur le fond blanc ou graphite, avec une ombre douce.",
       "html": "<div class='ds-carte'><div class='ds-carte-tete'><span class='ds-titre'>Dépenses prévues</span><span class='ds-montant'>1 240,00 €</span></div><div class='ds-carte-corps'><div class='ds-creux'>Reste 312,50 € sur 4 postes</div></div></div>",
-      "css": ".ds-carte { background: var(--surface, #fbfdfb); border: 1px solid transparent; border-radius: 16px; box-shadow: var(--ombre-carte, 0 3px 12px -7px #173e2e20); color: var(--encre, #172d28); font-family: inherit; max-width: 420px; overflow: hidden; } .ds-carte-tete { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--filet, #d6e4db); } .ds-titre { font-family: var(--app-display, \"Bricolage Grotesque\", sans-serif); font-size: 0.9375rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.006em; } .ds-montant { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.9375rem; letter-spacing: -0.012em; white-space: nowrap; } .ds-carte-corps { padding: 16px; } .ds-creux { background: var(--surface-creuse, #f1f6f2); border-radius: 0.5rem; padding: 10px 12px; font-size: 0.8125rem; color: var(--ardoise, #496359); }"
+      "css": ".ds-carte { background: var(--surface, #ffffff); border: 1px solid transparent; border-radius: 16px; box-shadow: var(--ombre-carte, 0 3px 12px -7px var(--planora-shadow, #283a3126)); color: var(--encre, #293331); font-family: inherit; max-width: 420px; overflow: hidden; } .ds-carte-tete { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--filet, #dfe5e2); } .ds-titre { font-family: var(--app-display, \"Bricolage Grotesque\", sans-serif); font-size: 0.9375rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.006em; } .ds-montant { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.9375rem; letter-spacing: -0.012em; white-space: nowrap; } .ds-carte-corps { padding: 16px; } .ds-creux { background: var(--surface-creuse, #f5f7f6); border-radius: 0.5rem; padding: 10px 12px; font-size: 0.8125rem; color: var(--ardoise, #566460); }"
     },
     {
       "name": "Pastille d'état",
@@ -810,7 +1192,7 @@
       "refersTo": "badge-portant",
       "description": "Pastille qui nomme un état financier, avec une encre et un fond adaptés au thème.",
       "html": "<span class='ds-pastille'>engagé</span> <span class='ds-pastille ds-pastille-portant'>acquis</span> <span class='ds-pastille ds-pastille-attente'>attendu</span> <span class='ds-pastille ds-pastille-tension'>dépassé</span>",
-      "css": ".ds-pastille { display: inline-flex; align-items: center; gap: 0.3em; border-radius: 999px; padding: 0.2em 0.62em; font-family: inherit; font-size: 0.6875rem; font-weight: 600; line-height: 1.35; letter-spacing: 0.02em; white-space: nowrap; background: var(--surface-creuse, #f1f6f2); color: var(--ardoise, #496359); box-shadow: inset 0 0 0 1px var(--filet, #d6e4db); } .ds-pastille-portant { background: var(--portant-voile, #dceee1); color: var(--portant, #236345); box-shadow: none; } .ds-pastille-attente { background: var(--attente-voile, #f6edda); color: var(--attente, #846019); box-shadow: none; } .ds-pastille-tension { background: var(--tension-voile, #f7e2da); color: var(--tension-encre, #9e3e2c); box-shadow: none; }"
+      "css": ".ds-pastille { display: inline-flex; align-items: center; gap: 0.3em; border-radius: 999px; padding: 0.2em 0.62em; font-family: inherit; font-size: 0.6875rem; font-weight: 600; line-height: 1.35; letter-spacing: 0.02em; white-space: nowrap; background: var(--surface-creuse, #f5f7f6); color: var(--ardoise, #566460); box-shadow: inset 0 0 0 1px var(--filet, #dfe5e2); } .ds-pastille-portant { background: var(--portant-voile, #e7f2eb); color: var(--portant, #245e49); box-shadow: none; } .ds-pastille-attente { background: var(--attente-voile, #fcf1eb); color: var(--attente, #784e3a); box-shadow: none; } .ds-pastille-tension { background: var(--tension-voile, #fae8e2); color: var(--tension-encre, #a83e30); box-shadow: none; }"
     },
     {
       "name": "Jauge d'enveloppe",
@@ -818,15 +1200,15 @@
       "refersTo": "gauge-envelope",
       "description": "La pièce signature. La largeur totale vaut la DÉPENSE, pas le budget : la piste n'occupe que la part budgétée et le débord se pose à sa droite, séparé par une encoche. Rompue, la barre passe entièrement au rouge.",
       "html": "<div class='ds-jauge'><div class='ds-jauge-piste' style='width:62%'><div class='ds-jauge-part' style='width:100%'></div></div><div class='ds-jauge-debord' style='width:38%'></div></div><div class='ds-jauge' style='margin-top:14px'><div class='ds-jauge-piste' style='width:100%'><div class='ds-jauge-part ds-jauge-part-neutre' style='width:44%'></div></div></div>",
-      "css": ".ds-jauge { position: relative; display: flex; height: 8px; width: 100%; max-width: 320px; align-items: stretch; border-radius: 999px; background: color-mix(in oklab, var(--filet-fort, #b8cdc0) 45%, var(--surface-creuse, #f1f6f2)); overflow: visible; } .ds-jauge-piste { position: relative; height: 100%; border-radius: 999px; background: color-mix(in oklab, var(--filet-fort, #b8cdc0) 45%, var(--surface-creuse, #f1f6f2)); overflow: hidden; } .ds-jauge-part { height: 100%; border-radius: 999px; background: var(--tension-encre, #9e3e2c); } .ds-jauge-part-neutre { background: var(--ardoise, #496359); } .ds-jauge-debord { height: 100%; min-width: 6px; border-radius: 999px; background: var(--tension, #b94e39); box-shadow: -2px 0 0 0 var(--surface, #fbfdfb); }"
+      "css": ".ds-jauge { position: relative; display: flex; height: 8px; width: 100%; max-width: 320px; align-items: stretch; border-radius: 999px; background: color-mix(in oklab, var(--filet-fort, #7e9189) 45%, var(--surface-creuse, #f5f7f6)); overflow: visible; } .ds-jauge-piste { position: relative; height: 100%; border-radius: 999px; background: color-mix(in oklab, var(--filet-fort, #7e9189) 45%, var(--surface-creuse, #f5f7f6)); overflow: hidden; } .ds-jauge-part { height: 100%; border-radius: 999px; background: var(--tension-encre, #a83e30); } .ds-jauge-part-neutre { background: var(--ardoise, #566460); } .ds-jauge-debord { height: 100%; min-width: 6px; border-radius: 999px; background: var(--tension, #a83e30); box-shadow: -2px 0 0 0 var(--surface, #ffffff); }"
     },
     {
       "name": "Destination de la barre produit",
       "kind": "nav",
       "refersTo": "nav-item-active",
-      "description": "Navigation en capsule ; la destination active utilise le fond forêt ou menthe du thème.",
+      "description": "Navigation en capsule ; la destination active utilise le vert eucalyptus du thème sur un support pêche.",
       "html": "<nav class='ds-barre'><a class='ds-nav ds-nav-active' href='#' aria-current='page'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='7' height='9'/><rect x='14' y='3' width='7' height='5'/><rect x='14' y='12' width='7' height='9'/><rect x='3' y='16' width='7' height='5'/></svg>Budget</a><a class='ds-nav' href='#'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M8 3 4 7l4 4'/><path d='M4 7h16'/><path d='m16 21 4-4-4-4'/><path d='M20 17H4'/></svg>Transactions</a></nav>",
-      "css": ".ds-barre { display: flex; align-items: center; gap: 2px; padding: 5px; background: var(--app-nav, #dcece1); border-radius: 999px; font-family: inherit; } .ds-nav { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 999px; color: var(--ardoise, #496359); font-size: 0.8125rem; font-weight: 600; text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-nav:hover { background: var(--surface-survol, #e6f0e9); color: var(--encre, #172d28); } .ds-nav-active { background: var(--app-selected, #126b5b); color: var(--app-selected-ink, #fff); } .ds-nav:focus-visible { outline: 2px solid var(--sarcelle, #126b5b); outline-offset: 2px; }"
+      "css": ".ds-barre { display: flex; align-items: center; gap: 2px; padding: 5px; background: var(--app-nav, #fcf1eb); border-radius: 999px; font-family: inherit; } .ds-nav { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 999px; color: var(--ardoise, #566460); font-size: 0.8125rem; font-weight: 600; text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-nav:hover { background: var(--surface-survol, #edf1ef); color: var(--encre, #293331); } .ds-nav-active { background: var(--app-selected, #126b5b); color: var(--app-selected-ink, #ffffff); } .ds-nav:focus-visible { outline: 2px solid var(--sarcelle, #126b5b); outline-offset: 2px; }"
     },
     {
       "name": "Bandeau de section",
@@ -834,7 +1216,7 @@
       "refersTo": "bandeau",
       "description": "Un message posé en tête d'une carte : fond voilé, filet d'un pixel à gauche, jamais plus.",
       "html": "<div class='ds-bandeau ds-bandeau-tension'>Deux enveloppes ont dépassé leur budget ce mois-ci.</div>",
-      "css": ".ds-bandeau { display: flex; gap: 0.625rem; border-radius: 0.5rem; border-left: 1px solid currentColor; padding: 0.625rem 0.875rem; font-family: inherit; font-size: 0.8125rem; line-height: 1.45; max-width: 420px; } .ds-bandeau-tension { background: var(--tension-voile, #f7e2da); color: var(--tension-encre, #9e3e2c); }"
+      "css": ".ds-bandeau { display: flex; gap: 0.625rem; border-radius: 0.5rem; border-left: 1px solid currentColor; padding: 0.625rem 0.875rem; font-family: inherit; font-size: 0.8125rem; line-height: 1.45; max-width: 420px; } .ds-bandeau-tension { background: var(--tension-voile, #fae8e2); color: var(--tension-encre, #a83e30); }"
     },
     {
       "name": "Tirage (squelette)",
@@ -842,7 +1224,7 @@
       "refersTo": "skeleton",
       "description": "Tient la place d'une valeur pas encore arrivée, à l'emplacement et à la largeur exacte de ce qui la remplacera. Un des deux seuls mouvements du produit.",
       "html": "<div class='ds-tirage' style='height:14px;width:180px'></div><div class='ds-tirage' style='height:8px;width:100%;max-width:320px;margin-top:10px'></div>",
-      "css": ".ds-tirage { position: relative; overflow: hidden; border-radius: 999px; background: var(--surface-creuse, #f1f6f2); } .ds-tirage::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--filet-fort, #b8cdc0) 55%, transparent), transparent); animation: ds-tirage-passer 1500ms ease-in-out infinite; } @keyframes ds-tirage-passer { from { transform: translateX(-100%); } to { transform: translateX(100%); } } @media (prefers-reduced-motion: reduce) { .ds-tirage::after { animation: none; background: color-mix(in oklab, var(--filet-fort, #b8cdc0) 40%, transparent); } }"
+      "css": ".ds-tirage { position: relative; overflow: hidden; border-radius: 999px; background: var(--surface-creuse, #f5f7f6); } .ds-tirage::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--filet-fort, #7e9189) 55%, transparent), transparent); animation: ds-tirage-passer 1500ms ease-in-out infinite; } @keyframes ds-tirage-passer { from { transform: translateX(-100%); } to { transform: translateX(100%); } } @media (prefers-reduced-motion: reduce) { .ds-tirage::after { animation: none; background: color-mix(in oklab, var(--filet-fort, #7e9189) 40%, transparent); } }"
     },
     {
       "name": "Landing · Bouton principal",
@@ -850,7 +1232,7 @@
       "refersTo": "landing-primary",
       "description": "Action principale publique ; mène à l’accès Plia.",
       "html": "<a class=\"ds-land-primary\" href=\"#\">Commencer avec Plia <svg aria-hidden=\"true\" width=\"21\" height=\"21\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M7 17 17 7M7 7h10v10\"/></svg></a>",
-      "css": ".ds-land-primary{display:inline-flex;align-items:center;justify-content:center;gap:24px;min-height:56px;padding:15px 24px;border-radius:100px;background:#126b5b;color:#fff;font:600 15px/1.5 \"Schibsted Grotesk\",sans-serif;text-decoration:none;transition:background .2s ease,transform .2s ease}.ds-land-primary:hover{background:#0b5043;transform:translateY(-2px)}.ds-land-primary:focus-visible{outline:3px solid #126b5b;outline-offset:5px}@media(prefers-color-scheme:dark){.ds-land-primary{background:#9fddbc;color:#143328}.ds-land-primary:hover{background:#b9edcf}}@media(prefers-reduced-motion:reduce){.ds-land-primary{transition:none}}"
+      "css": ".ds-land-primary{display:inline-flex;align-items:center;justify-content:center;gap:24px;min-height:56px;padding:15px 24px;border-radius:100px;background:var(--planora-action, #126b5b);color:var(--planora-action-ink, #ffffff);font:600 15px/1.5 \"Schibsted Grotesk\",sans-serif;text-decoration:none;transition:background .2s ease,transform .2s ease}.ds-land-primary:hover{background:var(--planora-action-hover, #0b5043);transform:translateY(-2px)}.ds-land-primary:focus-visible{outline:3px solid var(--planora-action, #126b5b);outline-offset:5px}@media(prefers-reduced-motion:reduce){.ds-land-primary{transition:none}}"
     },
     {
       "name": "Landing · Choix d’aperçu",
@@ -858,7 +1240,7 @@
       "refersTo": "landing-demo-choice",
       "description": "Trois choix à état pressé changent les captures ; pas une simulation budgétaire.",
       "html": "<div class=\"ds-land-choices\"><button aria-pressed=\"true\">Votre mois</button><button aria-pressed=\"false\">Comparer</button><button aria-pressed=\"false\">Le détail</button></div>",
-      "css": ".ds-land-choices{display:flex;gap:12px;flex-wrap:wrap;background:#164c3c;padding:20px}.ds-land-choices button{min-height:56px;padding:13px 19px;border:1px solid #7aaa9166;border-radius:100px;background:transparent;color:#e5f0e8;font:400 14px/1.5 \"Schibsted Grotesk\",sans-serif;cursor:pointer;transition:background .18s ease,color .18s ease}.ds-land-choices button[aria-pressed=true]{background:#edf5f0;color:#164c3c;border-color:transparent}.ds-land-choices button:not([aria-pressed=true]):hover{background:#276650}.ds-land-choices button:focus-visible{outline:3px solid #f1c94e;outline-offset:5px}@media(prefers-reduced-motion:reduce){.ds-land-choices button{transition:none}}"
+      "css": ".ds-land-choices{display:flex;gap:12px;flex-wrap:wrap;background:var(--planora-band, #273330);padding:20px}.ds-land-choices button{min-height:56px;padding:13px 19px;border:1px solid var(--planora-band-line, #64796e);border-radius:100px;background:transparent;color:var(--planora-band-ink, #f5f8f6);font:400 14px/1.5 \"Schibsted Grotesk\",sans-serif;cursor:pointer;transition:background .18s ease,color .18s ease}.ds-land-choices button[aria-pressed=true]{background:var(--planora-peach, #edc8b5);color:var(--planora-ink, #293331);border-color:transparent}.ds-land-choices button:not([aria-pressed=true]):hover{background:var(--planora-band-hover, #354b40)}.ds-land-choices button:focus-visible{outline:3px solid var(--planora-peach, #edc8b5);outline-offset:5px}@media(prefers-reduced-motion:reduce){.ds-land-choices button{transition:none}}"
     },
     {
       "name": "Landing · Cartouche illustratif",
@@ -866,31 +1248,47 @@
       "refersTo": "landing-balance",
       "description": "Soldes sur fond opaque ; l’exemple demeure explicitement identifié.",
       "html": "<aside class=\"ds-land-balance\"><strong>Voir plus loin.</strong><p>Solde prévu en fin de mois</p><dl><div><dt>Septembre</dt><dd>3 502,90 €</dd></div><div><dt>Octobre</dt><dd>7 032,91 €</dd></div><div><dt>Novembre</dt><dd>8 762,92 €</dd></div></dl><small>Exemple illustratif de budget</small></aside>",
-      "css": ".ds-land-balance{width:300px;padding:23px 24px 18px;background:#17222b;color:#f4f8f5;border-radius:14px;box-shadow:0 16px 38px #122e2729;font-family:\"Schibsted Grotesk\",sans-serif}.ds-land-balance strong{font-size:21px;font-weight:550}.ds-land-balance p{font-size:12px;color:#c1d0c8;margin:8px 0 16px}.ds-land-balance dl{margin:0}.ds-land-balance dl div{display:flex;justify-content:space-between;gap:16px;align-items:baseline;padding:10px 0}.ds-land-balance dt{font-size:13px;color:#c1d0c8}.ds-land-balance dd{margin:0;font-size:18px;font-weight:550;font-variant-numeric:tabular-nums}.ds-land-balance small{display:block;padding-top:10px;color:#b0c5b9;font-size:10px}"
+      "css": ".ds-land-balance{width:300px;padding:23px 24px 18px;background:var(--planora-band, #273330);color:var(--planora-band-ink, #f5f8f6);border-radius:14px;box-shadow:0 16px 38px var(--planora-shadow, #283a3126);font-family:\"Schibsted Grotesk\",sans-serif}.ds-land-balance strong{font-size:21px;font-weight:550}.ds-land-balance p{font-size:12px;color:var(--planora-band-muted, #c6d3cc);margin:8px 0 16px}.ds-land-balance dl{margin:0}.ds-land-balance dl div{display:flex;justify-content:space-between;gap:16px;align-items:baseline;padding:10px 0}.ds-land-balance dt{font-size:13px;color:var(--planora-band-muted, #c6d3cc)}.ds-land-balance dd{margin:0;font-size:18px;font-weight:550;font-variant-numeric:tabular-nums}.ds-land-balance small{display:block;padding-top:10px;color:var(--planora-band-muted, #c6d3cc);font-size:10px}"
     },
     {
       "name": "Landing · Réponse bancaire",
       "kind": "custom",
       "description": "FAQ native, ouvrable au clavier et au clic.",
       "html": "<details class=\"ds-land-faq\"><summary>Plia peut-il déplacer mon argent ?<span aria-hidden=\"true\">+</span></summary><p>Non. Plia lit le solde et les opérations de vos comptes pour construire votre budget. Il ne réalise pas de virements.</p></details>",
-      "css": ".ds-land-faq{background:#edf5f0;color:#172d28;border-block:1px solid #c5d7cc;font-family:\"Schibsted Grotesk\",sans-serif}.ds-land-faq summary{display:flex;justify-content:space-between;gap:25px;padding:25px 0;cursor:pointer;list-style:none;font-size:15px;font-weight:550}.ds-land-faq summary::-webkit-details-marker{display:none}.ds-land-faq summary:focus-visible{outline:3px solid #126b5b;outline-offset:5px}.ds-land-faq summary span{transition:transform .25s ease}.ds-land-faq[open] summary span{transform:rotate(45deg)}.ds-land-faq p{color:#496359;font-size:14px;line-height:1.8;padding:0 38px 26px 0}@media(prefers-reduced-motion:reduce){.ds-land-faq summary span{transition:none}}"
+      "css": ".ds-land-faq{background:var(--planora-canvas, #ffffff);color:var(--planora-text, #293331);border-block:1px solid var(--planora-line, #dfe5e2);font-family:\"Schibsted Grotesk\",sans-serif}.ds-land-faq summary{display:flex;justify-content:space-between;gap:25px;padding:25px 0;cursor:pointer;list-style:none;font-size:15px;font-weight:550}.ds-land-faq summary::-webkit-details-marker{display:none}.ds-land-faq summary:focus-visible{outline:3px solid var(--planora-action, #126b5b);outline-offset:5px}.ds-land-faq summary span{transition:transform .25s ease}.ds-land-faq[open] summary span{transform:rotate(45deg)}.ds-land-faq p{color:var(--planora-muted, #566460);font-size:14px;line-height:1.8;padding:0 38px 26px 0}@media(prefers-reduced-motion:reduce){.ds-land-faq summary span{transition:none}}"
+    },
+    {
+      "name": "Réservation · Champ public",
+      "kind": "input",
+      "refersTo": "reservation-field",
+      "description": "Champ opaque partagé par l’e-mail et la réponse libre ; libellé visible et focus explicite.",
+      "html": "<label class=\"ds-reservation-label\" for=\"ds-reservation-email\">Votre adresse e-mail</label><input class=\"ds-reservation-field\" id=\"ds-reservation-email\" type=\"email\" autocomplete=\"email\" placeholder=\"vous@exemple.fr\">",
+      "css": ".ds-reservation-label{display:block;margin-bottom:10px;color:var(--planora-text,#293331);font:500 15px/1.5 var(--font-ui,\"Schibsted Grotesk\"),sans-serif}.ds-reservation-field{width:100%;min-height:48px;padding:12px 14px;border:1px solid var(--planora-control-line,#7e9189);border-radius:8px;background:var(--planora-surface,#ffffff);color:var(--planora-text,#293331);font-family:var(--font-ui,\"Schibsted Grotesk\"),sans-serif;font-size:16px;caret-color:var(--planora-action,#126b5b)}.ds-reservation-field::placeholder{color:var(--planora-muted,#566460);opacity:1}.ds-reservation-field:focus-visible{outline:3px solid var(--planora-action,#126b5b);outline-offset:3px}"
+    },
+    {
+      "name": "Réservation · Choix de formule",
+      "kind": "custom",
+      "refersTo": "reservation-choice",
+      "description": "Le radio et son libellé annoncent le choix ; le voile menthe le renforce.",
+      "html": "<div class=\"ds-reservation-choices\"><label class=\"ds-reservation-choice\"><input type=\"radio\" name=\"ds-reservation-offer\" checked><span><strong>Sans connexion bancaire</strong><small>Saisie manuelle des opérations</small></span><span class=\"ds-reservation-price\">9,90 €<small>/ mois</small></span></label><label class=\"ds-reservation-choice\"><input type=\"radio\" name=\"ds-reservation-offer\"><span><strong>Avec connexion bancaire</strong><small>Synchronisation de vos opérations</small></span><span class=\"ds-reservation-price\">19,90 €<small>/ mois</small></span></label></div>",
+      "css": ".ds-reservation-choices{display:grid;gap:12px;font-family:var(--font-ui,\"Schibsted Grotesk\"),sans-serif}.ds-reservation-choice{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:12px;align-items:center;padding:16px;border:1px solid var(--planora-control-line,#7e9189);border-radius:12px;background:var(--planora-surface,#ffffff);color:var(--planora-text,#293331);cursor:pointer}.ds-reservation-choice:has(input:checked){background:var(--planora-action-soft,#e7f1ec);border-color:var(--planora-action,#126b5b)}.ds-reservation-choice:has(input:focus-visible){outline:3px solid var(--planora-action,#126b5b);outline-offset:3px}.ds-reservation-choice input{width:18px;height:18px;accent-color:var(--planora-action,#126b5b)}.ds-reservation-choice strong{display:block;font-size:15px;font-weight:600;line-height:1.4}.ds-reservation-choice small{display:block;margin-top:4px;color:var(--planora-muted,#566460);font-size:12px;line-height:1.5}.ds-reservation-price{text-align:right;white-space:nowrap;font-size:19px;font-weight:600}.ds-reservation-price small{margin:0;font-weight:400}@media(max-width:1000px){.ds-reservation-choice{padding:14px 12px;gap:8px}}@media(max-width:760px){.ds-reservation-choice{grid-template-columns:18px minmax(0,1fr)}.ds-reservation-price{grid-column:2;text-align:left;font-size:20px}.ds-reservation-price small{display:inline;margin-left:4px}}@media(prefers-reduced-motion:no-preference){.ds-reservation-choice{transition:background-color 160ms ease-out,border-color 160ms ease-out}}"
     }
   ],
   "narrative": {
     "northStar": "La lumière en mouvement",
-    "overview": "Planora partage une identité continue entre les pages publiques, la connexion et\nl’application : fonds menthe et forêt, accents corail, titres expressifs et courbes\nsouples. Dans le budget, cette identité encadre des données lisibles sur des surfaces\nopaques. La grille de comparaison conserve sa structure et les vues mobiles leurs\nrepères financiers ; la marque accompagne la lecture quotidienne.\n\nBricolage Grotesque porte la marque et les titres d’accueil des écrans ; Schibsted\nGrotesk porte les données, libellés et commandes. Les photographies de verre restent\nsur les surfaces d’accueil, dont la connexion sur ordinateur. Dans le relevé, deux\ncourbes fines et statiques près du titre suffisent à rappeler cette matière.\nLes compositions propres aux routes vivent dans leurs briefs de surface.",
+    "overview": "Planora partage une identité continue entre les pages publiques, la connexion et\nl’application : fond blanc ou graphite, accents vert eucalyptus, bleu brume et pêche, titres expressifs et courbes\nsouples. Dans le budget, cette identité encadre des données lisibles sur des surfaces\nopaques. La grille de comparaison conserve sa structure et les vues mobiles leurs\nrepères financiers ; la marque accompagne la lecture quotidienne.\n\nBricolage Grotesque porte la marque et les titres d’accueil des écrans ; Schibsted\nGrotesk porte les données, libellés et commandes. Les photographies de verre restent\nsur les surfaces d’accueil, dont la connexion sur ordinateur. Dans le relevé, deux\ncourbes fines et statiques près du titre suffisent à rappeler cette matière.\nLes compositions propres aux routes vivent dans leurs briefs de surface.",
     "keyCharacteristics": [
-      "Une identité menthe, forêt et corail, adaptée aux thèmes clair et sombre.",
+      "Une identité vert eucalyptus, bleu brume et pêche, adaptée aux thèmes clair et sombre.",
       "Des titres Bricolage et des données Schibsted tabulaires.",
       "Des cartes opaques de 16 px et des commandes en capsule.",
       "Un tableau de comparaison sur ordinateur et des sections lisibles sur téléphone.",
-      "Un relevé blanc frais, des sections menthe ou bleu brume et une trésorerie sauge, adaptés au sombre.",
+      "Un relevé blanc frais, des sections menthe ou bleu brume et une trésorerie gris neutre, adaptés au sombre.",
       "Des courbes de titre statiques, discrètes et masquées sur téléphone."
     ],
     "rules": [
       {
         "name": "La règle du sens financier",
-        "body": "Le relevé distingue revenus, dépenses et trésorerie par ses surfaces ; signes et mentions explicitent les résultats. Les panneaux mobiles conservent leurs fonds vert pour les revenus, rouge pour les dépenses et sombre pour les soldes. Un texte et un montant explicites accompagnent chaque état.",
+        "body": "Le relevé distingue revenus, dépenses et trésorerie par ses surfaces ; signes et mentions explicitent les résultats. Les panneaux mobiles conservent leurs fonds vert pour les revenus, bleu pour les dépenses et sombre pour les soldes. Un texte et un montant explicites accompagnent chaque état.",
         "section": "colors"
       },
       {
@@ -922,20 +1320,25 @@
         "name": "La règle du `<select>` natif",
         "body": "Un `<select>` natif partout. La primitive `Select` de",
         "section": "components"
+      },
+      {
+        "name": "The Explicit Choice Rule",
+        "body": "Dans la réservation, le radio, le libellé et le prix restent visibles ensemble ; la couleur renforce le choix sans le remplacer.",
+        "section": "components"
       }
     ],
     "dos": [
-      "Conserver la palette menthe, forêt et corail en clair et en sombre, jusque dans les panneaux et menus.",
+      "Conserver la palette vert eucalyptus, bleu brume et pêche en clair et en sombre, jusque dans les panneaux et menus.",
       "Utiliser Bricolage pour la marque et les titres d’accueil, Schibsted pour les données et commandes.",
       "Préserver le tableau sur ordinateur, les sections mobiles et toutes les actions de budget.",
       "Écrire chaque montant à côté du dessin qui le représente et garder les chiffres tabulaires.",
-      "Distinguer l’enveloppe claire de la trésorerie sauge et garder les repères financiers des panneaux mobiles.",
+      "Distinguer l’enveloppe claire de la trésorerie gris neutre et garder les repères financiers des panneaux mobiles.",
       "Garder les noms accessibles, les compteurs et le retour du focus quand les outils se resserrent."
     ],
     "donts": [
       "Ne pas poser de chiffres sur du verre translucide ni transformer les courbes décoratives en graphiques.",
       "Ne pas remplacer la grille de comparaison par des cartes qui empêchent de comparer les mois.",
-      "Ne pas appliquer Bricolage ou une chasse fixe aux montants et aux lignes de données.",
+      "Ne pas appliquer Bricolage ou une chasse fixe aux montants de budget et aux lignes de données.",
       "Ne pas masquer un compteur en masquant le libellé visuel d’un outil.",
       "Ne pas attribuer une nouvelle règle de calcul à un changement de couleur ou de présentation.",
       "Ne pas ajouter de mouvement décoratif dans le relevé ; respecter la réduction des animations."

@@ -180,3 +180,12 @@ describe("la barre de l'application", () => {
     }
   });
 });
+
+it("rend le contact accessible dans les menus du compte, y compris en démo", () => {
+  for (const mode of ["real", "automatic-demo"] as const) {
+    mocks.experience = { mode, restart: mocks.restart, flush: mocks.flush, saving: false };
+    const container = document.createElement("div");
+    container.innerHTML = renderToStaticMarkup(topbar());
+    expect(container.querySelectorAll('a[href="/app/contact"]')).toHaveLength(2);
+  }
+});

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./palette.css";
 @import "./app-theme.css";
 
 @custom-variant dark (&:is(.dark *));
@@ -11,7 +12,7 @@
    colonnes vers la droite.
 
    Quatre règles tiennent le système :
-   1. Une carte blanche sur un sol clair, un filet d'un pixel, une ombre courte.
+   1. Une carte blanche sur un sol blanc, un filet d'un pixel, une ombre courte.
       Le relief vient de la lumière, pas de la découpe.
    2. La sarcelle ne sert QU'À COMMANDER : bouton principal, lien, onglet actif,
       mise au point. Elle ne qualifie jamais un montant.
@@ -20,63 +21,57 @@
    4. Un état se dit dans une pastille arrondie, en petites capitales — jamais
       dans une couleur de texte seule. */
 :root {
-  /* L'ENCRE ET LE SOL. Un bleu-ardoise très sombre pour l'encre, un sol clair
-     légèrement cyan : c'est le papier de bureau d'un logiciel de travail, pas
-     une page blanche. Les cartes, elles, sont franchement blanches — c'est ce
-     contraste-là qui les décolle, avec le filet et l'ombre courte. */
-  --encre: #17222b;
-  --sol: #edf1f2;
-  --surface: #ffffff;
+  /* Le fond général est blanc en clair, vert forêt en sombre. */
+  --encre: var(--planora-text);
+  --sol: var(--planora-canvas);
+  --surface: var(--planora-surface);
   /* La surface creusée : le fond d'un bloc posé DANS une carte (une jauge, une
      ligne repliée, un pied de carte). Elle s'enfonce, elle ne monte pas. */
-  --surface-creuse: #f4f7f8;
-  --surface-survol: #f0f4f5;
+  --surface-creuse: var(--planora-soft);
+  --surface-survol: var(--planora-hover);
 
   /* LA SARCELLE. La couleur de la commande, et d'elle seule. Profonde, sans
      éclat, elle tient le contraste sur du blanc comme sur du sombre. */
-  --sarcelle: #0b6e75;
-  --sarcelle-forte: #095b61;
-  --sarcelle-voile: #e2eff0;
-  --sarcelle-encre: #0a656c;
+  --sarcelle: var(--planora-action);
+  --sarcelle-forte: var(--planora-action-hover);
+  --sarcelle-voile: var(--planora-action-soft);
+  --sarcelle-encre: var(--planora-income-ink);
 
   /* LES TROIS SENS D'UN MONTANT. Le vert dit que ça rentre, le rouge que ça a
      rompu, le sable que ça attend encore. Chacun a son encre (le texte) et son
      voile (le fond de pastille) : l'encre tient 4.5:1, le voile ne fait que
      teinter. */
-  --portant: #1c7a4e;
-  --portant-voile: #e2f1e8;
-  --tension: #c0392b;
+  --portant: var(--planora-income-ink);
+  --portant-voile: var(--planora-income);
+  --tension: var(--planora-negative);
   /* Le rouge de texte, gardé sous deux noms. Le pied du tableau redéfinit
      --tension-encre pour s'éclaircir sur son fond d'encre ; une case allumée dans
      ce pied redevient claire et doit retrouver l'original — d'où ce jeton-là, que
      personne ne réécrit. */
-  --tension-encre-base: #a8332a;
+  --tension-encre-base: var(--planora-negative);
   --tension-encre: var(--tension-encre-base);
-  --tension-voile: #fbe7e4;
-  --attente: #8a6410;
-  --attente-voile: #f7eedb;
+  --tension-voile: var(--planora-negative-soft);
+  --attente: var(--planora-warm-ink);
+  --attente-voile: var(--planora-warm-soft);
 
   /* Les deux coups de feutre du titre de la landing. Leur contraste est plus
      franc que celui des voiles fonctionnels pour rester visible sur le sol. */
-  --hero-soulignement: #c57a00;
-  --hero-surlignage: #78d6dc;
+  --hero-soulignement: var(--planora-eucalyptus);
+  --hero-surlignage: var(--planora-peach);
 
   /* La section problème reste une chambre noire dans les deux thèmes. La photo
      s'y fond au lieu de devenir une carte posée sur le fond. */
-  --landing-problem-bg: #0b1115;
-  --landing-problem-ink: #edf1f2;
-  --landing-problem-muted: #a7b5bd;
+  --landing-problem-bg: var(--planora-band);
+  --landing-problem-ink: var(--planora-band-ink);
+  --landing-problem-muted: var(--planora-band-muted);
 
   /* Les gris de l'ardoise. Le texte secondaire tient 4.5:1 sur le sol comme sur
      la carte ; le tertiaire ne porte que des légendes en capitales. */
-  --ardoise: #5a6b75;
-  /* 4,85:1 sur une carte blanche, 4,5:1 sur la surface creusée. Il a valu
-     #7d8d96 — une valeur qui ne tenait que 3,4:1, alors qu'elle porte les dates
-     d'opération, les montants à zéro et le texte d'invite de tous les champs. Un
-     ton « clair » ne dispense pas de se lire. */
-  --ardoise-claire: #64747c;
-  --filet: #dce4e7;
-  --filet-fort: #c3d0d5;
+  --ardoise: var(--planora-muted);
+  /* Les légendes et les champs restent lisibles sur les surfaces secondaires. */
+  --ardoise-claire: var(--planora-subtle);
+  --filet: var(--planora-line);
+  --filet-fort: var(--planora-control-line);
 
   --radius: 0.75rem;
   --background: var(--sol);
@@ -86,7 +81,7 @@
   --popover: var(--surface);
   --popover-foreground: var(--encre);
   --primary: var(--sarcelle);
-  --primary-foreground: #ffffff;
+  --primary-foreground: var(--planora-action-ink);
   --secondary: var(--surface-creuse);
   --secondary-foreground: var(--encre);
   --muted: var(--surface-creuse);
@@ -102,7 +97,7 @@
      filet et une ombre très courte : elle ne pèse pas, elle surplombe. C'est
      l'inverse exact de la poutre de carbone d'avant, et c'est voulu — la
      navigation n'est pas le sujet de l'écran. */
-  --barre: #ffffff;
+  --barre: var(--planora-canvas);
   --barre-texte: var(--ardoise);
   --barre-vive: var(--encre);
   --barre-appui: var(--surface-survol);
@@ -111,7 +106,7 @@
   --sidebar: var(--surface);
   --sidebar-foreground: var(--encre);
   --sidebar-primary: var(--sarcelle);
-  --sidebar-primary-foreground: #ffffff;
+  --sidebar-primary-foreground: var(--planora-action-ink);
   --sidebar-accent: var(--surface-survol);
   --sidebar-accent-foreground: var(--encre);
   --sidebar-border: var(--filet);
@@ -119,11 +114,11 @@
 
   /* LES TROIS ÉLÉVATIONS. Toutes décalées vers le bas et floues : une ombre sans
      décalage est un halo, c'est-à-dire une décoration. Elles sont teintées de
-     l'encre du monde, jamais du noir pur — un noir pur sur un sol cyan fait une
+     l'encre du monde, jamais du noir pur — un noir pur sur un sol blanc fait une
      ombre grise et sale. */
-  --ombre-carte: 0 1px 2px rgba(23, 34, 43, 0.06), 0 1px 3px rgba(23, 34, 43, 0.05);
-  --ombre-levee: 0 2px 4px rgba(23, 34, 43, 0.06), 0 8px 20px -6px rgba(23, 34, 43, 0.14);
-  --ombre-flottante: 0 4px 8px rgba(23, 34, 43, 0.08), 0 18px 44px -10px rgba(23, 34, 43, 0.2);
+  --ombre-carte: 0 1px 2px rgba(41, 51, 49, 0.06), 0 1px 3px rgba(41, 51, 49, 0.05);
+  --ombre-levee: 0 2px 4px rgba(41, 51, 49, 0.06), 0 8px 20px -6px rgba(41, 51, 49, 0.14);
+  --ombre-flottante: 0 4px 8px rgba(41, 51, 49, 0.08), 0 18px 44px -10px rgba(41, 51, 49, 0.2);
 }
 
 /* Le pendant sombre : le même bureau, la lampe éteinte. Le sol s'enfonce, les
@@ -132,45 +127,6 @@
    l'écart de valeur entre le sol et la carte qui le fait — donc elles se
    contentent d'asseoir les surfaces flottantes. */
 .dark {
-  --encre: #e7edf0;
-  --sol: #12181c;
-  --surface: #1b2329;
-  --surface-creuse: #232c33;
-  --surface-survol: #29333a;
-
-  --sarcelle: #3fa8ae;
-  --sarcelle-forte: #55bcc2;
-  --sarcelle-voile: #14313a;
-  --sarcelle-encre: #5cbfc5;
-
-  --portant: #4cb87f;
-  --portant-voile: #14301f;
-  --tension: #e4695a;
-  --tension-encre-base: #f08b7d;
-  --tension-encre: var(--tension-encre-base);
-  --tension-voile: #351a17;
-  --attente: #d8a94a;
-  --attente-voile: #302614;
-
-  --hero-soulignement: #f2b43c;
-  --hero-surlignage: #176b74;
-
-  --ardoise: #9aabb4;
-  /* 5,71:1 sur une carte, 5,09:1 sur la surface creusée — qui est le fond des
-     champs, donc celui du texte d'invite. Il a valu #7b8b94, qui n'y tenait que
-     4,03:1 : le contraste d'un ton clair se juge sur la surface la plus claire
-     qu'il touche, pas sur la plus sombre. */
-  --ardoise-claire: #8f9da5;
-  --filet: #2c363d;
-  --filet-fort: #3d4950;
-
-  --primary-foreground: #06181a;
-  --barre: #1b2329;
-  --barre-texte: var(--ardoise);
-  --barre-vive: var(--encre);
-  --barre-appui: var(--surface-survol);
-  --barre-filet: var(--filet);
-
   --ombre-carte: 0 1px 2px rgba(0, 0, 0, 0.4);
   --ombre-levee: 0 6px 18px -6px rgba(0, 0, 0, 0.55);
   --ombre-flottante: 0 18px 44px -10px rgba(0, 0, 0, 0.65);

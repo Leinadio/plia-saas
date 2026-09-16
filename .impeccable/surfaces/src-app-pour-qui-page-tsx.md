@@ -5,6 +5,22 @@ primary_target: "src/app/pour-qui/page.tsx"
 related_targets: ["src/app/pour-qui/page.module.css","src/app/layout.tsx","src/components/landing-header.tsx","src/components/landing-header.module.css","src/components/landing.module.css"]
 ---
 
+## Palette commune approuvée — 16 septembre 2026
+
+Cette révision chromatique fait autorité ; les revues antérieures ci-dessous
+restent des traces historiques. Blanc majoritaire en clair ; graphite neutre en sombre. Eucalyptus pour
+les actions et revenus, bleu brume pour les dépenses, pêche douce pour les filtres,
+le contexte et les courbes. Textes et trésorerie anthracite, cellules gris neutre.
+Les mêmes rôles s’appliquent à l’application, à la landing, à Pour qui et à la connexion.
+Formes, fontes, espacements, photos, textes et parcours sont conservés.
+Source : `src/app/palette.css`. Brief : `docs/design/2026-09-16-harmony-colors-shape.md`.
+Revue indépendante finale : **ship**, sans défaut matériel pour cette passe couleur.
+La carte QUALITY BAR était indisponible ; ce verdict ne constitue pas un audit
+global d’accessibilité ou d’ergonomie. Revue et preuves :
+`.impeccable/review/harmony-colors-finish-review.md` et
+`.impeccable/review/harmony-colors-validation.md`.
+
+
 ## Portée et mode
 
 Page publique `/pour-qui`, mode Read / Persuade, version construite
@@ -28,15 +44,16 @@ Aucun nouvel accès familial, tarif ou engagement commercial n’est introduit.
 
 ## Direction retenue et autorité
 
-La page hérite de « La lumière en mouvement » : fonds menthe et forêt, titres
+La page hérite de « La lumière en mouvement » : fonds blanc et graphite, titres
 Bricolage Grotesque, texte Schibsted Grotesk et commandes en capsules. Son expression
-propre associe photographie de vie, courbes opposées, support corail et preuves du
+propre associe photographie de vie, courbes opposées, support pêche et preuves du
 produit. La première composition a été rejetée pour manque de style, d’images
 nouvelles, de direction artistique recherchée et de force commerciale ; elle ne
 fait plus autorité. Il n’existe pas de maquette d’interface approuvée.
 
-Les rôles `landing-audience-*` de DESIGN.md et le CSS final font autorité pour
-cette page seulement. Les règles du budget connecté et de l’accueil sont préservées.
+Les alias `landing-audience-*` de DESIGN.md appliquent la palette partagée à cette
+composition ; le CSS final fait autorité. Les règles du budget connecté et de
+l’accueil sont préservées.
 
 ## Composition et parcours
 
@@ -47,10 +64,10 @@ des liens vers `#en-solo` et `#a-deux`, avec cartouches opaques et flèches visi
 
 « En solo. Faites-vous une place. » présente trois bénéfices courts : donner une
 place aux dépenses, expliquer les écarts et lire les prochains mois. Une vraie
-capture du détail est posée sur un support corail légèrement tourné, sous
+capture du détail est posée sur un support pêche légèrement tourné, sous
 « Un chiffre. Tout s’éclaire. ». Le lien propose « Préparer mon budget ».
 
-Une courbe ouvre la plage forêt. « À deux. Voyez la suite ensemble. » associe
+Une courbe ouvre la plage anthracite. « À deux. Voyez la suite ensemble. » associe
 quotidien, projets et choix discutés à trois bénéfices courts. La capture réelle
 de comparaison répond à « Aujourd’hui. Et après ? ». Le lien propose
 « Préparer nos projets », suivi de la limite explicite de l’accès personnel.
@@ -81,9 +98,9 @@ avec espace de 12 px, décalage de 24 px et coins opposés de 80 px.
 
 Les récits alternent texte et preuve, sur 1312 px maximum, colonnes 1.08fr / 1fr,
 espace de 96 puis 48 px. Leurs marges latérales passent de 40 à 36 puis 24 px.
-Sur téléphone, le texte précède toujours la preuve. Le support corail tourne de
+Sur téléphone, le texte précède toujours la preuve. Le support pêche tourne de
 2° et sa capture de −2° ; ces rotations statiques disparaissent sur téléphone.
-La courbe forêt mesure 80 px, puis 48 px sur téléphone.
+La courbe anthracite mesure 80 px, puis 48 px sur téléphone.
 
 Le titre utilise `clamp(64px, 8vw, 96px)`, puis `clamp(52px, 12vw, 70px)` sur
 mobile, graisse 550 et interligne 0.98. Les récits utilisent
@@ -93,9 +110,9 @@ comparaison. La conclusion utilise `clamp(40px, 5vw, 70px)`, puis 42 px.
 Le corps passe de 18 à 16 px ; les bénéfices ont une phrase forte à 18/16 px
 et une explication à 15/14 px. La limite d’accès personnel reste à 13 px.
 
-Le corail `#f5b5a2`, son survol `#ef9d87`, le support sombre `#e5a18d`,
-l’encre brune `#654234`, l’ombre `#56302724` et le filet `#54816b` ont des rôles
-intentionnels limités à cette surface. Le minimum de titre à 64 px et les 80 px
+Le support pêche, son survol et sa variante sombre, l’encre chaude, l’ombre et le
+filet reprennent les rôles communs de `src/app/palette.css`. Les noms historiques
+`landing-audience-coral`, `brown` et `mint` restent des alias documentés dans DESIGN.md. Le minimum de titre à 64 px et les 80 px
 des coins mobiles et de la courbe ne sont pas une exception générale pour le budget.
 
 Le bandeau sépare les sections de l’accueil et les pages : flèche descendante
@@ -105,12 +122,12 @@ et en dessous, les sections restent accessibles sur une seconde ligne. Depuis
 cette page, elles rejoignent la bonne ancre de l’accueil. Le défilement natif est
 progressif, ou immédiat lorsque la réduction des animations est activée. Le lien actif est souligné, teinté de la couleur
 d’action et annoncé par `aria-current="page"`. Les liens photographiques ont une
-mise au point visible ; sur forêt, le contour est jaune. Les thèmes suivent la
-préférence du navigateur. Le support solo s’assombrit légèrement et le bloc forêt
-reprend sa variante publique sombre. Aucune animation décorative n’est ajoutée ; les commandes
+mise au point visible ; sur anthracite, le contour est pêche. Les thèmes suivent
+la classe du document commune à l’application. Le lien couple et le support solo
+prennent la variante pêche sombre ; le bloc anthracite suit aussi le thème partagé. Aucune animation décorative n’est ajoutée ; les commandes
 partagées conservent leurs réactions et respectent la réduction des mouvements.
 
-## Revue finale et persistance
+## Revue antérieure de `audience-art-v2` et persistance
 
 La revue indépendante de `audience-art-v2` conclut **ship**, sans défaut matériel.
 Seize captures valides ont été inspectées dans `.impeccable/review/` : pour chaque

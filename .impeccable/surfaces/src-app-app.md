@@ -5,7 +5,45 @@ primary_target: "src/app/app"
 related_targets: ["src/components/app-topbar.tsx", "src/components/app-page-heading.tsx", "src/app/app-theme.css", "src/components/history-treasury.tsx", "src/components/history-treasury.css", "src/components/history-reading.tsx", "src/components/history-reading.css", "src/components/history-grid.tsx", "src/components/history-surfaces.css", "src/components/history-mobile.css", "src/components/history-section-heading.css", "src/components/history-mobile-columns.tsx", "src/components/history-comparison.tsx", "src/lib/history-columns.ts"]
 ---
 
+## Palette commune approuvée — 16 septembre 2026
+
+Cette révision chromatique fait autorité ; les revues antérieures ci-dessous
+restent des traces historiques. Blanc majoritaire en clair ; graphite neutre en sombre. Eucalyptus pour
+les actions et revenus, bleu brume pour les dépenses, pêche douce pour les filtres,
+le contexte et les courbes. Textes et trésorerie anthracite, cellules gris neutre.
+Les mêmes rôles s’appliquent à l’application, à la landing, à Pour qui et à la connexion.
+Formes, fontes, espacements, photos, textes et parcours sont conservés.
+Source : `src/app/palette.css`. Brief : `docs/design/2026-09-16-harmony-colors-shape.md`.
+Revue indépendante finale : **ship**, sans défaut matériel pour cette passe couleur.
+La carte QUALITY BAR était indisponible ; ce verdict ne constitue pas un audit
+global d’accessibilité ou d’ergonomie. Revue et preuves :
+`.impeccable/review/harmony-colors-finish-review.md` et
+`.impeccable/review/harmony-colors-validation.md`.
+
+
 ## Portée
+
+### Règles automatiques — ajout du 17 septembre 2026
+
+« Automatisation » ouvre la gestion des rattachements automatiques par libellé et montant.
+La liste ordonnée, le formulaire critères → budget et l’aperçu explicite de
+l’historique reprennent le monde établi, blanc en clair et forêt en sombre.
+Chaque rattachement rejoint la cloche avec les dépassements. Le [brief dédié](src-app-app-automatisations.md)
+décrit les parcours, les états, l’adaptation mobile et les limites des preuves.
+
+### Contact — ajout du 16 septembre 2026
+
+« Nous contacter » dans le menu du compte ouvre `/app/contact`. Le formulaire
+partagé avec l’accueil demande e-mail, sujet et message ; l’adresse du compte
+est préremplie et modifiable. Une personne non connectée rejoint la connexion.
+La page reprend les surfaces blanches ou graphite, les titres Bricolage et les
+commandes Schibsted, avec une action eucalyptus. Aucun montant ni aucune opération
+n’accompagne le message. Le [brief dédié](src-app-app-contact.md) décrit le parcours,
+les états et les preuves. L’envoi reste désactivé jusqu’à la configuration d’e-mail ;
+la revue porte sur les composants réels avec une session de démonstration et des
+réponses simulées, sans e-mail réel ni déploiement.
+
+### Périmètre général
 L’application connectée : budget, historique, transactions, réglages et compte.
 L’accueil redirige vers l’historique. La connexion partage la même identité ; son
 cadrage vit dans `src-app-connexion.md`. Les pages publiques gardent leurs briefs.
@@ -18,7 +56,7 @@ compte partagé.
 
 ## Direction retenue
 « La lumière en mouvement », adaptée de la landing à un espace de travail quotidien.
-Menthe, forêt et corail, marque et titres Bricolage, données et commandes Schibsted,
+Blanc, eucalyptus, bleu brume et pêche, marque et titres Bricolage, données et commandes Schibsted,
 cartes opaques de 16 px et capsules. Le titre et une phrase courte ouvrent chaque page.
 Deux courbes fines, statiques et décoratives le bordent sur ordinateur et disparaissent
 sur téléphone. La lecture financière garde sa structure.
@@ -34,8 +72,8 @@ sur une seconde ligne dès 640 px de largeur d’écran. Les outils gardent leur
 compteurs et noms accessibles ; seuls leurs libellés visuels se retirent. Sur téléphone,
 les commandes tactiles conservent leurs dimensions et leur ordre fonctionnel.
 
-Le thème est appliqué au document lorsque l’espace de travail est présent : menus,
-notifications et panneaux rendus à l’extérieur du conteneur héritent de la palette.
+Le thème et la palette commune sont appliqués au document : menus, notifications
+et panneaux rendus à l’extérieur du conteneur héritent des mêmes rôles.
 Les contrôles natifs suivent le mode sombre et les commandes menthe utilisent une
 encre sombre. Les filtres d’opérations gardent des libellés visibles pendant la saisie.
 
@@ -44,9 +82,9 @@ Le grand tableau à colonnes de mois reste la présentation sur ordinateur. Sa c
 de noms figée, ses familles de colonnes et les soldes contrastés conservent leur rôle.
 Les titres et totaux distinguent revenus menthe et dépenses bleu brume. Sur mobile,
 « Par mois » et « Comparer » gardent les sections verticales et leurs indicateurs.
-Le relevé sépare données claires et trésorerie sauge, avec en-têtes et bilan forêt. Les panneaux
-mobiles gardent leurs repères vert pour les revenus, rouge pour les dépenses et sombre
-pour les soldes ; ils ne reprennent pas les nouveaux fonds du tableau.
+Le relevé sépare données claires et trésorerie gris neutre, avec en-têtes et bilan anthracite. Les panneaux
+mobiles gardent leurs repères vert pour les revenus, bleu pour les dépenses et sombre
+pour les soldes ; ils suivent les mêmes rôles que le tableau.
 
 Créer et gérer une enveloppe ou une sous-enveloppe, corriger un budget daté, classer
 une opération, l’exclure, la commenter et ouvrir un calcul gardent leurs parcours.
@@ -74,8 +112,8 @@ Après les enveloppes, « Votre trésorerie » distingue « Trésorerie actuelle
 puis les prévisions selon les budgets ou avec dépassements. Un résultat négatif
 porte aussi « À découvert » pour le réel passé ou courant, ou « Découvert prévu »
 pour une prévision. Le pied entier (résultat, estimation et dépassement total)
-reste forêt dans les deux thèmes, avec la sélection préservée. Les étapes mobiles
-utilisent une surface sauge séparée du titre teinté, selon la palette locale
+reste anthracite dans les deux thèmes, avec la sélection préservée. Les étapes mobiles
+utilisent une surface gris neutre séparée du titre teinté, selon la palette locale
 ci-dessous. Les montants restent cliquables et conservent leurs références
 pour le détail et la calculatrice.
 
@@ -127,28 +165,29 @@ La présentation vit dans `src/components/history-section-heading.css`.
 
 ## Fonds du relevé — en-têtes précisés le 16 septembre 2026
 
-Le contrat courant de `docs/superpowers/specs/2026-09-15-table-palette-design.md`
-sépare deux lectures. À gauche, les données d’enveloppe reposent sur blanc frais,
-forêt en sombre ; titres et totaux sont menthe pour les revenus, bleu brume pour les
-dépenses. À droite, une surface sauge continue relie les trois parcours de trésorerie,
-cases vides comprises, sous des en-têtes forêt. À gauche, les titres et les deux
+La structure de `docs/superpowers/specs/2026-09-15-table-palette-design.md`,
+avec les couleurs approuvées le 16 septembre dans le brief commun, sépare deux lectures. À gauche, les données d’enveloppe reposent sur blanc frais,
+graphite en sombre ; titres et totaux sont menthe pour les revenus, bleu brume pour les
+dépenses. À droite, une surface gris neutre continue relie les trois parcours de trésorerie,
+cases vides comprises, sous des en-têtes anthracite. À gauche, les titres et les deux
 rangées d’en-tête côté enveloppe sont menthe pour les revenus, bleu brume pour les
 dépenses, y compris les groupes et cellules vides, sur tous les mois. La trésorerie
-conserve son texte clair sur forêt.
+conserve son texte clair sur anthracite.
 Les groupes portent « Ce revenu » ou « Cette enveloppe », puis « Trésorerie après
 ce revenu » ou « Trésorerie après cette enveloppe ». Le titre de section occupe
 les deux rangées d’en-tête (`rowSpan={2}`), sans bande vide.
 
 Les opérations ouvertes utilisent un léger creux neutre. Le reste garde un support
-neutre et le résultat de trésorerie un support sauge, même négatifs. Aucun fond rouge
+neutre et le résultat de trésorerie un support gris neutre, même négatifs. Aucun fond rouge
 dans le relevé : signes, texte coloré et mentions explicitent les alertes.
 Les retraits ordinaires restent discrets ; les entrées gardent leur vert sémantique.
-Sur mobile, titre teinté et étape de trésorerie sauge restent séparés ; les noms
+Sur mobile, titre teinté et étape de trésorerie gris neutre restent séparés ; les noms
 reprennent une teinte légère de leur section. L’argent de départ utilise détail ;
-l’introduction, le mois et le bilan restent forêt. Sur ordinateur, introduction et
+l’introduction, le mois et le bilan restent anthracite. Sur ordinateur, introduction et
 mois extérieurs gardent le fond de carte existant.
 
-Les jetons `history-*` restent locaux à `src/components/history-surfaces.css`.
+Les alias `history-*` de `src/components/history-surfaces.css` reprennent les
+rôles communs de `src/app/palette.css`.
 Le survol distingue enveloppe et trésorerie ; la sélection garde son filet intérieur
 sarcelle et rend transparent le support interne du montant. Panneaux, thème global,
 calculs, sections ouvertes, largeurs et cibles mobiles de 44 × 44 px sont conservés.
@@ -172,7 +211,7 @@ montants des revenus et dépenses, sans remplacer leurs indicateurs respectifs.
 En vue mensuelle, ce parcours suit les opérations réelles pour un mois passé ou
 courant, et les budgets pour un mois futur. Les étapes sans mouvement net restent
 absentes. Le panneau conserve son repère financier
-vert, rouge ou sombre, indépendamment du papier des données. Le titre n’est pas un bouton ; filtre et ajout
+vert, bleu ou sombre, indépendamment du papier des données. Le titre n’est pas un bouton ; filtre et ajout
 gardent leurs commandes propres.
 Les icônes du relevé ont une taille de 18 px dans des boutons de 44 × 44 px.
 Les « + » et crayons sont sans fond ni bordure, et sans libellé visible. Dans les
@@ -199,7 +238,8 @@ panneau et révèle sa destination. L’ajout à la calculatrice dispose d’un 
 
 
 ## Moyens et validation
-Le thème vient de `src/app/app-theme.css` ; les surfaces locales du relevé viennent
+Les couleurs viennent de `src/app/palette.css` ; `src/app/app-theme.css` adapte
+leurs rôles à l’application. Les surfaces locales du relevé viennent
 de `src/components/history-surfaces.css`, avec les composants existants. Le titre partagé utilise `src/components/app-page-heading.tsx`.
 Les icônes restent celles du produit. Aucune nouvelle image n’est ajoutée au relevé.
 
@@ -258,7 +298,7 @@ survol distinct et sélection sarcelle. Route temporaire retirée avant le build
 Cette passe documentaire valide uniquement son JSON ; la revue ne constitue pas
 une certification globale d’accessibilité.
 
-### Vérification des en-têtes d’enveloppe et de trésorerie — 16 septembre
+### Vérification antérieure à cette palette — en-têtes du 16 septembre
 Contrôle direct sur les vrais composants : vert ou bleu côté enveloppe, forêt côté
 trésorerie, cellules vides et tous les mois compris, sur sept formats et deux thèmes.
 Deux captures de bureau `treasury-header-restore-*.png` inspectées. Aucun débordement

@@ -1,24 +1,24 @@
 /* Deux sens financiers ; deux espaces de lecture : l’enveloppe, puis la trésorerie. */
 .history-layout {
-  --history-paper: #fafcfc;
-  --history-detail: #f0f5f5;
-  --history-income: #e0f0e7;
-  --history-income-ink: #245d46;
-  --history-income-detail: #eef7f1;
-  --history-expense: #e3edf3;
-  --history-expense-ink: #345867;
-  --history-expense-detail: #f0f5f8;
-  --history-treasury: #eaf2ee;
-  --history-treasury-hover: #dfece5;
-  --history-result: #dcebe2;
-  --history-hover: #f0f6f3;
-  --history-line: #dce6e2;
-  --history-rule: #bbcec4;
-  --history-closing: #193b30;
-  --history-closing-ink: #f4f8f5;
-  --history-closing-muted: #c3d6ca;
-  --history-closing-negative: #ffb59f;
-  --history-closing-line: #426153;
+  --history-paper: var(--planora-surface);
+  --history-detail: var(--planora-soft);
+  --history-income: var(--planora-income);
+  --history-income-ink: var(--planora-income-ink);
+  --history-income-detail: var(--planora-income-soft);
+  --history-expense: var(--planora-expense);
+  --history-expense-ink: var(--planora-expense-ink);
+  --history-expense-detail: var(--planora-expense-soft);
+  --history-treasury: var(--planora-treasury);
+  --history-treasury-hover: var(--planora-treasury-hover);
+  --history-result: var(--planora-result);
+  --history-hover: var(--planora-hover);
+  --history-line: var(--planora-line);
+  --history-rule: var(--planora-rule);
+  --history-closing: var(--planora-band);
+  --history-closing-ink: var(--planora-band-ink);
+  --history-closing-muted: var(--planora-band-muted);
+  --history-closing-negative: var(--planora-negative-on-dark);
+  --history-closing-line: var(--planora-band-line);
   --card: var(--history-paper);
   --background: var(--history-paper);
   --filet: var(--history-line);
@@ -26,27 +26,6 @@
   --border: var(--history-line);
 }
 
-.dark .history-layout {
-  --history-paper: #1b302a;
-  --history-detail: #243d34;
-  --history-income: #2b4c3b;
-  --history-income-ink: #b9e3ca;
-  --history-income-detail: #233e30;
-  --history-expense: #2b414d;
-  --history-expense-ink: #c2dce8;
-  --history-expense-detail: #24363f;
-  --history-treasury: #233f32;
-  --history-treasury-hover: #2c4b3b;
-  --history-result: #2c4a39;
-  --history-hover: #294237;
-  --history-line: #354d43;
-  --history-rule: #536f60;
-  --history-closing: #10271e;
-  --history-closing-ink: #edf5ef;
-  --history-closing-muted: #b9cebf;
-  --history-closing-negative: #ffb59f;
-  --history-closing-line: #3c5947;
-}
 
 .history-layout :is([data-history-section-table="income"], [data-history-card="income"]) {
   --history-section: var(--history-income);

@@ -1,0 +1,358 @@
+.landing {
+  max-width: 1440px;
+  margin: auto;
+  padding: 16px 64px 112px;
+  display: grid;
+  grid-template-columns: 0.85fr 1.1fr;
+  gap: 100px;
+  align-items: start;
+  scroll-margin-top: 40px;
+}
+.intro {
+  padding-top: 24px;
+}
+.intro h2 {
+  font-size: clamp(36px, 4vw, 56px);
+  line-height: 1.1;
+  font-weight: 500;
+}
+.intro h2 span {
+  color: var(--planora-action);
+}
+.intro > p {
+  margin-top: 24px;
+  max-width: 35ch;
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--planora-muted);
+}
+.faqLink {
+  border-top: 1px solid var(--planora-line);
+  margin-top: 40px;
+  padding-top: 24px;
+  max-width: 360px;
+}
+.faqLink p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--planora-muted);
+}
+.faqLink a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  margin-top: 10px;
+  color: var(--planora-action);
+}
+.faqLink a:hover {
+  text-decoration: underline;
+}
+.faqLink svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+.form,
+.success {
+  min-width: 0;
+  padding: 32px;
+  border-radius: 16px;
+  background: var(--planora-soft);
+  color: var(--planora-text);
+}
+.form fieldset {
+  border: 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 24px;
+}
+.field {
+  display: grid;
+  gap: 10px;
+}
+.field label {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px 14px;
+  background: var(--planora-surface);
+  color: var(--planora-text);
+  border: 1px solid var(--planora-control-line);
+  border-radius: 8px;
+  font:
+    400 16px/1.5 var(--font-ui),
+    sans-serif;
+  caret-color: var(--planora-action);
+}
+.field textarea {
+  min-height: 140px;
+  resize: vertical;
+  scrollbar-color: var(--planora-control-line) var(--planora-surface);
+}
+.field small {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--planora-muted);
+}
+.field :is(input, textarea)::placeholder {
+  color: var(--planora-muted);
+  opacity: 1;
+}
+.field :is(input, textarea, select):disabled {
+  cursor: not-allowed;
+  opacity: 1;
+}
+.selectWrap {
+  position: relative;
+}
+.selectWrap select {
+  appearance: none;
+  padding-right: 42px;
+  cursor: pointer;
+}
+.selectWrap svg {
+  position: absolute;
+  right: 14px;
+  top: 16px;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  color: var(--planora-muted);
+}
+.privacy {
+  color: var(--planora-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.submit,
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 48px;
+  padding: 14px 22px;
+  font:
+    500 14px/1.5 var(--font-ui),
+    sans-serif;
+  cursor: pointer;
+}
+.submit {
+  width: 100%;
+  border-radius: 100px;
+  background: var(--planora-action);
+  color: var(--planora-action-ink);
+}
+.submit:hover:not(:disabled) {
+  background: var(--planora-action-hover);
+}
+.submit:disabled {
+  cursor: not-allowed;
+  background: var(--planora-hover);
+  color: var(--planora-muted);
+}
+.submit svg,
+.secondary svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+.secondary {
+  border: 1px solid var(--planora-control-line);
+  border-radius: 8px;
+  background: var(--planora-surface);
+  color: var(--planora-action);
+  margin-top: 28px;
+}
+.secondary:hover {
+  background: var(--planora-hover);
+}
+.form :is(input, textarea, select, button):focus-visible,
+.success :is(button, h3):focus-visible,
+.faqLink a:focus-visible {
+  outline: 3px solid var(--planora-action);
+  outline-offset: 4px;
+}
+.availability {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--planora-line);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--planora-muted);
+}
+.availability svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  margin-top: 2px;
+  color: var(--planora-action);
+}
+.error {
+  margin-top: 24px;
+  padding: 16px;
+  border-radius: 8px;
+  color: var(--planora-negative);
+  background: var(--planora-negative-soft);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.success {
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+.successIcon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--planora-action-soft);
+  color: var(--planora-action);
+  margin-bottom: 24px;
+}
+.successIcon svg {
+  width: 24px;
+  height: 24px;
+}
+.success h3 {
+  font:
+    500 28px/1.2 var(--font-landing-display),
+    sans-serif;
+  letter-spacing: -0.025em;
+}
+.success p {
+  margin-top: 20px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--planora-muted);
+  overflow-wrap: anywhere;
+}
+.success strong {
+  font-weight: 500;
+  color: var(--planora-text);
+}
+.srOnly,
+.honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.app {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 48px;
+  width: 100%;
+  max-width: 1040px;
+  margin: 24px auto 48px;
+  align-items: start;
+}
+.appIntro {
+  padding-top: 24px;
+}
+.appIntro h2 {
+  font:
+    500 28px/1.2 var(--font-landing-display),
+    sans-serif;
+  letter-spacing: -0.025em;
+}
+.appIntro p {
+  color: var(--planora-muted);
+  font-size: 14px;
+  line-height: 1.75;
+  max-width: 40ch;
+  margin-top: 20px;
+}
+.app .form,
+.app .success {
+  background: var(--planora-surface);
+  border: 1px solid var(--planora-line);
+}
+.app .submit {
+  border-radius: 8px;
+}
+@media (max-width: 1100px) {
+  .landing {
+    padding-inline: 36px;
+    gap: 48px;
+  }
+  .app {
+    gap: 32px;
+  }
+}
+@media (max-width: 760px) {
+  .landing {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 0 24px 64px;
+  }
+  .intro {
+    padding-top: 0;
+  }
+  .intro h2 {
+    font-size: 36px;
+  }
+  .intro > p {
+    margin-top: 20px;
+    max-width: 46ch;
+    font-size: 15px;
+  }
+  .faqLink {
+    margin-top: 24px;
+    padding-top: 20px;
+    max-width: none;
+  }
+  .form,
+  .success {
+    padding: 24px 20px;
+  }
+  .form fieldset {
+    gap: 20px;
+  }
+  .app {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-block: 0 64px;
+  }
+  .appIntro {
+    padding-top: 0;
+  }
+  .appIntro h2 {
+    font-size: 24px;
+  }
+  .appIntro p {
+    max-width: 56ch;
+    margin-top: 16px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .submit,
+  .secondary {
+    transition: background-color 160ms ease-out;
+  }
+}

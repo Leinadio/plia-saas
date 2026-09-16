@@ -1,3 +1,4 @@
+import { listAutomationNotifications } from "./automation-service";
 import { pourMoi } from "./current-user";
 import { listAccounts } from "../db/repositories/accounts";
 import { listGroups } from "../db/repositories/groups";
@@ -25,8 +26,9 @@ import { pendingAsTransactions } from "./bank-pending";
 // milliseconde, ça les met simplement en file d'attente, et le pilote proteste.
 export async function appNotifications(): Promise<Notification[]> {
   const currentMonth = currentMonthKey(new Date());
-  const { comptes, groupes, budgets, budgetsLignes, operations, ecartees } = await pourMoi(
+  const { comptes, groupes, budgets, budgetsLignes, operations, ecartees, automatiques } = await pourMoi(
     async (database, userId) => ({
+      automatiques: await listAutomationNotifications(database, userId),
       comptes: await listAccounts(database, userId),
       groupes: await listGroups(database, userId),
       budgets: await listBudgetAmounts(database),
@@ -42,7 +44,7 @@ export async function appNotifications(): Promise<Notification[]> {
     id: t.id, date: t.date, amount: t.amount, label: t.label, accountId: t.accountId,
     groupId: t.groupId, lineId: t.lineId, excluded: t.excluded, budgetMonth: t.budgetMonth,
   }));
-  return overspendNotifications(
+  return [...automatiques, ...overspendNotifications(
     comptes.map((a) => ({
       accountId: a.id,
       accountName: accountLabel(a),
@@ -56,5 +58,5 @@ export async function appNotifications(): Promise<Notification[]> {
     })),
     ecartees,
     currentMonth,
-  );
+  )];
 }

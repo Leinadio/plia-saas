@@ -82,11 +82,11 @@ describe("la roue des outils du coin bas droit", () => {
     const vue = await rendre();
     try {
       await vue.ouvrirLaRoue();
-      const bouton = vue.trouver("Dépassements");
+      const bouton = vue.trouver("Notifications");
       expect(bouton?.textContent).toContain("3");
       // La première de la liste, donc la plus proche du pouce.
       const commandes = vue.boutons().filter((b) => b.getAttribute("role")?.startsWith("menuitem"));
-      expect(commandes[0]?.textContent).toContain("Dépassements");
+      expect(commandes[0]?.textContent).toContain("Notifications");
       await act(async () => bouton?.click());
       expect(mocks.ouvrirAlertes).toHaveBeenCalledOnce();
     } finally {
@@ -98,7 +98,7 @@ describe("la roue des outils du coin bas droit", () => {
     const vue = await rendre();
     try {
       await vue.ouvrirLaRoue();
-      expect(vue.trouver("Dépassements")).toBeUndefined();
+      expect(vue.trouver("Notifications")).toBeUndefined();
       expect(vue.boutons().filter((b) => b.getAttribute("role")?.startsWith("menuitem"))).toHaveLength(3);
     } finally {
       await vue.unmount();

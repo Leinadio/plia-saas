@@ -155,32 +155,25 @@
 
 .history-mobile [data-history-comparison="income"],
 [data-comparison-sheet="income"] {
-  --comparison-background: var(--portant-voile);
-  --comparison-accent: var(--portant);
+  --comparison-background: var(--planora-income);
+  --comparison-accent: var(--planora-income-ink);
 }
 
 .history-mobile [data-history-comparison="expense"],
 [data-comparison-sheet="expense"] {
-  --comparison-background: var(--tension-voile);
-  --comparison-accent: var(--tension);
+  --comparison-background: var(--planora-expense);
+  --comparison-accent: var(--planora-expense-ink);
 }
 
 .history-mobile [data-history-comparison="balance"],
 [data-comparison-sheet="balance"] {
-  --comparison-background: var(--encre);
-  --comparison-accent: var(--foreground);
-  --foreground: var(--surface);
-  --muted-foreground: color-mix(in oklab, var(--surface) 70%, var(--encre));
-  --border: color-mix(in oklab, var(--surface) 40%, var(--encre));
+  --comparison-background: var(--planora-band);
+  --comparison-accent: var(--planora-band-ink);
+  --foreground: var(--planora-band-ink);
+  --muted-foreground: var(--planora-band-muted);
+  --border: var(--planora-band-line);
+  --ring: var(--planora-band-accent);
   color-scheme: dark;
-}
-
-.dark .history-mobile [data-history-comparison="balance"],
-.dark [data-comparison-sheet="balance"] {
-  --comparison-background: var(--sol);
-  --foreground: var(--encre);
-  --muted-foreground: var(--ardoise);
-  --border: var(--filet);
 }
 
 .history-mobile [data-history-comparison] > td:not(.case-active) {
@@ -261,6 +254,7 @@
 }
 
 .history-comparison-options button[aria-pressed="true"] {
+  --muted-foreground: var(--foreground);
   background: color-mix(in oklab, var(--comparison-accent) 16%, var(--comparison-background));
 }
 

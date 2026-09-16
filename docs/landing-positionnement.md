@@ -1,6 +1,6 @@
 # Planora — positionnement de la nouvelle landing
 
-Proposition du 10 septembre 2026, mise à jour avec la cible retenue par le créateur : les personnes seules et les couples. La direction visuelle « La lumière en mouvement » a été choisie dans la page de décision (seed `29f966f4`, option `assigned`, réalisation en code). Le choix de cible ne constitue pas une étude clients ; le prix reste une hypothèse de lancement.
+Proposition du 10 septembre 2026, mise à jour le 16 septembre avec le pré-lancement et les deux offres retenues. La cible reste les personnes seules et les couples. La direction visuelle « La lumière en mouvement » a été choisie dans la page de décision (seed `29f966f4`, option `assigned`, réalisation en code). Le choix de cible ne constitue pas une étude clients ; la volonté de payer reste à valider.
 
 ## Cible retenue
 
@@ -12,9 +12,11 @@ La page `/pour-qui`, reliée au header sur mobile et ordinateur, présente ces u
 
 ## Offre proposée
 
-Une offre complète à **29 € par mois**, hypothèse premium demandée par le créateur. La landing indique « Tarif envisagé. L’offre commerciale est en cours de finalisation. » Le bouton conduit à l’accès Planora, sans simuler un paiement ou un abonnement inexistant. Aucun essai gratuit, engagement annuel, accompagnement personnel ou niveau de service n’est inventé.
+Le pré-lancement présente **9,90 € par mois sans connexion bancaire**, avec saisie manuelle, et **19,90 € par mois pendant les 12 premiers mois d’abonnement puis 29 € par mois avec connexion bancaire**. Les deux formules prévoient les enveloppes, la comparaison et les prévisions. Les boutons conservent l’offre choisie et ouvrent une réservation gratuite, sans carte bancaire. Les 12 mois commencent avec l’abonnement, jamais avec la réservation.
 
-Ce prix est ambitieux au regard des repères publics consultés le 10 septembre 2026 : Bankin’ Plus annonce 39,99 € par an ; YNAB affiche 14,99 USD par mois ou 109 USD par an ; Monarch Plus annonce 199 USD par an. Les devises, les marchés et les fonctionnalités diffèrent : ces montants ne sont pas une comparaison à périmètre égal. Un prix élevé de Planora devra être défendu par la clarté du produit, la qualité de son utilisation et une valeur confirmée auprès de la cible, pas seulement par une esthétique premium.
+L’hypothèse initiale d’une offre unique à 29 € accompagnée de « Tarif envisagé » est remplacée par le [cadrage du 16 septembre](design/2026-09-16-prelaunch-shape.md). Aucun essai gratuit, engagement annuel, import CSV, accès partagé, accompagnement ou niveau de service n’est promis. Le parcours autonome de budget sans banque reste à construire avant la vente de la formule manuelle.
+
+L’hypothèse initiale à 29 € était ambitieuse au regard des repères publics consultés le 10 septembre 2026 : Bankin’ Plus annonçait 39,99 € par an ; YNAB affichait 14,99 USD par mois ou 109 USD par an ; Monarch Plus annonçait 199 USD par an. Ces repères historiques ne sont pas revérifiés dans cette passe. Les devises, les marchés et les fonctionnalités diffèrent : ces montants ne sont pas une comparaison à périmètre égal. Les tarifs retenus devront être défendus par la clarté du produit, la qualité de son utilisation et une valeur confirmée auprès de la cible, pas seulement par une esthétique premium.
 
 Sources primaires : [Bankin’ Plus](https://support.bankin.com/hc/fr/articles/360006559578-Pr%C3%A9sentation-de-Bankin-Plus), [YNAB — tarifs](https://www.ynab.com/pricing), [Monarch Plus](https://www.monarch.com/blog/monarch-plus). La présence de prévisions chez Bankin’ et Monarch interdit de présenter l’anticipation comme une exclusivité de Planora.
 
@@ -26,9 +28,11 @@ L’ancienne landing présentait une vidéo et des illustrations moins proches d
 
 ## Parcours de conversion
 
-La promesse « Faites de la place à vos projets » relie le budget à une vie concrète. Le texte explique immédiatement le rôle de Planora : revenus, dépenses et mois à venir. L’action principale conduit à l’accès à Planora ; l’action secondaire ouvre la présentation du produit.
+Le titre « L’outil pour gérer vos finances sans vous compliquer la vie. » relie le budget au quotidien. Le texte explique immédiatement le rôle de Planora : revenus, dépenses et mois à venir. L’action principale rejoint les deux offres ; l’action secondaire ouvre la présentation du produit. Le hero annonce le pré-lancement et la réservation gratuite, sans carte. « Se connecter » conserve l’accès existant.
 
-Le visiteur explore ensuite trois aperçus issus des vrais composants, avec des données de démonstration : le budget du mois, la comparaison des soldes et le détail d’un montant. Une photographie de départ en week-end remet ces chiffres dans le contexte d’un projet. Le fonctionnement et les réponses bancaires précèdent ou accompagnent l’offre. La page se termine par une nouvelle invitation à commencer.
+Le visiteur explore ensuite trois aperçus issus des vrais composants, avec des données de démonstration : le budget du mois, la comparaison des soldes et le détail d’un montant. Une photographie de départ en week-end remet ces chiffres dans le contexte d’un projet. Le fonctionnement, les deux offres et la FAQ expliquent le choix manuel ou connecté et les conditions. La page se termine par une nouvelle invitation à réserver.
+
+Le formulaire demande l’adresse e-mail et, facultativement, le besoin principal. La confirmation de l’adresse et de la formule passe par un lien reçu puis un clic explicite ; elle mène à la démonstration identifiée comme fictive. Les adresses confirmées par formule constituent le premier signal d’intérêt. Elles ne garantissent ni un abonnement payé ni une activation future.
 
 Les photographies sont des créations originales générées avec l’outil imagegen intégré. Elles ne représentent pas des clients. Les captures de produit utilisent les données fictives déjà présentes dans Planora ; leur caractère démonstratif est visible sur la page. Les prompts et les origines sont enregistrés avec les images dans `public/landing/`.
 
@@ -40,7 +44,9 @@ le détail d’un montant, l’ajustement d’un budget et les mois à venir. Le
 s’ouvre au clic, avec sous-titres français facultatifs. Les données fictives et
 la voix générée par IA sont signalées sous l’aperçu.
 
-La refonte concerne la page publique. La police de titre et les couleurs de cette page sont isolées de l’interface de gestion du budget. La page prévoit une composition mobile, une version sombre et une réduction des animations selon les préférences du navigateur. Le prix reste une proposition commerciale à valider avant son lancement définitif.
+La composition publique reste adaptée au mobile, au thème sombre et à la réduction des animations. Depuis l’harmonisation du 16 septembre, elle partage avec l’application la palette eucalyptus, bleu brume et pêche. Les pages publiques utilisent Bricolage pour les titres et Schibsted pour les textes et commandes ; les compositions restent propres aux surfaces. Le pré-lancement ajoute les offres et la réservation sans nouvelle identité.
+
+L’intégration Resend et le schéma dédié sont préparés, mais leur configuration et leur installation en production restent à effectuer avant la collecte. Aucun e-mail réel ni paiement n’a été déclenché. Le [guide de mise en service](prelaunch.md) conserve ces limites. La date d’ouverture et les conditions commerciales restent à préciser ; la validation technique et visuelle du parcours préparé ne constitue pas un déploiement.
 
 ## Page « Pour qui ? » — proposition artistique
 
@@ -54,5 +60,7 @@ corail et forêt. La page reprend les polices et les commandes publiques de Plan
 La promesse reste celle du budget personnel et de l’anticipation. L’absence d’accès
 partagé entre conjoints est indiquée. Les photos sont fictives, créées par imagegen,
 avec prompts et provenance intégrés ; aucun témoignage ni résultat client n’est
-inventé. Les boutons ouvrent la démonstration, la connexion ou l’offre existante.
-Aucune nouvelle animation ni modification du tarif n’est introduite.
+inventé. Cette passe artistique conservait les destinations et l’offre alors
+existantes. Le pré-lancement suivant redirige les actions de conversion vers
+les offres ou la réservation, tout en conservant la démonstration et le lien
+« Se connecter ». Aucune nouvelle animation n’est introduite.
