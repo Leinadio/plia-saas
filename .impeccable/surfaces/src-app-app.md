@@ -306,3 +306,20 @@ ni erreur navigateur ; contrastes échantillonnés ≥ 5,35:1 clair / 5,20:1 som
 Les 1 150 tests passent avant et après. Route temporaire retirée. Preuves :
 `/private/tmp/planora-table-treasury-header-restore-browser.json` et
 `/private/tmp/planora-treasury-header-restore-tests-final.log`.
+
+### Protection contre le chevauchement — 17 septembre 2026
+
+La barre ne compresse plus les onglets sous leur contenu. Jusqu’à 1600 px de
+largeur disponible dans l’espace de travail, la marque et les outils occupent
+la première ligne ; les destinations occupent une seconde ligne centrée.
+Au-delà, le retour à la ligne reste possible si les outils et leurs compteurs
+prennent davantage de place. Les outils peuvent également se répartir dans
+leur propre zone quand le panneau latéral est ouvert. Le comportement mobile
+avec libellés complets et cibles de 44 px est conservé.
+
+Le contrôle navigateur mesure les intersections entre marque, navigation et
+outils, ainsi que le débordement des liens hors de leur propre conteneur :
+le seul dépassement de la page ne suffisait pas à détecter le défaut fourni
+par l’utilisateur. Quatorze cas contrôlés de 320 à 2048 px, dont des espaces
+de travail de 800 et 520 px dans une fenêtre de 1440 px, avec compteurs visibles.
+Preuves : `.impeccable/review/header-overlap-*.png`.
