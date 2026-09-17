@@ -124,11 +124,11 @@ colors:
   landing-sand-bg: "#f4ecdf"
   landing-sand-muted: "#685d4c"
   landing-sand-line: "#9a886e"
-  landing-demo-bg: "#e7f1ec"
+  landing-demo-bg: "#273330"
   landing-demo-bg-dark: "#273330"
-  landing-demo-ink: "#293331"
-  landing-demo-title: "#126b5b"
-  landing-demo-copy: "#566460"
+  landing-demo-ink: "#f5f8f6"
+  landing-demo-title: "#a3d9c0"
+  landing-demo-copy: "#c6d3cc"
   landing-demo-tab-line: "#64796e"
   landing-demo-tab-ink: "#f5f8f6"
   landing-demo-tab-hover: "#354b40"
@@ -152,13 +152,11 @@ colors:
   landing-offer-copy-dark: "#dec49d"
   landing-offer-line-dark: "#887963"
   landing-close-copy: "#c6d3cc"
-  landing-audience-coral: "#f5ded1"
-  landing-audience-coral-hover: "#efd2c1"
-  landing-audience-coral-dark: "#38352f"
-  landing-audience-brown: "#784e3a"
-  landing-audience-shadow: "#283a3126"
+  landing-audience-green: "#273330"
+  landing-audience-ink: "#f5f8f6"
+  landing-audience-muted: "#c6d3cc"
+  landing-audience-accent: "#edc8b5"
   landing-audience-line: "#64796e"
-  landing-audience-mint: "#edc8b5"
   barre: "#ffffff"
   app-curve: "#d7e5ed"
   app-curve-warm: "#f2d7c8"
@@ -261,63 +259,75 @@ typography:
     letterSpacing: "-0.035em"
   landing-audience-hero:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
-    fontSize: "clamp(64px, 8vw, 96px)"
-    fontWeight: 550
-    lineHeight: 0.98
+    fontSize: "72px"
+    fontWeight: 500
+    lineHeight: 1.04
+    letterSpacing: "-0.035em"
+  landing-audience-hero-tablet:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "56px"
+    fontWeight: 500
+    lineHeight: 1.04
     letterSpacing: "-0.035em"
   landing-audience-hero-mobile:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
-    fontSize: "clamp(52px, 12vw, 70px)"
-    fontWeight: 550
-    lineHeight: 0.98
-    letterSpacing: "-0.035em"
-  landing-audience-profile:
-    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
-    fontSize: "clamp(40px, 4.3vw, 60px)"
+    fontSize: "48px"
     fontWeight: 500
-    lineHeight: 1.06
+    lineHeight: 1.04
     letterSpacing: "-0.035em"
-  landing-audience-profile-mobile:
-    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
-    fontSize: "42px"
-    fontWeight: 500
-    lineHeight: 1.06
-    letterSpacing: "-0.035em"
-  landing-audience-proof:
+  landing-audience-hero-small:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
     fontSize: "40px"
     fontWeight: 500
-    lineHeight: 1.05
+    lineHeight: 1.04
     letterSpacing: "-0.035em"
-  landing-audience-proof-mobile:
-    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
-    fontSize: "36px"
-    fontWeight: 500
-    lineHeight: 1.05
-    letterSpacing: "-0.035em"
-  landing-audience-comparison:
-    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
-    fontSize: "60px"
-    fontWeight: 500
-    lineHeight: 1.05
-    letterSpacing: "-0.035em"
-  landing-audience-comparison-mobile:
+  landing-audience-profile:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
     fontSize: "48px"
     fontWeight: 500
-    lineHeight: 1.05
+    lineHeight: 1.12
+    letterSpacing: "-0.035em"
+  landing-audience-profile-tablet:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "40px"
+    fontWeight: 500
+    lineHeight: 1.12
+    letterSpacing: "-0.035em"
+  landing-audience-profile-mobile:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "36px"
+    fontWeight: 500
+    lineHeight: 1.12
+    letterSpacing: "-0.035em"
+  landing-audience-profile-small:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "32px"
+    fontWeight: 500
+    lineHeight: 1.12
+    letterSpacing: "-0.035em"
+  landing-audience-proof:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "36px"
+    fontWeight: 500
+    lineHeight: 1.12
+    letterSpacing: "-0.035em"
+  landing-audience-proof-mobile:
+    fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
+    fontSize: "28px"
+    fontWeight: 500
+    lineHeight: 1.12
     letterSpacing: "-0.035em"
   landing-audience-close:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
-    fontSize: "clamp(40px, 5vw, 70px)"
+    fontSize: "48px"
     fontWeight: 500
-    lineHeight: 1.08
+    lineHeight: 1.12
     letterSpacing: "-0.035em"
   landing-audience-close-mobile:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
-    fontSize: "42px"
+    fontSize: "36px"
     fontWeight: 500
-    lineHeight: 1.08
+    lineHeight: 1.12
     letterSpacing: "-0.035em"
   landing-headline:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
@@ -467,13 +477,13 @@ rounded:
   landing-close-mobile: "130px 0 0"
   landing-brand: "15px 15px 15px 4px"
   landing-brand-mobile: "13px 13px 13px 4px"
-  landing-audience-solo: "180px 16px 16px 16px"
-  landing-audience-couple: "16px 16px 180px 16px"
-  landing-audience-solo-mobile: "80px 12px 12px 12px"
-  landing-audience-couple-mobile: "12px 12px 80px 12px"
-  landing-audience-proof: "16px 160px 16px 16px"
-  landing-audience-proof-tablet: "16px 120px 16px 16px"
-  landing-audience-proof-mobile: "16px 100px 16px 16px"
+  landing-audience-hero: "160px 16px 16px 16px"
+  landing-audience-hero-mobile: "80px 16px 16px 16px"
+  landing-audience-solo: "160px 16px 16px 16px"
+  landing-audience-solo-mobile: "100px 16px 16px 16px"
+  landing-audience-couple: "16px 120px 16px 16px"
+  landing-audience-couple-mobile: "16px 80px 16px 16px"
+  landing-audience-proof: "16px"
 spacing:
   app-gutter: "32px"
   app-gutter-mobile: "16px"
@@ -754,7 +764,9 @@ conservent leurs couleurs.
 ### Page publique — palette de composition
 
 Le fond blanc et l’encre anthracite portent la lecture ; le vert d’action sert aussi
-aux mots accentués des titres. Les sections « Votre budget au clair » et de démonstration sont sur vert doux en clair, vert profond en sombre ;
+aux mots accentués des titres. La section « Votre budget au clair » n’a pas de fond propre : elle reprend le canevas
+de la page, avec titre et description dans les couleurs du thème. Ses cartes restent
+vertes. La démonstration garde le vert profond de la page Sécurité dans les deux thèmes ;
 les offres sont sur pêche pâle ; les photographies apportent le corail et la lumière.
 Dans le parcours de réservation, le bleu brume pâle situe le formulaire ; les
 champs restent sur la surface du thème et le choix actif utilise le voile menthe.
@@ -766,23 +778,23 @@ ont chacun leur pendant `-dark`. Les familles `landing-balance-*`, `income-*`,
 `expense-*`, `demo-*` et `offer-*` fixent les nuances propres aux fonds, textes,
 filets et états. Les variations claires d’un texte sur anthracite sont intentionnelles :
 titre, texte courant, légende et note restent distincts. `landing-selection` sert
-à la sélection de texte. Les cartes Bento du parcours reprennent la surface opaque,
-l’encre et le texte secondaire du thème, dans le bandeau vert doux en clair, vert profond en sombre.
+à la sélection de texte. Les cartes Bento du parcours reprennent exactement le fond des cartes « Votre budget
+au clair » : mélange opaque de 3 % d’encre ivoire et 97 % du fond vert profond.
+Les titres et icônes restent ivoire, le texte secondaire vert pâle et les liens
+menthe dans les deux thèmes. Les médias gardent leurs couleurs de démonstration.
 La commande des animations et le contour au survol utilisent l’accent du bandeau,
-eucalyptus en clair et menthe en sombre. La séparation courbe supérieure reste statique.
-Les deux sections partagent `greenSection` : fond clair `#e7f1ec`, encre et texte
-secondaire du thème, accent eucalyptus et filet de contrôle. En sombre, fond
-`#273330`, encre `#f5f8f6`, texte secondaire `#c6d3cc`, accent menthe `#a3d9c0`
+menthe dans les deux thèmes. La séparation courbe supérieure reste statique.
+Les deux sections partagent les jetons `greenSection` pour leurs cartes. Seule
+la démonstration applique un fond de section vert. Dans les deux thèmes : fond
+`#273330`, identique à la page Sécurité, encre `#f5f8f6`, texte secondaire `#c6d3cc`, accent menthe `#a3d9c0`
 et filet `#64796e`. Les autres bandes conservent leur palette.
 Les valeurs CSS finales du frontmatter
 font foi ; la couleur émeraude du prompt d’image n’est pas un jeton d’action.
 
-Sur `/pour-qui`, les alias historiques `landing-audience-coral` et `coral-hover`
-reprennent les surfaces pêche du lien photographique couple et de la preuve solo,
-avec leurs variantes sombres. `brown` reprend l’encre chaude du grand titre ;
-`line` sépare la note d’accès personnel, et `mint` désigne désormais l’accent pêche
-des titres et coches sur anthracite. Ces alias appliquent la palette commune ;
-leurs noms historiques ne désignent pas de nouvelles couleurs.
+Sur `/pour-qui`, les rôles `landing-audience-*` décrivent le vert profond des
+scènes et du tableau illustratif, son encre claire, ses textes secondaires et son
+accent pêche. Ces surfaces gardent les mêmes couleurs dans les deux thèmes ;
+le fond extérieur, les actions et le texte courant suivent la palette commune.
 
 ## Typography
 
@@ -809,11 +821,12 @@ présentes, de la note illustrative au prix. Les titres ont un interlettrage de
 courants de section ont une graisse 500, le héros et les étapes 550. Le corps varie
 de 14 à 18 px selon le contexte ; les mentions et légendes vont de 10 à 12 px.
 Les notes fines restent secondaires, jamais le seul endroit portant la promesse.
-Sur `/pour-qui`, les rôles `landing-audience-*` donnent au titre une ampleur
-propre à cette page, avec un interligne serré. Les titres de profils, les phrases
-des preuves et la conclusion ont leurs variantes mobiles explicites. Le corps
-est à 18 px, puis 16 px sur téléphone ; les bénéfices ont une phrase forte à
-18 px puis 16 px, suivie d’une explication à 15 px puis 14 px.
+Sur `/pour-qui`, le titre passe de 72 à 56, 48 puis 40 px aux seuils 1100,
+800 et 380 px, avec interligne 1.04. Les titres de section et de conclusion
+passent de 48 à 40, 36 puis 32 px aux mêmes seuils, avec interligne 1.12.
+Les titres sont de graisse 500. Le titre du tableau illustratif passe de 36 à
+28 px à 500 px ; les titres des bénéfices restent à 24 px. Le corps passe de
+18 à 16 px à 800 px ; les explications des bénéfices restent à 15 px.
 
 Les prix publics utilisent `landing-price` et `landing-price-mobile` sous
 le seuil de 760 px ; cette expression Bricolage reste distincte des montants
@@ -877,14 +890,14 @@ le visuel, limité à 560 px ; la réassurance suit les deux. Sous 380 px, les
 retraits du visuel et du relevé passent à 16 px, les icônes des opérations se
 masquent et la commande se resserre pour préserver la lecture à 320 px.
 
-Sur `/pour-qui`, le titre et l’action sont centrés dans un haut limité à 1440 px.
-Deux photographies en colonnes 1fr / 1.12fr forment un diptyque décalé : celle du
-solo descend de 48 px. Les images mesurent 460 px de haut, puis 400 px à 1100 px.
-À 700 px, elles restent côte à côte, en colonnes égales, hautes de 300 px, avec
-un décalage de 24 px et un espace de 12 px. Les deux récits alternent texte et
-preuve sur 1312 px maximum, colonnes 1.08fr / 1fr, espace de 96 px puis 48 px.
-Leurs marges latérales sont de 40, 36 puis 24 px. Sur téléphone, chaque récit
-précède sa preuve. La conclusion reste centrée sur le fond public.
+Sur `/pour-qui`, la lecture est verticale : titre, grande scène de vie,
+choix de profil, récit solo, récit couple puis réservation. Le conteneur partagé
+mesure au maximum 1440 px, avec retraits de 64, 36 puis 24 px aux seuils 1100
+et 700 px. Seule la scène solo associe une photo et un tableau illustratif en
+colonnes 0.85fr / 1.15fr ; elle s’empile à 800 px. La bande couple s’étend sur
+toute la largeur et contient une photo panoramique puis trois bénéfices, empilés
+à 800 px. Le choix de profil s’empile à 500 px ; l’ouverture et la conclusion
+s’alignent à gauche à ce seuil. Le parcours mène à `/reservation`.
 
 Les offres utilisent deux colonnes éditoriales séparées par un filet ; sous
 760 px elles s’empilent et leurs commandes prennent toute la largeur. La
@@ -930,12 +943,9 @@ Les boutons partagés réagissent en 200 ms. Les FAQ publiques ouvrent et referm
 leur réponse en 320 ms (grille 0fr/1fr), avec une opacité sur 200 ms et un signe
 qui pivote sur 280 ms. Ces transitions sont supprimées en mouvement réduit ;
 le défilement redevient immédiat.
-La page `/pour-qui` n’ajoute aucune animation ; elle conserve uniquement les
-réactions des commandes partagées et les mêmes préférences de mouvement réduit.
-Le support pêche porte une rotation statique de 2°, compensée de −2° sur la
-capture ; les deux rotations disparaissent sur téléphone. L’ombre du détail
-est `0 16px 32px var(--planora-shadow)` ; celle de la comparaison `0 20px 40px var(--planora-shadow)`.
-Ces traitements appartiennent aux preuves de `/pour-qui`, pas aux cartes du budget.
+La page `/pour-qui` n’ajoute aucune animation ; elle conserve les réactions
+des commandes partagées et leurs préférences de mouvement réduit. Les photos et
+les surfaces opaques vertes créent la profondeur sans rotation ni ombre locale.
 
 Les offres et la réservation utilisent des surfaces opaques et des filets sans
 nouvelle ombre. Les choix de formule ne font varier que le fond et le contour
@@ -964,10 +974,11 @@ Les grandes découpes sont asymétriques : les jetons `landing-hero`, `life` et
 `close`, avec leurs variantes mobiles, encadrent les photographies. La marque a
 son propre coin court (`landing-brand`). Les courbes de séparation relient les
 plages de couleur ; elles ne sont ni des graphiques ni des indicateurs financiers.
-Sur `/pour-qui`, les rôles `landing-audience-solo` et `couple` ouvrent des coins
-opposés sur les portraits ; leurs variantes mobiles conservent ce dialogue.
-Le support pêche utilise `landing-audience-proof` et ses variantes. La courbe
-statique au-dessus du bloc anthracite mesure 80 px, puis 48 px sur téléphone.
+Sur `/pour-qui`, l’ouverture et le portrait solo partagent un grand coin
+supérieur gauche ; la photo couple arrondit son coin supérieur droit. Les variantes
+mobiles préservent les visages. Le tableau illustratif garde des coins de 16 px.
+Les courbes statiques au-dessus et au-dessous de la bande verte mesurent 80 px,
+puis 40 px à 800 px. Ces formes restent propres aux scènes publiques.
 
 ## Components
 
@@ -1259,18 +1270,17 @@ mobile), avec une flèche. Au survol, son fond se renforce et il monte de 2 px ;
 la mise au point dessine un contour de 3 px décalé de 5 px. Les liens de texte
 restent soulignables. Les cibles de navigation et de connexion font au moins 44 px.
 Le header public garde la marque à gauche, les trois ancres de l’accueil au centre,
-puis « Pour qui ? », « Contact » et la capsule « Réserver mon accès » à droite.
-La capsule mène à `/reservation`. Les deux pages portent une flèche diagonale et
+puis « Pour qui ? », « Sécurité », « Contact » et la capsule « Réserver mon accès » à droite.
+La capsule mène à `/reservation`. Les trois pages portent une flèche diagonale et
 `aria-current="page"` sur leur page active ; les ancres une flèche vers le bas.
-À 1200 px et moins, les ancres passent sur une seconde ligne. À 700 px et moins,
+À 1320 px et moins, les ancres passent sur une seconde ligne. Sous 900 px,
+les liens de page ont leur propre rangée à droite. À 700 px et moins,
 la marque et la réservation restent en haut ; Menu est à gauche de la seconde
-ligne, les deux liens de page à droite. Menu ouvre les ancres, Échap les ferme
+ligne, les trois liens de page à droite. Menu ouvre les ancres, Échap les ferme
 et rend le focus au bouton. Les cibles mesurent au moins 44 px.
-Au-delà de 120 px de défilement, le header se fixe sur toute la largeur, sur fond
-opaque avec filet inférieur. Son entrée associe un déplacement de 16 px et un
-fondu en 280 ms. Sa hauteur est réservée pour éviter tout saut de contenu ; elle
-règle aussi l’écart des ancres sous le header. Le mouvement réduit supprime
-l’entrée animée et le défilement progressif. À moins de 380 px, la marque est à
+Le header reste dans le flux de la page et disparaît naturellement au défilement.
+Il n’a ni position fixe, ni animation d’entrée au scroll, ni hauteur réservée.
+Les ancres gardent un retrait de 16 px ; le mouvement réduit supprime le défilement progressif. À moins de 380 px, la marque est à
 20 px, les liens à 12 px et la flèche de réservation est masquée pour préserver le libellé.
 
 La connexion bancaire utilise un relevé illustratif statique sur fond d’accent

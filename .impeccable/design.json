@@ -279,108 +279,6 @@
         ],
         "darkValue": "#352e27"
       },
-      "landing-audience-coral": {
-        "role": "secondary",
-        "displayName": "Pêche de composition",
-        "scope": "application-and-public-pages",
-        "purpose": "Support de la preuve solo et lien photographique couple, selon le thème partagé.",
-        "canonical": "#f5ded1",
-        "darkValue": "#493a31",
-        "tonalRamp": [
-          "#102b24",
-          "#262b29",
-          "#66736b",
-          "#b8c6bf",
-          "#f5f7f6",
-          "#ffffff",
-          "#f5ded1"
-        ]
-      },
-      "landing-audience-coral-hover": {
-        "role": "secondary",
-        "displayName": "Pêche au survol",
-        "scope": "application-and-public-pages",
-        "purpose": "Survol du lien photographique couple.",
-        "canonical": "#efd2c1",
-        "darkValue": "#594436",
-        "tonalRamp": [
-          "#102b24",
-          "#262b29",
-          "#66736b",
-          "#b8c6bf",
-          "#f5f7f6",
-          "#ffffff",
-          "#efd2c1"
-        ]
-      },
-      "landing-audience-coral-dark": {
-        "role": "secondary",
-        "displayName": "Pêche en sombre",
-        "scope": "application-and-public-pages",
-        "purpose": "Support de la preuve solo et lien photographique couple en thème sombre.",
-        "canonical": "#493a31",
-        "darkValue": "#493a31",
-        "tonalRamp": [
-          "#102b24",
-          "#262b29",
-          "#66736b",
-          "#b8c6bf",
-          "#f5f7f6",
-          "#ffffff",
-          "#f5ded1"
-        ]
-      },
-      "landing-audience-brown": {
-        "role": "secondary",
-        "displayName": "Encre chaude",
-        "scope": "application-and-public-pages",
-        "purpose": "Encre chaude du grand titre sur le support pêche, selon le thème partagé.",
-        "canonical": "#784e3a",
-        "darkValue": "#efcfb9",
-        "tonalRamp": [
-          "#102b24",
-          "#262b29",
-          "#66736b",
-          "#b8c6bf",
-          "#f5f7f6",
-          "#ffffff",
-          "#784e3a"
-        ]
-      },
-      "landing-audience-line": {
-        "role": "secondary",
-        "displayName": "Pour qui · line",
-        "scope": "application-and-public-pages",
-        "purpose": "Filet au-dessus de la limite de l’accès personnel.",
-        "canonical": "#64796e",
-        "darkValue": "#607967",
-        "tonalRamp": [
-          "#102b24",
-          "#262b29",
-          "#66736b",
-          "#b8c6bf",
-          "#f5f7f6",
-          "#ffffff",
-          "#64796e"
-        ]
-      },
-      "landing-audience-mint": {
-        "role": "secondary",
-        "displayName": "Accent pêche sur anthracite",
-        "scope": "application-and-public-pages",
-        "purpose": "Accent des titres et coches du récit couple sur anthracite.",
-        "canonical": "#edc8b5",
-        "darkValue": "#edc8b5",
-        "tonalRamp": [
-          "#102b24",
-          "#262b29",
-          "#66736b",
-          "#b8c6bf",
-          "#f5f7f6",
-          "#ffffff",
-          "#edc8b5"
-        ]
-      },
       "app-curve": {
         "role": "secondary",
         "displayName": "Courbe bleu brume",
@@ -446,6 +344,46 @@
         "role": "border",
         "canonical": "#9a886e",
         "scope": "landing-budget-clarity and landing-demo in light mode"
+      },
+      "landing-audience-green": {
+        "role": "secondary",
+        "displayName": "Pour qui · green",
+        "scope": "src/app/pour-qui/page.tsx",
+        "purpose": "Fond des scènes et du tableau illustratif, identique dans les deux thèmes.",
+        "canonical": "#273330",
+        "darkValue": "#273330"
+      },
+      "landing-audience-ink": {
+        "role": "secondary",
+        "displayName": "Pour qui · ink",
+        "scope": "src/app/pour-qui/page.tsx",
+        "purpose": "Texte principal sur vert profond.",
+        "canonical": "#f5f8f6",
+        "darkValue": "#f5f8f6"
+      },
+      "landing-audience-muted": {
+        "role": "secondary",
+        "displayName": "Pour qui · muted",
+        "scope": "src/app/pour-qui/page.tsx",
+        "purpose": "Texte secondaire sur vert profond.",
+        "canonical": "#c6d3cc",
+        "darkValue": "#c6d3cc"
+      },
+      "landing-audience-accent": {
+        "role": "secondary",
+        "displayName": "Pour qui · accent",
+        "scope": "src/app/pour-qui/page.tsx",
+        "purpose": "Accent pêche des titres, icônes et liens sur vert profond.",
+        "canonical": "#edc8b5",
+        "darkValue": "#edc8b5"
+      },
+      "landing-audience-line": {
+        "role": "secondary",
+        "displayName": "Pour qui · line",
+        "scope": "src/app/pour-qui/page.tsx",
+        "purpose": "Filets du tableau, des bénéfices et de la note personnelle.",
+        "canonical": "#64796e",
+        "darkValue": "#64796e"
       }
     },
     "typographyMeta": {
@@ -502,34 +440,29 @@
         "purpose": "Rôle command de la page publique ; tailles normatives dans DESIGN.md.",
         "scope": "landing"
       },
-      "landing-audience-hero": {
-        "displayName": "Page publique · audience-hero",
-        "purpose": "Titre ample de /pour-qui ; rôle dédié et variante mobile dans DESIGN.md.",
-        "scope": "src/app/pour-qui/page.tsx"
-      },
-      "landing-audience-profile": {
-        "displayName": "Page publique · audience-profile",
-        "purpose": "Titres des récits solo et couple ; variante mobile dans DESIGN.md.",
-        "scope": "src/app/pour-qui/page.tsx"
-      },
-      "landing-audience-close": {
-        "displayName": "Page publique · audience-close",
-        "purpose": "Titre de conclusion de /pour-qui.",
-        "scope": "src/app/pour-qui/page.tsx"
-      },
-      "landing-audience-proof": {
-        "displayName": "Page publique · audience-proof",
-        "purpose": "Phrase de la preuve solo sur pêche.",
-        "scope": "src/app/pour-qui/page.tsx"
-      },
-      "landing-audience-comparison": {
-        "displayName": "Page publique · audience-comparison",
-        "purpose": "Phrase de la comparaison sur anthracite.",
-        "scope": "src/app/pour-qui/page.tsx"
-      },
       "app-card-title": {
         "displayName": "Titre de carte Bricolage",
         "purpose": "Titres des cartes standard ; les libellés du relevé restent Schibsted."
+      },
+      "landing-audience-hero": {
+        "displayName": "Pour qui · hero",
+        "purpose": "Titre : 72/56/48/40 px, seuils 1100/800/380 px, interligne 1.04.",
+        "scope": "src/app/pour-qui/page.tsx"
+      },
+      "landing-audience-profile": {
+        "displayName": "Pour qui · profile",
+        "purpose": "Sections : 48/40/36/32 px, seuils 1100/800/380 px, interligne 1.12.",
+        "scope": "src/app/pour-qui/page.tsx"
+      },
+      "landing-audience-close": {
+        "displayName": "Pour qui · close",
+        "purpose": "Conclusion : même échelle et mêmes seuils que les sections.",
+        "scope": "src/app/pour-qui/page.tsx"
+      },
+      "landing-audience-proof": {
+        "displayName": "Pour qui · proof",
+        "purpose": "Titre du tableau fictif : 36 px, puis 28 px à 500 px, interligne 1.12.",
+        "scope": "src/app/pour-qui/page.tsx"
       }
     },
     "roundedMeta": {
@@ -723,49 +656,40 @@
       "audience": {
         "scope": "src/app/pour-qui/page.tsx",
         "surfaceBrief": ".impeccable/surfaces/src-app-pour-qui-page-tsx.md",
-        "authority": "Inherits La lumière en mouvement, shared white/graphite ground and eucalyptus, mist blue and peach roles, with Bricolage/Schibsted and original solo/couple imagery. No approved UI comp.",
-        "layout": "Centered hero, 1440px cover; offset 1fr/1.12fr photo diptych, opposite curved corners, both photos remain side by side on mobile. Alternating 1312px stories in 1.08fr/1fr columns, 96/48px gap; text precedes proof at 700px. Peach detail plate and anthracite comparison section; centered final CTA.",
-        "theme": "Shared document theme: the peach proof and couple photo link use warm dark variants; the comparison section uses the shared anthracite band.",
-        "motion": "No new animation; shared command transitions and reduced-motion behavior only.",
+        "authority": "Code-led redesign in the approved current Planora identity: Bricolage/Schibsted, shared white/anthracite canvas, deep green, peach and curves. No approved UI comp or specific QUALITY BAR.",
+        "layout": "Vertical narrative in shared 1440px container, gutters 64/36/24px at 1100/700px. Hero lifestyle photo and profile navigation; solo photo/budget example pair in 0.85fr/1.15fr columns, stacked at 800px; full-width green couple story with panoramic photo and three benefits, stacked at 800px. Profile links stack and hero/closing align left at 500px.",
+        "theme": "Shared outer canvas, actions and body text. Local green #273330, ink #f5f8f6, muted #c6d3cc, peach #edc8b5 and line #64796e remain identical in both themes.",
+        "typography": "Hero 72/56/48/40px, section/closing 48/40/36/32px at 1100/800/380px. Weight 500. Example heading 36/28px at 500px.",
+        "motion": "No new animation or rotated surfaces; shared command transitions and reduced-motion behavior only.",
         "review": {
           "disposition": "ship",
           "materialFindings": [],
+          "materialFixes": [],
+          "basis": "Independent source and screenshot review; reviewer static inspection, not a separate browser interaction run. No specific QUALITY BAR available.",
+          "validation": "Browser 1440/768/390/320px light and 1440/390px dark: three images loaded, no horizontal overflow or page errors, profile anchors and reservation links passed. ESLint and TypeScript passed. npm test before and after: 1290 tests passed in 139 files.",
+          "status": "current-redesign-review",
           "evidence": [
-            ".impeccable/review/audience-art-1440.png",
-            ".impeccable/review/audience-art-1440-top.png",
-            ".impeccable/review/audience-art-1440-solo.png",
-            ".impeccable/review/audience-art-1440-couple.png",
-            ".impeccable/review/audience-art-1440-dark.png",
-            ".impeccable/review/audience-art-1440-dark-top.png",
-            ".impeccable/review/audience-art-1440-dark-solo.png",
-            ".impeccable/review/audience-art-1440-dark-couple.png",
-            ".impeccable/review/audience-art-390.png",
-            ".impeccable/review/audience-art-390-top.png",
-            ".impeccable/review/audience-art-390-solo.png",
-            ".impeccable/review/audience-art-390-couple.png",
-            ".impeccable/review/audience-art-390-dark.png",
-            ".impeccable/review/audience-art-390-dark-top.png",
-            ".impeccable/review/audience-art-390-dark-solo.png",
-            ".impeccable/review/audience-art-390-dark-couple.png"
+            "/tmp/planora-audience-review.md",
+            "/tmp/audience-1440.png",
+            "/tmp/audience-768.png",
+            "/tmp/audience-390.png",
+            "/tmp/audience-320.png",
+            "/tmp/audience-1440-dark.png",
+            "/tmp/audience-390-dark.png"
           ],
-          "contrast": "Pass; brown on dark coral 4.12:1 for large text.",
-          "validation": "1119 tests passed in 114 files; ESLint and production build passed. Production HTML contract audience-art-v2 verified. Browser 320/390/768/1100/1440px and dark 390/1440px: four images loaded, no overflow, photo anchors, keyboard focus, connexion/demo links passed. Documentation pass did not repeat tests, browser or detector.",
-          "status": "historical-audience-art-v2-review"
+          "evidenceRetention": "Temporary local QA evidence; not committed repository artifacts."
         },
-        "contract": "audience-art-v2",
         "imagery": {
           "originals": [
+            "public/landing/projets-foyer-v1.png",
             "public/landing/audience-solo-v1.png",
             "public/landing/audience-couple-v1.png"
           ],
-          "provenance": "Exact adjacent .prompt.txt files and embedded provenance; eight public raster assets checked, zero missing provenance. People shown are illustrative, not clients.",
-          "proofs": [
-            "public/landing/plia-detail-mobile.png",
-            "public/landing/plia-soldes-mobile.png"
-          ]
+          "provenance": "Three existing imagegen brand photographs; adjacent exact .prompt.txt files and embedded provenance retained. People shown are illustrative, not clients. No new assets.",
+          "proof": "HTML table labelled Exemple fictif de budgets mensuels; no product screenshots on this surface."
         },
-        "interaction": "Photo anchors #en-solo and #a-deux; visible keyboard focus; personal access and demo/estimate caveats; connexion and home demo/offer links.",
-        "localDecisions": "Only the audience scope accepts the intentional 64px hero clamp minimum, coral and brown roles, detail shadow, note divider and 80px mobile photo corners/desktop separator height. No blanket application exception."
+        "interaction": "Native #vos-priorites, #en-solo and #a-deux navigation. Primary CTAs /reservation; demo /#demonstration, offer /#offre, security /securite and contact /contact. Visible personal account limitation: no shared couple access. Free reservation without bank card, no active subscription implied.",
+        "localDecisions": "Photo corners 160/120px desktop and 80/100/80px mobile; example corners 16px. Green band curves 80px, 40px at 800px. These are public surface choices, not general budget UI rules."
       },
       "prelaunch": {
         "scope": [

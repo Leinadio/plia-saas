@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useRef, useState } from "react";
 import { PlanoraMark } from "./planora-mark";
 import { ArrowDown, ArrowUpRight, Menu, X } from "lucide-react";
 import styles from "./landing.module.css";
@@ -16,64 +16,24 @@ export function LandingBrand() {
   );
 }
 
-function subscribeScroll(callback: () => void) {
-  window.addEventListener("scroll", callback, { passive: true });
-  return () => window.removeEventListener("scroll", callback);
-}
-const getScrolled = () => window.scrollY > 120;
-const serverScrolled = () => false;
-
 export function LandingHeader({
   audience = false,
   homeLinks = false,
   contact = false,
+  security = false,
 }: {
   audience?: boolean;
   homeLinks?: boolean;
   contact?: boolean;
+  security?: boolean;
 }) {
   const home = audience || homeLinks ? "/" : "";
-  const scrolled = useSyncExternalStore(
-    subscribeScroll,
-    getScrolled,
-    serverScrolled,
-  );
   const [menuOpen, setMenuOpen] = useState(false);
-  const shellRef = useRef<HTMLDivElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    const shell = shellRef.current;
-    const panel = panelRef.current;
-    if (!shell || !panel) return;
-    const root = document.documentElement;
-    const previous = root.style.getPropertyValue("--public-header-height");
-    const measure = () => {
-      const height = panel.getBoundingClientRect().height;
-      if (!height) return;
-      // Reserve the same space before and after the bar becomes fixed.
-      shell.style.height = `${height}px`;
-      root.style.setProperty("--public-header-height", `${height}px`);
-    };
-    measure();
-    const observer =
-      typeof ResizeObserver === "undefined"
-        ? null
-        : new ResizeObserver(measure);
-    observer?.observe(panel);
-    window.addEventListener("resize", measure);
-    return () => {
-      observer?.disconnect();
-      window.removeEventListener("resize", measure);
-      if (previous) root.style.setProperty("--public-header-height", previous);
-      else root.style.removeProperty("--public-header-height");
-    };
-  }, []);
-
   return (
-    <div ref={shellRef} className={headerStyles.shell} data-scrolled={scrolled}>
-      <div ref={panelRef} className={headerStyles.panel}>
+    <div className={headerStyles.shell}>
+      <div className={headerStyles.panel}>
         <header
           className={`${styles.header} ${headerStyles.header}`}
           data-menu-open={menuOpen}
@@ -123,6 +83,12 @@ export function LandingHeader({
                 aria-current={audience ? "page" : undefined}
               >
                 Pour qui ? <ArrowUpRight aria-hidden />
+              </Link>
+              <Link
+                href="/securite"
+                aria-current={security ? "page" : undefined}
+              >
+                Sécurité <ArrowUpRight aria-hidden />
               </Link>
               <Link href="/contact" aria-current={contact ? "page" : undefined}>
                 Contact <ArrowUpRight aria-hidden />

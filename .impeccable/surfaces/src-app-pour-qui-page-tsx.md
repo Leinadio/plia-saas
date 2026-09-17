@@ -1,152 +1,125 @@
 ---
-version: 2
+version: 3
 slug: "src-app-pour-qui-page-tsx"
 primary_target: "src/app/pour-qui/page.tsx"
-related_targets: ["src/app/pour-qui/page.module.css","src/app/layout.tsx","src/components/landing-header.tsx","src/components/landing-header.module.css","src/components/landing.module.css"]
+related_targets: ["src/app/pour-qui/page.module.css","src/components/landing-layout.module.css","src/components/landing-header.tsx","src/components/landing-header.module.css","src/components/landing.module.css"]
 ---
 
-## Palette commune approuvée — 16 septembre 2026
+## Portée et autorité — 17 septembre 2026
 
-Cette révision chromatique fait autorité ; les revues antérieures ci-dessous
-restent des traces historiques. Blanc majoritaire en clair ; graphite neutre en sombre. Eucalyptus pour
-les actions et revenus, bleu brume pour les dépenses, pêche douce pour les filtres,
-le contexte et les courbes. Textes et trésorerie anthracite, cellules gris neutre.
-Les mêmes rôles s’appliquent à l’application, à la landing, à Pour qui et à la connexion.
-Formes, fontes, espacements, photos, textes et parcours sont conservés.
-Source : `src/app/palette.css`. Brief : `docs/design/2026-09-16-harmony-colors-shape.md`.
-Revue indépendante finale : **ship**, sans défaut matériel pour cette passe couleur.
-La carte QUALITY BAR était indisponible ; ce verdict ne constitue pas un audit
-global d’accessibilité ou d’ergonomie. Revue et preuves :
-`.impeccable/review/harmony-colors-finish-review.md` et
-`.impeccable/review/harmony-colors-validation.md`.
+Refonte de la page publique `/pour-qui`, mode Read / Persuade, dans l’identité
+Planora déjà approuvée. Cette version remplace la composition `audience-art-v2` ;
+les anciennes captures de revue restent historiques et ne décrivent plus la page.
+La réalisation est menée en code, sans maquette d’interface approuvée ni carte
+QUALITY BAR spécifique. Les sources finales font autorité.
 
+Bricolage Grotesque porte les titres, Schibsted Grotesk le texte et les montants.
+Le fond blanc ou anthracite, les actions communes, les grandes photos, les accents
+pêche et les courbes prolongent les pages publiques actuelles. Les références
+retenues sont la page Sécurité et les marges partagées de l’accueil.
 
-## Portée et mode
+## Travail à accomplir et vérité produit
 
-Page publique `/pour-qui`, mode Read / Persuade, version construite
-`audience-art-v2`. Elle s’adresse aux personnes seules et aux couples qui suivent
-leur budget personnel, sans condition de revenus confortables. Les professionnels
-ne sont pas visés. La route est rendue statiquement côté serveur ; son contrat
-est émis dans le document de production.
+Faire reconnaître deux situations de vie — en solo et à deux — puis montrer
+comment les budgets aident à prévoir les dépenses et préparer les projets.
+Le public reste celui du budget personnel, sans condition de revenus confortables
+et sans ciblage professionnel. Employer « budget » et « sous-budget ».
 
-## Travail à accomplir
-
-Faire reconnaître des envies et situations de vie, montrer comment Planora aide à
-organiser les dépenses et préparer les mois suivants, puis rejoindre la démonstration
-ou commencer. Les bénéfices reposent sur les enveloppes, le détail des montants et
-la comparaison des mois déjà présents dans le produit.
-
-Le couple décrit un usage personnel pour préparer les dépenses du foyer et en
-parler ensemble. Une note visible précise que l’accès partagé entre conjoints
-n’est pas proposé. Les captures sont identifiées comme données de démonstration ;
-la comparaison rappelle que les prévisions dépendent du budget renseigné.
-Aucun nouvel accès familial, tarif ou engagement commercial n’est introduit.
-
-## Direction retenue et autorité
-
-La page hérite de « La lumière en mouvement » : fonds blanc et graphite, titres
-Bricolage Grotesque, texte Schibsted Grotesk et commandes en capsules. Son expression
-propre associe photographie de vie, courbes opposées, support pêche et preuves du
-produit. La première composition a été rejetée pour manque de style, d’images
-nouvelles, de direction artistique recherchée et de force commerciale ; elle ne
-fait plus autorité. Il n’existe pas de maquette d’interface approuvée.
-
-Les alias `landing-audience-*` de DESIGN.md appliquent la palette partagée à cette
-composition ; le CSS final fait autorité. Les règles du budget connecté et de
-l’accueil sont préservées.
+Le couple décrit les dépenses du foyer suivies depuis un compte personnel.
+La limite « L’accès partagé entre conjoints n’est pas proposé aujourd’hui » reste
+visible. Le tableau solo porte « Exemple fictif de budgets mensuels » : ses
+850 €, 120 € et 250 € illustrent des choix, pas les données d’un utilisateur.
+La réservation est gratuite, sans carte bancaire, au stade du pré-lancement ;
+elle ne constitue pas un abonnement actif.
 
 ## Composition et parcours
 
-« La vie, à votre façon. » ouvre la page au centre. « Découvrir Planora » rejoint
-`/#demonstration`. Deux photographies originales composent un diptyque : le solo
-est décalé vers le bas, leurs grands coins sont opposés. Les photos entières sont
-des liens vers `#en-solo` et `#a-deux`, avec cartouches opaques et flèches visibles.
+« Votre vie change. Votre budget suit. » ouvre la page avec une courte explication,
+« Réserver mon accès » vers `/reservation` et « Trouver mon rythme » vers
+`#vos-priorites`. Une grande scène de départ en week-end suit, accompagnée des
+phrases « De la place pour le quotidien. » et « Et pour ce qui vous attend. ».
+La navigation dédiée mène ensuite à `#en-solo` et `#a-deux`.
 
-« En solo. Faites-vous une place. » présente trois bénéfices courts : donner une
-place aux dépenses, expliquer les écarts et lire les prochains mois. Une vraie
-capture du détail est posée sur un support pêche légèrement tourné, sous
-« Un chiffre. Tout s’éclaire. ». Le lien propose « Préparer mon budget ».
+« En solo, vos priorités passent au premier plan. » introduit le quotidien,
+les loisirs et les projets. Une seule paire photo/tableau illustre ce propos :
+lecture sur un balcon à gauche, budgets fictifs sur vert profond à droite.
+« Voir les budgets en action » mène à `/#demonstration`.
 
-Une courbe ouvre la plage anthracite. « À deux. Voyez la suite ensemble. » associe
-quotidien, projets et choix discutés à trois bénéfices courts. La capture réelle
-de comparaison répond à « Aujourd’hui. Et après ? ». Le lien propose
-« Préparer nos projets », suivi de la limite explicite de l’accès personnel.
-Les deux liens ouvrent `/connexion`.
+« À deux, préparez la suite sur des bases claires. » ouvre une bande verte bordée
+de courbes. Une photo panoramique d’aménagement précède trois bénéfices courts
+et la limite explicite du compte personnel. La lecture reste verticale.
 
-La conclusion « Faites de la place à votre prochaine envie. » propose
-« Commencer avec Planora » vers `/connexion` et « Découvrir l’offre » vers `/#offre`.
-Le bandeau et le pied communs conservent les liens vers l’accueil et ses sections.
+« Votre façon de vivre. Votre façon de budgétiser. » conclut avec `/reservation`,
+`/#offre`, la mention de réservation gratuite et un lien `/securite`. Le pied de
+page conserve la marque, les questions fréquentes et `/contact`. Le header partagé
+reste dans le flux et conserve la navigation des pages publiques.
 
 ## Images et provenance
 
-`public/landing/audience-solo-v1.png` montre un moment de lecture sur un balcon ;
-`audience-couple-v1.png` montre un couple choisissant une couleur pour aménager
-son appartement. Ce sont des créations originales imagegen, pas des clients ni
-des témoignages. Chaque prompt exact est conservé dans le `.prompt.txt` adjacent ;
-la provenance est aussi embarquée. Le contrôle livré des huit images publiques
-ne relève aucune provenance manquante.
+Trois photographies de marque existantes sont réutilisées :
+`public/landing/projets-foyer-v1.png`, `audience-solo-v1.png` et
+`audience-couple-v1.png`. Elles montrent respectivement un départ en week-end,
+une lecture sur un balcon et un choix de peinture pour un appartement.
+Les trois prompts exacts restent dans les fichiers `.prompt.txt` adjacents,
+avec la provenance embarquée des images. Aucun nouvel asset n’a été produit.
+Ces personnes sont illustratives, pas des clients ni des témoignages.
+Chaque image possède un texte alternatif ; les cadrages préservent les visages.
+Le tableau HTML est identifié comme fictif et possède une légende accessible.
+Aucune capture produit n’est affichée dans cette version.
 
-`plia-detail-mobile.png` et `plia-soldes-mobile.png` montrent les vrais composants
-avec données de démonstration. Les quatre images disposent d’un texte alternatif.
+## Couleurs, formes et profondeur
 
-## Adaptation, typographie et interactions
+Les scènes vertes gardent exactement les mêmes couleurs en clair et en sombre :
+fond `#273330`, encre `#f5f8f6`, texte secondaire `#c6d3cc`, accent pêche
+`#edc8b5`, filets `#64796e`. Le fond extérieur, les actions et le texte courant
+suivent les rôles partagés. Les chiffres restent sur une surface opaque.
 
-Le haut est limité à 1440 px. Les portraits occupent des colonnes 1fr / 1.12fr,
-avec un espace de 32 px et un décalage solo de 48 px. Leur hauteur passe de 460 à
-400 px à 1100 px. À 700 px, les deux images restent côte à côte, hautes de 300 px,
-avec espace de 12 px, décalage de 24 px et coins opposés de 80 px.
+L’ouverture et le portrait solo ont un grand coin supérieur gauche de 160 px,
+réduit respectivement à 80 et 100 px à 800 px. Le coin supérieur droit de la
+photo couple passe de 120 à 80 px. Les autres coins et le tableau sont à 16 px.
+Les courbes supérieure et inférieure de la bande couple passent de 80 à 40 px
+à 800 px. Aucun effet de rotation, ombre locale ou animation décorative n’est
+ajouté ; les commandes partagées respectent la réduction des mouvements.
 
-Les récits alternent texte et preuve, sur 1312 px maximum, colonnes 1.08fr / 1fr,
-espace de 96 puis 48 px. Leurs marges latérales passent de 40 à 36 puis 24 px.
-Sur téléphone, le texte précède toujours la preuve. Le support pêche tourne de
-2° et sa capture de −2° ; ces rotations statiques disparaissent sur téléphone.
-La courbe anthracite mesure 80 px, puis 48 px sur téléphone.
+## Adaptation et typographie
 
-Le titre utilise `clamp(64px, 8vw, 96px)`, puis `clamp(52px, 12vw, 70px)` sur
-mobile, graisse 550 et interligne 0.98. Les récits utilisent
-`clamp(40px, 4.3vw, 60px)`, puis 42 px, graisse 500 et interligne 1.06.
-Les phrases des preuves sont à 40/36 px pour le détail et 60/48 px pour la
-comparaison. La conclusion utilise `clamp(40px, 5vw, 70px)`, puis 42 px.
-Le corps passe de 18 à 16 px ; les bénéfices ont une phrase forte à 18/16 px
-et une explication à 15/14 px. La limite d’accès personnel reste à 13 px.
+Le conteneur partagé est limité à 1440 px, avec marges internes de 64 px,
+36 px à 1100 px, puis 24 px à 700 px. Les titres passent de 72 à 56, 48 puis
+40 px aux seuils 1100, 800 et 380 px ; interligne 1.04, graisse 500.
+Les sections et la conclusion utilisent 48, 40, 36 puis 32 px aux mêmes seuils,
+interligne 1.12. Le titre du tableau passe de 36 à 28 px à 500 px.
+Le corps passe de 18 à 16 px à 800 px. Les titres de bénéfice restent à 24 px,
+leurs descriptions à 15 px, la limite du compte personnel à 14 px.
 
-Le support pêche, son survol et sa variante sombre, l’encre chaude, l’ombre et le
-filet reprennent les rôles communs de `src/app/palette.css`. Les noms historiques
-`landing-audience-coral`, `brown` et `mint` restent des alias documentés dans DESIGN.md. Le minimum de titre à 64 px et les 80 px
-des coins mobiles et de la courbe ne sont pas une exception générale pour le budget.
+La paire solo utilise des colonnes 0.85fr / 1.15fr, avec un espace de 32 puis
+24 px à 1100 px, et s’empile à 800 px. Les trois bénéfices couple s’empilent au
+même seuil. La navigation de profils s’empile à 500 px ; l’ouverture et la
+conclusion s’alignent à gauche. La grande photo d’ouverture mesure successivement
+480, 400, 360 puis 320 px de haut aux seuils 1100, 800 et 500 px.
+La photo solo mesure au moins 520 px, puis 360 px à 800 px ; la photo couple
+passe de 400 à 320 px au même seuil.
 
-Le bandeau sépare les sections de l’accueil et les pages : flèche descendante
-pour les trois ancres, diagonale pour « Pour qui ? » et la connexion. « Pour qui ? »
-reste au centre, séparé des ancres par « / », tandis que la connexion reste à droite. À 1100 px
-et en dessous, les sections restent accessibles sur une seconde ligne. Depuis
-cette page, elles rejoignent la bonne ancre de l’accueil. Le défilement natif est
-progressif, ou immédiat lorsque la réduction des animations est activée. Le lien actif est souligné, teinté de la couleur
-d’action et annoncé par `aria-current="page"`. Les liens photographiques ont une
-mise au point visible ; sur anthracite, le contour est pêche. Les thèmes suivent
-la classe du document commune à l’application. Le lien couple et le support solo
-prennent la variante pêche sombre ; le bloc anthracite suit aussi le thème partagé. Aucune animation décorative n’est ajoutée ; les commandes
-partagées conservent leurs réactions et respectent la réduction des mouvements.
+## Revue et validation
 
-## Revue antérieure de `audience-art-v2` et persistance
+Disposition indépendante : **SHIP**, sans défaut matériel ni correction requise.
+La revue a inspecté les sources et les captures du résultat. Elle reste une
+revue statique : elle ne remplace pas un parcours navigateur indépendant ni un
+audit global d’accessibilité. Aucune QUALITY BAR spécifique n’était disponible.
 
-La revue indépendante de `audience-art-v2` conclut **ship**, sans défaut matériel.
-Seize captures valides ont été inspectées dans `.impeccable/review/` : pour chaque
-largeur 1440 et 390, les fichiers `audience-art-{largeur}{thème}{vue}.png`, avec
-thème vide ou `-dark` et vue vide, `-top`, `-solo` ou `-couple`. Cela représente
-quatre pages complètes, quatre hauts et huit sections. Ce sont les preuves du
-résultat construit, pas des maquettes approuvées. Les contrastes passent ; le
-brun sur corail sombre atteint 4.12:1 pour les grands titres concernés.
+La revue est conservée dans `/tmp/planora-audience-review.md`, les captures dans
+`/tmp/audience-{1440,768,390,320,1440-dark,390-dark}.png`, avec des vues de section
+complémentaires. Ces preuves locales sont temporaires, non ajoutées au dépôt.
 
-La validation livrée compte 1119 tests réussis dans 114 fichiers ; ESLint et le
-build de production ont réussi. Le contrat `audience-art-v2` a été vérifié dans
-le HTML de production. Le navigateur a couvert 320, 390, 768, 1100 et 1440 px,
-ainsi que le sombre à 390 et 1440 px : quatre images chargées, absence de
-débordement, ancres photographiques, mise au point clavier et liens connexion /
-démonstration validés. Cette passe documentaire ne relance ni serveur, ni tests,
-ni détecteur ; elle conserve les résultats de la passe de réalisation et de revue.
+La réalisation a été vérifiée sur le vrai serveur en clair à 1440, 768, 390
+et 320 px, puis en sombre à 1440 et 390 px. Les trois images sont chargées,
+sans débordement horizontal ni erreur de page. Les ancres de profil et les liens
+de réservation sont validés. ESLint et TypeScript passent. `npm test` réussit
+avant et après la réalisation : 1290 tests dans 139 fichiers. Le relevé final
+est conservé dans `/tmp/planora-audience-after.log`. Cette passe documentaire
+reprend ces résultats ; elle ne les présente pas comme de nouveaux essais.
 
 ## Décisions ouvertes
 
-Vérifier l’adéquation des usages solo et couple auprès des utilisateurs concernés.
-Le prix et les conditions commerciales gardent leur statut provisoire documenté
-sur l’accueil ; cette page n’introduit aucune souscription.
+Le besoin et la volonté de payer restent à valider. Les conditions commerciales
+et la disponibilité suivent PRODUCT.md et le parcours de pré-lancement.
+La page ne promet ni partage du compte, ni date d’ouverture, ni témoignage client.

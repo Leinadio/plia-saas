@@ -176,10 +176,12 @@ des sous-titres français facultatifs.
 
 Les quatre photographies originales ont été générées avec imagegen ; les personnes
 représentées ne sont pas des clients. Les huit PNG livrés dans `public/landing/`
-portent leur provenance embarquée. La page `/pour-qui` présente deux scènes de vie
-originales (lecture en solo et projet d’appartement en couple), des arguments courts
-et deux captures des vrais écrans, identifiées comme démonstration. Les preuves du rendu clair, sombre, ordinateur,
-téléphone et des cinq repères sont conservées dans `.impeccable/review/`.
+portent leur provenance embarquée. La page `/pour-qui` réutilise trois scènes de vie originales : départ en week-end,
+lecture en solo et projet d’appartement en couple. Elle présente les usages en solo
+et à deux, un exemple explicitement fictif de budgets mensuels et la limite du compte
+personnel sans accès partagé. La refonte du 17 septembre remplace les deux anciennes
+captures ; ses contrôles visuels en clair et sombre, ordinateur et téléphone restent
+dans `/tmp`. Les revues historiques sont conservées dans `.impeccable/review/`.
 
 Aucun client, témoignage, chiffre d’usage ou logo de presse n’est disponible. Ne pas
 les fabriquer. Le document de positionnement distingue les repères publics datés des

@@ -63,8 +63,12 @@
   grid-column: auto;
   border: 1px solid var(--planora-band-line);
   border-radius: 16px;
-  background: var(--planora-surface);
-  color: var(--planora-text);
+  background: color-mix(
+    in srgb,
+    var(--planora-band-ink) 3%,
+    var(--planora-band)
+  );
+  color: var(--planora-band-ink);
   box-shadow: none;
   transition:
     transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -79,7 +83,7 @@
   height: 32px;
   flex-shrink: 0;
   margin-bottom: 4px;
-  color: var(--planora-text);
+  color: var(--planora-band-ink);
   stroke-width: 1.5;
 }
 .card [data-bento-content] h3 {
@@ -90,7 +94,7 @@
 }
 .card [data-bento-content] p {
   max-width: 55ch;
-  color: var(--planora-muted);
+  color: var(--planora-band-muted);
   font-size: 15px;
   line-height: 1.6;
 }
@@ -130,13 +134,17 @@
   align-self: flex-start;
   min-height: 44px;
   margin-top: 4px;
-  color: var(--planora-action);
+  color: var(--planora-band-accent);
   font-size: 14px;
   font-weight: 500;
 }
 .expand svg {
   width: 16px;
   height: 16px;
+}
+.card .expand:focus-visible {
+  outline: 2px solid var(--planora-band-accent);
+  outline-offset: 4px;
 }
 .expand:hover {
   text-decoration: underline;

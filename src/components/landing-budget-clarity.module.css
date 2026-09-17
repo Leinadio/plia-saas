@@ -1,8 +1,7 @@
 .section {
   padding-block: 96px 64px;
   margin-bottom: 112px;
-  background: var(--planora-band);
-  color: var(--planora-band-ink);
+  color: var(--planora-text);
   scroll-margin-top: 24px;
 }
 
@@ -17,13 +16,13 @@
 
 .heading span {
   display: block;
-  color: var(--planora-band-accent);
+  color: var(--planora-action);
 }
 
 .description {
   max-width: 720px;
   margin-top: 28px;
-  color: var(--planora-band-muted);
+  color: var(--planora-muted);
   font-size: 18px;
   line-height: 1.7;
   text-wrap: pretty;
@@ -36,6 +35,7 @@
 }
 
 .card {
+  color: var(--planora-band-ink);
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -100,18 +100,18 @@
   justify-content: space-between;
   gap: 24px;
   min-height: 44px;
-  color: var(--planora-band-ink);
+  color: var(--planora-action);
   font-size: 16px;
   font-weight: 500;
 }
 
 .link:hover {
-  color: var(--planora-band-accent);
+  color: var(--planora-action);
   text-decoration: underline;
 }
 
 .section .link:focus-visible {
-  outline: 2px solid var(--planora-band-accent);
+  outline: 2px solid var(--planora-action);
   outline-offset: 6px;
 }
 

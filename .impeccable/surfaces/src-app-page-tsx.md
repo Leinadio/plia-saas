@@ -315,7 +315,7 @@ le haut de page et remplace le bloc des trois repères, retiré le 17 septembre 
 Elle présente la visite guidée de 1 min 14, ouverte au clic dans Hero Video Dialog
 de Magic UI. Le bloc « Votre budget au clair. Le doute en moins. » vient ensuite,
 puis le carrousel de situations de vie décrit en tête de ce brief.
-Sur fond vert doux en clair et vert profond en sombre, la démonstration présente budgets
+Sur fond vert profond dans les deux thèmes, la démonstration présente budgets
 et sous-budgets, transactions, prévisions, notifications et automatisation dans
 cinq cartes Bento, avec trois vidéos et deux illustrations, toutes agrandissables.
 La commande globale met les animations en pause ; la courbe supérieure reste
@@ -499,9 +499,10 @@ formule puis les échanges qualitatifs. Configurer la collecte, préciser les
 conditions et la date d’ouverture, puis construire le parcours manuel autonome
 avant une souscription réelle. Une réservation n’est pas un abonnement payé.
 
-Les sections « Votre budget au clair » et « Une vue d’avance » partagent désormais
-le fond vert doux #e7f1ec en clair et vert profond #273330 en sombre. Les accents
-sont eucalyptus en clair et menthe en sombre ; la courbe et les cartes restent en place.
+La section « Votre budget au clair » n’a pas de fond propre : le canevas de la page
+reste visible, avec texte et accent du thème. Ses trois cartes gardent leur fond vert.
+« Une vue d’avance » garde le fond vert profond #273330 de la page Sécurité dans
+les deux thèmes, ses accents menthe et ses textes ivoire ; la courbe reste en place.
 
 Dans la section bancaire, la protection des données est explicitée : accès aux
 opérations réservé au compte, séparation des données entre utilisateurs, autorisation
@@ -524,9 +525,16 @@ La revue de cette passe conclut **SHIP**, sans défaut matériel à 1440, 390 et
 scindée, le pied de page et la nouvelle page décrite dans
 `src-app-securite-page-tsx.md`.
 
-## Header public fixe — 17 septembre 2026
-Marque à gauche, ancres au centre, liens « Pour qui ? » et « Contact » puis réservation
-à droite. Après 120 px de défilement, fond opaque et apparition 280 ms sans saut de
-mise en page. Le header mesuré réserve sa hauteur et décale les ancres. Sur mobile,
-réservation toujours visible et menu des sections repliable ; les pages restent à droite.
-Échap ferme le menu, le choix d’une ancre aussi. Aucune animation sous mouvement réduit.
+## Header public dans le flux — 17 septembre 2026
+Marque à gauche, ancres au centre, liens « Pour qui ? », « Sécurité » et « Contact » puis réservation
+à droite. Le header défile naturellement avec la page, sans fixation ni animation
+au scroll. Sur mobile, le menu des sections est repliable ; les pages restent à droite.
+Échap ferme le menu, le choix d’une ancre aussi. Les ancres gardent un retrait de 16 px.
+
+Les cinq cartes du bento partagent le fond de « Budgétisez votre argent »
+(`color-mix` à 3 % d’encre du bandeau sur son fond). Texte ivoire, descriptions
+vert pâle, liens et focus menthe assurent le contraste dans les deux thèmes.
+Les vidéos et illustrations conservent leurs propres surfaces.
+
+Le bento retrouve ses dimensions précédentes : cinq cartes de largeurs variées sur
+deux rangées, 20 px entre les cartes, dans le conteneur partagé de la page.

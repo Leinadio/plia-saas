@@ -6,7 +6,7 @@ import { LandingHeader } from "@/components/landing-header";
 (
   globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }
 ).IS_REACT_ACT_ENVIRONMENT = true;
-it("groupe les nouvelles pages et conserve une réservation visible au défilement", async () => {
+it("groupe les nouvelles pages et ne change pas de mode au défilement", async () => {
   const node = document.createElement("div");
   document.body.append(node);
   const root = createRoot(node);
@@ -25,16 +25,12 @@ it("groupe les nouvelles pages et conserve une réservation visible au défileme
         .find((a) => a.textContent?.includes("Réserver mon accès"))
         ?.getAttribute("href"),
     ).toBe("/reservation");
-    expect(
-      node.querySelector("[data-scrolled]")?.getAttribute("data-scrolled"),
-    ).toBe("false");
+    const initialHeader = node.innerHTML;
     await act(async () => {
       vi.stubGlobal("scrollY", 200);
       window.dispatchEvent(new Event("scroll"));
     });
-    expect(
-      node.querySelector("[data-scrolled]")?.getAttribute("data-scrolled"),
-    ).toBe("true");
+    expect(node.innerHTML).toBe(initialHeader);
     const menu = node.querySelector<HTMLButtonElement>(
       'button[aria-controls="public-sections"]',
     )!;

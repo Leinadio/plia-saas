@@ -24,13 +24,6 @@
   --planora-band-accent: #a3d9c0;
   --planora-band-line: #64796e;
 }
-:global(:root:not(.dark)) .greenSection {
-  --planora-band: var(--planora-action-soft);
-  --planora-band-ink: var(--planora-text);
-  --planora-band-muted: var(--planora-muted);
-  --planora-band-accent: var(--planora-action);
-  --planora-band-line: var(--planora-control-line);
-}
 .landing ::selection {
   background: var(--planora-peach);
   color: var(--planora-ink);

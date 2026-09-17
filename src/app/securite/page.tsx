@@ -47,7 +47,7 @@ const protections = [
 export default function SecurityPage() {
   return (
     <main className={`${landing.landing} ${layout.page} ${styles.page}`}>
-      <LandingHeader homeLinks />
+      <LandingHeader homeLinks security />
       <section className={styles.hero} aria-labelledby="security-heading">
         <div>
           <h1 id="security-heading">
