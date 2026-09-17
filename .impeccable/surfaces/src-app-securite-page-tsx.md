@@ -11,13 +11,17 @@ Page publique `/securite`, destinée à expliquer les protections avant de conne
 une banque. Elle hérite de « La lumière en mouvement » : titres Bricolage,
 texte Schibsted, eucalyptus en clair, anthracite et sable en sombre, surfaces
 opaques, filets et commandes en capsule. Le lien d’entrée vient de la réassurance
-bancaire de l’accueil. Le CSS implémenté fait autorité ; aucune nouvelle palette
-ni photographie n’est introduite.
+bancaire de l’accueil. Le CSS implémenté fait autorité. À la demande de l’utilisateur, les surfaces
+de réassurance reprennent le vert profond #273330 de « Pour qui ? », en clair
+comme en sombre, avec texte ivoire et accents pêche. Les photographies existantes
+de la marque sont réutilisées ; aucune nouvelle image n’est générée.
 
 ## Composition
 
 Le titre « Votre budget est personnel. Vos données le restent. » accompagne un
-panneau d’engagements. Une séquence banque → prestataire AISP → espace Planora
+panneau d’engagements surmonté de la photo de lecture `audience-solo-v1.png`,
+découpée en arche. La bande des protections accueille également
+`lumiere-hero-v1.png`, ses verres courbes évoquant un espace personnel préservé. Une séquence banque → prestataire AISP → espace Planora
 explique le consentement et les responsabilités ; l’acronyme est développé et
 un lien ACPR documente le service d’information sur les comptes. La bande sombre
 présente l’identité, la séparation des données et les échanges bancaires HTTPS.
@@ -27,8 +31,10 @@ connexion bancaire avec FAQ, puis le contact et le pied de page commun.
 Le haut de page utilise deux colonnes (1.2fr / 0.9fr), les étapes trois colonnes.
 Les titres principaux mesurent 72 px, puis 56 px sous 1100 px, 48 px sous 800 px
 et 40 px sous 380 px. Sous 800 px, les sections et les étapes s’empilent ; les
-usages des données placent leur description sous le libellé. Les panneaux gardent
-des arrondis de 16 px, les encarts de lecture seule de 12 px. Le contact termine
+usages des données placent leur description sous le libellé. Le panneau photographique garde une arche haute et des angles bas de 24 px ;
+les encarts de lecture seule restent à 12 px. Deux courbes SVG de 80 px
+(40 px sur mobile) encadrent la bande verte, sur toute la largeur. La seconde
+image a un grand arrondi asymétrique de 100 px. Le contact termine
 le parcours sur un fond chaud, avec une action visible vers `/contact`.
 
 ## Interactions et limites des affirmations
@@ -53,3 +59,10 @@ données passent par le contact, sans promettre une action automatique inexistan
 La revue de cette passe conclut **SHIP**, sans défaut matériel à 1440, 390 et
 320 px en clair et à 390 px en sombre. Elle couvre la page, les deux FAQ,
 la réassurance bancaire scindée et les flèches du pied de page.
+
+## Raffinement visuel — 17 septembre 2026
+
+Deux images locales, découpes courbes et bande vert profond conformes à la
+référence utilisateur. Vérification réelle à 1440, 390 et 320 px en clair,
+et 390 px en sombre : images chargées, aucun débordement ni erreur navigateur,
+accordéon fonctionnel. Les captures de contrôle restent dans `/tmp`.

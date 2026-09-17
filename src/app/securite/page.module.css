@@ -36,23 +36,38 @@
   margin-top: 28px;
 }
 .promise {
-  padding: 32px;
-  background: var(--planora-action-soft);
-  border-radius: 16px;
+  overflow: hidden;
+  border-radius: 200px 200px 24px 24px;
+  background: #273330;
+  color: #f5f8f6;
+}
+.heroPhoto {
+  position: relative;
+  height: 360px;
+  overflow: hidden;
+  border-radius: 0 0 50% 8% / 0 0 12% 4%;
+}
+.heroPhoto img {
+  object-fit: cover;
+  object-position: 50% 38%;
+}
+.promiseBody {
+  padding: 28px 32px 32px;
 }
 .shield {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding-block: 16px 28px;
-  color: var(--planora-action);
+  align-items: center;
+  gap: 12px;
+  color: #edc8b5;
   font-size: 24px;
   font-family: var(--font-landing-display), sans-serif;
+  margin-bottom: 20px;
 }
 .shield > svg {
-  width: 88px;
-  height: 88px;
-  stroke-width: 1;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  stroke-width: 1.5;
 }
 .promise ul {
   padding: 0;
@@ -62,9 +77,8 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding-block: 16px;
-  border-top: 1px solid var(--planora-rule);
-  font-size: 15px;
+  padding-block: 8px;
+  font-size: 14px;
   line-height: 1.6;
 }
 .promise li svg {
@@ -72,13 +86,15 @@
   height: 18px;
   flex-shrink: 0;
   margin-top: 2px;
-  color: var(--planora-action);
+  color: #a3d9c0;
 }
-.hero .promise > p {
-  padding-top: 16px;
-  border-top: 1px solid var(--planora-rule);
-  margin-top: 0;
+.promiseBody > p {
+  padding-top: 20px;
+  border-top: 1px solid #64796e;
+  margin-top: 20px;
   font-size: 14px;
+  line-height: 1.6;
+  color: #c6d3cc;
 }
 .connectionSection {
   padding-block: 32px 96px;
@@ -176,14 +192,47 @@
   flex-shrink: 0;
 }
 .protection {
+  --planora-band: #273330;
+  --planora-band-ink: #f5f8f6;
+  --planora-band-muted: #c6d3cc;
+  --planora-band-accent: #edc8b5;
+  --planora-band-line: #64796e;
+  position: relative;
+  margin-block: 64px;
   background: var(--planora-band);
   color: var(--planora-band-ink);
+}
+.curveTop,
+.curveBottom {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  fill: var(--planora-band);
+  pointer-events: none;
+}
+.curveTop {
+  bottom: calc(100% - 1px);
+}
+.curveBottom {
+  top: calc(100% - 1px);
+}
+.protectionPhoto {
+  position: relative;
+  aspect-ratio: 1.8;
+  margin-top: 32px;
+  overflow: hidden;
+  border-radius: 16px 100px 16px 16px;
+}
+.protectionPhoto img {
+  object-fit: cover;
 }
 .protectionInner {
   display: grid;
   grid-template-columns: 1fr 1.1fr;
   gap: 80px;
-  padding-block: 88px;
+  padding-block: 64px;
+  align-items: center;
 }
 .protectionIntro > svg {
   width: 40px;
@@ -332,7 +381,7 @@
   .journey {
     gap: 28px;
   }
-  .promise {
+  .promiseBody {
     padding: 24px;
   }
 }
@@ -359,15 +408,18 @@
     max-width: 560px;
     width: 100%;
   }
-  .shield {
-    flex-direction: row;
-    align-items: center;
-    padding-top: 0;
+  .promise {
+    justify-self: center;
   }
-  .shield > svg {
-    width: 48px;
-    height: 48px;
-    flex-shrink: 0;
+  .heroPhoto {
+    height: 320px;
+  }
+  .curveTop,
+  .curveBottom {
+    height: 40px;
+  }
+  .protection {
+    margin-block: 32px;
   }
   .page h2 {
     font-size: 36px;

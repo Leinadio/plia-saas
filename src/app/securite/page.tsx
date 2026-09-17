@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowDown,
   ArrowRight,
@@ -64,25 +65,36 @@ export default function SecurityPage() {
           </a>
         </div>
         <div className={styles.promise}>
-          <div className={styles.shield}>
-            <ShieldCheck aria-hidden />
-            <span>Votre espace Planora</span>
+          <div className={styles.heroPhoto}>
+            <Image
+              src="/landing/audience-solo-v1.png"
+              alt="Un moment de lecture au calme, sur une terrasse lumineuse."
+              fill
+              priority
+              sizes="(max-width: 800px) 100vw, 45vw"
+            />
           </div>
-          <ul>
-            <li>
-              <Check aria-hidden />
-              <span>Votre autorisation avant la connexion</span>
-            </li>
-            <li>
-              <Check aria-hidden />
-              <span>Vos comptes consultés, aucun virement</span>
-            </li>
-            <li>
-              <Check aria-hidden />
-              <span>Vos données séparées de celles des autres</span>
-            </li>
-          </ul>
-          <p>Votre argent reste chez votre banque.</p>
+          <div className={styles.promiseBody}>
+            <div className={styles.shield}>
+              <ShieldCheck aria-hidden />
+              <span>Votre espace Planora</span>
+            </div>
+            <ul>
+              <li>
+                <Check aria-hidden />
+                <span>Votre autorisation avant la connexion</span>
+              </li>
+              <li>
+                <Check aria-hidden />
+                <span>Vos comptes consultés, aucun virement</span>
+              </li>
+              <li>
+                <Check aria-hidden />
+                <span>Vos données séparées de celles des autres</span>
+              </li>
+            </ul>
+            <p>Votre argent reste chez votre banque.</p>
+          </div>
         </div>
       </section>
 
@@ -161,10 +173,18 @@ export default function SecurityPage() {
 
       <section
         id="protection"
-        className={`${styles.protection} ${landing.greenSection}`}
+        className={styles.protection}
         data-full-bleed
         aria-labelledby="protection-heading"
       >
+        <svg
+          className={styles.curveTop}
+          viewBox="0 0 1440 80"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path d="M0 55C320 110 520 0 840 28S1190 85 1440 20V80H0Z" />
+        </svg>
         <div data-landing-container className={styles.protectionInner}>
           <div className={styles.protectionIntro}>
             <LockKeyhole aria-hidden />
@@ -178,6 +198,14 @@ export default function SecurityPage() {
               Plusieurs contrôles encadrent l’accès à votre espace et à vos
               informations.
             </p>
+            <div className={styles.protectionPhoto}>
+              <Image
+                src="/landing/lumiere-hero-v1.png"
+                alt="Des parois de verre courbes, vertes et ambrées, filtrent la lumière."
+                fill
+                sizes="(max-width: 800px) 100vw, 45vw"
+              />
+            </div>
           </div>
           <div className={styles.protectionList}>
             {protections.map(({ Icon, title, text }) => (
@@ -191,6 +219,14 @@ export default function SecurityPage() {
             ))}
           </div>
         </div>
+        <svg
+          className={styles.curveBottom}
+          viewBox="0 0 1440 80"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path d="M0 0H1440V30C1120 90 920 0 620 30S220 90 0 35Z" />
+        </svg>
       </section>
 
       <section className={styles.dataSection} aria-labelledby="data-heading">
