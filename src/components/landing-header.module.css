@@ -1,24 +1,46 @@
+.shell {
+  position: relative;
+  z-index: 40;
+}
+.panel {
+  width: 100%;
+  border-bottom: 1px solid transparent;
+}
+.shell[data-scrolled="true"] .panel {
+  position: fixed;
+  inset: 0 0 auto;
+  background: var(--planora-surface);
+  border-bottom: 1px solid var(--planora-line);
+  animation: headerEnter 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
 header.header {
   display: grid;
   grid-template-columns: auto 1fr auto;
+  gap: 28px;
+  height: 104px;
+  padding-inline: 64px;
 }
 .sections,
-.center,
-.pageGroup {
+.pages,
+.right {
   display: flex;
   align-items: center;
   gap: 24px;
   font-size: 14px;
 }
-.center {
-  justify-content: center;
-}
 .sections {
   justify-content: center;
-  color: var(--land-muted);
+  color: var(--planora-muted);
+}
+.pages {
+  gap: 20px;
+  font-weight: 500;
+}
+.right {
+  justify-content: flex-end;
 }
 .sections a,
-.pageLink {
+.pages a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -26,135 +48,179 @@ header.header {
   white-space: nowrap;
 }
 .sections svg,
-.pageLink svg {
+.pages svg {
   width: 14px;
   height: 14px;
   flex-shrink: 0;
 }
 .sections a:hover,
-.pageLink:hover {
-  color: var(--land-green);
+.pages a:hover,
+.pages a[aria-current="page"] {
+  color: var(--planora-action);
   text-decoration: underline;
 }
-.pageGroup {
-  font-weight: 600;
+.reserve {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  gap: 12px;
+  padding: 12px 20px;
+  border-radius: 100px;
+  background: var(--planora-action);
+  color: var(--planora-action-ink);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background 180ms ease;
 }
-.separator {
-  color: var(--land-muted);
-  font-size: 18px;
-  font-weight: 400;
+.reserve:hover {
+  background: var(--planora-action-hover);
 }
-.pageLink[aria-current="page"] {
-  color: var(--land-green);
-  text-decoration: underline;
+.reserve svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
-/* Native hash navigation preserves history, keyboard and no-JS behavior.
-   Smooth scrolling is limited to public pages. */
-:global(html):has(.header) {
+.menuButton {
+  display: none;
+}
+:global(html):has(.shell) {
   scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--public-header-height, 104px) + 16px);
 }
-@media (prefers-reduced-motion: reduce) {
-  :global(html):has(.header) {
-    scroll-behavior: auto;
+@keyframes headerEnter {
+  from {
+    transform: translateY(-16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
   header.header {
-    grid-template-columns: auto 1fr auto;
+    gap: 12px 24px;
     height: auto;
-    padding-top: 12px;
-    padding-bottom: 0;
-    row-gap: 8px;
+    padding: 16px 36px 4px;
+    grid-template-columns: auto 1fr;
+  }
+  .right {
+    grid-column: 2;
+    grid-row: 1;
   }
   .sections {
     grid-column: 1 / -1;
     grid-row: 2;
-    justify-content: center;
-    border-top: 1px solid var(--land-line);
+    border-top: 1px solid var(--planora-line);
     padding-block: 4px;
-  }
-  .center {
-    display: contents;
-  }
-  .pageGroup {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: center;
-  }
-  .header > a:last-child {
-    grid-column: 3;
-    grid-row: 1;
   }
 }
 @media (max-width: 700px) {
   header.header {
-    column-gap: 12px;
+    grid-template-columns: auto 1fr;
+    padding: 12px 24px 4px;
+    gap: 4px 12px;
   }
-  .pageGroup {
-    gap: 8px;
-    font-size: 13px;
-  }
-  .sections {
-    justify-content: space-between;
-    gap: 12px;
-    font-size: 12px;
-  }
-}
-@media (max-width: 420px) {
-  .sections svg {
-    display: none;
-  }
-  .sections {
-    gap: 8px;
-  }
-  header.header {
-    column-gap: 8px;
-    padding-inline: 16px;
+  .right {
+    display: contents;
   }
   .header > a:first-child {
+    font-size: 24px;
+    gap: 8px;
+  }
+  .header > a:first-child img {
+    width: 32px;
+    height: 32px;
+  }
+  .reserve {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    font-size: 13px;
+    padding: 10px 14px;
+    min-height: 44px;
+    gap: 8px;
+  }
+  .reserve svg {
+    width: 16px;
+    height: 16px;
+  }
+  .pages {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    gap: 16px;
+    font-size: 13px;
+  }
+  .pages a {
+    gap: 4px;
+  }
+  .menuButton {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    grid-column: 1;
+    grid-row: 2;
     gap: 6px;
-    font-size: 22px;
+    min-height: 44px;
+    color: var(--planora-muted);
+    font-size: 13px;
+  }
+  .menuButton svg {
+    width: 18px;
+    height: 18px;
+  }
+  .sections {
+    display: none;
+    grid-row: 3;
+    font-size: 14px;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0;
+    padding-block: 8px;
+  }
+  .sections a {
+    justify-content: space-between;
+  }
+  .header[data-menu-open="true"] .sections {
+    display: flex;
+  }
+}
+@media (max-width: 380px) {
+  header.header {
+    padding-inline: 16px;
+    gap: 4px 8px;
+  }
+  .header > a:first-child {
+    font-size: 20px;
+    gap: 6px;
   }
   .header > a:first-child img {
     width: 28px;
     height: 28px;
   }
-  .pageGroup {
-    gap: 4px;
+  .reserve {
     font-size: 12px;
-  }
-  .header > a:last-child {
-    font-size: 12px;
-    gap: 4px;
-  }
-  .header > a:last-child svg {
-    width: 14px;
-    height: 14px;
-  }
-}
-@media (max-width: 360px) {
-  header.header {
-    column-gap: 6px;
     padding-inline: 12px;
   }
-  .header > a:first-child {
-    font-size: 19px;
-    gap: 4px;
+  .reserve svg {
+    display: none;
   }
-  .header > a:first-child img {
-    width: 24px;
-    height: 24px;
-  }
-  .pageGroup {
-    gap: 4px;
+  .pages {
+    gap: 10px;
     font-size: 12px;
   }
-  .header > a:last-child {
-    font-size: 12px;
-    gap: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .shell[data-scrolled="true"] .panel {
+    animation: none;
   }
-  .header > a:last-child svg {
-    width: 14px;
-    height: 14px;
+  .reserve {
+    transition: none;
+  }
+  :global(html):has(.shell) {
+    scroll-behavior: auto;
   }
 }

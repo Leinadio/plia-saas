@@ -617,8 +617,8 @@
       },
       {
         "name": "landing-faq",
-        "value": "transform 0.25s ease",
-        "purpose": "Rotation du signe de FAQ à l’ouverture."
+        "value": "grid-template-rows 320ms cubic-bezier(0.16, 1, 0.3, 1), opacity 200ms ease, icon transform 280ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Ouverture et fermeture des FAQ publiques, grille 0fr/1fr et rotation du signe. Transitions supprimées en mouvement réduit."
       },
       {
         "name": "reservation-choice",
@@ -714,11 +714,11 @@
           "src/components/landing-header.tsx",
           "src/components/landing-header.module.css"
         ],
-        "desktop": "Above 1100px: brand, centered group of home-section anchors / Pour qui ?, then login at right. Slash separator is aria-hidden; arrows retain their section/page meaning.",
-        "compact": "At or below 1100px: brand, / Pour qui ? centered, login at right, all section anchors in second row. At or below 700px: 12px section and13px page text. At or below 360px:12px page text and tighter gaps.",
-        "currentPage": "Pour qui ? uses aria-current=\"page\", the action color and an underline on /pour-qui.",
-        "destinations": "Le produit → #demonstration, Fonctionnement → #fonctionnement, Les offres → #offre. Depuis /pour-qui et les pages de réservation, les ancres rejoignent l’accueil. Pour qui ? → /pour-qui ; Se connecter → /connexion. Le nom accessible et le séparateur décoratif masqué sont conservés.",
-        "scroll": "Native anchor navigation and history; smooth scrolling scoped to public pages, immediate with prefers-reduced-motion. Existing section scroll margins preserved."
+        "desktop": "Above 1200px: brand left, home sections centered, Pour qui ? / Contact and Réserver mon accès at right.",
+        "compact": "At 1200px: sections second row. At 700px: brand/reservation top, Menu left and page links right below. Menu reveals sections and closes on Escape or anchor click. Below380px:20px brand,12px navigation and no CTA arrow.",
+        "currentPage": "Pour qui ? and Contact use aria-current=page and action underline on their destination.",
+        "destinations": "Home-section anchors: #demonstration, #fonctionnement, #offre. Page links: /pour-qui, /contact. Reservation CTA: /reservation. Brand: /.",
+        "scroll": "Fixed after120px, opaque surface and lower rule.280ms translateY(-16px)/opacity entry. ResizeObserver reserves height and updates root anchor offset; no layout shift. Reduced motion disables animation and smooth scroll."
       },
       "audience": {
         "scope": "src/app/pour-qui/page.tsx",
@@ -818,6 +818,30 @@
           ]
         }
       },
+      "bankSync": {
+        "targets": [
+          "src/components/landing-bank-sync.tsx",
+          "src/components/landing-bank-sync.module.css"
+        ],
+        "anchor": "#fonctionnement",
+        "headline": "La synchronisation bancaire simplifie votre quotidien.",
+        "layout": "Shared container and heading; 1.1fr/1fr columns with 64px gap, 32px at 1100px. At or below 800px: copy, illustration (max 560px), reassurance. Below 380px: 16px visual padding and compact CTA; transaction icons hidden.",
+        "illustration": "Static bank-to-Planora connection and opaque ledger with three fictitious transactions; explicit illustration caption, accessible figure label and shared theme roles.",
+        "cta": "Découvrir la formule connectée → #offre",
+        "reassurance": "Left: bank consent and read-only consultation. Right: no transfers, money remains at the bank, security link to /securite. No banking-provider name in public copy. Account-scoped access and separation between users; visible lock and read-only label. Last-sync data and possible reauthorization remain explained in the FAQ.",
+        "motion": "No section-specific animation; existing primary-command states retained.",
+        "review": {
+          "disposition": "ship",
+          "materialFindings": [],
+          "viewports": [
+            "1440 light",
+            "390 light",
+            "320 light",
+            "390 dark"
+          ],
+          "scope": "Bank-sync section and incoming link only."
+        }
+      },
       "sandSections": {
         "scope": [
           "#esprit-libre",
@@ -882,6 +906,39 @@
             ".impeccable/review/features-result-automatisation-mobile-390.png"
           ],
           "documentationPass": "Mise à jour fondée sur le code et les validations fournies ; aucun nouveau test, navigateur ou revue."
+        }
+      },
+      "publicAccordion": {
+        "targets": [
+          "src/components/public-accordion.tsx",
+          "src/components/public-accordion.module.css"
+        ],
+        "behavior": "Native buttons controlled by React; aria-expanded, aria-controls and labelled answer regions. Closed answers are aria-hidden and inert. Grid 0fr/1fr transitions both directions in 320ms, opacity 200ms, plus icon rotation 280ms; no transitions under reduced motion."
+      },
+      "footerLinks": "All non-brand footer links use inline-flex alignment, 44px minimum height and a non-shrinking arrow.",
+      "securityPage": {
+        "scope": "src/app/securite/page.tsx",
+        "surfaceBrief": ".impeccable/surfaces/src-app-securite-page-tsx.md",
+        "visualAuthority": "Inherited Bricolage/Schibsted typography, shared eucalyptus light and anthracite/sand dark roles; opaque panels, ruled sections and protection band.",
+        "sections": [
+          "Personal-data hero and reassurance panel",
+          "Bank → AISP → Planora explanation",
+          "Identity, ownership separation and authenticated HTTPS banking protections",
+          "Data categories and uses",
+          "Manual/connected choice and shared FAQ",
+          "Contact and footer"
+        ],
+        "claimBoundary": "User authentication, account ownership and application/database separation, signed server-side HTTPS requests to the banking AISP. No named banking provider in public copy, certifications, encryption-at-rest or zero-risk claims.",
+        "review": {
+          "disposition": "ship",
+          "materialFindings": [],
+          "viewports": [
+            "1440 light",
+            "390 light",
+            "320 light",
+            "390 dark"
+          ],
+          "scope": "Security page, both public FAQs, split bank reassurance and footer arrow alignment."
         }
       }
     },
@@ -1324,9 +1381,9 @@
     {
       "name": "Landing · Réponse bancaire",
       "kind": "custom",
-      "description": "FAQ native, ouvrable au clavier et au clic.",
-      "html": "<details class=\"ds-land-faq\"><summary>Plia peut-il déplacer mon argent ?<span aria-hidden=\"true\">+</span></summary><p>Non. Plia lit le solde et les opérations de vos comptes pour construire votre budget. Il ne réalise pas de virements.</p></details>",
-      "css": ".ds-land-faq{background:var(--planora-canvas, #ffffff);color:var(--planora-text, #293331);border-block:1px solid var(--planora-line, #dfe5e2);font-family:\"Schibsted Grotesk\",sans-serif}.ds-land-faq summary{display:flex;justify-content:space-between;gap:25px;padding:25px 0;cursor:pointer;list-style:none;font-size:15px;font-weight:550}.ds-land-faq summary::-webkit-details-marker{display:none}.ds-land-faq summary:focus-visible{outline:3px solid var(--planora-action, #126b5b);outline-offset:5px}.ds-land-faq summary span{transition:transform .25s ease}.ds-land-faq[open] summary span{transform:rotate(45deg)}.ds-land-faq p{color:var(--planora-muted, #566460);font-size:14px;line-height:1.8;padding:0 38px 26px 0}@media(prefers-reduced-motion:reduce){.ds-land-faq summary span{transition:none}}"
+      "description": "FAQ publique partagée, bouton natif avec aria-expanded ; réponse nommée, aria-hidden et inert lorsque fermée. Ouverture et fermeture animées, sans transition en mouvement réduit.",
+      "html": "<div class=\"ds-land-faq\" data-open=\"false\"><h3><button type=\"button\" aria-expanded=\"false\" aria-controls=\"ds-land-faq-answer\" id=\"ds-land-faq-question\" onclick=\"const item=this.closest('.ds-land-faq');const open=this.getAttribute('aria-expanded')!=='true';this.setAttribute('aria-expanded',String(open));item.dataset.open=String(open);const answer=item.querySelector('[role=region]');answer.setAttribute('aria-hidden',String(!open));answer.inert=!open;\">Planora peut-il déplacer mon argent ?<svg aria-hidden=\"true\" width=\"21\" height=\"21\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M12 5v14M5 12h14\"/></svg></button></h3><div class=\"ds-land-faq-answer\" id=\"ds-land-faq-answer\" role=\"region\" aria-labelledby=\"ds-land-faq-question\" aria-hidden=\"true\" inert><div class=\"ds-land-faq-clip\"><p>Non. Planora consulte le solde et les opérations de vos comptes pour construire votre budget. Il ne réalise pas de virements.</p></div></div></div>",
+      "css": ".ds-land-faq{background:var(--planora-canvas,#ffffff);color:var(--planora-text,#293331);border-bottom:1px solid var(--planora-line,#dfe5e2);font-family:\"Schibsted Grotesk\",sans-serif}.ds-land-faq h3{margin:0}.ds-land-faq button{display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;min-height:64px;padding:24px 0;border:0;background:transparent;color:inherit;cursor:pointer;text-align:left;font:500 15px/1.5 \"Schibsted Grotesk\",sans-serif}.ds-land-faq button:hover{color:var(--planora-action,#126b5b)}.ds-land-faq button:focus-visible{outline:2px solid var(--planora-action,#126b5b);outline-offset:4px}.ds-land-faq svg{flex-shrink:0;transition:transform 280ms cubic-bezier(.16,1,.3,1)}.ds-land-faq[data-open=true] svg{transform:rotate(45deg)}.ds-land-faq-answer{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows 320ms cubic-bezier(.16,1,.3,1),opacity 200ms ease}.ds-land-faq[data-open=true] .ds-land-faq-answer{grid-template-rows:1fr;opacity:1}.ds-land-faq-clip{min-height:0;overflow:hidden}.ds-land-faq p{margin:0;padding:0 36px 24px 0;color:var(--planora-muted,#566460);font-size:14px;line-height:1.8}@media(prefers-reduced-motion:reduce){.ds-land-faq-answer,.ds-land-faq svg{transition:none}}"
     },
     {
       "name": "Réservation · Champ public",

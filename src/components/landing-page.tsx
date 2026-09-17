@@ -1,12 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowDown,
-  ArrowUpRight,
-  Link2,
-  SlidersHorizontal,
-  Sparkles,
-} from "lucide-react";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { LandingBankSync } from "./landing-bank-sync";
 import { LandingOffers } from "@/components/landing-offers";
 import { LandingHero } from "@/components/landing-hero";
 import { LandingDemo } from "@/components/landing-demo";
@@ -19,7 +14,9 @@ import styles from "./landing.module.css";
 import layout from "./landing-layout.module.css";
 export function LandingContent() {
   return (
-    <main className={`${styles.landing} ${layout.page} ${layout.sectionHeadings}`}>
+    <main
+      className={`${styles.landing} ${layout.page} ${layout.sectionHeadings}`}
+    >
       <LandingHeader />
       <LandingHero />
       <LandingVideo />
@@ -50,53 +47,11 @@ export function LandingContent() {
             est prévu, ce qui a été dépensé et où porter votre attention.
           </p>
           <a href="#fonctionnement" className={styles.textLink}>
-            Un budget à votre image <ArrowDown aria-hidden />
+            Moins de saisie au quotidien <ArrowDown aria-hidden />
           </a>
         </div>
       </section>
-      <section
-        id="fonctionnement"
-        className={styles.how}
-        aria-labelledby="how-heading"
-      >
-        <div className={styles.howIntro}>
-          <h2 id="how-heading">Votre vie est déjà assez remplie.</h2>
-          <p>Votre budget peut être plus simple à suivre.</p>
-        </div>
-        <div className={styles.steps}>
-          <article>
-            <Link2 aria-hidden />
-            <h3>Choisissez votre façon de suivre.</h3>
-            <p>
-              Saisissez vos opérations ou choisissez la connexion bancaire avec
-              Enable Banking. Deux façons de construire votre budget.
-            </p>
-          </article>
-          <article>
-            <SlidersHorizontal aria-hidden />
-            <h3>Donnez une place à chaque dépense.</h3>
-            <p>
-              Choisissez un montant pour chaque projet, activité ou dépense du
-              quotidien. Ajoutez des sous-budgets si vous souhaitez affiner.
-            </p>
-          </article>
-          <article>
-            <Sparkles aria-hidden />
-            <h3>Regardez les mois à venir.</h3>
-            <p>
-              Comparez les budgets et les soldes. Repérez un mois plus serré
-              avant qu’il arrive et ajustez vos choix.
-            </p>
-          </article>
-        </div>
-        <div className={styles.bankNote}>
-          <span>Vos comptes restent chez votre banque.</span>
-          <p>
-            Planora consulte vos opérations. Il ne déplace pas votre argent.
-          </p>
-          <Link2 aria-hidden />
-        </div>
-      </section>
+      <LandingBankSync />
       <LandingOffers />
       <LandingFaq />
       <section
@@ -133,6 +88,9 @@ export function LandingContent() {
         <p>Votre budget. Vos projets. Une vue d’avance.</p>
         <Link href="/contact">
           Nous contacter <ArrowUpRight aria-hidden />
+        </Link>
+        <Link href="/securite">
+          Sécurité des données <ArrowUpRight aria-hidden />
         </Link>
         <a href="#faq">
           Questions fréquentes <ArrowUpRight aria-hidden />

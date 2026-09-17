@@ -1,18 +1,22 @@
 import Link from "next/link";
-import { ArrowUpRight, Plus } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import { PublicAccordion } from "./public-accordion";
 import styles from "./landing.module.css";
 const questions = [
   {
     question: "Est-ce que je paie en réservant ?",
-    answer: "Non. La réservation est gratuite, sans carte bancaire et sans abonnement. Confirmez simplement votre adresse e-mail. Nous vous préviendrons de l’ouverture ; vous déciderez alors de vous abonner.",
+    answer:
+      "Non. La réservation est gratuite, sans carte bancaire et sans abonnement. Confirmez simplement votre adresse e-mail. Nous vous préviendrons de l’ouverture ; vous déciderez alors de vous abonner.",
   },
   {
     question: "Quelle différence entre les deux formules ?",
-    answer: "À 9,90 € par mois, vous saisissez vos opérations manuellement. Avec la connexion bancaire, elles sont synchronisées via Enable Banking : 19,90 € par mois pendant les 12 premiers mois d’abonnement, puis 29 € par mois. Les deux formules incluent la gestion des budgets, la comparaison des mois et les prévisions de solde.",
+    answer:
+      "À 9,90 € par mois, vous saisissez vos opérations manuellement. Avec la connexion bancaire, elles sont synchronisées depuis votre banque : 19,90 € par mois pendant les 12 premiers mois d’abonnement, puis 29 € par mois. Les deux formules incluent la gestion des budgets, la comparaison des mois et les prévisions de solde.",
   },
   {
     question: "Quand commence le tarif de lancement ?",
-    answer: "Les 12 mois à 19,90 € commencent à l’activation de votre abonnement avec connexion bancaire, pas au moment de la réservation. Au-delà, le tarif est de 29 € par mois. La date d’ouverture n’est pas encore annoncée.",
+    answer:
+      "Les 12 mois à 19,90 € commencent à l’activation de votre abonnement avec connexion bancaire, pas au moment de la réservation. Au-delà, le tarif est de 29 € par mois. La date d’ouverture n’est pas encore annoncée.",
   },
   {
     question: "Est-ce fait pour mon budget ?",
@@ -22,7 +26,7 @@ const questions = [
   {
     question: "Quelle banque puis-je connecter ?",
     answer:
-      "Vous choisissez votre établissement parmi les banques proposées par Enable Banking au moment de la connexion. Les établissements disponibles dépendent du pays et de la compatibilité bancaire.",
+      "Vous choisissez votre établissement parmi les banques disponibles au moment de la connexion. Les établissements disponibles dépendent du pays et de la compatibilité bancaire.",
   },
   {
     question: "Planora peut-il déplacer mon argent ?",
@@ -60,13 +64,9 @@ export function LandingFaq() {
       </div>
       <div className={styles.faqItems}>
         {questions.map((item) => (
-          <details key={item.question}>
-            <summary>
-              {item.question}
-              <Plus aria-hidden />
-            </summary>
+          <PublicAccordion key={item.question} question={item.question}>
             <p>{item.answer}</p>
-          </details>
+          </PublicAccordion>
         ))}
         <div className={styles.faqContact}>
           <p>Vous avez une autre question ?</p>

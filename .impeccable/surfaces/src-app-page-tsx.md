@@ -2,8 +2,39 @@
 version: 1
 slug: "src-app-page-tsx"
 primary_target: "src/app/page.tsx"
-related_targets: ["src/components/landing-page.tsx","src/components/landing-hero.tsx","src/components/landing-budget-examples.tsx","src/components/landing-budget-examples.module.css","src/components/landing-budget-clarity.tsx","src/components/landing-budget-clarity.module.css","src/components/landing-use-cases.tsx","src/components/landing-use-cases.module.css","src/components/landing-demo.tsx","src/components/landing-demo.module.css","src/components/landing-demo-video.tsx","src/components/ui/bento-grid.tsx","public/videos/fonctionnalites/manifest.json","public/videos/fonctionnalites/manifest-mobile.json","artifacts/landing-parcours/README.md","artifacts/landing-parcours/record-features.mjs","artifacts/landing-parcours/check-motion.mjs","src/components/landing-faq.tsx","src/components/landing.module.css","src/components/landing-header.tsx","src/components/landing-header.module.css","src/components/landing-offers.tsx","src/components/prelaunch.module.css"]
+related_targets: ["src/components/landing-page.tsx","src/components/landing-bank-sync.tsx","src/components/landing-bank-sync.module.css","src/components/landing-hero.tsx","src/components/landing-budget-examples.tsx","src/components/landing-budget-examples.module.css","src/components/landing-budget-clarity.tsx","src/components/landing-budget-clarity.module.css","src/components/landing-use-cases.tsx","src/components/landing-use-cases.module.css","src/components/landing-demo.tsx","src/components/landing-demo.module.css","src/components/landing-demo-video.tsx","src/components/ui/bento-grid.tsx","public/videos/fonctionnalites/manifest.json","public/videos/fonctionnalites/manifest-mobile.json","artifacts/landing-parcours/README.md","artifacts/landing-parcours/record-features.mjs","artifacts/landing-parcours/check-motion.mjs","src/components/landing-faq.tsx","src/components/public-accordion.tsx","src/components/public-accordion.module.css","src/app/securite/page.tsx","src/components/landing.module.css","src/components/landing-header.tsx","src/components/landing-header.module.css","src/components/landing-offers.tsx","src/components/prelaunch.module.css"]
 ---
+
+## Connexion bancaire et saisie allégée — 17 septembre 2026
+
+La section `#fonctionnement` remplace « Votre vie est déjà assez remplie » et
+ses trois étapes par « La synchronisation bancaire simplifie votre quotidien. ».
+Elle suit la scène de départ en week-end, dont le lien devient « Moins de saisie
+au quotidien », et précède les offres. Le texte présente le regroupement des
+opérations et leur rattachement aux budgets. La commande « Découvrir la formule
+connectée » mène à `#offre`.
+
+À droite, une banque est reliée à Planora au-dessus d’un relevé illustratif :
+salaire +2 450,00 €, cinéma −24,00 € et transport −48,60 €. L’état « Synchronisé »
+et les trois opérations sont explicitement accompagnés de « Illustration ·
+Données fictives » ; il ne s’agit pas de comptes réels. Sous les colonnes, un
+filet introduit deux messages : à gauche, « Votre autorisation. Vos données.
+Votre contrôle. » explique l’accord bancaire et la consultation ; à droite,
+l’absence de virement précède « Comment vos données sont protégées » vers
+`/securite`. Aucun prestataire n’est nommé dans le texte public. La FAQ conserve
+les limites de synchronisation et la possible nouvelle autorisation.
+
+Le système établi reste la référence : conteneur et titre communs,
+Bricolage/Schibsted, capsule principale et couleurs sémantiques claires/sombres.
+Les colonnes 1.1 / 1 ont 64 px d’écart, puis 32 px à 1100 px. À 800 px et moins,
+le texte précède l’illustration (560 px maximum), puis la réassurance. Sous
+380 px, les retraits se réduisent à 16 px et les icônes d’opérations disparaissent
+pour garder les montants lisibles à 320 px. Aucun mouvement propre n’est ajouté.
+La figure possède un nom accessible ; les icônes décoratives sont masquées.
+
+La revue visuelle dédiée conclut **SHIP**, sans problème matériel relevé sur
+1440, 390 et 320 px en clair, ni sur 390 px en sombre. Ce verdict porte uniquement
+sur cette section et son lien d’entrée ; il ne renouvelle pas les revues historiques.
 
 ## Fonds sable en mode clair — 17 septembre 2026
 
@@ -259,7 +290,7 @@ Le décor est statique et n’intercepte
 aucun clic. Le bloc des trois repères a été retiré à la demande de l’utilisateur.
 L’action principale rejoint les deux offres en `#offre` ; chaque formule ouvre
 `/reservation` avec le choix conservé. L’action secondaire rejoint les cinq cartes
-du parcours animé. « Se connecter » garde `/connexion`. La réservation ne déclenche
+du parcours animé. Le header propose « Réserver mon accès » vers `/reservation`. La réservation ne déclenche
 ni paiement ni abonnement.
 
 ## Direction retenue et autorité
@@ -291,8 +322,9 @@ La commande globale met les animations en pause ; la courbe supérieure reste
 statique et identique.
 
 Une scène de départ en week-end relie ensuite le budget à un projet concret.
-Le fonctionnement présente saisie manuelle ou connexion bancaire, budgets et
-comparaison, suivi d’un rappel que Planora ne déplace pas d’argent. Le bloc pêche
+Le fonctionnement présente la synchronisation bancaire et le temps de saisie
+économisé, avec un relevé fictif, une commande vers les offres et le rappel des
+limites de consultation bancaire décrit en tête de ce brief. Le bloc pêche
 compare deux offres : 9,90 € / mois sans banque ; 19,90 € / mois pendant les
 12 premiers mois d’abonnement puis 29 € / mois avec banque. La réservation est
 gratuite et sans carte. La FAQ précise les prix, le démarrage des 12 mois avec
@@ -356,7 +388,7 @@ couple, avec la limite actuelle de l’espace personnel sans accès partagé. Le
 cartes du parcours s’empilent sur téléphone ; les vidéos s’adaptent
 à la largeur de leur carte.
 La mention d’exemple et la commande des animations restent visibles. Le clavier
-accède à cette commande, aux lecteurs agrandis, aux nouvelles tentatives et à la FAQ native ; les images
+accède à cette commande, aux lecteurs agrandis, aux nouvelles tentatives et aux boutons natifs de la FAQ animée ; les images
 portent une description accessible.
 
 Les thèmes clair et sombre suivent la classe du document commune à l’application.
@@ -470,3 +502,31 @@ avant une souscription réelle. Une réservation n’est pas un abonnement payé
 Les sections « Votre budget au clair » et « Une vue d’avance » partagent désormais
 le fond vert doux #e7f1ec en clair et vert profond #273330 en sombre. Les accents
 sont eucalyptus en clair et menthe en sombre ; la courbe et les cartes restent en place.
+
+Dans la section bancaire, la protection des données est explicitée : accès aux
+opérations réservé au compte, séparation des données entre utilisateurs, autorisation
+auprès de la banque et lecture seule sans virement. Un cadenas relie banque et Planora,
+avec une mention lisible « Accès bancaire en lecture seule ». Aucune certification ni
+promesse de sécurité absolue ou de chiffrement de bout en bout n’est ajoutée.
+
+
+## FAQ, sécurité et pied de page — 17 septembre 2026
+
+Les FAQ de l’accueil et de `/securite` partagent le même accordéon : bouton natif
+avec `aria-expanded` et `aria-controls`, région nommée, contenu fermé masqué aux
+lecteurs d’écran et rendu `inert`. Ouverture et fermeture utilisent une grille
+0fr/1fr sur 320 ms, une opacité sur 200 ms et la rotation du signe sur 280 ms ;
+les transitions disparaissent en mouvement réduit. Les liens du pied de page,
+hors marque, alignent texte et flèche en `inline-flex`, sur une cible de 44 px.
+
+La revue de cette passe conclut **SHIP**, sans défaut matériel à 1440, 390 et
+320 px en clair et à 390 px en sombre. Elle couvre les deux FAQ, la réassurance
+scindée, le pied de page et la nouvelle page décrite dans
+`src-app-securite-page-tsx.md`.
+
+## Header public fixe — 17 septembre 2026
+Marque à gauche, ancres au centre, liens « Pour qui ? » et « Contact » puis réservation
+à droite. Après 120 px de défilement, fond opaque et apparition 280 ms sans saut de
+mise en page. Le header mesuré réserve sa hauteur et décale les ancres. Sur mobile,
+réservation toujours visible et menu des sections repliable ; les pages restent à droite.
+Échap ferme le menu, le choix d’une ancre aussi. Aucune animation sous mouvement réduit.

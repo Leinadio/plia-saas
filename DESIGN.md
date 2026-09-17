@@ -870,6 +870,13 @@ il charge une capture portrait de la vraie interface mobile à son ouverture ; l
 gardent leurs aperçus compacts. Les marges et seuils
 des pages publiques ne changent pas ceux de l’application.
 
+La section de connexion bancaire conserve le conteneur et le titre communs.
+Le texte et le relevé illustratif occupent deux colonnes de proportions 1.1 / 1,
+avec 64 px entre elles, puis 32 px à 1100 px. À 800 px et moins, le texte précède
+le visuel, limité à 560 px ; la réassurance suit les deux. Sous 380 px, les
+retraits du visuel et du relevé passent à 16 px, les icônes des opérations se
+masquent et la commande se resserre pour préserver la lecture à 320 px.
+
 Sur `/pour-qui`, le titre et l’action sont centrés dans un haut limité à 1440 px.
 Deux photographies en colonnes 1fr / 1.12fr forment un diptyque décalé : celle du
 solo descend de 48 px. Les images mesurent 460 px de haut, puis 400 px à 1100 px.
@@ -919,8 +926,10 @@ L’ouverture du lecteur agrandi met les aperçus en arrière-plan en pause.
 La pause globale fige aussi les illustrations sans les redémarrer et supprime transitions et déplacement au survol.
 Sous `prefers-reduced-motion`, les aperçus restent statiques par défaut et le lecteur
 agrandi ne démarre pas automatiquement ; une lecture explicite reste possible.
-Les boutons partagés réagissent en 200 ms, le signe de FAQ en 250 ms et le
-défilement redevient immédiat en mouvement réduit.
+Les boutons partagés réagissent en 200 ms. Les FAQ publiques ouvrent et referment
+leur réponse en 320 ms (grille 0fr/1fr), avec une opacité sur 200 ms et un signe
+qui pivote sur 280 ms. Ces transitions sont supprimées en mouvement réduit ;
+le défilement redevient immédiat.
 La page `/pour-qui` n’ajoute aucune animation ; elle conserve uniquement les
 réactions des commandes partagées et les mêmes préférences de mouvement réduit.
 Le support pêche porte une rotation statique de 2°, compensée de −2° sur la
@@ -1249,18 +1258,30 @@ Le bouton principal est une capsule pleine, haute d’au moins 56 px (54 sur
 mobile), avec une flèche. Au survol, son fond se renforce et il monte de 2 px ;
 la mise au point dessine un contour de 3 px décalé de 5 px. Les liens de texte
 restent soulignables. Les cibles de navigation et de connexion font au moins 44 px.
-Le bandeau et la marque sont partagés entre `/`, `/pour-qui` et les pages de réservation. Le lien actif
-« Pour qui ? » est souligné, teinté de la couleur d’action et annoncé par
-`aria-current="page"`. Depuis les pages secondaires, les liens de section reviennent aux
-ancres de l’accueil ; la marque revient à `/` et la connexion à `/connexion`.
-« Le produit », « Fonctionnement » et « Les offres » portent une flèche vers le bas
-et restent des ancres natives. « Pour qui ? » et « Se connecter » portent une
-flèche diagonale. La navigation des sections garde son nom accessible ; le séparateur est masqué aux lecteurs d’écran.
-Le défilement est progressif sur les pages publiques et immédiat sous réduction
-des animations. Les marges de section existantes déterminent le point d’arrivée.
-Sur téléphone, les sections sont à 12 px et les pages à 13 px ; sous 360 px,
-les pages passent à 12 px et leurs espacements se resserrent. Les cibles gardent
-44 px de hauteur et toutes les flèches restent visibles.
+Le header public garde la marque à gauche, les trois ancres de l’accueil au centre,
+puis « Pour qui ? », « Contact » et la capsule « Réserver mon accès » à droite.
+La capsule mène à `/reservation`. Les deux pages portent une flèche diagonale et
+`aria-current="page"` sur leur page active ; les ancres une flèche vers le bas.
+À 1200 px et moins, les ancres passent sur une seconde ligne. À 700 px et moins,
+la marque et la réservation restent en haut ; Menu est à gauche de la seconde
+ligne, les deux liens de page à droite. Menu ouvre les ancres, Échap les ferme
+et rend le focus au bouton. Les cibles mesurent au moins 44 px.
+Au-delà de 120 px de défilement, le header se fixe sur toute la largeur, sur fond
+opaque avec filet inférieur. Son entrée associe un déplacement de 16 px et un
+fondu en 280 ms. Sa hauteur est réservée pour éviter tout saut de contenu ; elle
+règle aussi l’écart des ancres sous le header. Le mouvement réduit supprime
+l’entrée animée et le défilement progressif. À moins de 380 px, la marque est à
+20 px, les liens à 12 px et la flèche de réservation est masquée pour préserver le libellé.
+
+La connexion bancaire utilise un relevé illustratif statique sur fond d’accent
+doux, avec une surface opaque et des montants tabulaires. Un lien graphique
+relie la banque à Planora ; le salaire, le cinéma et le transport illustrent
+les opérations importées, avec une mention explicite de données fictives.
+La commande reprend la capsule principale et rejoint les offres. Sous un filet,
+la réassurance sépare l’autorisation et la consultation à gauche, l’absence de
+virement et le lien vers `/securite` à droite. Aucun prestataire bancaire n’est
+nommé dans le texte public ; les limites de synchronisation restent dans la FAQ. Les couleurs s’adaptent
+avec les rôles partagés ; aucun mouvement propre à cette section n’est ajouté.
 
 La visite guidée suit directement le haut de page ; elle remplace le bloc des trois repères du budget. Le film préenregistré conserve
 sa palette antérieure ; son affiche reprend les couleurs actuelles, avec des
@@ -1303,7 +1324,8 @@ extérieur ferment le lecteur et rendent le focus au déclencheur. La page ne d�
 pas derrière le dialogue. Sa surface et son filet suivent le thème, avec un arrondi
 de 16 px et un fond extérieur assombri par le jeton d’encre à 72 %, sans flou.
 Ce parcours enregistré ne modifie pas les budgets du visiteur. Les réponses de
-FAQ utilisent des éléments natifs ouvrables au clavier. Le montant illustratif
+FAQ partagent des boutons natifs pilotés par React, utilisables au clavier,
+avec `aria-expanded`, réponse nommée et contenu fermé `aria-hidden` et `inert`. Le montant illustratif
 reste sur un fond opaque, avec sa mention d’exemple toujours visible.
 
 ### Réservation — choix et champs publics
@@ -1362,3 +1384,17 @@ Aucun débordement de page ni erreur JavaScript observés. Quatorze couples de
 contraste contrôlés par thème, dont les actions au survol, les champs et les
 états financiers. Les 1 270 tests existants passent avant et après la modification.
 Les captures de cette passe sont conservées sous `.impeccable/review/anthracite-*`.
+
+La section bancaire souligne la protection des données dans le second bénéfice,
+avec un bouclier Lucide. Le diagramme utilise un cadenas et la mention
+« Accès bancaire en lecture seule » (13 px, accent du thème) au-dessus du relevé.
+La réassurance précise l’autorisation bancaire et l’absence de virement ; les
+garanties de séparation des données correspondent au contrôle d’accès du produit.
+Les liens du pied de page, hors marque, sont tous alignés en `inline-flex` avec
+leur flèche non réductible et une cible de 44 px minimum.
+
+La page `/securite` hérite des titres Bricolage, du texte Schibsted et des rôles
+eucalyptus en clair, anthracite et sable en sombre. Ses filets, panneaux opaques
+et bande de protection reprennent les composants publics. Sa composition et les
+limites des affirmations sont consignées dans
+`.impeccable/surfaces/src-app-securite-page-tsx.md`.

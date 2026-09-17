@@ -517,85 +517,6 @@
 .lifeCopy .textLink {
   margin-top: 23px;
 }
-.how {
-  max-width: 1440px;
-  margin: auto;
-  padding: 10px 64px 125px;
-  scroll-margin-top: 55px;
-}
-.howIntro {
-  display: flex;
-  justify-content: space-between;
-  gap: 50px;
-  align-items: end;
-}
-.howIntro h2 {
-  font-size: 52px;
-  line-height: 1.08;
-  font-weight: 500;
-  max-width: 610px;
-}
-.howIntro p {
-  color: var(--land-muted);
-  font-size: 18px;
-  line-height: 1.6;
-  max-width: 285px;
-}
-.steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin-top: 45px;
-  gap: 50px;
-  border-top: 1px solid var(--land-line);
-}
-.steps article {
-  padding-top: 30px;
-}
-.steps article > svg {
-  width: 25px;
-  height: 25px;
-  color: var(--land-green);
-}
-.steps h3 {
-  margin-top: 25px;
-  font-size: 26px;
-  font-weight: 550;
-  line-height: 1.2;
-  max-width: 290px;
-}
-.steps p {
-  color: var(--land-muted);
-  margin-top: 17px;
-  font-size: 15px;
-  line-height: 1.8;
-  max-width: 355px;
-}
-.bankNote {
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: 22px;
-  row-gap: 6px;
-  align-items: center;
-  background: var(--land-soft);
-  padding: 24px 66px 24px 28px;
-  margin-top: 55px;
-  border-radius: 12px;
-  font-size: 13px;
-}
-.bankNote span {
-  font-weight: 600;
-}
-.bankNote p {
-  color: var(--land-muted);
-}
-.bankNote svg {
-  position: absolute;
-  right: 25px;
-  width: 21px;
-  height: 21px;
-  color: var(--land-green);
-}
 .faq {
   max-width: 1440px;
   padding: 115px 64px;
@@ -631,38 +552,6 @@
   color: var(--land-muted);
   font-size: 16px;
   line-height: 1.75;
-}
-.faqItems details {
-  border-bottom: 1px solid var(--land-line);
-}
-.faqItems summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 25px;
-  padding: 25px 0;
-  cursor: pointer;
-  list-style: none;
-  font-size: 15px;
-  font-weight: 550;
-}
-.faqItems summary::-webkit-details-marker {
-  display: none;
-}
-.faqItems summary svg {
-  width: 21px;
-  height: 21px;
-  flex-shrink: 0;
-  transition: transform 0.25s ease;
-}
-.faqItems details[open] summary svg {
-  transform: rotate(45deg);
-}
-.faqItems details > p {
-  color: var(--land-muted);
-  font-size: 14px;
-  line-height: 1.8;
-  padding: 0 38px 26px 0;
 }
 .close {
   position: relative;
@@ -709,6 +598,7 @@
   object-position: 80% center;
 }
 .footer {
+  flex-wrap: wrap;
   max-width: 1440px;
   display: flex;
   align-items: center;
@@ -721,16 +611,17 @@
   font-size: 12px;
   color: var(--land-muted);
 }
-.footer > a:last-child {
+.footer > a:not(.brand) {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
   gap: 14px;
   font-size: 12px;
 }
-.footer > a:last-child svg {
+.footer > a:not(.brand) svg {
   width: 17px;
   height: 17px;
+  flex-shrink: 0;
 }
 @media (max-width: 1100px) {
   .sectionInner {
@@ -750,19 +641,6 @@
   }
   .lifeImage {
     min-height: 550px;
-  }
-  .how {
-    padding-right: 36px;
-    padding-left: 36px;
-  }
-  .howIntro h2 {
-    font-size: 45px;
-  }
-  .steps {
-    gap: 30px;
-  }
-  .steps h3 {
-    font-size: 24px;
   }
   .faq {
     padding: 90px 36px;
@@ -819,56 +697,6 @@
   .lifeCopy .textLink {
     margin-top: 16px;
   }
-  .how {
-    padding: 5px 24px 110px;
-  }
-  .howIntro {
-    display: block;
-  }
-  .howIntro h2 {
-    font-size: 40px;
-    max-width: 500px;
-  }
-  .howIntro p {
-    margin-top: 18px;
-    font-size: 16px;
-    max-width: 350px;
-  }
-  .steps {
-    display: block;
-    margin-top: 30px;
-  }
-  .steps article {
-    position: relative;
-    padding: 25px 0 25px 43px;
-    border-bottom: 1px solid var(--land-line);
-  }
-  .steps article > svg {
-    position: absolute;
-    top: 26px;
-    left: 0;
-    width: 22px;
-    height: 22px;
-  }
-  .steps h3 {
-    margin: 0;
-    font-size: 25px;
-    max-width: 370px;
-  }
-  .steps p {
-    font-size: 14px;
-    max-width: 470px;
-    margin-top: 14px;
-  }
-  .bankNote {
-    margin-top: 27px;
-    padding: 22px;
-    font-size: 12px;
-    line-height: 1.6;
-  }
-  .bankNote svg {
-    display: none;
-  }
   .faq {
     display: block;
     padding: 64px 24px;
@@ -919,9 +747,8 @@
     flex-basis: 100%;
     font-size: 11px;
   }
-  .footer > a:last-child {
+  .footer > a:not(.brand) {
     font-size: 11px;
-    margin-left: auto;
     gap: 7px;
   }
 }
