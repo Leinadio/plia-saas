@@ -38,8 +38,8 @@ export function LandingHero() {
           </span>
         </h1>
         <p>
-          Vos revenus, vos dépenses, vos mois à venir. Planora réunit votre budget
-          pour voir ce qu’il restera, avant de décider.
+          Vous fixez un budget pour chaque projet, activité ou dépense du
+          quotidien. Planora vous montre ce qui est dépensé et ce qu’il reste.
         </p>
         <div className={styles.heroActions}>
           <Link className={styles.primary} href="#offre">

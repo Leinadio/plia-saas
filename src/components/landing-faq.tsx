@@ -7,7 +7,7 @@ const questions = [
   },
   {
     question: "Quelle différence entre les deux formules ?",
-    answer: "À 9,90 € par mois, vous saisissez vos opérations manuellement. Avec la connexion bancaire, elles sont synchronisées via Enable Banking : 19,90 € par mois pendant les 12 premiers mois d’abonnement, puis 29 € par mois. Les deux formules prévoient les enveloppes, la comparaison des mois et les prévisions de solde.",
+    answer: "À 9,90 € par mois, vous saisissez vos opérations manuellement. Avec la connexion bancaire, elles sont synchronisées via Enable Banking : 19,90 € par mois pendant les 12 premiers mois d’abonnement, puis 29 € par mois. Les deux formules incluent la gestion des budgets, la comparaison des mois et les prévisions de solde.",
   },
   {
     question: "Quand commence le tarif de lancement ?",
@@ -16,7 +16,7 @@ const questions = [
   {
     question: "Est-ce fait pour mon budget ?",
     answer:
-      "Planora s’adresse aux personnes qui pilotent le budget du foyer et veulent anticiper leurs dépenses : charges fixes, achats du quotidien ou projets à venir. Vous organisez les enveloppes selon votre vie.",
+      "Planora s’adresse aux personnes qui pilotent le budget du foyer et veulent anticiper leurs dépenses : charges fixes, achats du quotidien ou projets à venir. Vous organisez vos budgets selon vos besoins.",
   },
   {
     question: "Quelle banque puis-je connecter ?",
@@ -26,7 +26,7 @@ const questions = [
   {
     question: "Planora peut-il déplacer mon argent ?",
     answer:
-      "Non. Planora lit le solde et les opérations de vos comptes pour construire votre budget. Il ne réalise pas de virements. Créer une enveloppe organise votre budget ; cela ne déplace pas votre argent.",
+      "Non. Planora lit le solde et les opérations de vos comptes pour construire votre budget. Il ne réalise pas de virements. Créer un budget permet de planifier vos dépenses ; cela ne déplace pas votre argent.",
   },
   {
     question: "D’où viennent les prévisions ?",
@@ -41,7 +41,7 @@ const questions = [
   {
     question: "Dois-je tout classer à la main ?",
     answer:
-      "Avec la formule connectée, vos opérations sont importées depuis votre banque. Avec la formule sans connexion, vous les saisissez manuellement. Vous pouvez corriger leur classement, les rattacher à une enveloppe ou à une sous-enveloppe, et ajouter un commentaire pour garder le contexte.",
+      "Avec la formule connectée, vos opérations sont importées depuis votre banque. Avec la formule sans connexion, vous les saisissez manuellement. Vous pouvez corriger leur classement, les rattacher à un budget ou à un sous-budget, et ajouter un commentaire pour garder le contexte.",
   },
 ];
 export function LandingFaq() {

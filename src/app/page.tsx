@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Planora — Votre budget, une vue d’avance",
   description:
-    "Avec ou sans connexion bancaire, organisez vos enveloppes et comparez les mois à venir. Planora vous aide à voir ce qu’il restera pour vos projets.",
+    "Définissez un budget pour chaque projet, activité ou dépense du quotidien. Avec ou sans connexion bancaire, Planora vous aide à suivre vos dépenses et ce qu’il reste.",
 };
 
 export default async function LandingPage() {

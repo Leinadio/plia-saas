@@ -13,6 +13,7 @@ import { LandingDemo } from "@/components/landing-demo";
 import { LandingFaq } from "@/components/landing-faq";
 import { LandingContact } from "@/components/landing-contact";
 import { LandingVideo } from "@/components/landing-video";
+import { LandingBudgetExamples } from "@/components/landing-budget-examples";
 import { LandingBrand, LandingHeader } from "@/components/landing-header";
 import styles from "./landing.module.css";
 export function LandingContent() {
@@ -20,28 +21,8 @@ export function LandingContent() {
     <main className={styles.landing}>
       <LandingHeader />
       <LandingHero />
-      <section
-        className={styles.promise}
-        aria-label="Votre budget en trois repères"
-      >
-        <p>
-          Moins de calculs dans un coin de votre tête.
-          <br />
-          <strong>Plus de place pour ce qui compte.</strong>
-        </p>
-        <div className={styles.moneyFlow}>
-          <span>
-            Ce qui rentre <ArrowDown aria-hidden />
-          </span>
-          <span>
-            Ce qui sort <ArrowUpRight aria-hidden />
-          </span>
-          <span>
-            Ce qu’il restera <ArrowUpRight aria-hidden />
-          </span>
-        </div>
-      </section>
       <LandingVideo />
+      <LandingBudgetExamples />
       <LandingDemo />
       <section className={styles.life} aria-labelledby="life-heading">
         <div className={styles.lifeImage}>
@@ -93,8 +74,8 @@ export function LandingContent() {
             <SlidersHorizontal aria-hidden />
             <h3>Donnez une place à chaque dépense.</h3>
             <p>
-              Créez vos enveloppes, précisez vos budgets et affinez avec des
-              sous-enveloppes quand vous en avez besoin.
+              Choisissez un montant pour chaque projet, activité ou dépense du
+              quotidien. Ajoutez des sous-budgets si vous souhaitez affiner.
             </p>
           </article>
           <article>

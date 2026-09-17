@@ -1,0 +1,192 @@
+.section {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.3fr);
+  gap: 64px;
+  align-items: center;
+  max-width: 1328px;
+  margin: 0 auto;
+  padding: 0 64px 112px;
+}
+.intro h2 {
+  max-width: 16ch;
+  font-size: clamp(36px, 3.5vw, 52px);
+  line-height: 1.12;
+  font-weight: 500;
+}
+.intro p {
+  max-width: 42ch;
+  margin-top: 24px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--planora-muted);
+}
+.intro a {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  margin-top: 24px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--planora-action);
+}
+.intro a:hover {
+  text-decoration: underline;
+}
+.intro a svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+.example {
+  padding: 28px 32px;
+  border-radius: 16px;
+  background: var(--planora-soft);
+}
+.example figcaption {
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+.example figcaption span {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--planora-muted);
+}
+.budgets {
+  margin-top: 24px;
+}
+.budgets li {
+  padding: 22px 0;
+  border-top: 1px solid var(--planora-rule);
+}
+.budgetName {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.budgetName h3 {
+  font-size: 20px;
+  font-weight: 550;
+  line-height: 1.3;
+}
+.budgetName p {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--planora-muted);
+  text-align: right;
+}
+.budgets dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.budgets dl > div {
+  padding: 10px 0;
+}
+.budgets dt {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--planora-muted);
+}
+.budgets dd {
+  margin-top: 4px;
+  font-size: 24px;
+  line-height: 1.3;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.budgets dd span {
+  font-size: 0.7em;
+}
+.budgets .planned {
+  padding-inline: 12px;
+  border-radius: 8px;
+  background: var(--planora-action-soft);
+}
+.planned dt {
+  color: var(--planora-text);
+}
+.planned dd {
+  color: var(--planora-action);
+}
+.remaining dd {
+  font-weight: 650;
+}
+.note {
+  padding-top: 16px;
+  border-top: 1px solid var(--planora-rule);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--planora-muted);
+}
+@media (max-width: 1100px) {
+  .section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+    max-width: 860px;
+  }
+  .intro h2 {
+    max-width: 22ch;
+  }
+  .intro p {
+    max-width: 64ch;
+  }
+}
+@media (max-width: 700px) {
+  .section {
+    padding: 0 24px 70px;
+    gap: 28px;
+  }
+  .intro h2 {
+    font-size: 36px;
+  }
+  .intro p {
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  .example {
+    padding: 24px 20px;
+  }
+  .budgetName {
+    display: block;
+  }
+  .budgetName p {
+    margin-top: 4px;
+    text-align: left;
+  }
+  .budgets dl {
+    gap: 10px;
+  }
+  .budgets dd {
+    font-size: 20px;
+  }
+  .budgets .planned {
+    padding-inline: 8px;
+  }
+  .budgets dt {
+    font-size: 11px;
+  }
+}
+@media (max-width: 360px) {
+  .example {
+    padding-inline: 16px;
+  }
+  .budgets dl {
+    gap: 8px;
+  }
+  .budgets dd {
+    font-size: 16px;
+  }
+  .budgets dt {
+    min-height: 33px;
+  }
+  .budgets .planned {
+    padding-inline: 6px;
+  }
+}

@@ -21,10 +21,6 @@ export function AppPageHeading() {
         <h1>{page.title}</h1>
         <p>{page.description}</p>
       </div>
-      <svg className="app-heading-curves" viewBox="0 0 520 100" fill="none" aria-hidden="true">
-        <path d="M-20 66C104 6 150 98 292 58S451 17 540 47" />
-        <path d="M-20 82C104 22 150 114 292 74S451 33 540 63" />
-      </svg>
     </div>
   );
 }

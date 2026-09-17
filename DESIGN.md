@@ -672,8 +672,8 @@ repères financiers ; la marque accompagne la lecture quotidienne.
 
 Bricolage Grotesque porte la marque et les titres d’accueil des écrans ; Schibsted
 Grotesk porte les données, libellés et commandes. Les photographies de verre restent
-sur les surfaces d’accueil, dont la connexion sur ordinateur. Dans le relevé, deux
-courbes fines et statiques près du titre suffisent à rappeler cette matière.
+sur les surfaces d’accueil, dont la connexion sur ordinateur. Dans le relevé,
+le titre et sa description restent sans courbes décoratives (choix du 17 septembre 2026).
 Les compositions propres aux routes vivent dans leurs briefs de surface.
 
 **Key Characteristics:**
@@ -682,7 +682,7 @@ Les compositions propres aux routes vivent dans leurs briefs de surface.
 - Des cartes opaques de 16 px et des commandes en capsule.
 - Un tableau de comparaison sur ordinateur et des sections lisibles sur téléphone.
 - Un relevé blanc frais, des sections menthe ou bleu brume et une trésorerie gris neutre, adaptés au sombre.
-- Des courbes de titre statiques, discrètes et masquées sur téléphone.
+- Des titres de page sobres, sans courbes décoratives.
 
 ## Colors
 
@@ -824,8 +824,7 @@ vit dans une capsule ; le titre de page et sa courte explication précèdent le 
 Le contenu possède une largeur maximale de 1600 px. Les écrans conservent leurs
 propres limites de largeur, notamment pour les formulaires.
 
-Sous 640 px, les marges latérales passent à 16 px, le titre se réduit et les courbes
-disparaissent. Les actions tactiles du relevé conservent des cibles de 44 px.
+Sous 640 px, les marges latérales passent à 16 px et le titre se réduit. Les actions tactiles du relevé conservent des cibles de 44 px.
 La comparaison reste un tableau sur ordinateur ; ses sections s’empilent sur mobile.
 Les espacements intérieurs du relevé préservent sa densité de données.
 
@@ -885,8 +884,7 @@ translucide en clair, noir translucide en sombre.
 **La règle des surfaces opaques.** Les chiffres et les formulaires reposent sur un fond lisible. Le verre appartient à la photographie ; il ne devient pas un effet de transparence sur les données.
 
 Les regroupements internes utilisent des tons de surface, sans empiler des cartes
-ombrées. Les courbes du titre sont statiques ; les attentes et les retours de commande
-conservent leurs comportements existants et respectent la réduction des animations.
+ombrées. Les attentes et les retours de commande conservent leurs comportements existants et respectent la réduction des animations.
 
 ### Page publique — profondeur et mouvement
 
@@ -1199,6 +1197,12 @@ dessin ; les variantes ICO (16, 32 et 48 px) et Apple (180 px) en sont dérivée
 
 ### Page publique — composants
 
+L’exemple de budgets de l’accueil réunit trois lignes sur une seule surface
+opaque : le montant choisi reçoit le fond d’accent doux, le reste une graisse
+plus forte. Les chiffres tabulaires gardent leurs libellés et la mention
+d’exemple. Ce prolongement local conserve les fontes et jetons existants ; sa
+composition et ses preuves sont décrites dans [le brief d’accueil](.impeccable/surfaces/src-app-page-tsx.md).
+
 Le premier fond à larges rubans bleu brume et pêche est repris uniquement dans sa
 partie basse, avec son tracé fin d’accompagnement. La grande courbe du haut est
 supprimée : le titre et le bandeau retrouvent le fond blanc uni. Les contours
@@ -1228,7 +1232,7 @@ Sur téléphone, les sections sont à 12 px et les pages à 13 px ; sous 360 px,
 les pages passent à 12 px et leurs espacements se resserrent. Les cibles gardent
 44 px de hauteur et toutes les flèches restent visibles.
 
-La visite guidée suit les trois repères du budget. Le film préenregistré conserve
+La visite guidée suit directement le haut de page ; elle remplace le bloc des trois repères du budget. Le film préenregistré conserve
 sa palette antérieure ; les quatre captures publiques et son affiche reprennent
 les couleurs actuelles, avec des données identifiées comme démonstration. Son aperçu au format 16:9
 utilise un arrondi de 12 px et les couleurs publiques ; le bouton de lecture

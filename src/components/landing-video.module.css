@@ -1,7 +1,7 @@
 .section {
   max-width: 1248px;
   margin: 0 auto;
-  padding: 0 64px 112px;
+  padding: 38px 64px 112px;
   scroll-margin-top: 35px;
 }
 
@@ -63,7 +63,7 @@
 
 @media (max-width: 700px) {
   .section {
-    padding: 0 24px 70px;
+    padding: 8px 24px 70px;
     scroll-margin-top: 25px;
   }
 

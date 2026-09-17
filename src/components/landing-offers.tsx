@@ -37,7 +37,7 @@ export function LandingOffers() {
       <div className={styles.included}>
         <h3>Dans les deux formules</h3>
         <ul>
-          <li><Check aria-hidden />Enveloppes et sous-enveloppes</li>
+          <li><Check aria-hidden />Budgets et sous-budgets</li>
           <li><Check aria-hidden />Comparaison des mois</li>
           <li><Check aria-hidden />Prévisions de solde</li>
         </ul>

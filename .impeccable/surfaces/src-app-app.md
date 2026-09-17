@@ -58,8 +58,8 @@ compte partagé.
 « La lumière en mouvement », adaptée de la landing à un espace de travail quotidien.
 Blanc, eucalyptus, bleu brume et pêche, marque et titres Bricolage, données et commandes Schibsted,
 cartes opaques de 16 px et capsules. Le titre et une phrase courte ouvrent chaque page.
-Deux courbes fines, statiques et décoratives le bordent sur ordinateur et disparaissent
-sur téléphone. La lecture financière garde sa structure.
+Les deux courbes décoratives du titre ont été retirées à la demande de l’utilisateur
+le 17 septembre 2026. La lecture financière garde sa structure.
 
 ## Composition et adaptation
 La barre produit repose sur le fond de l’application, sans séparation lourde. Les

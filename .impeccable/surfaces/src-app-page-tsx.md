@@ -2,8 +2,40 @@
 version: 1
 slug: "src-app-page-tsx"
 primary_target: "src/app/page.tsx"
-related_targets: ["src/components/landing-page.tsx","src/components/landing-hero.tsx","src/components/landing-demo.tsx","src/components/landing-faq.tsx","src/components/landing.module.css","src/components/landing-header.tsx","src/components/landing-header.module.css","src/components/landing-offers.tsx","src/components/prelaunch.module.css"]
+related_targets: ["src/components/landing-page.tsx","src/components/landing-hero.tsx","src/components/landing-budget-examples.tsx","src/components/landing-budget-examples.module.css","src/components/landing-demo.tsx","src/components/landing-faq.tsx","src/components/landing.module.css","src/components/landing-header.tsx","src/components/landing-header.module.css","src/components/landing-offers.tsx","src/components/prelaunch.module.css"]
 ---
+
+## Budgets choisis par l’utilisateur — 17 septembre 2026
+
+Le haut explique désormais que l’utilisateur fixe un montant pour chaque projet,
+activité ou dépense du quotidien. Le bloc « Un budget pour chaque chose qui compte. »
+illustre ce mécanisme après la vidéo, désormais placée directement sous le haut de page. Garder « budget »
+et « sous-budget » dans tous les textes publics, descriptions accessibles et
+métadonnées, conformément à PRODUCT.md.
+
+À gauche, le texte explique que les dépenses saisies ou synchronisées doivent
+être rattachées au bon budget pour calculer le reste. À droite, une seule figure
+statique rassemble trois lignes : Week-end à deux (300 / 120 / 180 €), Sport
+(60 / 40 / 20 €), Courses (350 / 216,30 / 133,70 €). Les colonnes sont « Vous
+prévoyez », « Dépensé », « Il vous reste ». La légende précise « Exemple illustratif
+pour un mois » ; la note rappelle que créer un budget ne déplace pas d’argent.
+Le lien « Voir le suivi dans Planora » rejoint réellement `#demonstration`.
+
+Extension locale réalisée en code, sans nouvelle identité, image ni maquette.
+Elle reprend Bricolage, Schibsted et les surfaces opaques existantes, y compris
+« Anthracite et sable » en sombre. Cette palette du 17 septembre, décrite dans
+DESIGN.md, actualise la référence chromatique historique ci-dessous.
+Texte et figure s’empilent à 1100 px et moins ; les trois montants restent côte
+à côte sur téléphone, avec un ajustement compact sous 360 px, vérifié à 320 px.
+Le montant choisi reçoit un fond d’accent doux ; le reste est plus gras.
+
+Revue indépendante finale : **ship**, sans défaut matériel dans cet ajout.
+Le vrai serveur a été vérifié en clair à 1440, 390 et 320 px, en sombre à 1440
+et 390 px : aucun débordement ni erreur JavaScript ; dix couples de contraste
+supérieurs à 4,5:1. Les 1 270 tests de 133 fichiers passent avant et après ;
+le build passe. Preuves : `../review/budget-story-{1440-light,390-light,320-light,1440-dark,390-dark}.png`
+et `../review/budget-story-hero.png`. Ce verdict reste limité à cette extension,
+sans nouveau tournoi de concepts ni audit global QUALITY BAR.
 
 ## Palette commune approuvée — 16 septembre 2026
 
@@ -46,7 +78,7 @@ restaurés ; le titre et le bandeau restent sur fond uni. Les contours s’adapt
 au téléphone, les teintes au mode sombre. Leur amplitude verticale est réduite
 de 40 % à la demande de l’utilisateur, pour des courbes plus plates.
 Le décor est statique et n’intercepte
-aucun clic ; les trois repères restent affichés au-dessus des courbes.
+aucun clic. Le bloc des trois repères a été retiré à la demande de l’utilisateur.
 L’action principale rejoint les deux offres en `#offre` ; chaque formule ouvre
 `/reservation` avec le choix conservé. L’action secondaire rejoint la présentation
 par captures. « Se connecter » garde `/connexion`. La réservation ne déclenche
@@ -69,14 +101,15 @@ d’action de l’interface.
 
 Le haut partage la promesse à gauche et une photographie sculpturale à droite.
 Un cartouche sombre posé au pied de l’image expose trois soldes prévus avec la
-mention d’exemple illustratif. Trois repères relient ce qui rentre, ce qui sort et
-ce qu’il restera. Une section « Planora, en action. » présente ensuite la visite
-guidée de 1 min 14, ouverte au clic dans Hero Video Dialog de Magic UI.
+mention d’exemple illustratif. La section « Planora, en action. » suit directement
+le haut de page et remplace le bloc des trois repères, retiré le 17 septembre 2026.
+Elle présente la visite guidée de 1 min 14, ouverte au clic dans Hero Video Dialog
+de Magic UI. L’exemple de trois budgets choisis vient ensuite.
 Sur fond anthracite, la démonstration alterne « Votre mois »,
 « Comparer » et « Le détail » ; la courbe lumineuse change avec la vue choisie.
 
 Une scène de départ en week-end relie ensuite le budget à un projet concret.
-Le fonctionnement présente saisie manuelle ou connexion bancaire, enveloppes et
+Le fonctionnement présente saisie manuelle ou connexion bancaire, budgets et
 comparaison, suivi d’un rappel que Planora ne déplace pas d’argent. Le bloc pêche
 compare deux offres : 9,90 € / mois sans banque ; 19,90 € / mois pendant les
 12 premiers mois d’abonnement puis 29 € / mois avec banque. La réservation est
@@ -92,7 +125,7 @@ La volonté de payer et les conditions de l’ouverture restent à valider.
 
 Les trois aperçus sont une sélection de captures de vrais composants avec des données
 de démonstration. Le choix met à jour le
-texte et l’image ; il ne permet pas de modifier les enveloppes montrées.
+texte et l’image ; il ne permet pas de modifier les budgets montrés.
 
 La visite guidée qui précède ces aperçus est une capture continue des vrais écrans
 de démonstration. Elle montre les achats, le détail d’un montant, l’ajustement d’un

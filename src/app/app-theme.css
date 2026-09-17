@@ -4,8 +4,6 @@ html:has(.planora-workspace) {
   --ombre-carte: 0 3px 12px -7px var(--planora-shadow);
   --ombre-levee: 0 8px 24px -12px var(--planora-shadow);
   --ombre-flottante: 0 18px 50px -16px var(--planora-shadow);
-  --app-curve: var(--planora-ribbon-cool);
-  --app-curve-warm: var(--planora-ribbon-warm);
   --app-nav: var(--planora-warm-soft);
   --app-selected: var(--planora-action);
   --app-selected-ink: var(--planora-action-ink);
@@ -122,9 +120,6 @@ html:has(.planora-workspace) [data-slot="tabs-trigger"]::after {
   text-wrap: pretty;
 }
 .app-page-heading p { margin-top: 8px; color: var(--ardoise); font-size: 0.875rem; line-height: 1.6; }
-.app-heading-curves { width: 40%; max-width: 520px; height: 100px; flex-shrink: 1; }
-.app-heading-curves path:first-child { stroke: var(--app-curve); stroke-width: 2; }
-.app-heading-curves path:last-child { stroke: var(--app-curve-warm); stroke-width: 1.5; }
 .app-period-picker { background: var(--planora-warm-soft); border: 0; padding: 18px 20px; gap: 16px; }
 .app-period-picker button { border-radius: 999px; }
 .app-mobile-navigation { padding-block: 4px 8px; }
@@ -161,7 +156,6 @@ html:has(.planora-workspace) :is([data-slot="sheet-title"], [data-slot="drawer-t
   .app-page-heading { padding: 8px 0 24px; }
   .app-page-heading h1 { font-size: 1.75rem; }
   .app-page-heading p { font-size: 0.8125rem; max-width: 32ch; margin-top: 8px; }
-  .app-heading-curves { display: none; }
   .app-period-picker { padding: 16px 12px; }
 }
 @media (prefers-reduced-motion: reduce) {

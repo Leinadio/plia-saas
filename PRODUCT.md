@@ -21,9 +21,10 @@ accessible depuis le header sur mobile et ordinateur, explique les deux usages.
 
 ## Product Purpose
 
-Relier les opérations bancaires aux enveloppes de budget et aux soldes des mois à
-venir. L’utilisateur doit comprendre ce qui est prévu, ce qui a été dépensé et ce
-qu’il restera, avant de décider.
+L’utilisateur définit un budget et choisit un montant pour chaque projet, activité
+ou dépense du quotidien. Planora relie les opérations à ces budgets et aux soldes
+des mois à venir. L’utilisateur doit comprendre ce qui est prévu, ce qui a été
+dépensé et ce qu’il restera, avant de décider.
 
 ## Positioning
 
@@ -112,6 +113,10 @@ Ne pas inventer : paiement actif, prix définitif, date d’ouverture commercial
 connexion familiale partagée, gestion de patrimoine ou conseil financier.
 
 ## Brand Commitments
+
+Vocabulaire de la landing page : employer « budget » et « sous-budget », jamais
+« enveloppe » ou « sous-enveloppe » dans les textes, légendes, descriptions
+accessibles et métadonnées. Préférence explicite du 17 septembre 2026.
 
 Le nom public est **Planora**. La marque associe clarté du budget et place donnée aux
 projets. La page publique adopte « La lumière en mouvement », direction choisie dans
