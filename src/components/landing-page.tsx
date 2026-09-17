@@ -11,18 +11,18 @@ import { LandingOffers } from "@/components/landing-offers";
 import { LandingHero } from "@/components/landing-hero";
 import { LandingDemo } from "@/components/landing-demo";
 import { LandingFaq } from "@/components/landing-faq";
-import { LandingContact } from "@/components/landing-contact";
 import { LandingVideo } from "@/components/landing-video";
-import { LandingBudgetExamples } from "@/components/landing-budget-examples";
+import { LandingUseCases } from "@/components/landing-use-cases";
 import { LandingBrand, LandingHeader } from "@/components/landing-header";
 import styles from "./landing.module.css";
+import layout from "./landing-layout.module.css";
 export function LandingContent() {
   return (
-    <main className={styles.landing}>
+    <main className={`${styles.landing} ${layout.page}`}>
       <LandingHeader />
       <LandingHero />
       <LandingVideo />
-      <LandingBudgetExamples />
+      <LandingUseCases />
       <LandingDemo />
       <section className={styles.life} aria-labelledby="life-heading">
         <div className={styles.lifeImage}>
@@ -89,38 +89,49 @@ export function LandingContent() {
         </div>
         <div className={styles.bankNote}>
           <span>Vos comptes restent chez votre banque.</span>
-          <p>Planora consulte vos opérations. Il ne déplace pas votre argent.</p>
+          <p>
+            Planora consulte vos opérations. Il ne déplace pas votre argent.
+          </p>
           <Link2 aria-hidden />
         </div>
       </section>
       <LandingOffers />
       <LandingFaq />
-      <LandingContact />
-      <section className={styles.close} aria-labelledby="close-heading">
-        <div>
-          <h2 id="close-heading">
-            La suite mérite
-            <br />
-            d’être plus claire.
-          </h2>
-          <p>Choisissez votre formule. Nous vous préviendrons dès l’ouverture.</p>
-          <Link href="#offre" className={styles.primary}>
-            Réserver mon accès <ArrowUpRight aria-hidden />
-          </Link>
-        </div>
-        <div className={styles.closeImage}>
-          <Image
-            src="/landing/lumiere-hero-v1.png"
-            alt=""
-            fill
-            sizes="(max-width: 700px) 100vw, 42vw"
-          />
+      <section
+        className={styles.close}
+        aria-labelledby="close-heading"
+        data-full-bleed
+      >
+        <div className={styles.closeContent} data-landing-container>
+          <div className={styles.closeCopy}>
+            <h2 id="close-heading">
+              La suite mérite
+              <br />
+              d’être plus claire.
+            </h2>
+            <p>
+              Choisissez votre formule. Nous vous préviendrons dès l’ouverture.
+            </p>
+            <Link href="#offre" className={styles.primary}>
+              Réserver mon accès <ArrowUpRight aria-hidden />
+            </Link>
+          </div>
+          <div className={styles.closeImage}>
+            <Image
+              src="/landing/lumiere-hero-v1.png"
+              alt=""
+              fill
+              sizes="(max-width: 700px) 100vw, 42vw"
+            />
+          </div>
         </div>
       </section>
       <footer className={styles.footer}>
         <LandingBrand />
         <p>Votre budget. Vos projets. Une vue d’avance.</p>
-        <a href="#contact">Nous contacter <ArrowUpRight aria-hidden /></a>
+        <Link href="/contact">
+          Nous contacter <ArrowUpRight aria-hidden />
+        </Link>
         <a href="#faq">
           Questions fréquentes <ArrowUpRight aria-hidden />
         </a>

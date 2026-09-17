@@ -1,4 +1,5 @@
-import { Plus } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, Plus } from "lucide-react";
 import styles from "./landing.module.css";
 const questions = [
   {
@@ -67,6 +68,12 @@ export function LandingFaq() {
             <p>{item.answer}</p>
           </details>
         ))}
+        <div className={styles.faqContact}>
+          <p>Vous avez une autre question ?</p>
+          <Link href="/contact" className={styles.primary}>
+            Nous contacter <ArrowUpRight aria-hidden />
+          </Link>
+        </div>
       </div>
     </section>
   );

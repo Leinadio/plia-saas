@@ -2,8 +2,61 @@
 version: 1
 slug: "src-app-page-tsx"
 primary_target: "src/app/page.tsx"
-related_targets: ["src/components/landing-page.tsx","src/components/landing-hero.tsx","src/components/landing-budget-examples.tsx","src/components/landing-budget-examples.module.css","src/components/landing-demo.tsx","src/components/landing-faq.tsx","src/components/landing.module.css","src/components/landing-header.tsx","src/components/landing-header.module.css","src/components/landing-offers.tsx","src/components/prelaunch.module.css"]
+related_targets: ["src/components/landing-page.tsx","src/components/landing-hero.tsx","src/components/landing-budget-examples.tsx","src/components/landing-budget-examples.module.css","src/components/landing-use-cases.tsx","src/components/landing-use-cases.module.css","src/components/landing-demo.tsx","src/components/landing-faq.tsx","src/components/landing.module.css","src/components/landing-header.tsx","src/components/landing-header.module.css","src/components/landing-offers.tsx","src/components/prelaunch.module.css"]
 ---
+
+## Situations de vie en carrousel — 17 septembre 2026
+
+À la demande de l’utilisateur, le parcours vertical A → B → C → D est retiré
+entièrement. Le carrousel suit désormais la vidéo, la section des exemples
+de budgets ayant été retirée à la demande de l’utilisateur. Avant la démonstration,
+il montre sept usages : un week-end à deux, les courses du quotidien, les
+activités, un projet de travaux, la rentrée, le premier logement et les imprévus.
+Le titre est « Pour tout ce qui fait votre
+vie. ». Chaque scène associe des personnes souriantes et un usage concret des
+budgets de Planora, sans témoignage inventé ni résultat financier garanti.
+Le lien de chaque slide « Réserver mon accès » mène aux offres en `#offre`.
+
+Extension locale en mode Persuade, dans l’identité existante : Bricolage,
+Schibsted, eucalyptus en clair, anthracite et sable en sombre. Sur ordinateur,
+la photographie occupe une scène de 660 px de haut ; le texte se place en bas
+à gauche sur un voile sombre qui protège sa lisibilité. Les visages restent
+visibles. Sous 700 px, l’image en 4:3 précède un panneau opaque portant le texte
+et l’action. Le titre de scène passe à 32 px. Aucune nouvelle règle globale
+n’est créée par cette composition.
+
+Le visiteur choisit une des sept situations, utilise les flèches ou fait
+un geste horizontal sur l’image. Il n’y a pas de défilement automatique.
+Le clavier accepte les flèches, Home et End lorsque le carrousel a le focus.
+Les slides hors champ sont inertes ; leurs liens ne polluent pas l’ordre de
+tabulation. Le compteur annonce la situation active. Les flèches se désactivent
+aux extrémités. Le mouvement est instantané sous réduction des animations.
+Le défilement horizontal natif s’arrête sur chaque scène. Lors d’un changement
+de largeur, la situation active reste sélectionnée et se recale immédiatement,
+y compris au passage du téléphone à la tablette.
+
+Les sept photographies sont des scènes fictives produites avec le générateur
+d’images intégré, puis optimisées en WebP dans `public/landing/use-cases/`.
+La mention sous le carrousel a été retirée à la demande de l’utilisateur.
+Les prompts exacts sont conservés dans `prompts.json` et dans les
+sidecars de chaque image ; le scan de provenance trouve zéro élément manquant.
+
+La vérification navigateur couvre les quatre slides à 1440, 820, 390 et 320 px
+en clair et à 1440 et 390 px en sombre. Les captures montrent les quatre scènes
+à 1440 et 390 px en clair et la première dans les quatre autres variantes.
+Preuves : `../review/carousel-{1440,390}-light-{0,1,2,3}.png`,
+`../review/carousel-{320,820}-light-0.png` et
+`../review/carousel-{1440,390}-dark-0.png`. Les parcours au clavier, les boutons,
+le lien vers les offres, la suppression du flow et l’absence de débordement
+ou d’erreur JavaScript sont vérifiés. Le geste tactile, la navigation animée
+et la conservation de la situation active de 390 à 820 px sont aussi vérifiés.
+Les 1 274 tests de 134 fichiers passent, dont quatre tests du carrousel écrits
+avant leur implémentation ou correctif ; la compilation et le lint ciblé passent.
+Revue indépendante finale de cet ajout : **ship**, sans défaut matériel.
+La revue ciblée suivante confirme **ship** pour le correctif de conservation
+de la situation au redimensionnement, avec le défaut noté **resolved**.
+Ces verdicts portent sur cet ajout et ce correctif, sans nouvel audit global
+ni modification du système visuel partagé.
 
 ## Budgets choisis par l’utilisateur — 17 septembre 2026
 
@@ -104,7 +157,8 @@ Un cartouche sombre posé au pied de l’image expose trois soldes prévus avec 
 mention d’exemple illustratif. La section « Planora, en action. » suit directement
 le haut de page et remplace le bloc des trois repères, retiré le 17 septembre 2026.
 Elle présente la visite guidée de 1 min 14, ouverte au clic dans Hero Video Dialog
-de Magic UI. L’exemple de trois budgets choisis vient ensuite.
+de Magic UI. L’exemple de trois budgets choisis vient ensuite, puis le carrousel
+de situations de vie décrit en tête de ce brief.
 Sur fond anthracite, la démonstration alterne « Votre mois »,
 « Comparer » et « Le détail » ; la courbe lumineuse change avec la vue choisie.
 
@@ -238,7 +292,9 @@ jour documentaire ne relance ni serveur, ni tests, ni détecteur.
 
 ## Contact livré — 16 septembre 2026
 
-Le bandeau et le pied de page rejoignent `#contact`. Le bloc « Une question ?
+Depuis le 17 septembre, le bandeau et le pied de page rejoignent `/contact`.
+Le formulaire a été déplacé sur cette page publique dédiée et retiré de l’accueil.
+Son lien FAQ revient à `/#faq`. Le bloc « Une question ?
 On vous écoute. » associe une introduction et un renvoi à la FAQ au formulaire
 e-mail, sujet et message. Deux colonnes sur ordinateur deviennent une colonne
 sous 760 px. Le fond gris doux, les champs blancs ou graphite, l’action eucalyptus
@@ -258,6 +314,13 @@ ont été simulés ; aucun e-mail réel ni déploiement n’a été validé. La
 [validation](../review/contact-validation.md) conserve le périmètre exact.
 
 ## Décisions ouvertes
+
+Les marges de toutes les sections de l’accueil sont unifiées : conteneur de
+1440 px, retraits de 64 / 36 / 24 px aux seuils de 1100 / 700 px. Les fonds
+colorés restent pleine largeur avec un contenu intérieur aligné. Vérification
+sur le serveur à 320, 390, 700, 760, 820, 1100, 1440 et 1920 px : les treize
+blocs partagent les mêmes bords, sans débordement horizontal. Les 1274 tests
+passent après modification.
 
 Valider la cible et la volonté de payer, mesurer les adresses confirmées par
 formule puis les échanges qualitatifs. Configurer la collecte, préciser les

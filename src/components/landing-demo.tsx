@@ -52,6 +52,7 @@ export function LandingDemo() {
   return (
     <section
       id="demonstration"
+      data-full-bleed
       className={styles.demo}
       aria-labelledby="demo-heading"
       data-active={active}
@@ -64,7 +65,7 @@ export function LandingDemo() {
       >
         <path d="M0 0H1440V36C1110 105 870 4 590 36S175 75 0 35Z" />
       </svg>
-      <div className={styles.sectionInner}>
+      <div className={styles.sectionInner} data-landing-container>
         <div className={styles.demoHeading}>
           <h2 id="demo-heading">
             Une vue d’avance.

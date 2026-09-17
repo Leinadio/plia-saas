@@ -396,7 +396,7 @@
   .heroVisual {
     min-height: 415px;
     margin-left: 0;
-    margin-right: -24px;
+    margin-right: 0;
   }
   .heroArt {
     border-radius: 150px 0 0 12px;
@@ -404,6 +404,7 @@
   }
   .heroBalance {
     width: 254px;
+    max-width: calc(100% - 24px);
     right: 24px;
     padding: 20px;
   }
@@ -752,6 +753,18 @@
 .faqItems {
   border-top: 1px solid var(--land-line);
 }
+.faqContact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 32px;
+}
+.faqContact > p {
+  color: var(--land-muted);
+  font-size: 16px;
+  line-height: 1.75;
+}
 .faqItems details {
   border-bottom: 1px solid var(--land-line);
 }
@@ -788,15 +801,16 @@
   position: relative;
   background: var(--planora-band);
   color: var(--planora-band-ink);
+}
+.closeContent {
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   min-height: 440px;
 }
-.close > div:first-child {
+.closeCopy {
   position: relative;
   z-index: 1;
-  padding: 70px max(64px, calc((100vw - 1312px) / 2));
-  padding-right: 40px;
+  padding: 70px 40px 70px 0;
 }
 .close h2 {
   font-size: 60px;
@@ -894,9 +908,6 @@
     padding: 90px 36px;
     gap: 50px;
   }
-  .close > div:first-child {
-    padding-left: 36px;
-  }
   .close h2 {
     font-size: 50px;
   }
@@ -928,8 +939,8 @@
   }
   .demoChoices {
     gap: 8px;
-    margin: 28px -24px 0;
-    padding: 0 24px 8px;
+    margin: 28px 0 0;
+    padding: 0 0 8px;
     overflow-x: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--planora-band-muted) var(--planora-band);
@@ -1089,12 +1100,12 @@
     font-size: 13px;
     padding-right: 8px;
   }
-  .close {
+  .closeContent {
     display: flex;
     flex-direction: column;
   }
-  .close > div:first-child {
-    padding: 45px 24px;
+  .closeCopy {
+    padding: 45px 0;
   }
   .close h2 {
     font-size: 43px;
@@ -1104,7 +1115,7 @@
   }
   .closeImage {
     min-height: 240px;
-    margin-left: 24px;
+    margin-left: 0;
     border-radius: 130px 0 0;
   }
   .footer {

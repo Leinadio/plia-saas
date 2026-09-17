@@ -1,0 +1,35 @@
+{
+  "generator": "OpenAI built-in image_gen",
+  "created": "2026-09-17",
+  "purpose": "Illustrative fictional scenes, not customer testimonials",
+  "images": [
+    {
+      "key": "weekend",
+      "prompt": "Create one photorealistic-natural premium editorial lifestyle photograph for Planora, a French personal budgeting website. Landscape 1536x1024. Warm natural daylight, candid real-life moment, authentic happy smiling people, tactile everyday textures, soft muted eucalyptus/sand/cream colors, realistic anatomy and hands, contemporary French everyday setting, understated and attainable rather than luxury. No text, no logos, no watermarks, no UI, no collage. Composition for a large website carousel: main people's faces grouped in upper middle/right portion, environment in left third, allow bottom quarter to be covered by a dark text gradient. Wide environmental portrait, faces still substantial and readable on mobile center crop. A smiling adult couple in their early thirties on a small coastal French town café terrace, sharing a spontaneous laugh over coffee, light jackets and small weekend travel bags beside them, sea and sunlit buildings softly in the background. The scene communicates a modest, joyful weekend escape together; no camera posing."
+    },
+    {
+      "key": "quotidien",
+      "prompt": "Create one photorealistic-natural premium editorial lifestyle photograph for Planora, a French personal budgeting website. Landscape 1536x1024. Warm natural daylight, candid real-life moment, authentic happy smiling people, tactile everyday textures, soft muted eucalyptus/sand/cream colors, realistic anatomy and hands, contemporary French everyday setting, understated and attainable rather than luxury. No text, no logos, no watermarks, no UI, no collage. Composition for a large website carousel: main people's faces grouped in upper middle/right portion, environment in left third, allow bottom quarter to be covered by a dark text gradient. Wide environmental portrait, faces still substantial and readable on mobile center crop. A smiling adult woman in her early thirties unpacking a fabric grocery bag on the counter in her bright lived-in apartment kitchen. Fresh seasonal vegetables, a loaf of bread and ordinary pantry items; she naturally smiles while putting a tomato in a bowl. Candid medium-wide frame, ordinary home, no lavish decor, no phone or laptop."
+    },
+    {
+      "key": "activites",
+      "prompt": "Create one photorealistic-natural premium editorial lifestyle photograph for Planora, a French personal budgeting website. Landscape 1536x1024. Warm natural daylight, candid real-life moment, authentic happy smiling people, tactile everyday textures, soft muted eucalyptus/sand/cream colors, realistic anatomy and hands, contemporary French everyday setting, understated and attainable rather than luxury. No text, no logos, no watermarks, no UI, no collage. Composition for a large website carousel: main people's faces grouped in upper middle/right portion, environment in left third, allow bottom quarter to be covered by a dark text gradient. Wide environmental portrait, faces still substantial and readable on mobile center crop. Two smiling adult friends in their thirties, a Black man and a woman, resting with bicycles on a quiet leafy park path after an easy recreational ride. Casual everyday sports clothes, helmets safely resting on the bikes, joyful conversation, no intense athlete performance or branded equipment. People and faces grouped center-right, lush soft morning foliage."
+    },
+    {
+      "key": "projet",
+      "prompt": "Create one photorealistic-natural premium editorial lifestyle photograph for Planora, a French personal budgeting website. Landscape 1536x1024. Warm natural daylight, candid real-life moment, authentic happy smiling people, tactile everyday textures, soft muted eucalyptus/sand/cream colors, realistic anatomy and hands, contemporary French everyday setting, understated and attainable rather than luxury. No text, no logos, no watermarks, no UI, no collage. Composition for a large website carousel: main people's faces grouped in upper middle/right portion, environment in left third, allow bottom quarter to be covered by a dark text gradient. Wide environmental portrait, faces still substantial and readable on mobile center crop. A cheerful adult couple in their late thirties enjoying repainting one wall of their apartment living room together, warm cream wall, wooden floor, a simple paint roller and open paint tray with cream paint, one house plant and sofa covered with a sheet. Both smile naturally at each other. Everyday affordable home improvement project, not a construction site. Medium-wide candid photograph, believable hands and tools."
+    },
+    {
+      "key": "rentree",
+      "prompt": "Create one photorealistic premium editorial lifestyle photograph for French budgeting app Planora. Landscape 1536x1024. Warm natural daylight, candid smiling people, believable hands and anatomy. Muted eucalyptus, sand and cream colors. Modest attainable contemporary French home. No text, logos, watermark or collage. Wide environmental portrait with faces upper center-right, leave left and bottom for website text overlay. A smiling mother and her school-age daughter preparing a backpack with plain notebooks and pencils at their dining table, sharing a happy glance. A joyful back-to-school preparation, natural lived-in home."
+    },
+    {
+      "key": "logement",
+      "prompt": "Create one photorealistic premium editorial lifestyle photograph for French budgeting app Planora. Landscape 1536x1024. Warm natural daylight, candid smiling people, believable hands and anatomy. Muted eucalyptus, sand and cream colors. Modest attainable contemporary French home. No text, logos, watermark or collage. Wide environmental portrait with faces upper center-right, leave left and bottom for website text overlay. A happy young adult woman in her twenties settling into her first small apartment, sitting beside moving boxes and a small houseplant, holding keys and smiling at a friend helping unpack a lamp. Natural candid moment of independence."
+    },
+    {
+      "key": "imprevus",
+      "prompt": "Create one photorealistic premium editorial lifestyle photograph for French budgeting app Planora. Landscape 1536x1024. Warm natural daylight, candid smiling people, believable hands and anatomy. Muted eucalyptus, sand and cream colors. Modest attainable contemporary French home. No text, logos, watermark or collage. Wide environmental portrait with faces upper center-right, leave left and bottom for website text overlay. A smiling adult man in his forties and a friendly female bicycle repair professional in a modest bright repair workshop, chatting beside his everyday city bicycle after a repair. Relaxed relief, realistic tools, no brands."
+    }
+  ]
+}

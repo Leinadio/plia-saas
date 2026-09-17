@@ -839,7 +839,11 @@ La connexion utilise deux colonnes sur ordinateur : photographie à gauche, form
 ### Page publique — composition et adaptation
 
 La largeur principale est limitée à 1440 px ; les marges passent de 64 à 36 puis
-24 px aux seuils de 1100 et 700 px. Le haut est partagé entre texte et image ;
+24 px aux seuils de 1100 et 700 px. Sur l’accueil, un conteneur commun impose
+ces bords à chaque section, au bandeau et au pied de page. Les fonds de la
+démonstration, des offres et du dernier appel à l’action occupent toute la
+largeur, mais leur contenu reste aligné sur ce conteneur.
+Le haut est partagé entre texte et image ;
 les sections alternent colonnes et plages de couleur. Sur téléphone, le texte et
 l’action précèdent l’image, puis les sections s’empilent. Le bandeau partagé
 réunit les sections de l’accueil et « Pour qui ? » dans le groupe central,

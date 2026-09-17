@@ -13,7 +13,15 @@ export function LandingBrand() {
   );
 }
 
-export function LandingHeader({ audience = false, homeLinks = false }: { audience?: boolean; homeLinks?: boolean }) {
+export function LandingHeader({
+  audience = false,
+  homeLinks = false,
+  contact = false,
+}: {
+  audience?: boolean;
+  homeLinks?: boolean;
+  contact?: boolean;
+}) {
   const home = audience || homeLinks ? "/" : "";
   return (
     <header className={`${styles.header} ${headerStyles.header}`}>
@@ -38,9 +46,13 @@ export function LandingHeader({ audience = false, homeLinks = false }: { audienc
           <a href={`${home}#offre`} title="Voir les offres sur l’accueil">
             Les offres <ArrowDown aria-hidden />
           </a>
-          <a href={`${home}#contact`} title="Nous écrire sur l’accueil">
-            Contact <ArrowDown aria-hidden />
-          </a>
+          <Link
+            href="/contact"
+            title="Nous écrire"
+            aria-current={contact ? "page" : undefined}
+          >
+            Contact <ArrowUpRight aria-hidden />
+          </Link>
         </nav>
         <div className={headerStyles.pageGroup}>
           <span className={headerStyles.separator} aria-hidden>
