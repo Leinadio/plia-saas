@@ -28,14 +28,18 @@ présente l’identité, la séparation des données et les échanges bancaires 
 Viennent ensuite quatre usages des données, le choix entre saisie manuelle et
 connexion bancaire avec FAQ, puis le contact et le pied de page commun.
 
-Le haut de page utilise deux colonnes (1.2fr / 0.9fr), les étapes trois colonnes.
+La page adopte désormais un fil de lecture vertical (mode Read). Le titre et
+l’introduction ouvrent la page, suivis d’une image panoramique avec les engagements
+en dessous, sur 960 px maximum. Les explications, les étapes banque → AISP →
+Planora, les protections, les usages des données et la FAQ se lisent dans une
+colonne de 760 px maximum. Les descriptions suivent toujours leur titre ; les
+paragraphes restent limités à 65 caractères environ. La FAQ suit son introduction.
+
 Les titres principaux mesurent 72 px, puis 56 px sous 1100 px, 48 px sous 800 px
-et 40 px sous 380 px. Sous 800 px, les sections et les étapes s’empilent ; les
-usages des données placent leur description sous le libellé. Le panneau photographique garde une arche haute et des angles bas de 24 px ;
-les encarts de lecture seule restent à 12 px. Deux courbes SVG de 80 px
-(40 px sur mobile) encadrent la bande verte, sur toute la largeur. La seconde
-image a un grand arrondi asymétrique de 100 px. Le contact termine
-le parcours sur un fond chaud, avec une action visible vers `/contact`.
+et 40 px sous 380 px. Le visuel principal conserve un grand arrondi asymétrique ;
+les courbes SVG encadrent toujours la bande verte (80 px, puis 40 px sur mobile).
+Les images sont servies à la taille de leur nouveau conteneur. Le contact conclut
+la page dans un bloc centré, aligné à gauche sur mobile.
 
 ## Interactions et limites des affirmations
 

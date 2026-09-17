@@ -71,7 +71,7 @@ export default function SecurityPage() {
               alt="Un moment de lecture au calme, sur une terrasse lumineuse."
               fill
               priority
-              sizes="(max-width: 800px) 100vw, 45vw"
+              sizes="(max-width: 1056px) 100vw, 960px"
             />
           </div>
           <div className={styles.promiseBody}>
@@ -203,7 +203,7 @@ export default function SecurityPage() {
                 src="/landing/lumiere-hero-v1.png"
                 alt="Des parois de verre courbes, vertes et ambrées, filtrent la lumière."
                 fill
-                sizes="(max-width: 800px) 100vw, 45vw"
+                sizes="(max-width: 856px) 100vw, 760px"
               />
             </div>
           </div>

@@ -15,44 +15,55 @@
 }
 .hero {
   display: grid;
-  grid-template-columns: 1.2fr 0.9fr;
-  align-items: center;
-  gap: 80px;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: 48px;
   padding-block: 64px 100px;
+}
+.hero > div:first-child {
+  text-align: center;
+  max-width: 960px;
 }
 .hero h1 {
   font-size: 72px;
   line-height: 1.04;
-  max-width: 12ch;
+  max-width: 22ch;
+  margin-inline: auto;
+  text-wrap: balance;
 }
 .hero > div > p {
   font-size: 18px;
   line-height: 1.75;
   color: var(--planora-muted);
-  max-width: 52ch;
+  max-width: 65ch;
+  margin-inline: auto;
   margin-top: 28px;
 }
 .hero > div > a {
   margin-top: 28px;
 }
 .promise {
+  width: 100%;
+  max-width: 960px;
   overflow: hidden;
-  border-radius: 200px 200px 24px 24px;
+  border-radius: 120px 24px 24px 24px;
   background: #273330;
   color: #f5f8f6;
 }
 .heroPhoto {
   position: relative;
-  height: 360px;
+  height: 400px;
   overflow: hidden;
   border-radius: 0 0 50% 8% / 0 0 12% 4%;
 }
 .heroPhoto img {
   object-fit: cover;
-  object-position: 50% 38%;
+  object-position: 50% 28%;
 }
 .promiseBody {
-  padding: 28px 32px 32px;
+  padding: 32px 48px;
+  max-width: 760px;
+  margin-inline: auto;
 }
 .shield {
   display: flex;
@@ -101,33 +112,44 @@
 }
 .sectionIntro {
   display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 72px;
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+.connectionSection > *,
+.dataSection > *,
+.choices > *,
+.protectionInner > * {
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
 }
 .sectionIntro > p {
   color: var(--planora-muted);
   font-size: 16px;
   line-height: 1.8;
-  max-width: 52ch;
+  max-width: 65ch;
 }
 .journey {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 40px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
   list-style: none;
   padding: 0;
   margin-top: 56px;
 }
 .journey li {
+  position: relative;
+  padding: 32px 0 32px 64px;
   border-top: 1px solid var(--planora-control-line);
-  padding-top: 28px;
   display: flex;
   align-items: flex-start;
   flex-direction: column;
 }
 .journey li > svg,
 .mark {
+  position: absolute;
+  top: 32px;
+  left: 0;
   width: 36px;
   height: 36px;
   color: var(--planora-action);
@@ -143,7 +165,8 @@
   color: var(--planora-muted);
   font-size: 15px;
   line-height: 1.8;
-  margin-block: 16px 24px;
+  margin-block: 12px 16px;
+  max-width: 65ch;
 }
 .journeyLabel {
   margin-top: auto;
@@ -176,7 +199,7 @@
   font-weight: 500;
 }
 .source {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8px;
   min-height: 44px;
@@ -219,7 +242,7 @@
 }
 .protectionPhoto {
   position: relative;
-  aspect-ratio: 1.8;
+  aspect-ratio: 2.4;
   margin-top: 32px;
   overflow: hidden;
   border-radius: 16px 100px 16px 16px;
@@ -229,8 +252,8 @@
 }
 .protectionInner {
   display: grid;
-  grid-template-columns: 1fr 1.1fr;
-  gap: 80px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 48px;
   padding-block: 64px;
   align-items: center;
 }
@@ -249,7 +272,7 @@
   font-size: 16px;
   line-height: 1.8;
   margin-top: 24px;
-  max-width: 44ch;
+  max-width: 65ch;
 }
 .protectionList article {
   display: flex;
@@ -289,8 +312,8 @@
 }
 .dataList > div {
   display: grid;
-  grid-template-columns: 0.8fr 1.4fr;
-  gap: 64px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
   padding-block: 28px;
   border-top: 1px solid var(--planora-line);
 }
@@ -315,8 +338,8 @@
 }
 .choices {
   display: grid;
-  grid-template-columns: 1fr 1.15fr;
-  gap: 80px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 40px;
   padding-block: 0 96px;
   align-items: start;
 }
@@ -325,7 +348,7 @@
   line-height: 1.8;
   color: var(--planora-muted);
   margin-top: 24px;
-  max-width: 48ch;
+  max-width: 65ch;
 }
 .choices > div > a {
   margin-top: 24px;
@@ -335,6 +358,8 @@
 }
 .contact {
   display: flex;
+  flex-direction: column;
+  text-align: center;
   align-items: center;
   gap: 32px;
   padding-block: 56px;
@@ -373,14 +398,6 @@
   .page h2 {
     font-size: 40px;
   }
-  .sectionIntro,
-  .protectionInner,
-  .choices {
-    gap: 40px;
-  }
-  .journey {
-    gap: 28px;
-  }
   .promiseBody {
     padding: 24px;
   }
@@ -405,11 +422,16 @@
     margin-top: 24px;
   }
   .promise {
-    max-width: 560px;
-    width: 100%;
+    border-top-left-radius: 80px;
   }
-  .promise {
-    justify-self: center;
+  .hero > div:first-child {
+    text-align: left;
+  }
+  .hero > div > p {
+    margin-inline: 0;
+  }
+  .protectionPhoto {
+    aspect-ratio: 1.8;
   }
   .heroPhoto {
     height: 320px;
@@ -427,10 +449,16 @@
   .journey {
     grid-template-columns: minmax(0, 1fr);
     margin-top: 32px;
-    gap: 28px;
+    gap: 0;
   }
   .journey li {
-    padding-top: 24px;
+    padding: 24px 0 24px 48px;
+  }
+  .journey li > svg,
+  .mark {
+    top: 24px;
+    width: 28px;
+    height: 28px;
   }
   .journey li > svg,
   .mark {
@@ -466,7 +494,7 @@
   }
   .contact {
     align-items: flex-start;
-    flex-direction: column;
+    text-align: left;
     gap: 24px;
     padding-block: 40px;
   }
