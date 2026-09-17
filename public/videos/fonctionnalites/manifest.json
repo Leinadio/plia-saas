@@ -1,0 +1,57 @@
+[
+  {
+    "scene": "budgets",
+    "width": 1280,
+    "height": 720,
+    "frames": 125,
+    "duration": 23.578109708,
+    "fps": 60,
+    "camera": "cursor-follow",
+    "maxZoom": 2.6,
+    "source": "Origin: high-DPI lossless Playwright screenshots of real Planora production components, recorded 2026-09-17; synthetic demo data only, all network writes blocked. Scene budgets. A real UI action is recorded and encoded once to H.264, CRF 17. No generated interface. Smooth 60-fps camera and cursor follow the recorded control positions, always focused on the relevant information; no overview."
+  },
+  {
+    "scene": "transactions",
+    "width": 1280,
+    "height": 720,
+    "frames": 135,
+    "duration": 17.295407583,
+    "fps": 60,
+    "camera": "cursor-follow",
+    "maxZoom": 1.8,
+    "source": "Origin: high-DPI lossless Playwright screenshots of real Planora production components, recorded 2026-09-17; synthetic demo data only, all network writes blocked. Scene transactions. A real UI action is recorded and encoded once to H.264, CRF 17. No generated interface. Smooth 60-fps camera and cursor follow the recorded control positions, always focused on the relevant information; no overview."
+  },
+  {
+    "scene": "previsions",
+    "width": 1280,
+    "height": 720,
+    "frames": 98,
+    "duration": 17.319306875,
+    "fps": 60,
+    "camera": "cursor-follow",
+    "maxZoom": 2.2,
+    "source": "Origin: high-DPI lossless Playwright screenshots of real Planora production components, recorded 2026-09-17; synthetic demo data only, all network writes blocked. Scene previsions. A real UI action is recorded and encoded once to H.264, CRF 17. No generated interface. Smooth 60-fps camera and cursor follow the recorded control positions, always focused on the relevant information; no overview."
+  },
+  {
+    "scene": "depassements",
+    "width": 1280,
+    "height": 720,
+    "frames": 95,
+    "duration": 18.227912874999998,
+    "fps": 60,
+    "camera": "cursor-follow",
+    "maxZoom": 2.6,
+    "source": "Origin: high-DPI lossless Playwright screenshots of real Planora production components, recorded 2026-09-17; synthetic demo data only, all network writes blocked. Scene depassements. A real UI action is recorded and encoded once to H.264, CRF 17. No generated interface. Smooth 60-fps camera and cursor follow the recorded control positions, always focused on the relevant information; no overview."
+  },
+  {
+    "scene": "automatisation",
+    "width": 1280,
+    "height": 720,
+    "frames": 132,
+    "duration": 15.695773,
+    "fps": 60,
+    "camera": "cursor-follow",
+    "maxZoom": 1.8,
+    "source": "Origin: high-DPI lossless Playwright screenshots of real Planora production components, recorded 2026-09-17; synthetic demo data only, all network writes blocked. Scene automatisation. A real UI action is recorded and encoded once to H.264, CRF 17. No generated interface. Smooth 60-fps camera and cursor follow the recorded control positions, always focused on the relevant information; no overview."
+  }
+]

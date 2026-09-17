@@ -125,7 +125,8 @@ Aucune maquette d’interface n’a été approuvée avant cette réalisation.
 
 Cette identité relie désormais les pages publiques, la connexion et l’application.
 Bricolage Grotesque porte la marque et les titres ; Schibsted Grotesk garde les données,
-libellés et commandes. Le fond reste blanc en clair. En sombre, la palette
+libellés et commandes. Le fond reste blanc en clair ; les sections « Votre budget au clair » et
+« Une vue d’avance » utilisent un fond sable chaud. En sombre, la palette
 « Anthracite et sable » choisie le 17 septembre 2026 remplace le vert forêt :
 fond charbon, cartes ardoise, actions sable, revenus sauge, dépenses bleu brume
 et alertes corail. En clair, les actions et revenus restent eucalyptus ; la pêche
@@ -139,12 +140,35 @@ Le système exact est documenté dans DESIGN.md.
 ## Evidence on Hand
 
 Le produit, ses calculs testés et ses composants constituent la preuve disponible.
-La présentation publique propose trois aperçus sélectionnables : le mois, les soldes
-comparés et le détail d’un montant. Ce sont quatre captures des vrais composants avec
-des données fictives, adaptées au support, pas une simulation de budget manipulable.
+La présentation publique montre cinq fonctionnalités dans une grille Bento :
+budgets et sous-budgets, suivi des transactions, prévisions de trésorerie,
+dépassements de budget, règles d’automatisation. Trois vidéos distinctes enregistrent
+des actions dans les vrais composants, sur données fictives et avec les écritures
+réseau bloquées. La scène Budgets crée localement Vacances à 250 € dans le scénario,
+puis montre le nouveau budget dans la liste. Le cadrage reste rapproché et suit
+un curseur agrandi dans les trois vidéos. La trésorerie montre les trois lectures
+« Opérations réelles », « Selon vos budgets » et « Dépassements inclus ».
+Une scène distincte compare les 120 € prévus de Transport aux 147,60 € dépensés,
+puis montre son dépassement de 27,60 €. Deux illustrations vectorielles animées complètent le Bento : recherche et rattachement
+d’une transaction Cinéma au budget Sorties et loisirs ; règle Cinéma de 10 à 50 € qui
+reconnaît deux opérations vers Sorties et loisirs après vérification. Elles remplacent les
+vidéos correspondantes, aussi dans la vue agrandie.
+« Les fonctionnalités en action · Données de démonstration. » reste visible.
+Les aperçus s’animent seulement quand leur carte et l’onglet sont visibles ; une
+commande permet de tous les mettre en pause. « Voir en grand » ouvre chaque scène
+avec les commandes vidéo, une fermeture par Échap et un retour au bouton initial.
+Le lecteur utilise cinq captures portrait distinctes sur téléphone ; elles se chargent
+uniquement à son ouverture. Les cartes en arrière-plan sont alors en pause.
+En mouvement réduit, les visuels
+restent fixes par défaut, avec une lecture possible sur demande. Une erreur revient
+à l’image fixe et propose de réessayer. Aucun budget personnel n’est modifié.
+Cinq MP4 haute densité et leurs images fixes sont servis dans les cartes, sans
+interface générée. Les anciens recadrages et illustrations ont été retirés ; les neuf
+vidéos d’origine restent des archives de production. La provenance est conservée dans
+[les sources du parcours](artifacts/landing-parcours/README.md).
 Le cartouche de soldes du haut est également identifié comme illustratif.
 
-Une visite guidée de 1 min 14 suit les trois repères du budget. Elle montre les vrais
+Une visite guidée distincte de 1 min 14 suit directement le haut de page. Elle montre les vrais
 écrans de démonstration, un parcours guidé par la souris et une voix française
 générée par IA, signalée dans la légende. Un accompagnement musical original reste
 en retrait pendant la narration. Le lecteur s’ouvre au clic et propose
@@ -155,7 +179,7 @@ représentées ne sont pas des clients. Les huit PNG livrés dans `public/landin
 portent leur provenance embarquée. La page `/pour-qui` présente deux scènes de vie
 originales (lecture en solo et projet d’appartement en couple), des arguments courts
 et deux captures des vrais écrans, identifiées comme démonstration. Les preuves du rendu clair, sombre, ordinateur,
-téléphone et des trois vues sont conservées dans `.impeccable/review/`.
+téléphone et des cinq repères sont conservées dans `.impeccable/review/`.
 
 Aucun client, témoignage, chiffre d’usage ou logo de presse n’est disponible. Ne pas
 les fabriquer. Le document de positionnement distingue les repères publics datés des

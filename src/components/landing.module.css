@@ -17,6 +17,20 @@
   caret-color: var(--land-green);
   scrollbar-color: var(--land-green) var(--land-bg);
 }
+.greenSection {
+  --planora-band: #273330;
+  --planora-band-ink: #f5f8f6;
+  --planora-band-muted: #c6d3cc;
+  --planora-band-accent: #a3d9c0;
+  --planora-band-line: #64796e;
+}
+:global(:root:not(.dark)) .greenSection {
+  --planora-band: var(--planora-action-soft);
+  --planora-band-ink: var(--planora-text);
+  --planora-band-muted: var(--planora-muted);
+  --planora-band-accent: var(--planora-action);
+  --planora-band-line: var(--planora-control-line);
+}
 .landing ::selection {
   background: var(--planora-peach);
   color: var(--planora-ink);
@@ -218,17 +232,17 @@
   width: 18px;
   height: 18px;
 }
-.heroCopy > .connectionNote {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 25px;
-  font-size: 11px;
-}
-.connectionNote svg {
-  width: 15px;
-  height: 15px;
-  flex-shrink: 0;
+.heroCopy > .heroBadge {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0 0 24px;
+  padding: 8px 16px;
+  border-radius: 100px;
+  background: var(--planora-action-soft);
+  color: var(--planora-action);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
 }
 .heroVisual {
   position: relative;
@@ -389,10 +403,6 @@
     padding: 14px 21px;
     gap: 24px;
   }
-  .heroCopy > .connectionNote {
-    margin-top: 13px;
-    font-size: 10px;
-  }
   .heroVisual {
     min-height: 415px;
     margin-left: 0;
@@ -469,149 +479,6 @@
   font-size: 16px;
   line-height: 1.75;
   color: var(--planora-band-muted);
-}
-.demoChoices {
-  display: flex;
-  gap: 12px;
-  margin-top: 44px;
-}
-.demoChoices button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 13px;
-  min-height: 56px;
-  padding: 13px 19px;
-  border: 1px solid var(--planora-band-line);
-  border-radius: 100px;
-  font-size: 14px;
-  color: var(--planora-band-ink);
-  transition:
-    background 0.18s ease,
-    color 0.18s ease;
-}
-.demoChoices button > svg {
-  width: 19px;
-  height: 19px;
-  flex-shrink: 0;
-}
-.demoChoices button[aria-pressed="true"] {
-  background: var(--planora-peach);
-  color: var(--planora-ink);
-  border-color: transparent;
-}
-.demoChoices button:not([aria-pressed="true"]):hover {
-  background: var(--planora-band-hover);
-}
-.demoChoices button:focus-visible {
-  outline-color: var(--planora-peach);
-}
-.demoChoices .choiceArrow {
-  width: 15px;
-  margin-left: 10px;
-}
-.demoPanel {
-  display: grid;
-  grid-template-columns: 0.78fr 1.65fr;
-  gap: 48px;
-  align-items: center;
-  margin-top: 28px;
-  min-height: 590px;
-}
-.demoText {
-  padding: 30px 0 40px;
-}
-.demoText h3 {
-  font-size: 34px;
-  line-height: 1.18;
-  font-weight: 500;
-  max-width: 360px;
-}
-.demoText p {
-  font-size: 15px;
-  line-height: 1.8;
-  color: var(--planora-band-muted);
-  margin-top: 24px;
-  max-width: 340px;
-}
-.demoHint {
-  display: block;
-  max-width: 320px;
-  margin-top: 25px;
-  padding-top: 24px;
-  border-top: 1px solid var(--planora-band-line);
-  font-size: 12px;
-  line-height: 1.65;
-  color: var(--planora-band-muted);
-}
-.demoFigure {
-  position: relative;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  min-height: 540px;
-}
-.lightCurve {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  color: var(--planora-action);
-  opacity: 0.16;
-  transform: translateX(-35px);
-  transition:
-    transform 650ms cubic-bezier(0.16, 1, 0.3, 1),
-    color 650ms ease;
-}
-.demo[data-active="1"] .lightCurve {
-  transform: translateX(45px) rotate(8deg);
-  color: var(--planora-peach);
-}
-.demo[data-active="2"] .lightCurve {
-  transform: translateX(-5px) rotate(-9deg);
-  color: var(--planora-peach);
-}
-.demoImageWrap {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 12px;
-  animation: revealView 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 20px 45px var(--planora-shadow);
-}
-.demoImageWrap img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-.demoPhone .demoImageWrap {
-  max-width: 398px;
-}
-.demo[data-active="2"] .demoImageWrap {
-  max-width: 310px;
-  max-height: 550px;
-  overflow-y: auto;
-  scrollbar-color: var(--planora-band-line) var(--planora-band-ink);
-}
-.demoFigure figcaption {
-  position: relative;
-  margin-top: 18px;
-  color: var(--planora-band-muted);
-  font-size: 11px;
-  text-align: center;
-}
-@keyframes revealView {
-  from {
-    opacity: 0.65;
-    clip-path: inset(0 0 5%);
-  }
-  to {
-    opacity: 1;
-    clip-path: inset(0);
-  }
 }
 .life {
   display: grid;
@@ -877,13 +744,6 @@
     max-width: 250px;
     font-size: 14px;
   }
-  .demoPanel {
-    grid-template-columns: 0.8fr 1.5fr;
-    gap: 25px;
-  }
-  .demoText h3 {
-    font-size: 29px;
-  }
   .life {
     padding: 90px 36px;
     gap: 40px;
@@ -936,76 +796,6 @@
     max-width: 480px;
     font-size: 15px;
     margin-top: 23px;
-  }
-  .demoChoices {
-    gap: 8px;
-    margin: 28px 0 0;
-    padding: 0 0 8px;
-    overflow-x: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--planora-band-muted) var(--planora-band);
-  }
-  .demoChoices button {
-    flex-shrink: 0;
-    min-height: 48px;
-    padding: 11px 14px;
-    gap: 8px;
-    font-size: 12px;
-  }
-  .demoChoices button > svg {
-    width: 17px;
-    height: 17px;
-  }
-  .demoChoices .choiceArrow {
-    display: none;
-  }
-  .demoPanel {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 20px;
-    margin-top: 10px;
-    min-height: 800px;
-  }
-  .demoText {
-    padding: 22px 0 0;
-  }
-  .demoText h3 {
-    font-size: 29px;
-    max-width: 360px;
-  }
-  .demoText p {
-    font-size: 14px;
-    max-width: 500px;
-    margin-top: 16px;
-  }
-  .demoHint {
-    margin-top: 19px;
-    padding-top: 17px;
-    max-width: none;
-    font-size: 10px;
-  }
-  .demoFigure {
-    min-height: 460px;
-    flex: 1;
-  }
-  .demoDesktop .demoImageWrap {
-    max-width: 398px;
-    max-height: 500px;
-    overflow-y: auto;
-    scrollbar-color: var(--planora-band-line) var(--planora-band-ink);
-  }
-  .demoImageWrap {
-    border-radius: 12px;
-  }
-  .demo[data-active="2"] .demoImageWrap {
-    max-width: 330px;
-    max-height: 500px;
-  }
-  .demoFigure figcaption {
-    max-width: 280px;
-    font-size: 10px;
-    line-height: 1.6;
   }
   .life {
     display: flex;

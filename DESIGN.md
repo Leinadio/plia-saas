@@ -121,11 +121,14 @@ colors:
   landing-expense-ink: "#3b6076"
   landing-expense-bg: "#e9f0f5"
   landing-remaining-ink: "#f5f8f6"
-  landing-demo-bg: "#273330"
-  landing-demo-bg-dark: "#101216"
-  landing-demo-ink: "#f5f8f6"
-  landing-demo-title: "#edc8b5"
-  landing-demo-copy: "#c6d3cc"
+  landing-sand-bg: "#f4ecdf"
+  landing-sand-muted: "#685d4c"
+  landing-sand-line: "#9a886e"
+  landing-demo-bg: "#e7f1ec"
+  landing-demo-bg-dark: "#273330"
+  landing-demo-ink: "#293331"
+  landing-demo-title: "#126b5b"
+  landing-demo-copy: "#566460"
   landing-demo-tab-line: "#64796e"
   landing-demo-tab-ink: "#f5f8f6"
   landing-demo-tab-hover: "#354b40"
@@ -360,13 +363,13 @@ typography:
     letterSpacing: "-0.035em"
   landing-demo-title:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
-    fontSize: "34px"
+    fontSize: "32px"
     fontWeight: 500
     lineHeight: 1.18
     letterSpacing: "-0.035em"
   landing-demo-title-mobile:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
-    fontSize: "29px"
+    fontSize: "28px"
     fontWeight: 500
     lineHeight: 1.18
     letterSpacing: "-0.035em"
@@ -631,13 +634,10 @@ components:
     typography: "{typography.landing-command}"
   landing-primary-hover:
     backgroundColor: "{colors.landing-green-hover}"
-  landing-demo-choice:
-    textColor: "{colors.landing-demo-tab-ink}"
+  landing-demo-motion-control:
+    textColor: "{colors.landing-demo-ink}"
     rounded: "{rounded.landing-pill}"
-    padding: "13px 19px"
-  landing-demo-choice-selected:
-    backgroundColor: "{colors.brand-peach}"
-    textColor: "{colors.neutral-ink}"
+    padding: "10px 16px"
   landing-balance:
     backgroundColor: "{colors.landing-balance-bg}"
     textColor: "{colors.landing-balance-ink}"
@@ -754,7 +754,7 @@ conservent leurs couleurs.
 ### Page publique — palette de composition
 
 Le fond blanc et l’encre anthracite portent la lecture ; le vert d’action sert aussi
-aux mots accentués des titres. Le bloc de démonstration est anthracite ;
+aux mots accentués des titres. Les sections « Votre budget au clair » et de démonstration sont sur vert doux en clair, vert profond en sombre ;
 les offres sont sur pêche pâle ; les photographies apportent le corail et la lumière.
 Dans le parcours de réservation, le bleu brume pâle situe le formulaire ; les
 champs restent sur la surface du thème et le choix actif utilise le voile menthe.
@@ -766,10 +766,15 @@ ont chacun leur pendant `-dark`. Les familles `landing-balance-*`, `income-*`,
 `expense-*`, `demo-*` et `offer-*` fixent les nuances propres aux fonds, textes,
 filets et états. Les variations claires d’un texte sur anthracite sont intentionnelles :
 titre, texte courant, légende et note restent distincts. `landing-selection` sert
-à la sélection de texte, à la mise au point des boutons sur anthracite et à la lumière
-de comparaison ; `landing-light-coral` accompagne le détail. La courbe lumineuse
-est à 16 % d’opacité. Le défilement reprend les neutres documentés `demo-scroll` et
-`tabs-scroll`, adaptés au thème. Les valeurs CSS finales du frontmatter
+à la sélection de texte. Les cartes Bento du parcours reprennent la surface opaque,
+l’encre et le texte secondaire du thème, dans le bandeau vert doux en clair, vert profond en sombre.
+La commande des animations et le contour au survol utilisent l’accent du bandeau,
+eucalyptus en clair et menthe en sombre. La séparation courbe supérieure reste statique.
+Les deux sections partagent `greenSection` : fond clair `#e7f1ec`, encre et texte
+secondaire du thème, accent eucalyptus et filet de contrôle. En sombre, fond
+`#273330`, encre `#f5f8f6`, texte secondaire `#c6d3cc`, accent menthe `#a3d9c0`
+et filet `#64796e`. Les autres bandes conservent leur palette.
+Les valeurs CSS finales du frontmatter
 font foi ; la couleur émeraude du prompt d’image n’est pas un jeton d’action.
 
 Sur `/pour-qui`, les alias historiques `landing-audience-coral` et `coral-hover`
@@ -849,8 +854,20 @@ l’action précèdent l’image, puis les sections s’empilent. Le bandeau par
 réunit les sections de l’accueil et « Pour qui ? » dans le groupe central,
 séparés par une barre oblique « / ». La connexion reste à droite.
 À 1100 px et en dessous, la marque, « / Pour qui ? » et la connexion occupent la première ligne ;
-les trois sections restent visibles sur une seconde ligne séparée par un filet. Les aperçus deviennent des captures mobiles ;
-leurs choix défilent horizontalement dans leur propre bande. Les marges et seuils
+les trois sections restent visibles sur une seconde ligne séparée par un filet.
+Le parcours utilise cinq cartes Bento sur une grille de vingt-quatre colonnes : trois
+cartes en 7/9/8, puis deux en 10/14. Entre 701 et 1100 px, elles forment trois
+rangées : deux paires puis l’automatisation sur toute la largeur. Chaque carte place le visuel au-dessus du texte.
+À 700 px et moins, les cinq cartes s’empilent. Les médias occupent toute la largeur
+jusqu’au bord supérieur, avec un filet inférieur de 1 px. Leur hauteur est de
+240 px sur ordinateur et tablette, puis 220 px sur téléphone. Les vidéos
+occupent le cadre en largeur et hauteur, avec
+un ajustement `cover` dont le point de recadrage suit le curseur, sans bandes libres ; leur canevas blanc
+d’enregistrement reste intentionnellement clair en thème sombre. La mention d’exemple
+reste visible sur mobile. Le lecteur agrandi mesure au plus 960 px de large, avec
+16 px de retrait de chaque côté et une hauteur limitée à l’écran. À 700 px et moins,
+il charge une capture portrait de la vraie interface mobile à son ouverture ; les cartes
+gardent leurs aperçus compacts. Les marges et seuils
 des pages publiques ne changent pas ceux de l’application.
 
 Sur `/pour-qui`, le titre et l’action sont centrés dans un haut limité à 1440 px.
@@ -892,12 +909,18 @@ ombrées. Les attentes et les retours de commande conservent leurs comportements
 
 ### Page publique — profondeur et mouvement
 
-Le cartouche sombre porte une ombre `0 16px 38px var(--planora-shadow)` ; les captures portent
-`0 20px 45px var(--planora-shadow)`. Les textes ne sont jamais posés sur du verre translucide.
-Le changement d’aperçu révèle l’image en 450 ms et déplace la courbe lumineuse en
-650 ms avec `cubic-bezier(0.16, 1, 0.3, 1)`. Les boutons réagissent en 200 ms, les
-choix en 180 ms et le signe de FAQ en 250 ms. Sous `prefers-reduced-motion`,
-animations et transitions s’arrêtent et le défilement redevient immédiat.
+Le cartouche sombre porte une ombre `0 16px 38px var(--planora-shadow)`.
+Les cartes Bento du parcours gardent un fond opaque et un filet, sans ombre ajoutée.
+Les textes ne sont jamais posés sur du verre translucide. Les cartes restent fixes
+à leur apparition et lors de la pause/reprise ; aucune animation d’entrée ne redémarre.
+Le survol à la souris relève la carte de 4 px en 240 ms.
+Les trois vidéos et les deux illustrations tournent seulement quand leur carte et l’onglet sont visibles.
+L’ouverture du lecteur agrandi met les aperçus en arrière-plan en pause.
+La pause globale fige aussi les illustrations sans les redémarrer et supprime transitions et déplacement au survol.
+Sous `prefers-reduced-motion`, les aperçus restent statiques par défaut et le lecteur
+agrandi ne démarre pas automatiquement ; une lecture explicite reste possible.
+Les boutons partagés réagissent en 200 ms, le signe de FAQ en 250 ms et le
+défilement redevient immédiat en mouvement réduit.
 La page `/pour-qui` n’ajoute aucune animation ; elle conserve uniquement les
 réactions des commandes partagées et les mêmes préférences de mouvement réduit.
 Le support pêche porte une rotation statique de 2°, compensée de −2° sur la
@@ -923,8 +946,11 @@ photographies d’accueil peuvent garder des découpes asymétriques plus amples
 
 ### Page publique — arrondis et courbes
 
-Les commandes et choix sont des capsules (`landing-pill`). Le cartouche utilise
-`landing-balance`, les captures et notes 12 px, les petits repères mobiles 8 px.
+Les commandes principales et celle des animations sont des capsules (`landing-pill`).
+Les cartes du parcours ont un contour propre arrondi de 16 px. Leurs cinq médias
+reposent sur la surface du thème, sans contour ni arrondi intérieur supplémentaire.
+Le cartouche utilise `landing-balance`, les autres captures et notes 12 px,
+les petits repères mobiles 8 px.
 Les grandes découpes sont asymétriques : les jetons `landing-hero`, `life` et
 `close`, avec leurs variantes mobiles, encadrent les photographies. La marque a
 son propre coin court (`landing-brand`). Les courbes de séparation relient les
@@ -1237,18 +1263,46 @@ les pages passent à 12 px et leurs espacements se resserrent. Les cibles garden
 44 px de hauteur et toutes les flèches restent visibles.
 
 La visite guidée suit directement le haut de page ; elle remplace le bloc des trois repères du budget. Le film préenregistré conserve
-sa palette antérieure ; les quatre captures publiques et son affiche reprennent
-les couleurs actuelles, avec des données identifiées comme démonstration. Son aperçu au format 16:9
+sa palette antérieure ; son affiche reprend les couleurs actuelles, avec des
+données identifiées comme démonstration. Son aperçu au format 16:9
 utilise un arrondi de 12 px et les couleurs publiques ; le bouton de lecture
 conserve son contraste en clair et en sombre. Le lecteur Magic UI s’ouvre au clic,
 avec fermeture au clavier, retour du focus et sous-titres facultatifs. Sa hauteur
 respecte aussi les écrans mobiles en paysage. Sous réduction des animations,
 la transition et le démarrage automatique de la vidéo sont désactivés.
 
-Les trois choix d’aperçu sont des boutons à état pressé, hauts de 56 px puis
-48 px sur téléphone. Le choix actif est pêche sur anthracite. Le texte associé est
-annoncé poliment et chaque image a une description ; le panneau montre une capture
-avec données de démonstration, pas une application interactive. Les réponses de
+La démonstration reprend `BentoGrid` et `BentoCard` de
+[Magic UI](https://magicui.design/docs/components/bento-grid), adaptés aux cinq
+fonctionnalités : budgets et sous-budgets, suivi des transactions, prévisions de
+trésorerie, dépassements de budget, règles d’automatisation.
+Chaque titre est précédé d’une icône Lucide au trait, dans l’encre du thème :
+portefeuille, liste filtrée, courbe, triangle d’alerte et organigramme.
+Ces icônes décoratives mesurent 32 px, avec un trait de 1,5 px.
+Les titres des cartes font 24 px ; les descriptions 15 px. Budgets, trésorerie et
+dépassements utilisent un MP4 distinct et son image d’attente, enregistrés en haute
+densité dans les vrais composants sur données fictives. Les trois films restent en cadrage rapproché,
+avec une caméra à 60 images/seconde qui suit le curseur agrandi. Aucun plan général.
+Les médias sont conservés dans
+`public/videos/fonctionnalites/`. Transactions et automatisation utilisent des illustrations
+animées en HTML, CSS et icônes Lucide : recherche puis rattachement au budget Sorties et loisirs ;
+règle Cinéma de 10 à 50 € avec deux opérations reliées à Sorties et loisirs. Les surfaces et textes suivent
+les jetons du thème. Les cycles de 7 et 8 secondes expliquent filtrage et rattachement ;
+ils se figent hors écran, en onglet masqué et à la pause, sans remontage. Sous mouvement
+réduit, les scènes restent lisibles et fixes. Leur vue agrandie garde l’illustration
+et une commande de pause, sans charger les anciens films.
+Tous les éléments restent nets sans survol : aucun flou ni fondu, et aucune
+variation d’opacité à l’entrée. La source vidéo est affectée après la première
+apparition de la carte, avec `preload="none"`.
+« Les fonctionnalités en action · Données de démonstration. » reste visible près de la commande globale,
+y compris sur téléphone ; les images portent une description accessible d’exemple.
+Pause, lecture, agrandissement, fermeture et nouvelle tentative disposent de cibles d’au moins 44 px et d’un
+focus visible. Une erreur ou un refus de lecture affiche l’image fixe avec
+« Réessayer l’aperçu ». « Voir en grand » ouvre un dialogue natif avec commandes
+vidéo, titre et description de l’action. Échap, le bouton de fermeture ou le fond
+extérieur ferment le lecteur et rendent le focus au déclencheur. La page ne défile
+pas derrière le dialogue. Sa surface et son filet suivent le thème, avec un arrondi
+de 16 px et un fond extérieur assombri par le jeton d’encre à 72 %, sans flou.
+Ce parcours enregistré ne modifie pas les budgets du visiteur. Les réponses de
 FAQ utilisent des éléments natifs ouvrables au clavier. Le montant illustratif
 reste sur un fond opaque, avec sa mention d’exemple toujours visible.
 

@@ -2,6 +2,15 @@
   --landing-page-gutter: 64px;
 }
 
+.sectionHeadings {
+  --landing-section-heading-size: 60px;
+}
+
+.sectionHeadings > section h2 {
+  font-size: var(--landing-section-heading-size);
+  line-height: 1.08;
+}
+
 .page > :is(header, section, footer):not([data-full-bleed]),
 .page [data-landing-container] {
   width: 100%;
@@ -18,10 +27,18 @@
   .page {
     --landing-page-gutter: 36px;
   }
+
+  .sectionHeadings {
+    --landing-section-heading-size: 48px;
+  }
 }
 
 @media (max-width: 700px) {
   .page {
     --landing-page-gutter: 24px;
+  }
+
+  .sectionHeadings {
+    --landing-section-heading-size: 36px;
   }
 }

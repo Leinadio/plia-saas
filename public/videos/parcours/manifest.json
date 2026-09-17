@@ -1,0 +1,89 @@
+[
+  {
+    "scene": "budgets",
+    "device": "desktop",
+    "width": 1280,
+    "height": 760,
+    "duration": 10.166,
+    "source": "Actual Planora demo components; built-in fictitious fixtures only; no account, database writes or audio.",
+    "poster": "budgets-desktop.png",
+    "video": "budgets-desktop.mp4"
+  },
+  {
+    "scene": "depenses",
+    "device": "desktop",
+    "width": 1280,
+    "height": 760,
+    "duration": 8.405999999999999,
+    "source": "Actual Planora demo components; built-in fictitious fixtures only; no account, database writes or audio.",
+    "poster": "depenses-desktop.png",
+    "video": "depenses-desktop.mp4"
+  },
+  {
+    "scene": "avenir",
+    "device": "desktop",
+    "width": 1280,
+    "height": 760,
+    "duration": 8.247,
+    "source": "Actual Planora demo components; built-in fictitious fixtures only; no account, database writes or audio.",
+    "poster": "avenir-desktop.png",
+    "video": "avenir-desktop.mp4"
+  },
+  {
+    "scene": "budgets",
+    "device": "mobile",
+    "width": 390,
+    "height": 720,
+    "duration": 9.911,
+    "source": "Actual Planora demo components; built-in fictitious fixtures only; no account, database writes or audio.",
+    "poster": "budgets-mobile.png",
+    "video": "budgets-mobile.mp4"
+  },
+  {
+    "scene": "depenses",
+    "device": "mobile",
+    "width": 390,
+    "height": 720,
+    "duration": 8.296,
+    "source": "Actual Planora demo components; built-in fictitious fixtures only; no account, database writes or audio.",
+    "poster": "depenses-mobile.png",
+    "video": "depenses-mobile.mp4"
+  },
+  {
+    "scene": "avenir",
+    "device": "mobile",
+    "width": 390,
+    "height": 720,
+    "duration": 6.242,
+    "source": "Actual Planora demo components; built-in fictitious fixtures only; no account, database writes or audio.",
+    "poster": "avenir-mobile.png",
+    "video": "avenir-mobile.mp4"
+  },
+  {
+    "scene": "revenus",
+    "device": "desktop",
+    "width": 1280,
+    "height": 760,
+    "duration": 5.709999999999999,
+    "source": "Actual Planora demo components; built-in fictional fixtures; network writes blocked.",
+    "video": "revenus-desktop.mp4"
+  },
+  {
+    "scene": "charges",
+    "device": "desktop",
+    "width": 1280,
+    "height": 760,
+    "duration": 5.714,
+    "source": "Actual Planora demo components; built-in fictional fixtures; network writes blocked.",
+    "video": "charges-desktop.mp4"
+  },
+  {
+    "scene": "reste",
+    "device": "desktop",
+    "width": 1280,
+    "height": 760,
+    "duration": 5.696,
+    "source": "Actual Planora demo components; built-in fictional fixtures; network writes blocked.",
+    "video": "reste-desktop.mp4"
+  }
+]

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-16T15:05:08Z",
+  "generatedAt": "2026-09-17T19:26:38Z",
   "title": "Design System: Planora",
   "extensions": {
     "colorMeta": {
@@ -431,6 +431,21 @@
           "#c0d6e2",
           "#e9f0f5"
         ]
+      },
+      "landing-sand-bg": {
+        "role": "surface",
+        "canonical": "#f4ecdf",
+        "scope": "landing-budget-clarity and landing-demo in light mode"
+      },
+      "landing-sand-muted": {
+        "role": "text",
+        "canonical": "#685d4c",
+        "scope": "landing-budget-clarity and landing-demo in light mode"
+      },
+      "landing-sand-line": {
+        "role": "border",
+        "canonical": "#9a886e",
+        "scope": "landing-budget-clarity and landing-demo in light mode"
       }
     },
     "typographyMeta": {
@@ -596,19 +611,9 @@
         "purpose": "Survol du bouton ; déplacement vertical de -2 px."
       },
       {
-        "name": "landing-choice",
-        "value": "background 0.18s ease, color 0.18s ease",
-        "purpose": "Changement d’état des choix d’aperçu."
-      },
-      {
-        "name": "landing-reveal",
-        "value": "0.45s cubic-bezier(0.16, 1, 0.3, 1)",
-        "purpose": "Révélation de la capture choisie par opacité et clip-path."
-      },
-      {
-        "name": "landing-light",
-        "value": "transform 650ms cubic-bezier(0.16, 1, 0.3, 1), color 650ms ease",
-        "purpose": "La courbe lumineuse accompagne le choix du mois, de la comparaison ou du détail."
+        "name": "landing-bento-hover",
+        "value": "transform 240ms cubic-bezier(0.16, 1, 0.3, 1), border-color 240ms ease",
+        "purpose": "Survol à la souris : carte relevée de 4 px et filet accentué. Désactivé en pause et en mouvement réduit."
       },
       {
         "name": "landing-faq",
@@ -667,7 +672,7 @@
         "approvedUiComp": false
       },
       "focus": "Eucalyptus on light surfaces; peach on anthracite; shared document theme.",
-      "reducedMotion": "All landing animations and transitions are disabled; scroll behavior is auto.",
+      "reducedMotion": "Decorative motion is disabled and scroll behavior is auto. The five real feature videos remain static by default; explicit play can animate visible cards while the browser tab is visible. Global pause stops previews and removes transition and hover movement. Opening an expanded viewer pauses the background previews. The viewer does not autoplay under reduced motion. Cards stay fully opaque and their layout does not move on pause or resume.",
       "tonalRamps": "Observed role families only; these strips group the actual CSS shades, not new interchangeable semantic tokens.",
       "review": {
         "disposition": "ship",
@@ -811,6 +816,72 @@
             ".impeccable/review/prelaunch-confirmed-390-light.png",
             ".impeccable/review/prelaunch-confirmed-390-dark.png"
           ]
+        }
+      },
+      "sandSections": {
+        "scope": [
+          "#esprit-libre",
+          "#demonstration"
+        ],
+        "background": "#f4ecdf",
+        "ink": "#293331",
+        "muted": "#685d4c",
+        "accent": "#784e3a",
+        "line": "#9a886e",
+        "dark": "Unchanged; inherits existing planora-band roles."
+      },
+      "features": {
+        "scope": "#demonstration",
+        "direction": "Extension du monde public Bricolage/Schibsted existant ; aucune nouvelle identité ni interface générée.",
+        "content": [
+          "Budgets et sous-budgets",
+          "Suivi des transactions",
+          "Prévisions de trésorerie",
+          "Dépassements de budget",
+          "Règles d’automatisation"
+        ],
+        "label": "Les fonctionnalités en action · Données de démonstration.",
+        "layout": "Grille de 24 colonnes : 7/9/8 puis 10/14 ; entre 701 et 1100 px, deux paires puis automatisation pleine largeur ; à 700 px et moins, cinq cartes empilées. Médias de 240 px puis 220 px, cover suivant le point du curseur, sans bandes libres. Titres 24 px, descriptions 15 px, icônes 32 px au trait 1,5 px. Surface opaque, arrondi 16 px, aucun flou ; courbe et titrage de section conservés.",
+        "sources": {
+          "directory": "public/videos/fonctionnalites/",
+          "manifests": [
+            "public/videos/fonctionnalites/manifest.json",
+            "public/videos/fonctionnalites/manifest-mobile.json"
+          ],
+          "production": "artifacts/landing-parcours/README.md",
+          "provenance": "Cinq captures distinctes des vrais composants avec fixtures de démonstration ; PNG sans perte à densité 2 ou 3, un encodage H.264 CRF 15. Écritures réseau bloquées, aucune interface générée. Cinq posters correspondants et cinq variantes portrait distinctes de la vraie interface mobile.",
+          "budgetProof": "Création locale de Vacances à 250 € puis suivi de la liste ; montant et total recalculés par le modèle réel. Les cinq films restent rapprochés, avec caméra et curseur agrandi à 60 fps, sans plan général. Trésorerie : trois colonnes de calcul ; dépassements : Transport à 27,60 €. Exports 1280 × 720 et portrait 720 × 1320.",
+          "replaced": "Les trois recadrages 440 × 280, les deux illustrations animées et leur script de recadrage sont supprimés. Les neuf vidéos antérieures restent des archives, sans chargement dans les cartes."
+        },
+        "viewer": {
+          "trigger": "Voir en grand, cible minimale de 44 px dans chaque carte.",
+          "interaction": "Dialogue natif avec titre, description et commandes vidéo. Fermeture par bouton de 44 px, Échap ou fond extérieur ; focus rendu au déclencheur. Défilement de la page bloqué et aperçus en arrière-plan en pause.",
+          "responsive": "Largeur min(960px, calc(100vw - 32px)), hauteur maximale calc(100dvh - 32px), vidéo limitée à 68dvh. À 700 px et moins, la capture portrait est choisie à l’ouverture et ne se charge pas auparavant.",
+          "appearance": "Surface et filet du thème, arrondi de 16 px ; backdrop color-mix(in srgb, var(--planora-ink) 72%, transparent), sans flou."
+        },
+        "lifecycle": "Sources des cartes affectées à leur première apparition, preload none. Lecture uniquement si carte et onglet visibles. Pause globale et mouvement réduit respectés ; poster et nouvelle tentative en cas d’échec.",
+        "verification": {
+          "disposition": "ship",
+          "reviewer": "features_finish_review",
+          "scope": "Deux corrections : lisibilité mobile et preuve du budget enregistré. Aucune régression matérielle observée sur les captures ; ne certifie pas l’application entière.",
+          "checks": "1 283 tests dans 135 fichiers, dont neuf tests de cycle de vie ; lint et types réussis. Grille à 1440/820/390/320 px en clair et 1440/390 px en sombre ; lecteur à 1440/390/320 px ; inspection des vidéos décodées. Déplacement après pause/reprise : 0 px aux quatre largeurs. Backdrop corrigé via un jeton, sans exception persistée.",
+          "evidence": [
+            ".impeccable/review/features-1440-light.png",
+            ".impeccable/review/features-820-light.png",
+            ".impeccable/review/features-390-light.png",
+            ".impeccable/review/features-320-light.png",
+            ".impeccable/review/features-1440-dark.png",
+            ".impeccable/review/features-390-dark.png",
+            ".impeccable/review/features-modal-1440.png",
+            ".impeccable/review/features-modal-390.png",
+            ".impeccable/review/features-modal-320.png",
+            ".impeccable/review/features-result-budgets-1440.png",
+            ".impeccable/review/features-result-budgets-mobile-390.png",
+            ".impeccable/review/features-result-previsions-mobile-390.png",
+            ".impeccable/review/features-result-notifications-mobile-390.png",
+            ".impeccable/review/features-result-automatisation-mobile-390.png"
+          ],
+          "documentationPass": "Mise à jour fondée sur le code et les validations fournies ; aucun nouveau test, navigateur ou revue."
         }
       }
     },
@@ -1235,12 +1306,12 @@
       "css": ".ds-land-primary{display:inline-flex;align-items:center;justify-content:center;gap:24px;min-height:56px;padding:15px 24px;border-radius:100px;background:var(--planora-action, #126b5b);color:var(--planora-action-ink, #ffffff);font:600 15px/1.5 \"Schibsted Grotesk\",sans-serif;text-decoration:none;transition:background .2s ease,transform .2s ease}.ds-land-primary:hover{background:var(--planora-action-hover, #0b5043);transform:translateY(-2px)}.ds-land-primary:focus-visible{outline:3px solid var(--planora-action, #126b5b);outline-offset:5px}@media(prefers-reduced-motion:reduce){.ds-land-primary{transition:none}}"
     },
     {
-      "name": "Landing · Choix d’aperçu",
+      "name": "Landing · Commande des animations Bento",
       "kind": "button",
-      "refersTo": "landing-demo-choice",
-      "description": "Trois choix à état pressé changent les captures ; pas une simulation budgétaire.",
-      "html": "<div class=\"ds-land-choices\"><button aria-pressed=\"true\">Votre mois</button><button aria-pressed=\"false\">Comparer</button><button aria-pressed=\"false\">Le détail</button></div>",
-      "css": ".ds-land-choices{display:flex;gap:12px;flex-wrap:wrap;background:var(--planora-band, #273330);padding:20px}.ds-land-choices button{min-height:56px;padding:13px 19px;border:1px solid var(--planora-band-line, #64796e);border-radius:100px;background:transparent;color:var(--planora-band-ink, #f5f8f6);font:400 14px/1.5 \"Schibsted Grotesk\",sans-serif;cursor:pointer;transition:background .18s ease,color .18s ease}.ds-land-choices button[aria-pressed=true]{background:var(--planora-peach, #edc8b5);color:var(--planora-ink, #293331);border-color:transparent}.ds-land-choices button:not([aria-pressed=true]):hover{background:var(--planora-band-hover, #354b40)}.ds-land-choices button:focus-visible{outline:3px solid var(--planora-peach, #edc8b5);outline-offset:5px}@media(prefers-reduced-motion:reduce){.ds-land-choices button{transition:none}}"
+      "refersTo": "landing-demo-motion-control",
+      "description": "Mention de démonstration toujours visible et commande globale de pause/lecture des cinq vidéos réelles. Les cartes et leurs textes restent nets et opaques ; la pause arrête les vidéos et supprime le mouvement au survol.",
+      "html": "<div class=\"ds-land-toolbar\"><span>Les fonctionnalités en action · Données de démonstration.</span><button type=\"button\"><svg aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"6\" y=\"4\" width=\"4\" height=\"16\" rx=\"1\"/><rect x=\"14\" y=\"4\" width=\"4\" height=\"16\" rx=\"1\"/></svg>Mettre les animations en pause</button></div>",
+      "css": ".ds-land-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px;background:var(--planora-band, #273330);color:var(--planora-band-muted, #c6d3cc);font:400 14px/1.5 \"Schibsted Grotesk\",sans-serif}.ds-land-toolbar button{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:44px;padding:10px 16px;border:1px solid var(--planora-band-line, #64796e);border-radius:100px;background:transparent;color:var(--planora-band-ink, #f5f8f6);font:400 14px/1.5 \"Schibsted Grotesk\",sans-serif;cursor:pointer}.ds-land-toolbar button:hover{border-color:var(--planora-band-accent, #edc8b5);color:var(--planora-band-accent, #edc8b5)}.ds-land-toolbar button:focus-visible{outline:2px solid var(--planora-band-accent, #edc8b5);outline-offset:4px}.ds-land-toolbar svg{width:16px;height:16px;flex-shrink:0}@media(max-width:700px){.ds-land-toolbar{align-items:flex-start;flex-direction:column;gap:12px}.ds-land-toolbar button{font-size:13px;text-align:left}}"
     },
     {
       "name": "Landing · Cartouche illustratif",

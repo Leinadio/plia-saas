@@ -17,7 +17,7 @@ export function LandingVideo() {
           On vous montre.
         </p>
       </div>
-      <figure className={styles.figure}>
+      <figure>
         <HeroVideoDialog
           animationStyle="from-center"
           videoSrc="/videos/plia-visite-guidee.mp4?v=2"
@@ -26,10 +26,6 @@ export function LandingVideo() {
           thumbnailAlt="Visite guidée de Planora : le tableau des revenus, dépenses et prévisions, avec des données de démonstration."
           className={styles.preview}
         />
-        <figcaption>
-          Les vrais écrans de Planora · Données de démonstration · Voix générée par
-          IA
-        </figcaption>
       </figure>
     </section>
   );

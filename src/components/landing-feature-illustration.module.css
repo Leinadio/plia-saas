@@ -1,0 +1,305 @@
+.scene {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: var(--planora-text);
+  background: var(--planora-soft);
+  font-size: 14px;
+  line-height: 1.4;
+  container-type: inline-size;
+}
+.scene svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.5;
+  flex-shrink: 0;
+}
+.ledger {
+  width: min(360px, calc(100% - 40px));
+}
+.search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--planora-line);
+  border-radius: 12px;
+  background: var(--planora-surface);
+}
+.search > span {
+  flex: 1;
+}
+.search > svg {
+  color: var(--planora-muted);
+}
+.transaction {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0 12px;
+}
+.merchant {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--planora-action-soft);
+  color: var(--planora-action);
+}
+.transactionName {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+.transactionName > span {
+  color: var(--planora-muted);
+  font-size: 12px;
+}
+.amount {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.assignment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--planora-surface);
+  color: var(--planora-muted);
+  font-size: 12px;
+}
+.budgetTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--planora-action);
+  font-size: 14px;
+  font-weight: 500;
+  animation: assign 7s infinite;
+}
+.otherTransaction {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  color: var(--planora-muted);
+  font-size: 12px;
+  animation: filter 7s infinite;
+}
+.automation {
+  width: min(560px, calc(100% - 40px));
+}
+.rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.rule > svg {
+  color: var(--planora-action);
+}
+.rule > span {
+  padding-left: 12px;
+  border-left: 1px solid var(--planora-line);
+  color: var(--planora-muted);
+  font-size: 12px;
+}
+.flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px minmax(0, 0.8fr);
+  align-items: center;
+}
+.operations {
+  display: grid;
+  gap: 8px;
+}
+.operation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--planora-line);
+  border-radius: 8px;
+  background: var(--planora-surface);
+  font-size: 12px;
+  animation: match 8s infinite;
+}
+.operation > strong {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+.operation:nth-child(2) {
+  animation-delay: 400ms;
+}
+.connection {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--planora-action);
+}
+.connection::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  height: 1px;
+  background: var(--planora-line);
+}
+.connection > svg {
+  position: relative;
+  background: var(--planora-soft);
+}
+.connection > span {
+  position: absolute;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--planora-action);
+  animation: route 8s infinite;
+}
+.destination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: 12px;
+  background: var(--planora-action-soft);
+  color: var(--planora-action);
+}
+.destination > svg {
+  width: 28px;
+  height: 28px;
+}
+.destination > strong {
+  font-size: 18px;
+  font-weight: 500;
+}
+.destination > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  animation: received 8s infinite;
+}
+.destination > span > svg {
+  width: 14px;
+  height: 14px;
+}
+.confirmation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
+  color: var(--planora-muted);
+  font-size: 12px;
+}
+.confirmation > svg {
+  width: 14px;
+  height: 14px;
+}
+@keyframes assign {
+  0%,
+  18%,
+  100% {
+    opacity: 0.3;
+    transform: translateX(-8px);
+  }
+  38%,
+  84% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes filter {
+  0%,
+  12%,
+  100% {
+    opacity: 1;
+  }
+  30%,
+  86% {
+    opacity: 0.25;
+  }
+}
+@keyframes match {
+  0%,
+  14%,
+  100% {
+    transform: translateX(0);
+  }
+  28%,
+  68% {
+    transform: translateX(5px);
+    border-color: var(--planora-action);
+  }
+}
+@keyframes route {
+  0%,
+  28% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  34% {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+  53% {
+    opacity: 1;
+    transform: translateX(48px);
+  }
+  60%,
+  100% {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+}
+@keyframes received {
+  0%,
+  32%,
+  100% {
+    opacity: 0.35;
+  }
+  55%,
+  88% {
+    opacity: 1;
+  }
+}
+.scene[data-active="false"] * {
+  animation-play-state: paused;
+}
+@container (max-width: 400px) {
+  .flow {
+    grid-template-columns: minmax(0, 1.2fr) 28px minmax(0, 0.8fr);
+  }
+  .operation {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
+    padding: 7px 8px;
+  }
+  .connection > span {
+    display: none;
+  }
+  .rule {
+    margin-bottom: 12px;
+  }
+  .destination > strong {
+    font-size: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene * {
+    animation: none;
+  }
+}

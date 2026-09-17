@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowUpRight, Link2 } from "lucide-react";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { LandingHeroBackdrop } from "./landing-hero-backdrop";
 import styles from "./landing.module.css";
 
@@ -9,6 +9,9 @@ export function LandingHero() {
     <section className={styles.hero} aria-labelledby="landing-title">
       <LandingHeroBackdrop />
       <div className={styles.heroCopy}>
+        <p className={styles.heroBadge}>
+          Pré-lancement · Réservation gratuite, sans carte bancaire.
+        </p>
         <h1 id="landing-title">
           L’outil pour gérer vos{" "}
           <span className={styles.heroAccent}>
@@ -49,9 +52,6 @@ export function LandingHero() {
             Voir Planora en action <ArrowDown aria-hidden />
           </a>
         </div>
-        <p className={styles.connectionNote}>
-          <Link2 aria-hidden /> Pré-lancement · Réservation gratuite, sans carte bancaire.
-        </p>
       </div>
       <div className={styles.heroVisual}>
         <div className={styles.heroArt}>

@@ -13,15 +13,17 @@ import { LandingDemo } from "@/components/landing-demo";
 import { LandingFaq } from "@/components/landing-faq";
 import { LandingVideo } from "@/components/landing-video";
 import { LandingUseCases } from "@/components/landing-use-cases";
+import { LandingBudgetClarity } from "@/components/landing-budget-clarity";
 import { LandingBrand, LandingHeader } from "@/components/landing-header";
 import styles from "./landing.module.css";
 import layout from "./landing-layout.module.css";
 export function LandingContent() {
   return (
-    <main className={`${styles.landing} ${layout.page}`}>
+    <main className={`${styles.landing} ${layout.page} ${layout.sectionHeadings}`}>
       <LandingHeader />
       <LandingHero />
       <LandingVideo />
+      <LandingBudgetClarity />
       <LandingUseCases />
       <LandingDemo />
       <section className={styles.life} aria-labelledby="life-heading">

@@ -1,0 +1,11 @@
+{
+  "scene": "budgets",
+  "width": 1280,
+  "height": 720,
+  "frames": 125,
+  "duration": 23.578109708,
+  "fps": 60,
+  "camera": "cursor-follow",
+  "maxZoom": 2.6,
+  "source": "Origin: high-DPI lossless Playwright screenshots of real Planora production components, recorded 2026-09-17; synthetic demo data only, all network writes blocked. Scene budgets. A real UI action is recorded and encoded once to H.264, CRF 17. No generated interface. Smooth 60-fps camera and cursor follow the recorded control positions, always focused on the relevant information; no overview."
+}

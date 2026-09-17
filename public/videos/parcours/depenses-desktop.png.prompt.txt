@@ -1,0 +1,1 @@
+Origin: Playwright screenshot of the actual Planora demo components in a temporary development route, 2026-09-17. Built-in demonstration fixtures only; no customer data. Scene: depenses. Format: desktop.

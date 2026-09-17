@@ -1,149 +1,316 @@
 "use client";
-import Image from "next/image";
-import { useState } from "react";
-import { ArrowRight, CalendarDays, Columns3, ScanLine } from "lucide-react";
-import styles from "./landing.module.css";
-import budgetDesktop from "../../public/landing/plia-budget-desktop.png";
-import budgetMobile from "../../public/landing/plia-enveloppes-mobile.png";
-import balancesMobile from "../../public/landing/plia-soldes-mobile.png";
-import detailMobile from "../../public/landing/plia-detail-mobile.png";
-const views = [
+
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  TriangleAlert,
+  ChartNoAxesCombined,
+  ListFilter,
+  Pause,
+  Play,
+  Wallet,
+  Workflow,
+  Maximize2,
+  X,
+} from "lucide-react";
+import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
+import { JourneyVideo } from "./landing-demo-video";
+import { FeatureIllustration } from "./landing-feature-illustration";
+import landing from "./landing.module.css";
+import styles from "./landing-demo.module.css";
+
+const steps = [
   {
-    label: "Votre mois",
-    Icon: CalendarDays,
-    title: "Tout votre mois. Au même endroit.",
+    id: "budgets",
+    icon: Wallet,
+    title: "Budgets et sous-budgets",
     description:
-      "Vos revenus, vos dépenses et le montant disponible pour chaque budget : tout se lit d’un seul regard.",
-    image: budgetDesktop,
-    mobile: budgetMobile.src,
-    alt: "Le tableau Planora en septembre 2026 : revenus, budgets et solde. Données de démonstration.",
-    note: "Vue du budget · Septembre 2026",
-    width: budgetDesktop.width,
-    height: budgetDesktop.height,
+      "Définissez un montant par poste, détaillez vos charges en sous-budgets et ajustez vos prévisions mois par mois.",
+    example:
+      "Création d’un budget Vacances de 250 €, puis consultation du nouveau budget dans la liste de démonstration.",
   },
   {
-    label: "Comparer",
-    Icon: Columns3,
-    title: "Demain fait déjà partie du tableau.",
+    id: "transactions",
+    icon: ListFilter,
+    title: "Suivi des transactions",
     description:
-      "Comparez les mois et choisissez l’indicateur qui vous intéresse : budget, dépenses ou solde. Chaque section garde son propre repère.",
-    image: balancesMobile,
-    alt: "La vue Comparer de Planora présente les soldes d’août à novembre 2026. Données de démonstration.",
-    note: "Vue Comparer · Soldes réels et estimation",
-    width: balancesMobile.width,
-    height: balancesMobile.height,
+      "Recherchez une opération par libellé, montant ou date, puis rattachez-la au bon budget.",
+    example:
+      "Illustration : recherche d’une dépense Cinéma de 24,00 €, puis rattachement au budget Sorties et loisirs.",
   },
   {
-    label: "Le détail",
-    Icon: ScanLine,
-    title: "Un chiffre vous interpelle ? Ouvrez-le.",
+    id: "previsions",
+    icon: ChartNoAxesCombined,
+    title: "Prévisions de trésorerie",
     description:
-      "Retrouvez les montants qui l’expliquent. Vous comprenez d’où vient l’écart et quel budget mérite votre attention.",
-    image: detailMobile,
-    alt: "Le panneau de détail de Planora explique le montant restant du budget Courses à partir du montant prévu et des dépenses.",
-    note: "Détail d’un montant · Budget Courses",
-    width: detailMobile.width,
-    height: detailMobile.height,
+      "Suivez votre trésorerie après chaque poste : opérations réelles, budgets prévus et dépassements inclus.",
+    example:
+      "Lecture des colonnes de trésorerie : opérations réelles, selon vos budgets et dépassements inclus.",
   },
-];
+  {
+    id: "depassements",
+    icon: TriangleAlert,
+    title: "Dépassements de budget",
+    description:
+      "Repérez les budgets dépassés, comparez le prévu au dépensé et consultez le détail de l’écart.",
+    example:
+      "Budget Transport : 120 € prévus, 147,60 € dépensés et un dépassement de 27,60 € à consulter.",
+  },
+  {
+    id: "automatisation",
+    icon: Workflow,
+    title: "Règles d’automatisation",
+    description:
+      "Définissez une règle par libellé et montant. Vérifiez les correspondances avant de traiter les opérations déjà présentes.",
+    example:
+      "Illustration : une règle Cinéma, entre 10 et 50 €, reconnaît deux opérations à rattacher au budget Sorties et loisirs après vérification.",
+  },
+] as const;
+
+function subscribeMotion(callback: () => void) {
+  const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+  query.addEventListener("change", callback);
+  return () => query.removeEventListener("change", callback);
+}
+function subscribeVisibility(callback: () => void) {
+  document.addEventListener("visibilitychange", callback);
+  return () => document.removeEventListener("visibilitychange", callback);
+}
+const getReducedMotion = () =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const getVisible = () => document.visibilityState === "visible";
+const serverReducedMotion = () => true;
+const serverVisible = () => true;
+
+function JourneyCard({
+  step,
+  running,
+  onExpand,
+}: {
+  step: (typeof steps)[number];
+  running: boolean;
+  onExpand: () => void;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    if (typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setVisible(entry.isIntersecting);
+        if (entry.isIntersecting) setSeen(true);
+      },
+      { threshold: 0.15 },
+    );
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
+  const active = running && visible;
+  return (
+    <div ref={cardRef} className={styles.item}>
+      <BentoCard
+        className={styles.card}
+        name={step.title}
+        Icon={step.icon}
+        description={step.description}
+        background={
+          <div className={styles.media}>
+            {step.id === "transactions" || step.id === "automatisation" ? (
+              <FeatureIllustration scene={step.id} active={active} />
+            ) : (
+              <JourneyVideo
+                scene={step.id}
+                description={`Démonstration : ${step.example}`}
+                active={active}
+                seen={seen}
+              />
+            )}
+          </div>
+        }
+      >
+        <button
+          type="button"
+          className={styles.expand}
+          onClick={onExpand}
+          aria-label={`Voir en grand : ${step.title}`}
+        >
+          Voir en grand <Maximize2 aria-hidden />
+        </button>
+      </BentoCard>
+    </div>
+  );
+}
+
+function FeaturePreview({
+  step,
+  reducedMotion,
+  onClose,
+}: {
+  step: (typeof steps)[number];
+  reducedMotion: boolean;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const [illustrationPlaying, setIllustrationPlaying] =
+    useState(!reducedMotion);
+  const pageVisible = useSyncExternalStore(
+    subscribeVisibility,
+    getVisible,
+    serverVisible,
+  );
+  // This viewer mounts after an explicit click, so the viewport is available.
+  const [compact] = useState(
+    () => window.matchMedia("(max-width: 700px)").matches,
+  );
+  const asset = `/videos/fonctionnalites/${step.id}${compact ? "-mobile" : ""}`;
+  useEffect(() => {
+    const trigger = document.activeElement as HTMLElement | null;
+    const dialog = ref.current;
+    dialog?.showModal();
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      dialog?.close();
+      document.body.style.overflow = overflow;
+      trigger?.focus();
+    };
+  }, []);
+  return (
+    <dialog
+      ref={ref}
+      className={styles.dialog}
+      aria-labelledby="feature-preview-title"
+      onCancel={onClose}
+      onClose={() => {
+        // Ignore a queued close event if React has already reopened the dialog.
+        if (!ref.current?.open) onClose();
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div className={styles.dialogHeader}>
+        <h3 id="feature-preview-title">{step.title}</h3>
+        <button type="button" onClick={onClose}>
+          <X aria-hidden />
+          <span className="sr-only">Fermer l’aperçu</span>
+        </button>
+      </div>
+      {step.id === "transactions" || step.id === "automatisation" ? (
+        <>
+          <div className={styles.illustrationPreview}>
+            <FeatureIllustration
+              scene={step.id}
+              active={illustrationPlaying && pageVisible}
+            />
+          </div>
+          <div className={styles.illustrationControls}>
+            <button
+              type="button"
+              className={styles.expand}
+              onClick={() => setIllustrationPlaying(!illustrationPlaying)}
+            >
+              {illustrationPlaying ? (
+                <Pause aria-hidden />
+              ) : (
+                <Play aria-hidden />
+              )}
+              {illustrationPlaying
+                ? "Mettre l’illustration en pause"
+                : "Animer l’illustration"}
+            </button>
+          </div>
+        </>
+      ) : (
+        <video
+          src={`${asset}.mp4`}
+          poster={`${asset}.png`}
+          controls
+          autoPlay={!reducedMotion}
+          muted
+          playsInline
+          preload="metadata"
+          aria-label={step.example}
+        />
+      )}
+      <p>{step.example}</p>
+    </dialog>
+  );
+}
+
 export function LandingDemo() {
-  const [active, setActive] = useState(0);
-  const view = views[active];
+  const reducedMotion = useSyncExternalStore(
+    subscribeMotion,
+    getReducedMotion,
+    serverReducedMotion,
+  );
+  const pageVisible = useSyncExternalStore(
+    subscribeVisibility,
+    getVisible,
+    serverVisible,
+  );
+  const [motionOverride, setMotionOverride] = useState<boolean | null>(null);
+  const [preview, setPreview] = useState<(typeof steps)[number] | null>(null);
+  const running = motionOverride ?? !reducedMotion;
   return (
     <section
       id="demonstration"
       data-full-bleed
-      className={styles.demo}
+      className={`${landing.demo} ${landing.greenSection}`}
       aria-labelledby="demo-heading"
-      data-active={active}
+      data-animations={running ? "playing" : "paused"}
     >
       <svg
-        className={styles.sectionCurve}
+        className={landing.sectionCurve}
         viewBox="0 0 1440 72"
         preserveAspectRatio="none"
         aria-hidden
       >
         <path d="M0 0H1440V36C1110 105 870 4 590 36S175 75 0 35Z" />
       </svg>
-      <div className={styles.sectionInner} data-landing-container>
-        <div className={styles.demoHeading}>
+      <div className={landing.sectionInner} data-landing-container>
+        <div className={landing.demoHeading}>
           <h2 id="demo-heading">
             Une vue d’avance.
             <br />
             <span>Des décisions plus claires.</span>
           </h2>
           <p>
-            Un compte bien rempli aujourd’hui peut déjà avoir beaucoup à faire
-            demain. Planora met les prochains mois en perspective.
+            Des budgets personnalisables, des opérations bien classées et une
+            trésorerie prévisionnelle. Découvrez les outils de Planora en
+            action.
           </p>
         </div>
-        <div
-          className={styles.demoChoices}
-          role="group"
-          aria-label="Explorer les vues de Planora"
-        >
-          {views.map(({ label, Icon }, i) => (
-            <button
-              key={label}
-              type="button"
-              aria-pressed={active === i}
-              aria-controls="landing-demo-view"
-              onClick={() => setActive(i)}
-            >
-              <Icon aria-hidden />
-              {label}
-              <ArrowRight className={styles.choiceArrow} aria-hidden />
-            </button>
+        <div className={styles.toolbar}>
+          <span>Les fonctionnalités en action · Données de démonstration.</span>
+          <button
+            type="button"
+            onClick={() => setMotionOverride(!running)}
+            aria-controls="budget-journey"
+          >
+            {running ? <Pause aria-hidden /> : <Play aria-hidden />}
+            {running ? "Mettre les animations en pause" : "Lire les animations"}
+          </button>
+        </div>
+        <BentoGrid id="budget-journey" className={styles.bento}>
+          {steps.map((step) => (
+            <JourneyCard
+              key={step.id}
+              step={step}
+              running={running && pageVisible && !preview}
+              onExpand={() => setPreview(step)}
+            />
           ))}
-        </div>
-        <div id="landing-demo-view" className={styles.demoPanel}>
-          <div
-            className={styles.demoText}
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            <h3>{view.title}</h3>
-            <p>{view.description}</p>
-            <span className={styles.demoHint}>{view.note}</span>
-          </div>
-          <figure
-            className={[
-              styles.demoFigure,
-              active === 0 ? styles.demoDesktop : styles.demoPhone,
-            ].join(" ")}
-          >
-            <svg
-              className={styles.lightCurve}
-              viewBox="0 0 650 500"
-              aria-hidden
-            >
-              <path
-                d="M-300 720C700 780 -60 -300 1100 -150"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="100"
-              />
-            </svg>
-            <div className={styles.demoImageWrap} key={active}>
-              <picture>
-                {view.mobile && (
-                  <source media="(max-width: 700px)" srcSet={view.mobile} />
-                )}
-                <Image
-                  src={view.image}
-                  alt={view.alt}
-                  width={view.width}
-                  height={view.height}
-                  sizes="(max-width: 700px) 90vw, 60vw"
-                  unoptimized
-                />
-              </picture>
-            </div>
-            <figcaption>
-              Écrans de l’application · données de démonstration
-            </figcaption>
-          </figure>
-        </div>
+        </BentoGrid>
+        {preview && (
+          <FeaturePreview
+            step={preview}
+            reducedMotion={reducedMotion}
+            onClose={() => setPreview(null)}
+          />
+        )}
       </div>
     </section>
   );
