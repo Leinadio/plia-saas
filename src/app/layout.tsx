@@ -37,7 +37,7 @@ OWN-WORLD: Monde « La lumière en mouvement » conservé, seed 29f966f4.
 Eucalyptus #126b5b pour les actions et revenus, bleu brume #547c91 pour les dépenses,
 pêche #edc8b5 pour le contexte et les courbes. Texte et trésorerie anthracite.
 Blanc #ffffff en clair. En sombre : anthracite #181a1e, cartes ardoise #22252a,
-actions sable #ddc39a, revenus sauge, dépenses bleu brume et alertes corail.
+actions eucalyptus clair #82cfb0, revenus sauge, dépenses bleu brume et alertes corail.
 Couleurs opaques et contrastées. Palette sombre approuvée le 17 septembre 2026.
 STORY: Repérer le mois, lire les enveloppes, suivre la trésorerie puis ouvrir un montant.
 FIRST VIEWPORT: Composition actuelle conservée ; l’accueil montre la promesse et le

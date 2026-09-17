@@ -30,7 +30,7 @@
   --surface-creuse: var(--planora-soft);
   --surface-survol: var(--planora-hover);
 
-  /* La commande : eucalyptus en clair, sable en sombre. Les anciens noms
+  /* La commande : eucalyptus en clair, eucalyptus lumineux en sombre. Les anciens noms
      sarcelle restent des alias pour les composants existants. */
   --sarcelle: var(--planora-action);
   --sarcelle-forte: var(--planora-action-hover);

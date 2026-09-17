@@ -31,10 +31,10 @@ colors:
   surface-nuit: "#22252a"
   surface-creuse-nuit: "#292d33"
   surface-survol-nuit: "#323740"
-  sarcelle-nuit: "#ddc39a"
-  sarcelle-forte-nuit: "#efd7b2"
+  sarcelle-nuit: "#82cfb0"
+  sarcelle-forte-nuit: "#a1dfc3"
   sarcelle-encre-nuit: "#b1d9c1"
-  sarcelle-voile-nuit: "#3c3429"
+  sarcelle-voile-nuit: "#243e33"
   portant-nuit: "#b1d9c1"
   portant-voile-nuit: "#25382f"
   tension-nuit: "#ffafa6"
@@ -96,12 +96,12 @@ colors:
   landing-surface-dark: "#22252a"
   landing-ink-dark: "#f1efeb"
   landing-muted-dark: "#b7bbc3"
-  landing-green-dark: "#ddc39a"
+  landing-green-dark: "#82cfb0"
   landing-line-dark: "#3b414a"
   landing-soft-dark: "#292c32"
   landing-green-hover: "#0b5043"
-  landing-green-hover-dark: "#efd7b2"
-  landing-button-ink-dark: "#292218"
+  landing-green-hover-dark: "#a1dfc3"
+  landing-button-ink-dark: "#132e25"
   landing-white: "#ffffff"
   landing-selection: "#edc8b5"
   landing-hero-ribbon-sage: "#d7e5ed"
@@ -164,12 +164,12 @@ colors:
   app-selected: "#126b5b"
   app-selected-ink: "#ffffff"
   barre-nuit: "#181a1e"
-  sidebar-commande-texte-nuit: "#292218"
+  sidebar-commande-texte-nuit: "#132e25"
   app-curve-nuit: "#39485e"
   app-curve-warm-nuit: "#5e4f3c"
   app-nav-nuit: "#292c32"
-  app-selected-nuit: "#ddc39a"
-  app-selected-ink-nuit: "#292218"
+  app-selected-nuit: "#82cfb0"
+  app-selected-ink-nuit: "#132e25"
 typography:
   display:
     fontFamily: "Bricolage Grotesque, Schibsted Grotesk, sans-serif"
@@ -1278,9 +1278,13 @@ les liens de page ont leur propre rangée à droite. À 700 px et moins,
 la marque et la réservation restent en haut ; Menu est à gauche de la seconde
 ligne, les trois liens de page à droite. Menu ouvre les ancres, Échap les ferme
 et rend le focus au bouton. Les cibles mesurent au moins 44 px.
-Le header reste dans le flux de la page et disparaît naturellement au défilement.
-Il n’a ni position fixe, ni animation d’entrée au scroll, ni hauteur réservée.
-Les ancres gardent un retrait de 16 px ; le mouvement réduit supprime le défilement progressif. À moins de 380 px, la marque est à
+Le header reste fixé en haut. Après 80 px de défilement, il se compacte ;
+il retrouve sa hauteur initiale sous 24 px pour éviter les oscillations.
+Sur grand écran, il passe de 104 à 72 px. Les espacements diminuent aussi
+sur tablette et mobile, avec des cibles conservées à 44 px minimum.
+Son empreinte initiale reste réservée pour éviter tout saut du contenu. La
+transition dure 240 ms ; le mouvement réduit la désactive. Les ancres prennent
+la hauteur réelle du bandeau plus 16 px, mesurée par ResizeObserver. À moins de 380 px, la marque est à
 20 px, les liens à 12 px et la flèche de réservation est masquée pour préserver le libellé.
 
 La connexion bancaire utilise un relevé illustratif statique sur fond d’accent
@@ -1375,13 +1379,15 @@ au [brief de réservation](.impeccable/surfaces/src-app-reservation.md).
 - Ne pas attribuer une nouvelle règle de calcul à un changement de couleur ou de présentation.
 - Ne pas ajouter de mouvement décoratif dans le relevé ; respecter la réduction des animations.
 
-## Mode sombre — Anthracite et sable, choix du 17 septembre 2026
+## Mode sombre — Anthracite et eucalyptus, choix du 17 septembre 2026
 
 L’utilisateur a choisi « Anthracite et sable » après comparaison de deux aperçus.
 Cette décision remplace la préférence précédente pour le fond vert forêt.
 Le fond est anthracite `#181a1e`, les cartes ardoise `#22252a`, les champs
-`#292d33`. Les actions et sélections utilisent le sable `#ddc39a`, avec une
-encre brune sombre `#292218` ; leur survol passe à `#efd7b2`.
+`#292d33`. À la demande de l’utilisateur, les actions et sélections reviennent
+au vert eucalyptus clair `#82cfb0`, avec une encre `#132e25`, un survol
+`#a1dfc3` et un voile de commande `#243e33`. Les fonds de page et de carte
+restent inchangés ; le sable reste un accent contextuel.
 Le texte principal est blanc cassé `#f1efeb`, le secondaire gris `#b7bbc3`.
 Les revenus restent sauge, les dépenses bleu brume et les alertes corail.
 Ces rôles sont partagés par la vitrine, la connexion, les formulaires, les menus

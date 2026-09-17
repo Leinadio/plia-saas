@@ -69,7 +69,7 @@
         "role": "primary",
         "displayName": "Vert eucalyptus de commande",
         "canonical": "#126b5b",
-        "darkValue": "#9bd8ba",
+        "darkValue": "#82cfb0",
         "tonalRamp": [
           "#102b24",
           "#262b29",
@@ -651,7 +651,7 @@
         "compact": "At 1200px: sections second row. At 700px: brand/reservation top, Menu left and page links right below. Menu reveals sections and closes on Escape or anchor click. Below380px:20px brand,12px navigation and no CTA arrow.",
         "currentPage": "Pour qui ? and Contact use aria-current=page and action underline on their destination.",
         "destinations": "Home-section anchors: #demonstration, #fonctionnement, #offre. Page links: /pour-qui, /contact. Reservation CTA: /reservation. Brand: /.",
-        "scroll": "Fixed after120px, opaque surface and lower rule.280ms translateY(-16px)/opacity entry. ResizeObserver reserves height and updates root anchor offset; no layout shift. Reduced motion disables animation and smooth scroll."
+        "scroll": "Always fixed with opaque canvas. Compact above80px and expanded below24px; 104px to72px on desktop, reduced padding/gaps on smaller screens. Expanded footprint stays reserved; ResizeObserver updates anchor offset to current height plus16px. 240ms transition, disabled with reduced motion."
       },
       "audience": {
         "scope": "src/app/pour-qui/page.tsx",

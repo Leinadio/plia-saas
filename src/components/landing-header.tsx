@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PlanoraMark } from "./planora-mark";
 import { ArrowDown, ArrowUpRight, Menu, X } from "lucide-react";
 import styles from "./landing.module.css";
@@ -29,11 +29,39 @@ export function LandingHeader({
 }) {
   const home = audience || homeLinks ? "/" : "";
   const [menuOpen, setMenuOpen] = useState(false);
+  const [compact, setCompact] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const updateScroll = () => {
+      // Separate thresholds avoid flickering near the compact transition.
+      setCompact((current) => window.scrollY > (current ? 24 : 80));
+    };
+    updateScroll();
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    const panel = panelRef.current;
+    const updateOffset = () => {
+      if (panel) {
+        document.documentElement.style.setProperty(
+          "--public-header-offset",
+          `${Math.ceil(panel.getBoundingClientRect().height) + 16}px`,
+        );
+      }
+    };
+    const observer = new ResizeObserver(updateOffset);
+    if (panel) observer.observe(panel);
+    updateOffset();
+    return () => {
+      window.removeEventListener("scroll", updateScroll);
+      observer.disconnect();
+      document.documentElement.style.removeProperty("--public-header-offset");
+    };
+  }, []);
   const menuRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <div className={headerStyles.shell}>
-      <div className={headerStyles.panel}>
+    <div className={headerStyles.shell} data-compact={compact}>
+      <div ref={panelRef} className={headerStyles.panel}>
         <header
           className={`${styles.header} ${headerStyles.header}`}
           data-menu-open={menuOpen}

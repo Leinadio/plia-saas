@@ -1,4 +1,4 @@
-/* Clair : eucalyptus, bleu brume et pêche. Sombre : anthracite et sable. */
+/* Clair : eucalyptus, bleu brume et pêche. Sombre : anthracite, actions eucalyptus clair. */
 :root {
   color-scheme: light;
   --planora-eucalyptus: #126b5b;
@@ -61,10 +61,10 @@
   --planora-line: #3b414a;
   --planora-rule: #68717e;
   --planora-control-line: #7d8795;
-  --planora-action: #ddc39a;
-  --planora-action-hover: #efd7b2;
-  --planora-action-ink: #292218;
-  --planora-action-soft: #3c3429;
+  --planora-action: #82cfb0;
+  --planora-action-hover: #a1dfc3;
+  --planora-action-ink: #132e25;
+  --planora-action-soft: #243e33;
   --planora-income: #25382f;
   --planora-income-ink: #b1d9c1;
   --planora-income-soft: #202d27;

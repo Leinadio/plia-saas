@@ -525,11 +525,13 @@ La revue de cette passe conclut **SHIP**, sans défaut matériel à 1440, 390 et
 scindée, le pied de page et la nouvelle page décrite dans
 `src-app-securite-page-tsx.md`.
 
-## Header public dans le flux — 17 septembre 2026
+## Header public fixe et compact — 17 septembre 2026
 Marque à gauche, ancres au centre, liens « Pour qui ? », « Sécurité » et « Contact » puis réservation
-à droite. Le header défile naturellement avec la page, sans fixation ni animation
-au scroll. Sur mobile, le menu des sections est repliable ; les pages restent à droite.
-Échap ferme le menu, le choix d’une ancre aussi. Les ancres gardent un retrait de 16 px.
+à droite. Le header reste fixé en haut, avec un fond opaque. Après 80 px de
+défilement, il réduit ses espaces intérieurs en 240 ms ; sous 24 px, il retrouve
+sa hauteur initiale. Son empreinte reste réservée pour éviter un saut de page. Sur mobile, le menu des sections est repliable ; les pages restent à droite.
+Échap ferme le menu, le choix d’une ancre aussi. Les ancres gardent un retrait égal à la hauteur réelle du header plus 16 px.
+La réduction des mouvements supprime la transition et le scroll progressif.
 
 Les cinq cartes du bento partagent le fond de « Budgétisez votre argent »
 (`color-mix` à 3 % d’encre du bandeau sur son fond). Texte ivoire, descriptions

@@ -1,9 +1,14 @@
 .shell {
   position: relative;
   z-index: 40;
+  /* Keep the expanded footprint so compacting never moves the page content. */
+  height: 105px;
 }
 .panel {
+  position: fixed;
+  inset: 0 0 auto;
   width: 100%;
+  background: var(--planora-canvas);
   border-bottom: 1px solid transparent;
 }
 header.header {
@@ -12,6 +17,16 @@ header.header {
   gap: 28px;
   height: 104px;
   padding-inline: 64px;
+  transition:
+    height 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    padding 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    gap 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.shell[data-compact="true"] .panel {
+  border-bottom-color: var(--planora-line);
+}
+.shell[data-compact="true"] header.header {
+  height: 72px;
 }
 .sections,
 .pages,
@@ -80,9 +95,17 @@ header.header {
 }
 :global(html):has(.shell) {
   scroll-behavior: smooth;
-  scroll-padding-top: 16px;
+  scroll-padding-top: var(--public-header-offset, 121px);
 }
 @media (max-width: 1320px) {
+  .shell {
+    height: 134px;
+  }
+  .shell[data-compact="true"] header.header {
+    height: auto;
+    padding-block: 4px 0;
+    row-gap: 0;
+  }
   header.header {
     gap: 12px 24px;
     height: auto;
@@ -101,6 +124,9 @@ header.header {
   }
 }
 @media (max-width: 900px) {
+  .shell {
+    height: 190px;
+  }
   .right {
     display: contents;
   }
@@ -119,6 +145,13 @@ header.header {
   }
 }
 @media (max-width: 700px) {
+  .shell {
+    height: 109px;
+  }
+  .panel {
+    max-height: 100dvh;
+    overflow-y: auto;
+  }
   header.header {
     grid-template-columns: auto 1fr;
     padding: 12px 24px 4px;
@@ -160,6 +193,8 @@ header.header {
     gap: 4px;
   }
   .menuButton {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     justify-self: start;
@@ -216,7 +251,8 @@ header.header {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .reserve {
+  .reserve,
+  header.header {
     transition: none;
   }
   :global(html):has(.shell) {

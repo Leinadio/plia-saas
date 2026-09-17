@@ -12,6 +12,7 @@ import {
   UsersRound,
   Wallet,
 } from "lucide-react";
+import { PublicAccordion } from "@/components/public-accordion";
 import { LandingBrand, LandingHeader } from "@/components/landing-header";
 import landing from "@/components/landing.module.css";
 import layout from "@/components/landing-layout.module.css";
@@ -202,6 +203,62 @@ export default function AudiencePage() {
         </div>
       </section>
 
+      <section className={styles.lifeStages} aria-labelledby="stages-heading">
+        <div className={styles.intro}>
+          <h2 id="stages-heading">
+            De nouvelles habitudes.
+            <br />
+            <span>À chaque nouveau départ.</span>
+          </h2>
+          <p>
+            Pas besoin d’attendre d’avoir un grand projet ou un salaire plus
+            élevé. Votre budget peut commencer avec la vie que vous avez
+            aujourd’hui.
+          </p>
+          <div className={styles.stageList}>
+            <article>
+              <span className={styles.stageNumber} aria-hidden="true">
+                01
+              </span>
+              <div>
+                <h3>Un premier salaire, des repères à construire.</h3>
+                <p>
+                  Le loyer, les transports, les sorties : les premières dépenses
+                  arrivent vite. Prévoyez un montant pour chaque poste et voyez
+                  la place qu’il reste pour vos envies.
+                </p>
+              </div>
+            </article>
+            <article>
+              <span className={styles.stageNumber} aria-hidden="true">
+                02
+              </span>
+              <div>
+                <h3>Un nouveau rythme, un budget à ajuster.</h3>
+                <p>
+                  Un déménagement, un changement de travail ou un abonnement de
+                  plus : vos dépenses évoluent. Ajustez vos budgets et regardez
+                  leur effet sur les mois à venir.
+                </p>
+              </div>
+            </article>
+            <article>
+              <span className={styles.stageNumber} aria-hidden="true">
+                03
+              </span>
+              <div>
+                <h3>L’envie de savoir où passe votre argent.</h3>
+                <p>
+                  Rattachez vos opérations à vos budgets pour comparer ce que
+                  vous aviez prévu et ce que vous avez réellement dépensé. Vous
+                  repérez les écarts et choisissez ce que vous voulez changer.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section
         id="a-deux"
         className={styles.couple}
@@ -264,6 +321,122 @@ export default function AudiencePage() {
         >
           <path d="M0 0H1440V30C1120 90 920 0 620 30S220 90 0 35Z" />
         </svg>
+      </section>
+
+      <section className={styles.seasons} aria-labelledby="seasons-heading">
+        <div className={styles.intro}>
+          <h2 id="seasons-heading">
+            Les mois se suivent.
+            <br />
+            <span>Ils ne se ressemblent pas.</span>
+          </h2>
+          <p>
+            Des vacances en été, une rentrée bien remplie, une réparation qui
+            tombe mal. Un budget sert aussi à donner une place à ce qui ne
+            revient pas tous les mois.
+          </p>
+        </div>
+        <figure className={styles.seasonScene}>
+          <div className={styles.seasonPhoto}>
+            <Image
+              src="/landing/use-cases/weekend.webp"
+              alt="Un couple profite d’un café en terrasse pendant un séjour au bord de la mer."
+              fill
+              sizes="(max-width: 1440px) 100vw, 1312px"
+            />
+          </div>
+          <figcaption>Un départ se prépare aussi dans votre budget.</figcaption>
+        </figure>
+        <div className={styles.seasonDetails}>
+          <article>
+            <h3>Avant les vacances.</h3>
+            <p>
+              Transport, hébergement, activités : détaillez votre projet en
+              sous-budgets. Vous voyez le montant prévu pour chaque partie du
+              voyage, puis les dépenses au fil des réservations.
+            </p>
+          </article>
+          <article>
+            <h3>À l’approche de la rentrée.</h3>
+            <p>
+              Une inscription au sport, du matériel, un abonnement annuel :
+              prévoyez ces dépenses sur les mois concernés pour les retrouver
+              aux côtés de vos charges habituelles.
+            </p>
+          </article>
+          <article>
+            <h3>Quand un imprévu arrive.</h3>
+            <p>
+              Une réparation dépasse le montant prévu ? Repérez le dépassement
+              et consultez son effet sur votre trésorerie. Vous pouvez revoir
+              vos priorités avec une vue sur la suite.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className={styles.practical} aria-labelledby="practical-heading">
+        <div className={styles.intro}>
+          <h2 id="practical-heading">
+            Commencez simplement.
+            <br />
+            <span>Avancez à votre rythme.</span>
+          </h2>
+          <p>
+            Quelques repères pour vous projeter dans votre utilisation de
+            Planora.
+          </p>
+          <div className={styles.questions}>
+            <PublicAccordion question="Je n’ai jamais fait de budget. Par où commencer ?">
+              <p>
+                Commencez par les dépenses que vous connaissez : logement,
+                transport, loisirs. Créez un budget pour chaque poste et
+                choisissez un montant prévu. Vous pourrez ensuite ajouter des
+                sous-budgets et ajuster les montants à mesure que vos besoins se
+                précisent.
+              </p>
+            </PublicAccordion>
+            <PublicAccordion question="Est-ce utile si j’ai peu de marge dans mon budget ?">
+              <p>
+                Vous pouvez suivre les montants qui correspondent à votre
+                situation, sans minimum. Comparer vos dépenses au prévu aide à
+                identifier ce qui pèse dans votre mois. Planora vous donne de la
+                visibilité ; il ne crée pas de marge supplémentaire à votre
+                place.
+              </p>
+            </PublicAccordion>
+            <PublicAccordion question="Mes revenus changent selon les mois. Puis-je adapter mes prévisions ?">
+              <p>
+                Vous pouvez renseigner vos revenus prévus et ajuster vos budgets
+                mois par mois. Si un montant change, revoyez vos prévisions pour
+                garder des repères cohérents. Les estimations dépendent des
+                informations que vous renseignez et des opérations connues.
+              </p>
+            </PublicAccordion>
+            <PublicAccordion question="Dois-je connecter ma banque pour utiliser Planora ?">
+              <p>
+                Non. Vous pouvez saisir vos opérations manuellement. La formule
+                avec synchronisation bancaire permet de retrouver les opérations
+                de vos comptes connectés, selon la dernière synchronisation.
+                Dans les deux cas, c’est vous qui définissez vos budgets.
+              </p>
+            </PublicAccordion>
+            <PublicAccordion question="Pouvons-nous utiliser le même compte à deux ?">
+              <p>
+                Planora permet d’organiser les dépenses du foyer depuis un
+                compte personnel. Vous pouvez vous appuyer sur cette vue pour
+                discuter de vos projets à deux. Un accès partagé avec deux
+                connexions distinctes n’est pas proposé aujourd’hui.
+              </p>
+            </PublicAccordion>
+          </div>
+          <Link
+            href="/contact"
+            className={`${landing.textLink} ${styles.contactLink}`}
+          >
+            Parlons de votre situation <ArrowUpRight aria-hidden />
+          </Link>
+        </div>
       </section>
 
       <section className={styles.closing} aria-labelledby="start-heading">
