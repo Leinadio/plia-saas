@@ -74,7 +74,7 @@ les commandes tactiles conservent leurs dimensions et leur ordre fonctionnel.
 
 Le thème et la palette commune sont appliqués au document : menus, notifications
 et panneaux rendus à l’extérieur du conteneur héritent des mêmes rôles.
-Les contrôles natifs suivent le mode sombre et les commandes menthe utilisent une
+Les contrôles natifs suivent le mode sombre « Anthracite et sable » et les commandes sable utilisent une
 encre sombre. Les filtres d’opérations gardent des libellés visibles pendant la saisie.
 
 ## Structure financière conservée

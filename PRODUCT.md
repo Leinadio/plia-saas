@@ -120,9 +120,11 @@ Aucune maquette d’interface n’a été approuvée avant cette réalisation.
 
 Cette identité relie désormais les pages publiques, la connexion et l’application.
 Bricolage Grotesque porte la marque et les titres ; Schibsted Grotesk garde les données,
-libellés et commandes. Le fond est blanc en clair, vert forêt en sombre (préférence utilisateur du 16 septembre 2026). Les actions
-et revenus sont eucalyptus, les dépenses bleu brume ; la pêche accompagne les
-filtres, le contexte et les courbes. Les cartes arrondies et les commandes en
+libellés et commandes. Le fond reste blanc en clair. En sombre, la palette
+« Anthracite et sable » choisie le 17 septembre 2026 remplace le vert forêt :
+fond charbon, cartes ardoise, actions sable, revenus sauge, dépenses bleu brume
+et alertes corail. En clair, les actions et revenus restent eucalyptus ; la pêche
+accompagne les filtres, le contexte et les courbes. Les cartes arrondies et les commandes en
 capsule accompagnent le budget. Les chiffres restent sur des surfaces
 opaques. Les repères financiers et les parcours existants guident cette adaptation :
 le relevé distingue les revenus menthe, les dépenses bleu brume et la trésorerie

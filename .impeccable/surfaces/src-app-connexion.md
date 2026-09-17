@@ -7,8 +7,8 @@ related_targets: ["src/app/app-theme.css"]
 
 ## État courant — Google, 17 septembre 2026
 
-La préférence utilisateur pour le vert forêt (`#102b24`) en sombre remplace le
-graphite de la passe couleur consignée plus bas. Le clair reste blanc. Cette note
+Le choix « Anthracite et sable » du 17 septembre 2026 remplace le vert forêt :
+fond `#181a1e`, cartes ardoise et commandes sable. Le clair reste blanc. Cette note
 fait autorité pour la surface ; les décisions antérieures sont conservées comme
 historique, sans révision du système global.
 

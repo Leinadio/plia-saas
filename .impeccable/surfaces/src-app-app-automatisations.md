@@ -13,7 +13,7 @@ avec une notification pour chaque rattachement. Le mode est Operate : les critè
 la destination et les actions doivent se lire immédiatement.
 
 Cette extension reprend le monde Planora établi, sans nouvelle maquette ni carte
-QUALITY BAR. Fond blanc en clair et vert forêt (#102b24) en sombre, selon la
+QUALITY BAR. Fond blanc en clair, anthracite (#181a1e) et commandes sable en sombre, selon la
 préférence explicite de l’utilisateur ; surfaces opaques et palette commune.
 Bricolage porte les titres, Schibsted les champs, données et commandes. Aucun
 nouvel actif visuel ni changement du système global n’est nécessaire.

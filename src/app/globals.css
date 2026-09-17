@@ -21,7 +21,7 @@
    4. Un état se dit dans une pastille arrondie, en petites capitales — jamais
       dans une couleur de texte seule. */
 :root {
-  /* Le fond général est blanc en clair, vert forêt en sombre. */
+  /* Le fond général est blanc en clair, anthracite en sombre. */
   --encre: var(--planora-text);
   --sol: var(--planora-canvas);
   --surface: var(--planora-surface);
@@ -30,8 +30,8 @@
   --surface-creuse: var(--planora-soft);
   --surface-survol: var(--planora-hover);
 
-  /* LA SARCELLE. La couleur de la commande, et d'elle seule. Profonde, sans
-     éclat, elle tient le contraste sur du blanc comme sur du sombre. */
+  /* La commande : eucalyptus en clair, sable en sombre. Les anciens noms
+     sarcelle restent des alias pour les composants existants. */
   --sarcelle: var(--planora-action);
   --sarcelle-forte: var(--planora-action-hover);
   --sarcelle-voile: var(--planora-action-soft);
