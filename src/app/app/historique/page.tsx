@@ -29,6 +29,8 @@ import { currentOnboardingMode } from "@/lib/current-onboarding";
 import { isDemoMode } from "@/lib/onboarding-mode";
 import { DemoHistory } from "@/components/demo-history";
 
+import periodStyles from "@/components/history-period.module.css";
+
 export const dynamic = "force-dynamic";
 
 const MAX_MONTHS = 24; // garde-fou : nombre de colonnes affichées au maximum
@@ -104,11 +106,11 @@ export default async function HistoriquePage({
   return (
     <div className="flex flex-col gap-4">
       {connexionTerminee && <ConnexionReussie imported={imported} />}
-      <Tabs defaultValue={accounts[0].id}>
+      <Tabs defaultValue={accounts[0].id} className={periodStyles.accounts}>
         {/* Les onglets de comptes défilent plutôt que de se tasser : sur un écran
             étroit, quatre noms de comptes ne tiennent pas côte à côte, et aucun ne
             doit disparaître. */}
-        <div className="max-w-full overflow-x-auto">
+        <div className={periodStyles.accountTabs}>
           <TabsList>
             {accounts.map((a) => (
               <TabsTrigger key={a.id} value={a.id}>
@@ -191,7 +193,7 @@ export default async function HistoriquePage({
           }));
 
           return (
-            <TabsContent key={a.id} value={a.id} className="flex flex-col gap-4">
+            <TabsContent key={a.id} value={a.id} className={periodStyles.accountPanel}>
               <HistoryPeriodFrame
                 key={`${a.id}:${from}:${to}`}
                 min={stripMin}

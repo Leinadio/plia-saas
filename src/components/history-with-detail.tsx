@@ -85,7 +85,7 @@ export function HistoryWithDetail(props: {
           s'éteignent d'un cran et cessent de répondre au clic. Ils restent lisibles
           — on ne cache pas un montant — mais on ne peut plus ouvrir le détail d'une
           case qui va changer dans la seconde. */}
-      <VoileDAttente className={isMobile ? undefined : "carte overflow-hidden"}>
+      <VoileDAttente className={isMobile ? undefined : "carte history-table-frame overflow-hidden"}>
         <CenterScroll>
         <HistoryGrid
           {...history}

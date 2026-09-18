@@ -11,6 +11,7 @@ export function DemoHistory() {
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
       <div data-onboarding-target="demo-account" className="app-account-choice w-fit rounded-lg border px-3 py-2 text-sm font-semibold">
         Compte Démo
       </div>
@@ -22,6 +23,7 @@ export function DemoHistory() {
           to={history.months[history.months.length - 1]}
           current={history.currentMonth}
         />
+      </div>
       </div>
       <HistoryWithDetail
         {...history}

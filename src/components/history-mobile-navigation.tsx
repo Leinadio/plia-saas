@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarDays, Columns3 } from "lucide-react";
 import { monthRange } from "@/lib/history";
 import { type ColKey, COL_LABEL } from "@/lib/history-columns";
 import { validComparisonMetric, type ComparisonMetrics, type HistoryComparison } from "@/components/history-comparison";
@@ -58,13 +58,13 @@ export function HistoryMobileControls({ navigation, min, max, disabled = false }
   const months = monthRange(min, max);
   const index = months.indexOf(month);
   return (
-    <div className="app-mobile-navigation carte flex min-w-0 flex-col gap-3 p-3" aria-label="Navigation du relevé" aria-busy={disabled || undefined}>
+    <div className="app-mobile-navigation flex min-w-0 flex-col gap-3 p-3" aria-label="Navigation du relevé" aria-busy={disabled || undefined}>
       <div className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1" role="group" aria-label="Présentation du relevé">
-        {[{ label: "Par mois", compare: false }, { label: "Comparer", compare: true }].map((mode) => (
+        {[{ label: "Par mois", compare: false, icon: CalendarDays }, { label: "Comparer", compare: true, icon: Columns3 }].map((mode) => (
           <button key={mode.label} type="button" disabled={disabled} aria-pressed={(metric !== null) === mode.compare}
             onClick={() => onCompareChange(mode.compare)}
-            className={cn("min-h-10 rounded-md px-3 text-sm font-medium", (metric !== null) === mode.compare ? "bg-background text-foreground shadow-sm" : "text-muted-foreground")}>
-            {mode.label}
+            className={cn("flex min-h-11 items-center justify-center gap-2 rounded-md px-3 text-sm font-medium", (metric !== null) === mode.compare ? "bg-background text-foreground shadow-sm" : "text-muted-foreground")}>
+            <mode.icon aria-hidden className="size-4" />{mode.label}
           </button>
         ))}
       </div>

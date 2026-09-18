@@ -8,6 +8,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { HistoryMobileControls, HistoryMobileNavigationContext, useHistoryMobileState } from "@/components/history-mobile-navigation";
 
+import styles from "./history-period.module.css";
+
 type Range = { from: string; to: string };
 
 // Garde la nouvelle période à l'écran pendant que le serveur recalcule le tableau.
@@ -55,8 +57,7 @@ export function HistoryPeriodFrame({ min, max, from, to, current, children }: {
 
   return (
     <HistoryMobileNavigationContext.Provider value={navigation}>
-      {isMobile && <HistoryMobileControls navigation={navigation} min={min} max={max} disabled={pendingRange !== null} />}
-      {(!isMobile || mobile.metric !== null) && <MonthRangePicker
+      <MonthRangePicker
         min={min}
         max={max}
         from={from}
@@ -65,7 +66,9 @@ export function HistoryPeriodFrame({ min, max, from, to, current, children }: {
         pendingRange={pendingRange}
         onCommit={changeRange}
         disabled={pendingRange !== null}
-      />}
+      />
+      <div className={styles.body}>
+      {isMobile && <HistoryMobileControls navigation={navigation} min={min} max={max} disabled={pendingRange !== null} />}
       {pendingRange ? (
         <div className="flex flex-col gap-3" role="status" aria-live="polite">
           <span className="sr-only">Chargement du relevé</span>
@@ -77,6 +80,7 @@ export function HistoryPeriodFrame({ min, max, from, to, current, children }: {
           </div> : <SqueletteGrilleHistorique />}
         </div>
       ) : children}
+      </div>
     </HistoryMobileNavigationContext.Provider>
   );
 }

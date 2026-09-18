@@ -1,40 +1,50 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+
+import { useId, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { monthRange } from "@/lib/history";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  ArrowRight,
+  ChevronDown,
+} from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { addMonthsKey, monthRange } from "@/lib/history";
 import { cn } from "@/lib/utils";
+import styles from "./history-period.module.css";
 
-const MONTHS_FR = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
-const shortLabel = (m: string) => MONTHS_FR[Number(m.slice(5, 7)) - 1];
-const yearOf = (m: string) => m.slice(0, 4);
+const MONTHS = [
+  "janv.",
+  "févr.",
+  "mars",
+  "avr.",
+  "mai",
+  "juin",
+  "juil.",
+  "août",
+  "sept.",
+  "oct.",
+  "nov.",
+  "déc.",
+];
+const label = (month: string) =>
+  `${MONTHS[Number(month.slice(5, 7)) - 1]} ${month.slice(0, 4)}`;
 
-// Les deux champs reprennent le langage d'un choix de voyage : le départ se remplit
-// au premier clic, la fin au second. Ils restent visibles sur toutes les largeurs.
-function Borne({ label, mois, active = false }: { label: string; mois: string | null; active?: boolean }) {
-  return (
-    <div
-      className={cn(
-        "flex min-w-0 flex-1 flex-col gap-0.5 rounded-lg border px-3 py-2",
-        active ? "border-sarcelle ring-sarcelle/20 ring-2" : "border-border bg-background",
-      )}
-    >
-      <span className="legende">{label}</span>
-      <span className={cn("truncate text-sm font-semibold whitespace-nowrap capitalize", !mois && "text-muted-foreground font-normal")}>
-        {mois ? `${shortLabel(mois)} ${yearOf(mois)}` : "Choisir le mois de fin"}
-      </span>
-    </div>
-  );
-}
-
-// LA FRISE DES MOIS. Clic sur le premier mois, clic sur le dernier : c'est la
-// plage que la pile affiche. Elle est écrite dans l'URL (?from&to), donc elle se
-// partage et se retrouve au retour.
-//
-// Elle vit dans sa propre carte, à part de la pile qu'elle commande : c'est un
-// réglage, pas une donnée. La plage est dite en toutes lettres au-dessus de la
-// frise sur téléphone, et de part et d'autre dès qu'il y a la place.
-export function MonthRangePicker({ min, max, from, to, current, pendingRange, onCommit, disabled = false }: {
+export function MonthRangePicker({
+  min,
+  max,
+  from,
+  to,
+  current,
+  pendingRange,
+  onCommit,
+  disabled = false,
+}: {
   min: string;
   max: string;
   from: string;
@@ -46,128 +56,213 @@ export function MonthRangePicker({ min, max, from, to, current, pendingRange, on
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const scroller = useRef<HTMLDivElement>(null);
-  const midRef = useRef<HTMLButtonElement>(null);
+  const summaryId = useId();
+  const headingId = useId();
+  const hintId = useId();
+  const [open, setOpen] = useState(false);
+  const [year, setYear] = useState(Number(from.slice(0, 4)));
   const [anchor, setAnchor] = useState<string | null>(null);
-  const [localPendingRange, setLocalPendingRange] = useState<{ from: string; to: string } | null>(null);
+  const [localPending, setLocalPending] = useState<{
+    from: string;
+    to: string;
+  } | null>(null);
+  const range = pendingRange ?? localPending ?? { from, to };
+  const displayFrom = anchor ?? range.from;
+  const displayTo = anchor ? null : range.to;
+  const endLimit =
+    anchor && addMonthsKey(anchor, 23) < max ? addMonthsKey(anchor, 23) : max;
 
-  const months = monthRange(min, max);
-  const waitingRange = pendingRange ?? localPendingRange;
-  const displayFrom = anchor ?? waitingRange?.from ?? from;
-  const displayTo = anchor ? null : waitingRange?.to ?? to;
-  // Milieu de la plage sélectionnée, centré à l'ouverture. Pendant le choix, le
-  // nouveau départ prend sa place sans modifier la période réellement affichée.
-  const selected = displayTo ? monthRange(displayFrom, displayTo) : [displayFrom];
-  const mid = anchor ?? selected[Math.floor((selected.length - 1) / 2)];
-
-  // Centre la sélection à l'ouverture.
-  useEffect(() => {
-    midRef.current?.scrollIntoView({ block: "nearest", inline: "center" });
-  }, [mid]);
-
-  const onPick = (m: string) => {
-    if (disabled) return;
-    if (anchor === null) {
-      setLocalPendingRange(null);
-      setAnchor(m);
-      return;
-    }
-    if (m < anchor) return;
-    const nextRange = { from: anchor, to: m };
+  const changeOpen = (next: boolean) => {
+    setOpen(next);
     setAnchor(null);
-    if (onCommit) onCommit(nextRange.from, nextRange.to);
+    if (next) setYear(Number(range.from.slice(0, 4)));
+  };
+  const commit = (next: { from: string; to: string }) => {
+    if (disabled) return;
+    setAnchor(null);
+    setOpen(false);
+    if (onCommit) onCommit(next.from, next.to);
     else {
-      setLocalPendingRange(nextRange);
-      router.push(`${pathname}?from=${nextRange.from}&to=${nextRange.to}`);
+      setLocalPending(next);
+      router.push(`${pathname}?from=${next.from}&to=${next.to}`);
     }
   };
-
-  const scrollBy = (dir: -1 | 1) => scroller.current?.scrollBy({ left: dir * 260, behavior: "smooth" });
+  const presets = [
+    { name: "Ce mois-ci", from: current, to: current },
+    { name: "3 mois à venir", from: current, to: addMonthsKey(current, 2) },
+    { name: "6 mois à venir", from: current, to: addMonthsKey(current, 5) },
+  ];
+  const pick = (month: string) => {
+    if (disabled) return;
+    if (!anchor) {
+      setAnchor(month);
+      return;
+    }
+    if (month < anchor || month > endLimit) return;
+    commit({ from: anchor, to: month });
+  };
 
   return (
-    <div aria-busy={disabled || undefined} className={cn("app-period-picker carte flex flex-col gap-3 px-3 py-3 sm:px-4", disabled && "opacity-70")}>
-      <div className="mx-auto grid w-full max-w-xl grid-cols-2 gap-2">
-        <Borne label="Mois de départ" mois={displayFrom} active={anchor !== null} />
-        <Borne label="Mois de fin" mois={displayTo} active={anchor !== null} />
-      </div>
-
-      <div className="flex min-w-0 flex-1 items-center gap-1">
-        <button
-          type="button"
-          aria-label="Défiler vers la gauche"
-          onClick={() => scrollBy(-1)}
-          disabled={disabled}
-          className="text-ardoise hover:bg-survol hover:text-foreground flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+    <div className={styles.period} aria-busy={disabled || undefined}>
+      <span id={summaryId} className="sr-only">
+        {label(range.from)} — {label(range.to)}
+      </span>
+      <Popover open={open} onOpenChange={changeOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className={styles.trigger}
+            aria-label="Choisir la période"
+            aria-describedby={summaryId}
+            disabled={disabled}
+          >
+            <span className={styles.bound}>
+              <span className={styles.label}>Mois de départ</span>
+              <span className={styles.value}>{label(displayFrom)}</span>
+            </span>
+            <ArrowRight aria-hidden className={styles.arrow} />
+            <span className={styles.bound}>
+              <span className={styles.label}>Mois de fin</span>
+              <span className={styles.value}>
+                {displayTo ? label(displayTo) : "À choisir"}
+              </span>
+            </span>
+            <span className={styles.calendarIcon}>
+              <CalendarDays aria-hidden size={20} />
+              <ChevronDown aria-hidden size={14} />
+            </span>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          className={styles.calendar}
+          sideOffset={8}
+          collisionPadding={12}
+          aria-labelledby={headingId}
+          aria-describedby={hintId}
         >
-          <ChevronLeft className="size-4" />
-        </button>
-
-        {/* Un fondu aux deux bords : sans lui, un mois coupé en plein milieu par le
-            bord du défileur se lit comme un mot cassé (« in » pour « juin ») et non
-            comme une frise qui continue. */}
-        <div
-          ref={scroller}
-          className="min-w-0 flex-1 overflow-x-auto scroll-px-2 [mask-image:linear-gradient(to_right,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)]"
-        >
-          {/* mx-auto : centre la frise quand elle tient, défile sans rognage quand
-              elle déborde. */}
-          <div className="mx-auto flex w-fit gap-0.5 px-1 py-0.5">
-            {months.map((m) => {
-              const indisponible = disabled || (anchor !== null && m < anchor);
-              const dedans = displayTo ? m >= displayFrom && m <= displayTo : m === displayFrom;
-              const debut = m === displayFrom;
-              const fin = displayTo !== null && m === displayTo;
+          <div className={styles.calendarHeading}>
+            <h2 id={headingId}>Choisir la période</h2>
+            <p id={hintId} aria-live="polite">
+              {anchor
+                ? "Choisissez le mois de fin."
+                : "Choisissez le mois de départ, puis le mois de fin."}
+            </p>
+          </div>
+          <div className={styles.presets} aria-label="Périodes rapides">
+            {presets.map((preset) => (
+              <button
+                type="button"
+                key={preset.name}
+                disabled={disabled || preset.from < min || preset.to > max}
+                onClick={() => commit({ from: preset.from, to: preset.to })}
+              >
+                {preset.name}
+              </button>
+            ))}
+          </div>
+          <div className={styles.rangeFields}>
+            <button
+              type="button"
+              aria-label="Modifier le mois de départ"
+              aria-pressed={!anchor}
+              onClick={() => {
+                setAnchor(null);
+                setYear(Number(range.from.slice(0, 4)));
+              }}
+            >
+              <span>Départ</span>
+              <strong>{label(displayFrom)}</strong>
+            </button>
+            <button
+              type="button"
+              aria-label="Modifier le mois de fin"
+              aria-pressed={!!anchor}
+              onClick={() => {
+                setAnchor(displayFrom);
+                setYear(Number((displayTo ?? displayFrom).slice(0, 4)));
+              }}
+            >
+              <span>Fin</span>
+              <strong>{displayTo ? label(displayTo) : "À choisir"}</strong>
+            </button>
+          </div>
+          <div className={styles.yearNav}>
+            <button
+              type="button"
+              aria-label="Année précédente"
+              disabled={year <= Number((anchor ?? min).slice(0, 4))}
+              onClick={() => setYear(year - 1)}
+            >
+              <ChevronLeft size={18} aria-hidden />
+            </button>
+            <select
+              aria-label="Année du calendrier"
+              value={year}
+              onChange={(event) => setYear(Number(event.target.value))}
+            >
+              {Array.from(
+                {
+                  length:
+                    Number(endLimit.slice(0, 4)) -
+                    Number((anchor ?? min).slice(0, 4)) +
+                    1,
+                },
+                (_, index) => Number((anchor ?? min).slice(0, 4)) + index,
+              ).map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              aria-label="Année suivante"
+              disabled={year >= Number(endLimit.slice(0, 4))}
+              onClick={() => setYear(year + 1)}
+            >
+              <ChevronRight size={18} aria-hidden />
+            </button>
+          </div>
+          <div className={styles.months}>
+            {MONTHS.map((name, i) => {
+              const month = `${year}-${String(i + 1).padStart(2, "0")}`;
+              const selected = displayTo
+                ? month >= displayFrom && month <= displayTo
+                : month === displayFrom;
+              const edge = month === displayFrom || month === displayTo;
               return (
                 <button
-                  key={m}
-                  ref={m === mid ? midRef : undefined}
+                  key={month}
                   type="button"
-                  onClick={() => onPick(m)}
-                  disabled={indisponible}
-                  aria-pressed={dedans}
+                  aria-pressed={selected}
+                  aria-current={month === current ? "date" : undefined}
+                  disabled={
+                    disabled || month < (anchor ?? min) || month > endLimit
+                  }
                   className={cn(
-                    // py-2.5 sur téléphone : un mois est une cible qu'on vise au
-                    // doigt, pas au curseur.
-                    "relative w-11 shrink-0 cursor-pointer rounded-md py-2.5 text-center text-xs font-semibold capitalize transition-colors sm:py-1.5",
-                    dedans
-                      ? "bg-sarcelle-voile text-sarcelle-encre"
-                      : "text-ardoise hover:bg-survol hover:text-foreground",
-                    // Les deux bouts de la plage se marquent plus fort : c'est eux
-                    // qu'on déplace.
-                    (debut || fin) && "bg-sarcelle text-white",
-                    m === anchor && "ring-sarcelle ring-2",
-                    indisponible && "cursor-not-allowed opacity-35 hover:bg-transparent hover:text-ardoise",
+                    styles.month,
+                    selected && styles.selected,
+                    edge && styles.edge,
                   )}
+                  onClick={() => pick(month)}
                 >
-                  {shortLabel(m)}
-                  {/* Le mois courant se signale par un point sous son nom : un
-                      repère, pas une sélection — il reste visible même hors de la
-                      plage choisie. */}
-                  {m === current && (
-                    <span
-                      aria-hidden
-                      className={cn(
-                        "absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full",
-                        debut || fin ? "bg-white" : "bg-sarcelle",
-                      )}
-                    />
-                  )}
+                  {name}
                 </button>
               );
             })}
           </div>
-        </div>
-
-        <button
-          type="button"
-          aria-label="Défiler vers la droite"
-          onClick={() => scrollBy(1)}
-          disabled={disabled}
-          className="text-ardoise hover:bg-survol hover:text-foreground flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <ChevronRight className="size-4" />
-        </button>
-      </div>
+          <div className={styles.calendarFooter}>
+            <span>
+              {anchor
+                ? `Départ : ${label(anchor)}`
+                : `${monthRange(range.from, range.to).length} mois affiché${range.from === range.to ? "" : "s"}`}
+            </span>
+            <button type="button" onClick={() => changeOpen(false)}>
+              Annuler
+            </button>
+          </div>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }

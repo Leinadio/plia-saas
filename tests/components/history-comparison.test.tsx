@@ -30,7 +30,7 @@ describe("comparaison mobile par section", () => {
       <Grid />
     </HistoryPeriodFrame></TooltipProvider>));
   };
-  const button = (name: string) => Array.from(container.querySelectorAll("button")).find(el => el.getAttribute("aria-label") === name || el.textContent?.trim() === name)!;
+  const button = (name: string) => Array.from(document.querySelectorAll("button")).find(el => el.getAttribute("aria-label") === name || el.textContent?.trim() === name)!;
   const select = (name: string) => container.querySelector<HTMLSelectElement>(`select[aria-label="${name}"]`)!;
   const choices = (name: string) => container.querySelector<HTMLButtonElement>(`button[aria-label="${name}"]`)!;
   const dialog = () => document.querySelector<HTMLElement>('[role="dialog"]')!;
@@ -44,6 +44,7 @@ describe("comparaison mobile par section", () => {
       expect(dialog()).not.toBeNull();
       await act(async () => dialog().querySelector<HTMLButtonElement>(`button[value="${value}"]`)!.click());
       expect(dialog()).toBeNull();
+      await act(async () => { await vi.waitFor(() => expect(document.activeElement).toBe(choices(name))); });
     }
   };
   const card = (name: string) => container.querySelector(`[data-history-card="${name}"]`)!;
@@ -72,6 +73,7 @@ describe("comparaison mobile par section", () => {
       expect(dialog().querySelector('[aria-pressed="true"]')).not.toBeNull();
       await act(async () => dialog().querySelector<HTMLButtonElement>('[aria-label="Fermer"]')!.click());
       expect(dialog()).toBeNull();
+      await act(async () => { await vi.waitFor(() => expect(document.activeElement).toBe(choices(name))); });
     }
     expect(card("income").contains(choices("Comparer les revenus"))).toBe(true);
     expect(card("expense").contains(choices("Comparer les dépenses"))).toBe(true);
@@ -126,6 +128,7 @@ describe("comparaison mobile par section", () => {
     await change("Comparer les revenus", "budgetRem");
     await change("Comparer les dépenses", "reste");
     await change("Comparer les soldes", "soldeDepass");
+    await act(async () => button("Choisir la période").click());
     await act(async () => button("sept.").click());
     await act(async () => button("oct.").click());
     const query = new URL(mocks.push.mock.calls[0][0], "http://localhost").searchParams;

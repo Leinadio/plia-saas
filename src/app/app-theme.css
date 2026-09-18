@@ -122,9 +122,10 @@ html:has(.planora-workspace) [data-slot="tabs-trigger"]::after {
 .app-page-heading p { margin-top: 8px; color: var(--ardoise); font-size: 0.875rem; line-height: 1.6; }
 .app-period-picker { background: var(--planora-warm-soft); border: 0; padding: 18px 20px; gap: 16px; }
 .app-period-picker button { border-radius: 999px; }
-.app-mobile-navigation { padding-block: 4px 8px; }
-.app-mobile-navigation > div:first-child { border-radius: 999px; padding: 4px; background: var(--app-nav); }
-.app-mobile-navigation > div:first-child button { border-radius: 999px; min-height: 44px; }
+.app-mobile-navigation { padding: 0; box-shadow: none; }
+.app-mobile-navigation > div:first-child { border-radius: 12px; padding: 4px; background: var(--muted); border: 1px solid var(--border); }
+.app-mobile-navigation > div:first-child button { border-radius: 8px; min-height: 44px; cursor: pointer; }
+.app-mobile-navigation > div:first-child button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .app-mobile-navigation > div:first-child button[aria-pressed="true"] {
   color: var(--app-selected-ink); background: var(--app-selected); box-shadow: none;
 }
@@ -172,7 +173,7 @@ html:has(.planora-workspace) :is([data-slot="sheet-title"], [data-slot="drawer-t
   .app-transaction-filters { padding: 16px; gap: 12px; }
   .app-transaction-filters :is(input, select) { min-height: 44px; }
   .app-mobile-navigation select { font-size: 16px; border-radius: 12px; }
-  .app-mobile-navigation > div:last-child > button { border-radius: 50%; }
+  .app-mobile-navigation > div:last-child:not([role="group"]) > button { border-radius: 12px; }
 }
 /* The detail panel changes the available workspace width independently from
    the viewport. Keep every navigation and utility action reachable. */

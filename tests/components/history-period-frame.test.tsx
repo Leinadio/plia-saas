@@ -33,9 +33,10 @@ describe("le chargement d'une nouvelle période", () => {
       </HistoryPeriodFrame>);
     });
 
-    const month = (label: string) => Array.from(container.querySelectorAll("button"))
+    const month = (label: string) => Array.from(document.querySelectorAll("button"))
       .find((button) => button.textContent?.trim() === label) as HTMLButtonElement;
 
+    await act(async () => container.querySelector<HTMLButtonElement>('button[aria-label="Choisir la période"]')!.click());
     await act(async () => month("sept.").click());
     expect(container.querySelector("[data-history-table]")).not.toBeNull();
 
@@ -45,7 +46,7 @@ describe("le chargement d'une nouvelle période", () => {
     expect(container.textContent).toContain("sept. 2026");
     expect(container.textContent).toContain("nov. 2026");
     expect(mocks.push).toHaveBeenCalledWith("/app/historique?from=2026-09&to=2026-11");
-    expect(Array.from(container.querySelectorAll("button")).every((button) => button.disabled)).toBe(true);
+    expect(Array.from(document.querySelectorAll("button")).every((button) => button.disabled)).toBe(true);
 
     await act(async () => root.unmount());
     container.remove();
@@ -60,7 +61,7 @@ describe("la navigation sur téléphone", () => {
       <div data-history-table="">Tableau</div>
     </HistoryPeriodFrame>));
   };
-  const button = (name: string) => Array.from(container.querySelectorAll("button"))
+  const button = (name: string) => Array.from(document.querySelectorAll("button"))
     .find(b => b.getAttribute("aria-label") === name || b.textContent?.trim() === name)!;
   const select = (name: string) => container.querySelector(`select[aria-label="${name}"]`) as HTMLSelectElement;
   const change = async (name: string, value: string) => {
@@ -103,6 +104,7 @@ describe("la navigation sur téléphone", () => {
     expect(button("Comparer")).toBeDefined();
     expect(button("Comparer").getAttribute("aria-pressed")).toBe("true");
     expect(select("Indicateur à comparer")).toBeNull();
+    await act(async () => button("Choisir la période").click());
     await act(async () => button("sept.").click());
     await act(async () => button("nov.").click());
     const query = new URL(mocks.push.mock.calls[0][0], "http://localhost").searchParams;

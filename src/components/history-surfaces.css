@@ -112,3 +112,9 @@
   .history-layout [data-history-heading]:hover > td:not(.case-active) { background: var(--history-hover); }
   .history-layout [data-history-heading]:hover > td.history-treasury-cell:not(.case-active) { background: var(--history-treasury-hover); }
 }
+
+/* En clair, délimiter seulement le contenant ; garder les filets intérieurs. */
+:root:not(.dark) .app-content .history-table-frame,
+:root:not(.dark) .app-content .history-mobile [data-history-card] {
+  border: 1px solid var(--planora-rule);
+}
