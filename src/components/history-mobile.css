@@ -334,3 +334,23 @@
 
 .history-mobile-management .flex.items-center { flex-wrap: wrap; }
 .history-mobile-management .flex.items-center > button { flex-shrink: 1; }
+
+/* Les formulaires mobiles gardent la surface anthracite en mode sombre. */
+.dark .history-mobile-sheet {
+  --comparison-background: var(--planora-surface);
+  --foreground: var(--planora-text);
+  --muted-foreground: var(--planora-muted);
+  --border: var(--planora-line);
+  background: var(--planora-surface);
+  color: var(--planora-text);
+}
+.dark .history-mobile :is(button[aria-label="Gérer le groupe"], button[aria-label="Gérer la ligne"], button[aria-label="Ajouter un sous-poste"], button.history-section-add) {
+  background: var(--planora-action-soft);
+  color: var(--planora-action);
+}
+.dark .history-mobile :is(button[aria-label="Gérer le groupe"], button[aria-label="Gérer la ligne"], button[aria-label="Ajouter un sous-poste"], button.history-section-add):hover {
+  background: var(--planora-hover);
+}
+@media (prefers-reduced-motion: reduce) {
+  .history-mobile-sheet { animation: none !important; transition: none; }
+}

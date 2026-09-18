@@ -8,6 +8,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 const mocks = vi.hoisted(() => ({
+  mobile: false,
   push: vi.fn(),
   pathname: "/app/historique",
 }));
@@ -17,13 +18,15 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mocks.push }),
 }));
 
+vi.mock("@/hooks/use-mobile", () => ({ useIsMobile: () => mocks.mobile }));
+
 const { MonthRangePicker } = await import("@/components/month-range-picker");
 
 beforeAll(() => {
   HTMLElement.prototype.scrollIntoView = vi.fn();
 });
 
-afterEach(() => vi.clearAllMocks());
+afterEach(() => { vi.clearAllMocks(); mocks.mobile = false; });
 
 async function renderPicker(max = "2026-12") {
   const container = document.createElement("div");
@@ -52,6 +55,32 @@ async function renderPicker(max = "2026-12") {
 }
 
 describe("le sélecteur de période", () => {
+  it("ouvre un panneau du bas sur mobile et conserve les raccourcis", async () => {
+    mocks.mobile = true;
+    const rendered = await renderPicker();
+    try {
+      await rendered.open();
+      const panel = document.querySelector('[role="dialog"]');
+      expect(panel?.getAttribute("data-slot")).toBe("sheet-content");
+      expect(panel?.className).toContain("slide-in-from-bottom");
+      await act(async () => rendered.month("3 mois à venir").click());
+      expect(mocks.push).toHaveBeenCalledWith("/app/historique?from=2026-08&to=2026-10");
+      expect(document.querySelector('[role="dialog"]')).toBeNull();
+    } finally { await rendered.unmount(); }
+  });
+  it("ferme le panneau mobile sans appliquer un choix incomplet et rend le focus", async () => {
+    mocks.mobile = true;
+    const rendered = await renderPicker();
+    try {
+      await rendered.open();
+      await act(async () => rendered.month("sept.").click());
+      await act(async () => document.querySelector<HTMLButtonElement>('button[aria-label="Fermer le calendrier"]')!.click());
+      expect(mocks.push).not.toHaveBeenCalled();
+      expect(rendered.container.textContent).toContain("août 2026");
+      await act(async () => { await vi.waitFor(() => expect(document.activeElement).toBe(rendered.container.querySelector('button[aria-label="Choisir la période"]'))); });
+    } finally { await rendered.unmount(); }
+  });
+
   it("applique les trois prochains mois en un clic", async () => {
     const rendered = await renderPicker();
     try {

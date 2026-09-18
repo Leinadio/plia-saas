@@ -8,12 +8,22 @@ import {
   ChevronRight,
   ArrowRight,
   ChevronDown,
+  X,
 } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetTitle,
+  SheetDescription,
+  SheetClose,
+} from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { addMonthsKey, monthRange } from "@/lib/history";
 import { cn } from "@/lib/utils";
 import styles from "./history-period.module.css";
@@ -54,6 +64,11 @@ export function MonthRangePicker({
   onCommit?: (from: string, to: string) => void;
   disabled?: boolean;
 }) {
+  const isMobile = useIsMobile(640);
+  const Root = isMobile ? Sheet : Popover;
+  const Trigger = isMobile ? SheetTrigger : PopoverTrigger;
+  const Title = isMobile ? SheetTitle : "h2";
+  const Description = isMobile ? SheetDescription : "p";
   const router = useRouter();
   const pathname = usePathname();
   const summaryId = useId();
@@ -102,13 +117,137 @@ export function MonthRangePicker({
     commit({ from: anchor, to: month });
   };
 
+  const calendarBody = (
+    <>
+      <div className={styles.calendarHeading}>
+        <Title id={headingId}>Choisir la période</Title>
+        <Description id={hintId} aria-live="polite">
+          {anchor
+            ? "Choisissez le mois de fin."
+            : "Choisissez le mois de départ, puis le mois de fin."}
+        </Description>
+      </div>
+      <div className={styles.presets} aria-label="Périodes rapides">
+        {presets.map((preset) => (
+          <button
+            type="button"
+            key={preset.name}
+            disabled={disabled || preset.from < min || preset.to > max}
+            onClick={() => commit({ from: preset.from, to: preset.to })}
+          >
+            {preset.name}
+          </button>
+        ))}
+      </div>
+      <div className={styles.rangeFields}>
+        <button
+          type="button"
+          aria-label="Modifier le mois de départ"
+          aria-pressed={!anchor}
+          onClick={() => {
+            setAnchor(null);
+            setYear(Number(range.from.slice(0, 4)));
+          }}
+        >
+          <span>Départ</span>
+          <strong>{label(displayFrom)}</strong>
+        </button>
+        <button
+          type="button"
+          aria-label="Modifier le mois de fin"
+          aria-pressed={!!anchor}
+          onClick={() => {
+            setAnchor(displayFrom);
+            setYear(Number((displayTo ?? displayFrom).slice(0, 4)));
+          }}
+        >
+          <span>Fin</span>
+          <strong>{displayTo ? label(displayTo) : "À choisir"}</strong>
+        </button>
+      </div>
+      <div className={styles.yearNav}>
+        <button
+          type="button"
+          aria-label="Année précédente"
+          disabled={year <= Number((anchor ?? min).slice(0, 4))}
+          onClick={() => setYear(year - 1)}
+        >
+          <ChevronLeft size={18} aria-hidden />
+        </button>
+        <select
+          aria-label="Année du calendrier"
+          value={year}
+          onChange={(event) => setYear(Number(event.target.value))}
+        >
+          {Array.from(
+            {
+              length:
+                Number(endLimit.slice(0, 4)) -
+                Number((anchor ?? min).slice(0, 4)) +
+                1,
+            },
+            (_, index) => Number((anchor ?? min).slice(0, 4)) + index,
+          ).map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
+        <button
+          type="button"
+          aria-label="Année suivante"
+          disabled={year >= Number(endLimit.slice(0, 4))}
+          onClick={() => setYear(year + 1)}
+        >
+          <ChevronRight size={18} aria-hidden />
+        </button>
+      </div>
+      <div className={styles.months}>
+        {MONTHS.map((name, i) => {
+          const month = `${year}-${String(i + 1).padStart(2, "0")}`;
+          const selected = displayTo
+            ? month >= displayFrom && month <= displayTo
+            : month === displayFrom;
+          const edge = month === displayFrom || month === displayTo;
+          return (
+            <button
+              key={month}
+              type="button"
+              aria-pressed={selected}
+              aria-current={month === current ? "date" : undefined}
+              disabled={disabled || month < (anchor ?? min) || month > endLimit}
+              className={cn(
+                styles.month,
+                selected && styles.selected,
+                edge && styles.edge,
+              )}
+              onClick={() => pick(month)}
+            >
+              {name}
+            </button>
+          );
+        })}
+      </div>
+      <div className={styles.calendarFooter}>
+        <span>
+          {anchor
+            ? `Départ : ${label(anchor)}`
+            : `${monthRange(range.from, range.to).length} mois affiché${range.from === range.to ? "" : "s"}`}
+        </span>
+        <button type="button" onClick={() => changeOpen(false)}>
+          Annuler
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <div className={styles.period} aria-busy={disabled || undefined}>
       <span id={summaryId} className="sr-only">
         {label(range.from)} — {label(range.to)}
       </span>
-      <Popover open={open} onOpenChange={changeOpen}>
-        <PopoverTrigger asChild>
+      <Root open={open} onOpenChange={changeOpen}>
+        <Trigger asChild>
           <button
             type="button"
             className={styles.trigger}
@@ -132,137 +271,38 @@ export function MonthRangePicker({
               <ChevronDown aria-hidden size={14} />
             </span>
           </button>
-        </PopoverTrigger>
-        <PopoverContent
-          className={styles.calendar}
-          sideOffset={8}
-          collisionPadding={12}
-          aria-labelledby={headingId}
-          aria-describedby={hintId}
-        >
-          <div className={styles.calendarHeading}>
-            <h2 id={headingId}>Choisir la période</h2>
-            <p id={hintId} aria-live="polite">
-              {anchor
-                ? "Choisissez le mois de fin."
-                : "Choisissez le mois de départ, puis le mois de fin."}
-            </p>
-          </div>
-          <div className={styles.presets} aria-label="Périodes rapides">
-            {presets.map((preset) => (
+        </Trigger>
+        {isMobile ? (
+          <SheetContent
+            side="bottom"
+            showCloseButton={false}
+            className={cn(styles.calendar, styles.calendarSheet)}
+            aria-labelledby={headingId}
+            aria-describedby={hintId}
+          >
+            <SheetClose asChild>
               <button
                 type="button"
-                key={preset.name}
-                disabled={disabled || preset.from < min || preset.to > max}
-                onClick={() => commit({ from: preset.from, to: preset.to })}
+                className={styles.close}
+                aria-label="Fermer le calendrier"
               >
-                {preset.name}
+                <X size={20} aria-hidden />
               </button>
-            ))}
-          </div>
-          <div className={styles.rangeFields}>
-            <button
-              type="button"
-              aria-label="Modifier le mois de départ"
-              aria-pressed={!anchor}
-              onClick={() => {
-                setAnchor(null);
-                setYear(Number(range.from.slice(0, 4)));
-              }}
-            >
-              <span>Départ</span>
-              <strong>{label(displayFrom)}</strong>
-            </button>
-            <button
-              type="button"
-              aria-label="Modifier le mois de fin"
-              aria-pressed={!!anchor}
-              onClick={() => {
-                setAnchor(displayFrom);
-                setYear(Number((displayTo ?? displayFrom).slice(0, 4)));
-              }}
-            >
-              <span>Fin</span>
-              <strong>{displayTo ? label(displayTo) : "À choisir"}</strong>
-            </button>
-          </div>
-          <div className={styles.yearNav}>
-            <button
-              type="button"
-              aria-label="Année précédente"
-              disabled={year <= Number((anchor ?? min).slice(0, 4))}
-              onClick={() => setYear(year - 1)}
-            >
-              <ChevronLeft size={18} aria-hidden />
-            </button>
-            <select
-              aria-label="Année du calendrier"
-              value={year}
-              onChange={(event) => setYear(Number(event.target.value))}
-            >
-              {Array.from(
-                {
-                  length:
-                    Number(endLimit.slice(0, 4)) -
-                    Number((anchor ?? min).slice(0, 4)) +
-                    1,
-                },
-                (_, index) => Number((anchor ?? min).slice(0, 4)) + index,
-              ).map((value) => (
-                <option key={value} value={value}>
-                  {value}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              aria-label="Année suivante"
-              disabled={year >= Number(endLimit.slice(0, 4))}
-              onClick={() => setYear(year + 1)}
-            >
-              <ChevronRight size={18} aria-hidden />
-            </button>
-          </div>
-          <div className={styles.months}>
-            {MONTHS.map((name, i) => {
-              const month = `${year}-${String(i + 1).padStart(2, "0")}`;
-              const selected = displayTo
-                ? month >= displayFrom && month <= displayTo
-                : month === displayFrom;
-              const edge = month === displayFrom || month === displayTo;
-              return (
-                <button
-                  key={month}
-                  type="button"
-                  aria-pressed={selected}
-                  aria-current={month === current ? "date" : undefined}
-                  disabled={
-                    disabled || month < (anchor ?? min) || month > endLimit
-                  }
-                  className={cn(
-                    styles.month,
-                    selected && styles.selected,
-                    edge && styles.edge,
-                  )}
-                  onClick={() => pick(month)}
-                >
-                  {name}
-                </button>
-              );
-            })}
-          </div>
-          <div className={styles.calendarFooter}>
-            <span>
-              {anchor
-                ? `Départ : ${label(anchor)}`
-                : `${monthRange(range.from, range.to).length} mois affiché${range.from === range.to ? "" : "s"}`}
-            </span>
-            <button type="button" onClick={() => changeOpen(false)}>
-              Annuler
-            </button>
-          </div>
-        </PopoverContent>
-      </Popover>
+            </SheetClose>
+            {calendarBody}
+          </SheetContent>
+        ) : (
+          <PopoverContent
+            className={styles.calendar}
+            sideOffset={8}
+            collisionPadding={12}
+            aria-labelledby={headingId}
+            aria-describedby={hintId}
+          >
+            {calendarBody}
+          </PopoverContent>
+        )}
+      </Root>
     </div>
   );
 }

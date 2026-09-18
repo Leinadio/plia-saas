@@ -148,7 +148,7 @@ export function SpeedDial({
       <button
         ref={triggerRef}
         type="button"
-        className="bg-sarcelle shadow-flottante focus-visible:ring-ring focus-visible:ring-offset-background relative z-20 flex size-13 shrink-0 touch-manipulation items-center justify-center rounded-full text-white transition-transform duration-150 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.97]"
+        className="bg-primary shadow-flottante focus-visible:ring-ring focus-visible:ring-offset-background relative z-20 flex size-13 shrink-0 touch-manipulation items-center justify-center rounded-full text-primary-foreground transition-transform duration-150 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.97]"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-controls={menuId}
