@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import type { AccountForecast } from "@/lib/forecast";
 import type { MonthCell, HistorySection, SoldeColumn, PlannedSoldes, Overspend, IgnoredBlock } from "@/lib/history";
+import { HistoryEmptyState } from "@/components/history-empty-state";
 import { CenterScroll } from "@/components/center-scroll";
 import { HistoryGrid, type SelectGroup } from "@/components/history-grid";
 import { useDetailSidebar } from "@/components/detail-sidebar";
@@ -66,6 +67,14 @@ export function HistoryWithDetail(props: {
   const localNavigation = useHistoryMobileState({ from: props.months[0] ?? props.currentMonth,
     to: props.months.at(-1) ?? props.currentMonth, current: props.currentMonth });
   const mobile = frameNavigation ?? localNavigation;
+  // Check the account’s groups, not visible rows: a different month can be empty
+  // while budgets still exist and must remain accessible in the normal table.
+  if (props.groups.length === 0) {
+    return <HistoryEmptyState key={`${props.accountId}:${props.months.join(",")}:${isMobile ? mobile.month : "desktop"}`}
+      accountId={props.accountId} balance={props.forecast.balance}
+      stripMin={props.stripMin} stripMax={props.stripMax}
+      month={isMobile ? mobile.month : props.months[0] ?? props.currentMonth} />;
+  }
   return (
     <div className="flex flex-col gap-4 pb-[calc(8rem+env(safe-area-inset-bottom))] sm:pb-0">
       {isMobile && !frameNavigation && <HistoryMobileControls navigation={mobile}

@@ -200,12 +200,8 @@ export default async function HistoriquePage({
                 to={to}
                 current={currentMonth}
               >
-                {/* Le tableau s'affiche même sans une seule ligne. Un compte tout neuf
-                    n'a ni transaction ni dépense, et c'est précisément là qu'on veut ses
-                    colonnes de mois et ses boutons de création : le message qui les
-                    remplaçait laissait sans aucun moyen de commencer. Les en-têtes de
-                    section sont rendus même quand la section n'existe pas encore
-                    (cf. sectionSlots). */}
+                {/* Sans budget créé sur ce compte, le relevé propose un premier
+                    budget. Un mois sans ligne garde le tableau si des budgets existent. */}
                 <HistoryWithDetail
                   months={months}
                   currentMonth={currentMonth}

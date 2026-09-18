@@ -1,0 +1,243 @@
+.empty {
+  overflow: hidden;
+  border: 1px solid var(--planora-line);
+  border-radius: 16px;
+  background: var(--planora-surface);
+}
+.intro {
+  padding: 48px 40px 32px;
+  text-align: center;
+}
+.symbol {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 24px;
+  color: var(--planora-action);
+  stroke-width: 1.5;
+}
+.intro h2 {
+  font-family: var(--font-landing-display), var(--font-ui), sans-serif;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.intro h2 span {
+  color: var(--planora-action);
+}
+.intro > p {
+  max-width: 58ch;
+  margin: 20px auto 0;
+  color: var(--planora-muted);
+  font-size: 16px;
+  line-height: 1.75;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+.actions button {
+  min-height: 44px;
+}
+.ideas {
+  padding: 16px 40px 40px;
+}
+.ideas > p {
+  margin-bottom: 16px;
+  color: var(--planora-muted);
+  font-size: 14px;
+  text-align: center;
+}
+.suggestions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.suggestions button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding-block: 20px;
+  border-block: 1px solid var(--planora-line);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+}
+.suggestions button:hover,
+.suggestions button[aria-expanded="true"] {
+  color: var(--planora-action);
+  border-color: var(--planora-action);
+}
+.suggestions svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--planora-action);
+  stroke-width: 1.5;
+}
+.suggestions svg:last-child {
+  margin-left: auto;
+  width: 18px;
+  height: 18px;
+}
+.suggestions strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+}
+.suggestions small {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--planora-muted);
+}
+.creation {
+  margin: 0 40px 40px;
+  padding: 28px;
+  background: var(--planora-soft);
+  border-radius: 12px;
+}
+.creation h3 {
+  font-size: 20px;
+  font-weight: 500;
+}
+.creation > p {
+  margin-top: 8px;
+  color: var(--planora-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.creation form {
+  padding: 24px 0 0;
+  gap: 16px;
+}
+.creation form > div {
+  gap: 8px;
+}
+.creation :is(input, select, button) {
+  min-height: 44px;
+}
+.balance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 24px 40px;
+  background: var(--planora-soft);
+}
+.balance > div {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+.balance span {
+  font-size: 14px;
+  color: var(--planora-muted);
+}
+.balance strong {
+  font-size: 24px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.balance a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 14px;
+  color: var(--planora-action);
+}
+.balance a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.balance svg {
+  width: 18px;
+  height: 18px;
+}
+.empty :is(button, a):focus-visible {
+  outline: 2px solid var(--planora-action);
+  outline-offset: 4px;
+}
+@media (max-width: 900px) {
+  .suggestions {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .suggestions button + button {
+    border-top: 0;
+  }
+}
+@media (max-width: 640px) {
+  .empty {
+    margin-bottom: calc(8rem + env(safe-area-inset-bottom));
+  }
+  .intro {
+    padding: 32px 20px 24px;
+    text-align: left;
+  }
+  .symbol {
+    margin: 0 0 20px;
+    width: 32px;
+    height: 32px;
+  }
+  .intro h2 {
+    font-size: 32px;
+  }
+  .intro > p {
+    font-size: 15px;
+    margin-top: 16px;
+  }
+  .actions {
+    justify-content: flex-start;
+    margin-top: 24px;
+    gap: 8px;
+  }
+  .actions button {
+    white-space: normal;
+    text-align: left;
+    height: auto;
+    padding-block: 12px;
+  }
+  .ideas {
+    padding: 8px 20px 28px;
+  }
+  .ideas > p {
+    text-align: left;
+  }
+  .creation {
+    margin: 0 16px 24px;
+    padding: 20px 16px;
+  }
+  .creation form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .creation :is(input, select) {
+    width: 100%;
+    max-width: none;
+  }
+  .balance {
+    padding: 20px;
+    gap: 12px;
+  }
+  .balance > div {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .suggestions button {
+    transition: none;
+  }
+}

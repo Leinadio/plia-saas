@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { createGroup } from "@/app/app/historique/actions";
 import { useMiseAJour } from "@/components/mise-a-jour";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import { draftMode, draftStart, type PeriodDraft } from "@/lib/group-period";
 export function NewGroupInline({
   accountId,
   direction = "out",
+  defaultName = "",
   planned = true,
   stripMin,
   stripMax,
@@ -29,6 +30,7 @@ export function NewGroupInline({
 }: {
   accountId: string;
   direction?: "in" | "out";
+  defaultName?: string;
   // Le bloc de dépenses d'où le formulaire a été ouvert : prévues ou non prévues.
   // Rien ne le demande à l'écran — le bouton « + » sur lequel on a cliqué le dit déjà.
   planned?: boolean;
@@ -39,6 +41,7 @@ export function NewGroupInline({
 }) {
   // Mois choisissables : toute la frise du compte, stripMin compris — un budget
   // oublié se rattrape en arrière, pas seulement à partir d'aujourd'hui.
+  const id = useId();
   const defaut = clampMonth(defaultMonth, stripMin, stripMax);
 
   // Par défaut : à partir du mois de la colonne, sans fin. C'est le cas courant, et il
@@ -73,12 +76,12 @@ export function NewGroupInline({
   return (
     <form action={submit} className="flex flex-wrap items-end gap-2 py-2 pl-6">
       <div className="flex flex-col gap-1">
-        <Label className="font-normal">Nom</Label>
-        <Input name="name" required className="max-w-40" placeholder={direction === "in" ? "Ex: Salaire" : "Ex: Courses"} />
+        <Label htmlFor={`${id}-name`} className="font-normal">Nom</Label>
+        <Input id={`${id}-name`} defaultValue={defaultName} name="name" required className="max-w-40" placeholder={direction === "in" ? "Ex: Salaire" : "Ex: Courses"} />
       </div>
       <div className="flex flex-col gap-1">
-        <Label className="font-normal">Montant €</Label>
-        <Input type="number" name="amount" step="0.01" min="0" className="max-w-28" placeholder="0.00" />
+        <Label htmlFor={`${id}-amount`} className="font-normal">Montant €</Label>
+        <Input id={`${id}-amount`} type="number" name="amount" step="0.01" min="0" className="max-w-28" placeholder="0.00" />
       </div>
       <PeriodFields draft={draft} onChange={setDraft} stripMin={stripMin} stripMax={stripMax} />
       <Button type="submit" size="sm" variant="secondary" disabled={pending}>
