@@ -68,6 +68,6 @@ export function EnvelopeRemainder({ cell, future = false, total = false, uncateg
     <span className="history-envelope-result-value" data-budget-remaining="">{money.format(value)}</span>
     <span className="history-envelope-result-caption">{caption}</span>
     {released && <span className="history-envelope-result-note">{total ? "Budgets clôturés après remboursement" : "Budget clôturé après remboursement"}</span>}
-    {uncategorized && <span className="history-envelope-result-note">Provision et reçus inclus</span>}
+    {uncategorized && cell.budgeted > 0 && <span className="history-envelope-result-note">Provision incluse</span>}
   </span>;
 }

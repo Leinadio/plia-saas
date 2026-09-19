@@ -756,7 +756,7 @@ function grossGroupNodes(rows: HistoryRow[], month: string, index: number, direc
   })).filter(node => Math.abs(node.amount) >= 0.005);
 }
 
-function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, solde, planPrevu, planDepass, uncatInSec, selCellKey, prevDisp, noticeOf, total, tint, onboarding }: {
+function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, solde, planPrevu, planDepass, selCellKey, prevDisp, noticeOf, total, tint, onboarding }: {
   sec: HistorySection;
   // Teinte de fond des cellules, quand elle ne découle pas de `total` : les
   // sous-totaux des deux blocs de dépenses sont des sommes sans être LE total.
@@ -770,15 +770,9 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
   currentMonth: string;
   onSelect?: (d: CellDetail) => void;
   solde?: (number | null)[];
-  // Soldes du plan (prévu / si dépassement) au niveau de cette ligne, pour les non
-  // catégorisés : ils ne sont pas planifiés, donc le solde du plan les traverse
-  // (les reçus reprennent la valeur après les rémunérations, les dépenses la
-  // clôture du plan).
+  // Soldes courus après les reçus ou la provision et les dépassements de cette ligne.
   planPrevu?: (number | null)[];
   planDepass?: (number | null)[];
-  // Section « non catégorisés » côté reçus : fournie à la section côté dépenses
-  // pour calculer sa Balance (Reçu de la ligne du haut − Dépensé de celle-ci).
-  uncatInSec?: HistorySection;
   selCellKey?: ReadonlySet<string>;
   // Clé de la dernière ligne AFFICHÉE au-dessus, par colonne de solde et par mois
   // (cases vides sautées) : pour surligner la bonne case « Solde précédent ».
@@ -826,29 +820,15 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
           : grossGroupNodes(sec.rows, month, i, "in");
         const recuDetail: CellDetail = makeDetail(uncatIn ? "Reçu" : EXPENSE_RECEIPTS_LABEL, recuNodes ?? [], { subtitle, result: parts.rentre });
 
-        // Balance des non catégorisés (côté dépenses) : le mouvement net = Reçu de
-        // la ligne « Non catégorisés » du haut (reçus) − Dépensé de celle-ci.
-        const inRecu = uncatInSec?.totals[i]?.recu ?? 0;
-        const inRecuNodes = uncatInSec ? sectionTxnChildren(uncatInSec.txns, month, false, i) : undefined;
-        // La Balance est celle que computeHistory a posée, y compris pour les non
-        // catégorisés (provision + reçus sans groupe − dépensé) : la grille ne la
-        // recalcule pas de son côté.
+        // Le reste est calculé dans computeHistory : aucun revenu d'une autre
+        // section ne finance implicitement ces dépenses.
         const resteVal = c.balance;
         const releasedBudget = parts.released;
-        // Balance toujours affichée → toujours cliquable. Décomposition : Reçu (ligne
-        // des reçus non catégorisés) − Dépensé pour les non catégorisés, Budget −
-        // Dépensé pour les autres sections (quand l'invariant tient).
         const resteDetail: CellDetail = makeDetail(
           "Reste / manque",
           isUncat
             ? [
-                ...(c.budgeted > 0.005 ? [{ label: "Provision", amount: c.budgeted, ref: ck("budget") }] : []),
-                {
-                  label: "Reçu",
-                  amount: inRecu,
-                  ref: uncatInSec ? cellKey(sectionRowKey(uncatInSec), "recu", i) : undefined,
-                  children: inRecuNodes ?? undefined,
-                },
+                { label: "Budget", amount: c.budgeted, ref: ck("budget") },
                 {
                   label: "Dépensé",
                   amount: -parts.sorti,
@@ -891,21 +871,14 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
               )
             : null;
 
-        // Dépassement des non catégorisés = la part rouge de leur Balance (dépensé
-        // au-delà des reçus et de la provision non catégorisés). Sert au calcul du
-        // solde si dépassement. Mois futur : repli sur celui du mois courant (plus de
-        // report retenu — cf. computePlannedSoldes).
-        const ciIdx = months.indexOf(currentMonth);
+        // Les reçus ne réduisent pas le dépassement du budget des dépenses.
         const isFuture = month > currentMonth;
-        const srcI = isFuture && ciIdx !== -1 ? ciIdx : i;
         const depassVal =
-          isUncat && !uncatIn ? uncatOverspendOf(sec.totals[srcI], uncatInSec?.totals[srcI]) : 0;
+          isUncat && !uncatIn ? uncatOverspendOf(c) : 0;
+        const plannedIn = uncatIn ? c.recu : 0;
         const plannedOut = isUncat && !uncatIn ? c.budgeted + (isFuture ? 0 : depassVal) : 0;
 
-        // Non catégorisés comme étape du plan : planPrevu/planDepass fournissent les
-        // valeurs courues à cette ligne (le débordement net est déjà retiré de la
-        // chaîne « si dépassement » — cf. computePlannedSoldes). Le détail repose le
-        // calcul : valeur précédente (au-dessus) − dépassement de la ligne.
+        // Chaque détail reprend le solde précédent et le mouvement de cette ligne.
         const soldePrevuVal = planPrevu?.[i] ?? null;
         const soldeDepassVal = planDepass?.[i] ?? null;
         const soldePrevuDetail: CellDetail | null =
@@ -913,8 +886,10 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
             ? makeDetail(
                 COL_LABEL.soldePrevu,
                 [
-                  { label: "Montant avant cette étape", amount: soldePrevuVal + c.budgeted, ref: prevDisp?.soldePrevu?.[i] ? cellKey(prevDisp.soldePrevu[i]!, "soldePrevu", i) : undefined },
-                  { label: "Budget dépense", amount: -c.budgeted, ref: ck("budget") },
+                  { label: "Montant avant cette étape", amount: soldePrevuVal + c.budgeted - plannedIn, ref: prevDisp?.soldePrevu?.[i] ? cellKey(prevDisp.soldePrevu[i]!, "soldePrevu", i) : undefined },
+                  ...(uncatIn
+                    ? [{ label: "Reçu", amount: plannedIn, ref: ck("recu"), children: recuNodes }]
+                    : [{ label: "Budget dépense", amount: -c.budgeted, ref: ck("budget") }]),
                 ],
                 { subtitle, result: soldePrevuVal },
               )
@@ -924,19 +899,13 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
             ? makeDetail(
                 COL_LABEL.soldeDepass,
                 [
-                  // Les non catégorisés récapitulent tout : ils affichent le cumul
-                  // global (runD). Le détail chaîne donc sur la valeur du dessus
-                  // (soldeDepassVal + depassVal = le cumul avant leur propre débordement).
-                  { label: "Montant avant cette étape", amount: soldeDepassVal + plannedOut, ref: prevDisp?.soldeDepass?.[i] ? cellKey(prevDisp.soldeDepass[i]!, "soldeDepass", i) : undefined },
+                  { label: "Montant avant cette étape", amount: soldeDepassVal + plannedOut - plannedIn, ref: prevDisp?.soldeDepass?.[i] ? cellKey(prevDisp.soldeDepass[i]!, "soldeDepass", i) : undefined },
+                  ...(uncatIn ? [{ label: "Reçu", amount: plannedIn, ref: ck("recu"), children: recuNodes }] : []),
                   ...(c.budgeted > 0.005 && !uncatIn
                     ? [{ label: "Provision", amount: -c.budgeted, ref: ck("budget") }]
                     : []),
-                  // Débordement retenu (marqué permanent) sur les mois futurs, sinon celui du
-                  // mois courant. Renvoi vers la Balance du mois SOURCE (srcI) : sur un
-                  // mois de projection, le débordement vient du mois courant, pas du mois
-                  // affiché (dont la Balance est à 0).
                   ...(!isFuture && depassVal > 0.005
-                    ? [{ label: "Dépassement", amount: -depassVal, ref: cellKey(rowKey, "reste", srcI) }]
+                    ? [{ label: "Dépassement", amount: -depassVal, ref: cellKey(rowKey, "reste", i) }]
                     : []),
                 ],
                 { subtitle, result: soldeDepassVal },
@@ -996,17 +965,14 @@ function SectionTotalsCells({ sec, accountId, months, currentMonth, onSelect, so
               {s != null ? <TreasuryAmount v={s} delta={net} /> : ""}
             </CellAmount>
           ),
-          // Non catégorisés : on affiche le solde du plan (identique aux clôtures
-          // prévues du mois) ; les autres sections de dépense restent vides. Mouvement
-          // de la ligne : −budget (provision) pour le prévu, −débordement pour le si
-          // dépassement (cf. les nœuds « précédent » des détails ci-dessus).
+          // Reçu positif ou retrait de la provision et, le cas échéant, de son excès.
           soldePrevu: (b) =>
             isUncat
-              ? plannedSoldeCell("soldePrevu", soldePrevuVal, b, soldePrevuDetail, onSelect, ck("soldePrevu"), selCellKey, -c.budgeted)
+              ? plannedSoldeCell("soldePrevu", soldePrevuVal, b, soldePrevuDetail, onSelect, ck("soldePrevu"), selCellKey, plannedIn - c.budgeted)
               : plannedSoldeCol("soldePrevu", null, b),
           soldeDepass: (b) =>
             isUncat
-              ? plannedSoldeCell("soldeDepass", soldeDepassVal, b, soldeDepassDetail, onSelect, ck("soldeDepass"), selCellKey, -plannedOut)
+              ? plannedSoldeCell("soldeDepass", soldeDepassVal, b, soldeDepassDetail, onSelect, ck("soldeDepass"), selCellKey, plannedIn - plannedOut)
               : plannedSoldeCol("soldeDepass", null, b),
         };
 
@@ -1187,6 +1153,10 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
           amount: prevuClose != null ? prevuClose - prevuPrev : 0,
           children: [
             { label: "Revenus prévus", amount: budgetRemTotal, ref: ck("revenus"), children: revenusChildren },
+            ...sections
+              .filter(sec => sec.kind === "uncategorized" && sec.uncatDirection === "in")
+              .map(sec => sectionNode(sec, i, month, "recu"))
+              .filter(node => node.amount !== 0),
             { label: "Budget", amount: -expenseBudget, ref: ck("budget"), children: budgetChildren },
             ...allRows
               .filter(r => r.direction === "out" && r.cells[i].plannedExpense != null)
@@ -1227,7 +1197,7 @@ function GrandTotalsCells({ sections, grand, solde, planned, months, currentMont
           .map((r) => ({ id: r.id, name: r.name, amount: r.cells[cs].balance }));
         const grandOverspendChildren: DetailNode[] = [
           ...overspendRows.map((r): DetailNode => ({ label: r.name, amount: r.amount, ref: cellKey(groupRow(r.id), "reste", i) })),
-          // Débordement net des non catégorisés (dépensé au-delà des reçus), inclus
+          // Débordement des non catégorisés (dépensé au-delà de la provision), inclus
           // dans la chaîne « si dépassement » comme les dépassements de budget.
           ...(uncatOs > 0.005
             ? [{ label: "Non catégorisés", amount: -uncatOs, ref: cellKey(sectionRow("uncategorized"), "reste", i) }]
@@ -2154,7 +2124,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
   // Ligne « Non catégorisés » d'une des deux sections (reçus / dépenses) : total
   // dépliable sur ses transactions. Les reçus s'affichent sous les rémunérations,
   // les dépenses après les enveloppes.
-  const renderUncatRows = (sec: HistorySection, secs: HistorySection[]) => {
+  const renderUncatRows = (sec: HistorySection) => {
     const dir = sec.uncatDirection ?? "out";
     const uKey = uncatOpenKey(dir);
         const uOpen = isOpen(uKey);
@@ -2187,7 +2157,6 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             solde={solde.uncategorizedRunning?.[dir] ?? undefined}
             planPrevu={planPrevu}
             planDepass={planDepass}
-            uncatInSec={dir === "out" ? secs.find((s) => s.kind === "uncategorized" && s.uncatDirection === "in") : undefined}
             selCellKey={selCellKey}
             prevDisp={{ solde: prevDisplayedByCol.solde.get(rowKey), soldePrevu: prevDisplayedByCol.soldePrevu.get(rowKey), soldeDepass: prevDisplayedByCol.soldeDepass.get(rowKey) }}
             noticeOf={noticeDe(0, null)}
@@ -2507,7 +2476,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             </TeinteSection.Provider>
             {uncatIn && (
               <TeinteSection.Provider value={INCOME_TINT}>
-                {renderUncatRows(uncatIn, secs)}
+                {renderUncatRows(uncatIn)}
               </TeinteSection.Provider>
             )}
             <TableRow data-history-total="income" className="font-medium">
@@ -2535,7 +2504,7 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
             {/* Les non catégorisés portent la couleur de leur sens : ce qui entre
                 avec les revenus, ce qui sort avec les dépenses. */}
             <TeinteSection.Provider value={(sec.uncatDirection ?? "out") === "in" ? INCOME_TINT : EXPENSE_TINT}>
-              {renderUncatRows(sec, secs)}
+              {renderUncatRows(sec)}
             </TeinteSection.Provider>
           </Fragment>
         );

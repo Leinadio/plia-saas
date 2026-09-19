@@ -284,13 +284,9 @@ describe("Répartition des transactions sous les groupes", () => {
     // L'argent qui entre dans le bloc « in » (affiché sous les rémunérations)…
     expect(uncatIn.txns!.map((t) => t.id)).toEqual(["2"]);
     expect(uncatIn.totals[0]).toEqual({ budgeted: 0, depense: 0, recu: 100, balance: 0, depenseBrute: 0, recuBrut: 100 });
-    // … et l'argent qui sort dans le bloc « out » (après les enveloppes). Sans
-    // provision (aucun budget daté du groupe 0), la Balance = reçus non catégorisés
-    // du bloc « in » (100) − dépensé (40) = 60. Le `recu` de CETTE section (« out »)
-    // reste 0 (elle ne contient que les sorties) : c'est bien le reçu croisé du bloc
-    // « in » qui alimente la Balance, comme le Reste affiché dans la grille.
+    // Sans budget, les 40 dépensés manquent. Les 100 reçus restent dans les revenus.
     expect(uncatOut.txns!.map((t) => t.id)).toEqual(["1"]);
-    expect(uncatOut.totals[0]).toEqual({ budgeted: 0, depense: 40, recu: 0, balance: 60, depenseBrute: 40, recuBrut: 0 });
+    expect(uncatOut.totals[0]).toEqual({ budgeted: 0, depense: 40, recu: 0, balance: -40, depenseBrute: 40, recuBrut: 0 });
     expect([...uncatIn.txns!, ...uncatOut.txns!].every((t) => t.groupId === null)).toBe(true);
     // Ordre : l'argent qui entre juste après les rémunérations (ici : en tête), l'argent qui sort en dernier.
     expect(sections.map((s) => (s.kind === "uncategorized" ? `uncat-${s.uncatDirection}` : s.kind))).toEqual([
@@ -449,8 +445,8 @@ describe("Les soldes prévisionnels", () => {
     expect(pe.depassClosings[1]).toBeCloseTo(pe.prevuClosings[1]!, 2);
   });
 
-  it("devrait faire baisser la ligne des dépassements avec l'argent dépensé sans groupe, l'argent reçu sans groupe n'y changeant rien", () => {
-    // 500 dépensés sans groupe, 200 reçus sans groupe -> débordement net 300.
+  it("devrait ajouter les reçus puis retirer les dépenses sans groupe à leurs étapes respectives", () => {
+    // 200 reçus puis 500 dépensés : mouvement net de −300, dépassement de 500.
     const txns = [
       tx({ id: "a", date: "2026-07-05", amount: -500, label: "ACHAT X" }),
       tx({ id: "b", date: "2026-07-06", amount: 200, label: "REMBOURSEMENT" }),
@@ -460,13 +456,13 @@ describe("Les soldes prévisionnels", () => {
     const solde = computeSolde(sections, months, "2026-07", 1000);
     const p = computePlannedSoldes(sections, months, "2026-07", solde.openings);
     const open = solde.openings[0];
-    // Prévu simple : les non catégorisés ne changent rien (aucun budget).
-    expect(p.prevuClosings[0]).toBeCloseTo(open, 2);
+    // Les 200 reçus sont connus ; aucun budget de dépense n’a été prévu.
+    expect(p.prevuClosings[0]).toBeCloseTo(open + 200, 2);
     // Ligne dépassement : la clôture retire le débordement net (300), en continu avec
     // la valeur courue à l'étape « dépenses ».
     expect(p.depassClosings[0]).toBeCloseTo(open - 300, 2);
     expect(p.uncatDepassRunning.out?.[0]).toBeCloseTo(open - 300, 2);
-    expect(p.uncatDepassRunning.in?.[0]).toBeCloseTo(open, 2); // le reçu ne retire rien
+    expect(p.uncatDepassRunning.in?.[0]).toBeCloseTo(open + 200, 2);
     // Mois futur : plus aucun report, le « si dépassement » rejoint le « prévu ».
     expect(p.depassClosings[1]).toBeCloseTo(p.prevuClosings[1]!, 2);
   });
@@ -682,12 +678,12 @@ describe("Rappels d'argent dépensé au-delà du budget", () => {
       tx({ id: "1", date: "2026-06-10", amount: -350, label: "CARREFOUR", groupId: 1 }), // juin : dépassement 50
       tx({ id: "2", date: "2026-07-10", amount: -380, label: "CARREFOUR", groupId: 1 }), // juillet (courant) : 80
       tx({ id: "3", date: "2026-06-05", amount: -120, label: "SANS GROUPE" }), // uncat juin : 120 dépensés
-      tx({ id: "4", date: "2026-06-06", amount: 40, label: "REMBOURSEMENT" }), // uncat juin : 40 reçus -> net 80
+      tx({ id: "4", date: "2026-06-06", amount: 40, label: "REMBOURSEMENT" }), // revenu distinct, ne réduit pas le dépassement de 120
     ];
     const r = over([courses], txns, "2026-07");
     expect(r.byMonth["2026-06"]).toEqual([
       { groupId: 1, lineId: null, name: "Courses", month: "2026-06", amount: 50 },
-      { groupId: 0, lineId: null, name: "Non catégorisés", month: "2026-06", amount: 80 },
+      { groupId: 0, lineId: null, name: "Non catégorisés", month: "2026-06", amount: 120 },
     ]);
     expect(r.byMonth["2026-07"]).toEqual([
       { groupId: 1, lineId: null, name: "Courses", month: "2026-07", amount: 80 },
@@ -989,16 +985,16 @@ describe("Durée de vie d'un groupe", () => {
   it("devrait retirer la provision du dépassement non catégorisé", () => {
     const txns = [
       tx({ id: "a", date: "2026-06-05", amount: -300, label: "SANS GROUPE" }), // dépensé 300 sans groupe
-      tx({ id: "b", date: "2026-06-06", amount: 40, label: "REMB" }), // reçu 40 -> net 260
+      tx({ id: "b", date: "2026-06-06", amount: 40, label: "REMB" }), // revenu distinct de la dépense
     ];
     // Juin est ici le mois courant : c'est le seul qui se tranche encore.
-    // Sans provision : dépassement = 260.
+    // Sans provision : dépassement = 300.
     const sans = over([], txns, "2026-06");
-    expect(sans.byMonth["2026-06"]).toEqual([{ groupId: 0, lineId: null, name: "Non catégorisés", month: "2026-06", amount: 260 }]);
-    // Provision de 100 en vigueur en juin (budget daté du groupe 0) : dépassement = 160.
+    expect(sans.byMonth["2026-06"]).toEqual([{ groupId: 0, lineId: null, name: "Non catégorisés", month: "2026-06", amount: 300 }]);
+    // Provision de 100 en vigueur en juin (budget daté du groupe 0) : dépassement = 200.
     const dated = { 0: [{ effectiveMonth: "2026-06", amount: 100 }] };
     const avec = over([], txns, "2026-06", dated);
-    expect(avec.byMonth["2026-06"]).toEqual([{ groupId: 0, lineId: null, name: "Non catégorisés", month: "2026-06", amount: 160 }]);
+    expect(avec.byMonth["2026-06"]).toEqual([{ groupId: 0, lineId: null, name: "Non catégorisés", month: "2026-06", amount: 200 }]);
   });
 });
 
@@ -1048,7 +1044,7 @@ describe("Ce qu'une ligne apporte au plan du mois", () => {
 // verrouille la règle ici, à sa place : la Balance stockée EST celle que le tableau
 // montre, il n'y a plus qu'une seule vérité à maintenir.
 describe("La Balance des non catégorisés, telle que le tableau la lit", () => {
-  it("devrait valoir provision + reçus sans groupe − dépenses sans groupe", () => {
+  it("devrait valoir provision − dépenses sans groupe, indépendamment des reçus", () => {
     const dated = { 0: [{ effectiveMonth: "2026-07", amount: 100 }] };
     const txns = [
       tx({ id: "a", date: "2026-07-05", amount: -180, label: "SANS GROUPE" }),
@@ -1057,10 +1053,11 @@ describe("La Balance des non catégorisés, telle que le tableau la lit", () => 
     const sections = hist([], txns, ["2026-07"], "2026-07", dated);
     const out = sections.find((s) => s.kind === "uncategorized" && (s.uncatDirection ?? "out") === "out")!;
     const inSec = sections.find((s) => s.kind === "uncategorized" && s.uncatDirection === "in")!;
-    // 100 de provision + 40 remboursés − 180 dépensés = −40.
-    expect(out.totals[0].balance).toBeCloseTo(-40, 5);
+    // 100 de provision − 180 dépensés = −80. Les reçus restent distincts.
+    expect(out.totals[0].balance).toBeCloseTo(-80, 5);
+    expect(inSec.totals[0].recu).toBe(40);
     expect(out.totals[0].balance).toBeCloseTo(
-      out.totals[0].budgeted + inSec.totals[0].recu - out.totals[0].depense,
+      out.totals[0].budgeted - out.totals[0].depense,
       5,
     );
   });
@@ -1083,30 +1080,31 @@ describe("Le débordement des dépenses sans groupe", () => {
       tx({ id: "b", date: "2026-07-06", amount: 40, label: "REMBOURSEMENT" }),
     ], ["2026-07"], "2026-07", dated);
 
-  it("devrait compter ce qui est sorti au-delà des remboursements et de la provision", () => {
-    // 180 sortis, 40 remboursés, 100 de provision -> 40 de débordement.
-    expect(uncatOverspend(sectionsOf({ 0: [{ effectiveMonth: "2026-07", amount: 100 }] }), 0)).toBeCloseTo(40, 5);
+  it("devrait compter ce qui est sorti au-delà de la provision", () => {
+    // 180 sortis, 100 de provision -> 80 de débordement, quels que soient les reçus.
+    expect(uncatOverspend(sectionsOf({ 0: [{ effectiveMonth: "2026-07", amount: 100 }] }), 0)).toBeCloseTo(80, 5);
   });
 
-  it("devrait retomber à zéro quand la provision et les remboursements couvrent tout", () => {
+  it("devrait retomber à zéro quand la provision couvre tout", () => {
     expect(uncatOverspend(sectionsOf({ 0: [{ effectiveMonth: "2026-07", amount: 200 }] }), 0)).toBe(0);
   });
 
   it("devrait tout compter comme débordement quand aucune provision n'est posée", () => {
-    expect(uncatOverspend(sectionsOf(), 0)).toBeCloseTo(140, 5);
+    expect(uncatOverspend(sectionsOf(), 0)).toBeCloseTo(180, 5);
   });
 
-  it("devrait donner le même résultat à partir des deux totaux directement", () => {
+  it("devrait donner le même résultat à partir du total des dépenses directement", () => {
     // La grille appelle cette forme-là : les deux chemins doivent coïncider, sinon
     // la case et son explication afficheraient deux chiffres différents.
     const sections = sectionsOf({ 0: [{ effectiveMonth: "2026-07", amount: 100 }] });
     const out = sections.find((s) => s.kind === "uncategorized" && (s.uncatDirection ?? "out") === "out")!;
     const inSec = sections.find((s) => s.kind === "uncategorized" && s.uncatDirection === "in")!;
-    expect(uncatOverspendOf(out.totals[0], inSec.totals[0])).toBeCloseTo(uncatOverspend(sections, 0), 5);
+    expect(inSec.totals[0].recu).toBe(40);
+    expect(uncatOverspendOf(out.totals[0])).toBeCloseTo(uncatOverspend(sections, 0), 5);
   });
 
   it("ne devrait rien voir déborder quand il n'y a aucune dépense sans groupe", () => {
-    expect(uncatOverspendOf(undefined, undefined)).toBe(0);
+    expect(uncatOverspendOf(undefined)).toBe(0);
   });
 });
 

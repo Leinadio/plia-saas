@@ -380,15 +380,6 @@ export function computeHistory(
     return { kind: "expense", rows, totals: sumRows(rows) };
   };
 
-  // Reçus non catégorisés d'un mois (section « in »), indépendamment de la
-  // direction demandée à `uncategorized` ci-dessous : sert à ce que la Balance
-  // stockée de la section « out » inclue les remboursements croisés, comme le
-  // Reste recomposé et affiché dans la grille (history-grid.tsx, resteVal).
-  const uncatInRecuOf = (m: string): number =>
-    owned
-      .filter((o) => o.ownerId === null && o.t.amount > 0 && o.month === m)
-      .reduce((s, o) => s + o.t.amount, 0);
-
   // Transactions sans groupe, scindées par sens : les reçus (« in », affichés sous
   // les rémunérations) et les dépenses (« out », affichées après les enveloppes).
   const uncategorized = (direction: "in" | "out"): HistorySection | null => {
@@ -401,20 +392,12 @@ export function computeHistory(
       const monthTxns = mine.filter((t) => moisBudget(t) === m);
       const depense = monthTxns.filter((t) => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
       const recu = monthTxns.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
-      // Les dépenses non catégorisées reçoivent la provision (budget daté du groupe 0)
-      // comme budget : la Balance devient provision + reçus non catégorisés (section
-      // « in ») − dépensé, comme une enveloppe. Le `recu` de CETTE section (« out »)
-      // est toujours 0 (elle ne contient que les sorties) : sans les reçus croisés de
-      // la section « in », la Balance stockée sous-estimerait le Reste réellement
-      // affiché (cf. resteVal dans history-grid.tsx, qui fait le même calcul).
-      // Les reçus non catégorisés, eux, n'ont toujours pas de budget (0, reste à 0) :
-      // l'argent reçu sans groupe n'est jamais soustrait d'un « reste ».
-      // Rien ne va à contre-sens d'une section sans poste : le brut y vaut le
-      // réalisé, et les colonnes se totalisent quand même.
+      // Les reçus restent dans leur section de revenus. Ils ne financent pas
+      // implicitement le budget des dépenses non catégorisées.
       const brut = { depenseBrute: depense, recuBrut: recu };
       if (direction === "out") {
         const budgeted = provisionInForce(dated, m);
-        return { budgeted, depense, recu, ...brut, balance: budgeted + uncatInRecuOf(m) - depense };
+        return { budgeted, depense, recu, ...brut, balance: budgeted - depense };
       }
       return { budgeted: 0, depense, recu, ...brut, balance: 0 };
     });
@@ -682,9 +665,9 @@ export type PlannedSoldes = {
   prevuRowRunning: Record<number, (number | null)[]>;
   depassRowRunning: Record<number, (number | null)[]>;
   // Valeurs courues des chaînes au niveau des deux étapes « non catégorisés »
-  // (reçus / dépenses). Le prévu les traverse sans changer (rien de planifié) ;
-  // le « si dépassement » retire, à l'étape dépenses, leur débordement net
-  // (dépensé au-delà des reçus non catégorisés), maintenu sur les mois futurs.
+  // (reçus / dépenses). Les reçus connus augmentent les deux chaînes ; la provision
+  // et son dépassement sont retirés à l'étape dépenses. Aucun dépassement n'est
+  // reconduit sur les mois futurs.
   uncatPrevuRunning: { in?: (number | null)[]; out?: (number | null)[] };
   uncatDepassRunning: { in?: (number | null)[]; out?: (number | null)[] };
   // Valeurs des deux chaînes au pied de chacun des deux blocs de dépenses, pour leur
@@ -787,19 +770,17 @@ export function computeTableEstimate(
 }
 
 // Débordement net des non catégorisés pour un mois : dépensé (section « out »)
-// au-delà des reçus (section « in ») et de la provision en vigueur. C'est la part
+// au-delà de la provision en vigueur. C'est la part
 // rouge de leur Balance. `outT.budgeted` porte déjà la provision (posée par
 // `computeHistory`), donc ce calcul retourne exactement l'excès au-delà d'elle.
 export function uncatOverspend(sections: HistorySection[], i: number): number {
   const outT = sections.find((s) => s.kind === "uncategorized" && (s.uncatDirection ?? "out") === "out")?.totals[i];
-  const inT = sections.find((s) => s.kind === "uncategorized" && s.uncatDirection === "in")?.totals[i];
-  return uncatOverspendOf(outT, inT);
+  return uncatOverspendOf(outT);
 }
 
-// Même règle, à partir des deux totaux déjà en main (la grille les a sous la main
-// quand elle rend la ligne « Non catégorisés » : inutile de rechercher les sections).
-export function uncatOverspendOf(outT?: MonthCell, inT?: MonthCell): number {
-  return Math.max(0, (outT?.depense ?? 0) - (inT?.recu ?? 0) - (outT?.budgeted ?? 0));
+// Même règle à partir du total des dépenses déjà disponible dans la grille.
+export function uncatOverspendOf(outT?: MonthCell): number {
+  return Math.max(0, (outT?.depense ?? 0) - (outT?.budgeted ?? 0));
 }
 
 // Dépassements par (ce qui porte un budget) x mois, groupés par mois.
@@ -871,8 +852,7 @@ export function computeOverspends(
     }
     const uncat = owned.filter((o) => o.ownerId === null && o.month === m);
     const dep = uncat.filter((o) => o.t.amount < 0).reduce((s, o) => s + Math.abs(o.t.amount), 0);
-    const rec = uncat.filter((o) => o.t.amount > 0).reduce((s, o) => s + o.t.amount, 0);
-    const os = Math.max(0, dep - rec - provisionInForce(dated, m));
+    const os = Math.max(0, dep - provisionInForce(dated, m));
     if (os > 0.005) noter({ groupId: 0, lineId: null, name: "Non catégorisés", month: m, amount: os });
   }
   // Tri par nom, pour un bandeau et des étiquettes stables.
@@ -910,8 +890,8 @@ export function groupsWithPending(byMonth: Record<string, Overspend[]>): Set<str
 // de fin du mois courant (currentEstimate, sinon la clôture du plan), les suivants
 // enchaînent ; aucun dépassement n'y est plus supposé (plus de report), le « si
 // dépassement » y rejoint donc le « prévu ». Les non catégorisés entrent dans le
-// prévu via leur provision (une dépense planifiée, comme un budget d'enveloppe), et
-// leur débordement net au-delà de la provision est retiré de la chaîne « si
+// prévu via leurs reçus connus et leur provision (une dépense planifiée, comme
+// un budget d'enveloppe). L'excès au-delà de la provision est retiré de la chaîne « si
 // dépassement » (à leur étape « dépenses », après les enveloppes) : la colonne se
 // lit ainsi en continu jusqu'au « Solde actuel ».
 export function computePlannedSoldes(
@@ -963,7 +943,12 @@ export function computePlannedSoldes(
         // sur un mois ancré (passé / courant), le débordement net au-delà de la
         // provision ; sur un mois futur, plus aucun report : il rejoint le prévu.
         const dir = sec.uncatDirection ?? "out";
-        if (dir === "out") {
+        if (dir === "in") {
+          // Reçus connus : comptés une fois, à leur propre étape, sans masquer
+          // le dépassement d'une dépense située plus bas.
+          runP += sec.totals[i].recu;
+          runD += sec.totals[i].recu;
+        } else {
           const prov = provisionInForce(dated, months[i]);
           runP -= prov;
           if (anchored) runD -= prov + uncatOverspend(sections, osMonth);
