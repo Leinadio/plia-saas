@@ -169,7 +169,7 @@ function OverspendTag() {
 }
 
 // La largeur des noms est commune au cadre et aux sections : 320 px sur grand
-// écran, 256 px sur tablette, puis toute la carte sur téléphone. Elle reste
+// écran, 256 px sur tablette, 192 px sur téléphone. Elle reste
 // stable quand on déplie des transactions à long libellé.
 const COL1_W = "w-[var(--history-name-width)]";
 // Les sections et le cadre réservent la même largeur de données par mois.
@@ -2550,13 +2550,6 @@ export function HistoryGrid({ months, currentMonth, stripMin, stripMax, forecast
       style={tableWidths}
       className={cn(
         "table-fixed w-[var(--history-table-width)] text-[13px] tabular-nums [&_td]:overflow-hidden [&_th]:overflow-hidden",
-        // Le serrage de téléphone. Il ne touche QUE les cases de chiffres —
-        // reconnaissables à leur tabular-nums — parce que l'épine, elle, porte du
-        // texte : la rétrécir aussi rendrait les noms de postes illisibles. Onze
-        // pixels et deux de gouttière font gagner une centaine de pixels par mois,
-        // soit une colonne et demie de plus à l'écran.
-        "max-sm:[&_td.tabular-nums]:px-1 max-sm:[&_td.tabular-nums]:text-[11px]",
-        "max-sm:[&_th.tabular-nums]:px-1 max-sm:[&_th.tabular-nums]:text-[11px]",
       )}
     >
       {/* Le colgroup ne porte plus de teinte : il ne reste que la structure des

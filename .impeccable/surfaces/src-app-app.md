@@ -194,7 +194,23 @@ calculs, sections ouvertes, largeurs et cibles mobiles de 44 × 44 px sont conse
 
 ## Contrat d’interaction mobile
 
-### Vue d’ensemble sur téléphone — mise à jour du 15 septembre 2026
+### Vue d’ensemble commune — 2 octobre 2026
+
+À la demande de l’utilisateur, le téléphone reprend le tableau de l’ordinateur,
+avec toutes les colonnes, les mois et les mêmes montants. Le défilement horizontal
+reste à l’intérieur de la carte ; les noms défilent avec les chiffres sous 640 px.
+Leur largeur est de 192 px sur téléphone, 256 px sur tablette et 320 px sur ordinateur.
+Les modes mobiles « Par mois » et « Comparer » ne sont plus proposés. Le choix de
+période, les ajouts et les calculs restent disponibles ; le détail et le calendrier
+conservent leurs panneaux adaptés au téléphone. Les règles historiques ci-dessous
+sur les cartes verticales et leurs filtres sont remplacées par cette décision.
+
+Validation : serveur Next.js réel, aperçu à 390 × 844 et 1728 px, défilements
+horizontal et vertical, ouverture d’un calcul et du calendrier. Aucun débordement
+horizontal de page à 390 px. Tests : 162 fichiers, 1 433 tests ; TypeScript et lint
+ciblé sans erreur.
+
+### Historique — vue d’ensemble sur téléphone du 15 septembre 2026
 
 Sous 640 px, le relevé présente un mois verticalement : introduction au parcours,
 argent de départ, revenus, dépenses, puis résultat et estimation. Les postes restent

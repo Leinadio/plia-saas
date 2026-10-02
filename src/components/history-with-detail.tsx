@@ -7,8 +7,6 @@ import { CenterScroll } from "@/components/center-scroll";
 import { HistoryGrid, type SelectGroup } from "@/components/history-grid";
 import { useDetailSidebar } from "@/components/detail-sidebar";
 import { VoileDAttente } from "@/components/mise-a-jour";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { HistoryMobileControls, useHistoryMobileNavigation, useHistoryMobileState } from "@/components/history-mobile-navigation";
 
 // SelectGroup vient de HistoryGrid, à qui ce composant ne fait que passer la main.
 // Le redéclarer ici l'avait déjà laissé dériver : il lui manquait les bornes de mois,
@@ -62,30 +60,26 @@ export function HistoryWithDetail(props: {
   useEffect(() => {
     if (selectionScope !== null && !sameScope) setDetail(null);
   }, [selectionScope, sameScope, setDetail]);
-  const isMobile = useIsMobile(640);
-  const frameNavigation = useHistoryMobileNavigation();
-  const localNavigation = useHistoryMobileState({ from: props.months[0] ?? props.currentMonth,
-    to: props.months.at(-1) ?? props.currentMonth, current: props.currentMonth });
-  const mobile = frameNavigation ?? localNavigation;
   // Check the account’s groups, not visible rows: a different month can be empty
   // while budgets still exist and must remain accessible in the normal table.
   if (props.groups.length === 0) {
-    return <HistoryEmptyState key={`${props.accountId}:${props.months.join(",")}:${isMobile ? mobile.month : "desktop"}`}
+    return <HistoryEmptyState key={viewScope}
       accountId={props.accountId} balance={props.forecast.balance}
       stripMin={props.stripMin} stripMax={props.stripMax}
-      month={isMobile ? mobile.month : props.months[0] ?? props.currentMonth} />;
+      month={props.months[0] ?? props.currentMonth} />;
   }
   return (
     <div className="flex flex-col gap-4 pb-[calc(8rem+env(safe-area-inset-bottom))] sm:pb-0">
-      {isMobile && !frameNavigation && <HistoryMobileControls navigation={mobile}
-        min={props.months[0] ?? props.currentMonth} max={props.months.at(-1) ?? props.currentMonth} />}
-      {/* Sur ordinateur, une carte entoure tout le tableau. Sur mobile, chaque
-          section porte sa propre carte ; les espaces laissent voir le fond de page. */}
+      <p className="text-muted-foreground text-xs sm:hidden">
+        Faites défiler le tableau horizontalement pour voir les mois et les montants.
+      </p>
+      {/* Le même tableau sur tous les écrans ; sur téléphone, les noms défilent
+          avec les montants pour laisser toute la largeur à la lecture. */}
       {/* Le voile d'attente : pendant qu'une modification se propage, les chiffres
           s'éteignent d'un cran et cessent de répondre au clic. Ils restent lisibles
           — on ne cache pas un montant — mais on ne peut plus ouvrir le détail d'une
           case qui va changer dans la seconde. */}
-      <VoileDAttente className={isMobile ? undefined : "carte history-table-frame overflow-hidden"}>
+      <VoileDAttente className="carte history-table-frame overflow-hidden">
         <CenterScroll>
         <HistoryGrid
           {...history}
@@ -94,7 +88,6 @@ export function HistoryWithDetail(props: {
           selected={sameScope ? selected : null}
           anchor={sameScope ? anchor : null}
           onDetailOpened={onDetailOpened}
-          mobile={isMobile ? mobile : undefined}
         />
         </CenterScroll>
       </VoileDAttente>

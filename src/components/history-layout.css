@@ -48,6 +48,10 @@
   .history-layout { --history-name-width: 16rem; }
 }
 
+@media (max-width: 639px) {
+  .history-layout { --history-name-width: 12rem; }
+}
+
 .history-mobile {
   --history-name-width: 100%;
   --history-name-inset: 1rem;

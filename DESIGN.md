@@ -1414,3 +1414,13 @@ eucalyptus en clair, anthracite et sable en sombre. Ses filets, panneaux opaques
 et bande de protection reprennent les composants publics. Sa composition et les
 limites des affirmations sont consignées dans
 `.impeccable/surfaces/src-app-securite-page-tsx.md`.
+
+
+## Vue d’ensemble commune — 2 octobre 2026
+
+Décision utilisateur : le téléphone reprend le tableau de l’ordinateur avec
+un défilement horizontal dans la carte. Les sections mobiles empilées et les
+modes « Par mois » / « Comparer » décrits plus haut sont remplacés. Les colonnes,
+les calculs et les couleurs restent communs ; les noms défilent avec les montants
+sur téléphone. Le calendrier et le détail gardent leurs panneaux mobiles.
+Contrat et vérifications : `.impeccable/surfaces/src-app-app.md`.

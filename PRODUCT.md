@@ -28,8 +28,8 @@ dépensé et ce qu’il restera, avant de décider.
 
 ## Positioning
 
-Planora réunit les revenus, les dépenses et les soldes dans un relevé lisible. Les vues
-« Par mois » et « Comparer » rendent les mois à venir concrets ; les enveloppes,
+Planora réunit les revenus, les dépenses et les soldes dans un relevé lisible.
+Le tableau mensuel rend les mois à venir concrets ; les enveloppes,
 sous-enveloppes et détails de montants expliquent les chiffres. La connexion bancaire
 via Enable Banking alimente cette lecture. L’anticipation n’est pas présentée comme
 une exclusivité concurrentielle, ni le report des restes et dépassements comme une
@@ -55,12 +55,12 @@ décisions ; le [guide d’installation](docs/prelaunch.md) décrit les limites 
 
 Planora se consulte sur ordinateur et téléphone. Une barre produit donne accès au budget,
 aux transactions et aux réglages. Les montants ouvrent leur détail ; sur téléphone,
-les formulaires et les choix de comparaison utilisent un panneau du bas.
+le détail occupe toute la largeur et le calendrier s’ouvre dans un panneau du bas.
 
-Les vues « Par mois » et « Comparer » gardent une présentation adaptée au support :
-relevé à colonnes sur ordinateur, sections et mois empilés sur téléphone. En comparaison
-mobile, revenus, dépenses et soldes conservent chacun leur indicateur. La page publique
-et la connexion sont accessibles avant la session.
+La vue d’ensemble utilise le même tableau à colonnes sur ordinateur et téléphone.
+Sur téléphone, l’utilisateur fait défiler les mois et les montants horizontalement ;
+les noms des enveloppes défilent avec les chiffres. Il n’y a plus de modes mobiles
+« Par mois » et « Comparer ». La page publique et la connexion sont accessibles avant la session.
 
 On synchronise, corrige le classement, ajuste une enveloppe, puis consulte les soldes.
 La valeur vient de la lecture et de la décision, pas du nombre de visites quotidiennes.
