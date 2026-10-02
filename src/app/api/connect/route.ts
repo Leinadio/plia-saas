@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { startAuth } from "../../../enablebanking/connection";
+import { startAuth, startReauth } from "../../../enablebanking/connection";
 import { requireUserId } from "../../../lib/current-user";
 
 // Demande une autorisation à une banque. Le nom et le pays viennent de l'appelant :
@@ -9,7 +9,12 @@ export async function POST(req: NextRequest) {
   const userId = await requireUserId();
   try {
     const body = await req.json().catch(() => ({}));
-    const { url } = await startAuth(userId, body.aspspName, body.aspspCountry);
+    if (body.connectionId !== undefined && (!Number.isInteger(body.connectionId) || body.connectionId <= 0)) {
+      return NextResponse.json({ error: "Connexion bancaire invalide." }, { status: 400 });
+    }
+    const { url } = body.connectionId !== undefined
+      ? await startReauth(userId, body.connectionId)
+      : await startAuth(userId, body.aspspName, body.aspspCountry);
     return NextResponse.json({ url });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 502 });

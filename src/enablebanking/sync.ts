@@ -3,10 +3,11 @@ import type { Db } from "../db/pg";
 import { parseAmount } from "../lib/money";
 import { upsertAccount } from "../db/repositories/accounts";
 import { attachAccountToConnection } from "../db/repositories/bank-connections";
+import { accountForReconnection } from "../db/repositories/account-reconnection";
 import { upsertTransaction, setTransactionGroup, setTransactionBudgetMonth } from "../db/repositories/transactions";
 import { fenetreAcceptee } from "./periode";
 import { bankBalances, type BankBalance } from "../lib/bank-balances";
-import { pendingTransactions, reconcilePendingChoices, type PendingBankTransaction } from "../lib/bank-pending";
+import { pendingTransactions, reconcilePendingChoices } from "../lib/bank-pending";
 
 type EbGet = <T>(path: string) => Promise<T>;
 
@@ -18,6 +19,7 @@ export const txnId = (accountUid: string, reference: string) => `${accountUid}${
 type BalancesResponse = { balances: BankBalance[] };
 type AccountDetails = {
   account_id?: { iban?: string };
+  identification_hash?: string;
   name?: string;
   product?: string;
 };
@@ -106,7 +108,7 @@ export async function syncAll(
   // autorisé la connexion. Sans lui il serait orphelin et n'apparaîtrait chez personne.
   // connectionId : la banque d'où vient ce compte. C'est ce lien qui dira plus tard
   // quelle autorisation renouveler quand celle-ci expirera.
-  deps: { ebGet: EbGet; accountUids: string[]; accountName: string; userId: string; connectionId?: number },
+  deps: { ebGet: EbGet; accountUids: string[]; accountName: string; userId: string; connectionId?: number; accountIdentities?: Record<string, string> },
 ): Promise<{ imported: number }> {
   let imported = 0;
   const nowIso = new Date().toISOString();
@@ -118,11 +120,13 @@ export async function syncAll(
     // Account details (IBAN, name) are optional — never let them break a sync.
     let ibanMasked: string | null = null;
     let name = deps.accountName;
+    let identity = deps.accountIdentities?.[uid] ?? null;
     try {
       const details = await deps.ebGet<AccountDetails>(`/accounts/${uid}/details`);
       const iban = details.account_id?.iban;
       if (iban) ibanMasked = "…" + iban.slice(-4);
       name = details.name || details.product || deps.accountName;
+      identity ??= details.identification_hash ?? null;
     } catch {
       // keep defaults
     }
@@ -133,11 +137,13 @@ export async function syncAll(
     const operations = await fetchTransactions(deps.ebGet, uid);
 
     imported += await db.pourUtilisateur(deps.userId, async (t) => {
-      const previous = (await t.one<{ pending_transactions: PendingBankTransaction[] }>(
-        "SELECT pending_transactions FROM accounts WHERE id = $1 FOR UPDATE", [uid],
-      ))?.pending_transactions ?? [];
+      const account = await accountForReconnection(t, deps.userId, uid, deps.connectionId, identity, currency);
+      if (!account) return 0;
+      const { id: accountId, previous } = account;
       await upsertAccount(t, {
-        id: uid,
+        id: accountId,
+        bank_uid: uid,
+        identification_hash: identity,
         name,
         iban_masked: ibanMasked,
         balance,
@@ -146,7 +152,7 @@ export async function syncAll(
         currency,
         last_synced: nowIso,
       }, deps.userId);
-      if (deps.connectionId != null) await attachAccountToConnection(t, uid, deps.connectionId);
+      if (deps.connectionId != null) await attachAccountToConnection(t, accountId, deps.connectionId);
 
       let nouvelles = 0;
       const booked: { id: string; pendingId: string; amount: number; label: string }[] = [];
@@ -162,8 +168,8 @@ export async function syncAll(
         // disputent les mêmes clés, et la seconde ne voit jamais rien arriver.
         const label = (op.remittance_information ?? []).join(" ").trim() || "(sans libellé)";
         const transaction = {
-          id: txnId(uid, ref),
-          account_id: uid,
+          id: txnId(accountId, ref),
+          account_id: accountId,
           date: op.booking_date,
           amount: parseAmount(op.transaction_amount.amount, op.credit_debit_indicator),
           label,
@@ -172,23 +178,35 @@ export async function syncAll(
         nouvelles += inserted;
         if (inserted) booked.push({
           id: transaction.id, amount: transaction.amount, label: transaction.label,
-          pendingId: pendingTransactions(uid, [{ ...op, status: "PDNG" }])[0].id,
+          pendingId: pendingTransactions(accountId, [{ ...op, status: "PDNG" }])[0].id,
         });
       }
-      const reconciled = reconcilePendingChoices(previous, pendingTransactions(uid, operations), booked);
+      const reconciled = reconcilePendingChoices(previous, pendingTransactions(accountId, operations), booked);
       for (const { id, choices } of reconciled.assignments) {
         // Une enveloppe supprimée entre-temps ne doit pas bloquer toute la synchro.
         const destination = choices.groupId == null ? null : await t.one<{ groupId: number; lineId: number | null }>(
           `SELECT g.id AS "groupId", l.id AS "lineId" FROM groups g
            LEFT JOIN group_lines l ON l.group_id = g.id AND l.id = $2
            WHERE g.id = $1 AND g.account_id = $3 AND ($2::integer IS NULL OR l.id IS NOT NULL)`,
-          [choices.groupId, choices.lineId ?? null, uid],
+          [choices.groupId, choices.lineId ?? null, accountId],
         );
         await setTransactionGroup(t, id, destination?.groupId ?? null, false, destination?.lineId ?? null);
         await setTransactionBudgetMonth(t, id, choices.budgetMonth ?? null);
       }
-      await t.run("UPDATE accounts SET pending_transactions = $1::jsonb WHERE id = $2", [JSON.stringify(reconciled.pending), uid]);
+      await t.run("UPDATE accounts SET pending_transactions = $1::jsonb WHERE id = $2", [JSON.stringify(reconciled.pending), accountId]);
       await applyNewTransactions(t, deps.userId, booked.map(op => op.id));
+      if (deps.connectionId != null) await t.run(
+        `UPDATE bank_connections SET sync_pending_uids = (
+           SELECT COALESCE(jsonb_agg(value), '[]'::jsonb)::text
+           FROM jsonb_array_elements_text(COALESCE(sync_pending_uids, '[]')::jsonb) WHERE value <> $1)
+         WHERE id = $2 AND user_id = $3`, [uid, deps.connectionId, deps.userId],
+      );
+      // Une connexion partiellement renouvelée conserve les comptes non partagés.
+      for (const oldId of account.oldConnections) {
+        if (oldId === deps.connectionId) continue;
+        await t.run(`DELETE FROM bank_connections WHERE id = $1 AND user_id = $2
+          AND NOT EXISTS (SELECT 1 FROM accounts WHERE connection_id = $1)`, [oldId, deps.userId]);
+      }
       return nouvelles;
     });
   }

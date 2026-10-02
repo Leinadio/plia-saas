@@ -91,12 +91,12 @@ test("une base recyclée repart de zéro, compteurs compris", async () => {
 // aussi la définition de référence de la base : ce qui n'est pas ici n'existe pas.
 const FORME: Record<string, string[]> = {
   accounts: [
-    "balance:numeric", "booked_balance:numeric", "connection_id:integer", "currency:text", "custom_name:text",
-    "iban_masked:text", "id:text", "last_synced:text", "name:text", "pending_transactions:jsonb", "user_id:text",
+    "balance:numeric", "bank_uid:text", "booked_balance:numeric", "connection_id:integer", "currency:text", "custom_name:text",
+    "iban_masked:text", "id:text", "identification_hash:text", "last_synced:text", "name:text", "pending_transactions:jsonb", "user_id:text",
   ],
   bank_connections: [
     "account_uids:text", "aspsp_country:text", "aspsp_name:text", "id:integer",
-    "session_id:text", "user_id:text", "valid_until:text",
+    "session_id:text", "sync_pending_uids:text", "user_id:text", "valid_until:text",
   ],
   budget_amounts: [
     "account_id:text", "amount:numeric", "effective_month:text", "group_id:integer",

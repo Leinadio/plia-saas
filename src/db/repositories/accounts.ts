@@ -15,6 +15,8 @@ export type Account = {
   user_id: string | null;
   // Connexion bancaire qui a rapporté ce compte. NULL avant le trousseau.
   connection_id: number | null;
+  bank_uid?: string | null;
+  identification_hash?: string | null;
 };
 
 // Le propriétaire est posé À LA CRÉATION et n'est jamais réécrit ensuite. Une
@@ -26,15 +28,17 @@ export async function upsertAccount(
   userId: string,
 ): Promise<void> {
   await db.run(
-    `INSERT INTO accounts (id, name, iban_masked, balance, currency, last_synced, user_id, booked_balance, pending_transactions)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb)
+    `INSERT INTO accounts (id, name, iban_masked, balance, currency, last_synced, user_id, booked_balance, pending_transactions, bank_uid, identification_hash)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10, $11)
      ON CONFLICT (id) DO UPDATE SET
        name = EXCLUDED.name, iban_masked = EXCLUDED.iban_masked,
        balance = EXCLUDED.balance, currency = EXCLUDED.currency,
        booked_balance = EXCLUDED.booked_balance,
        pending_transactions = EXCLUDED.pending_transactions,
+       bank_uid = COALESCE(EXCLUDED.bank_uid, accounts.bank_uid),
+       identification_hash = COALESCE(EXCLUDED.identification_hash, accounts.identification_hash),
        last_synced = EXCLUDED.last_synced`,
-    [a.id, a.name, a.iban_masked, a.balance, a.currency, a.last_synced, userId, a.booked_balance ?? null, JSON.stringify(a.pending_transactions ?? [])],
+    [a.id, a.name, a.iban_masked, a.balance, a.currency, a.last_synced, userId, a.booked_balance ?? null, JSON.stringify(a.pending_transactions ?? []), a.bank_uid ?? null, a.identification_hash ?? null],
   );
 }
 
@@ -82,6 +86,19 @@ export async function deleteAccount(db: Db, id: string): Promise<void> {
 // transaction n'existe pas — la deuxième validerait la première au passage, et un
 // échec à mi-parcours laisserait une banque disparue avec la moitié de ses comptes.
 export async function supprimerCompte(db: Db, id: string): Promise<void> {
+  // Le repli de première synchronisation ne doit pas ressusciter le dernier compte
+  // supprimé. Après reconnexion son uid bancaire n'est plus son identifiant local.
+  await db.run(
+    `UPDATE bank_connections c SET account_uids = (
+       SELECT COALESCE(jsonb_agg(uid), '[]'::jsonb)::text
+       FROM jsonb_array_elements_text(COALESCE(c.account_uids, '[]')::jsonb) AS u(uid)
+       WHERE uid <> COALESCE(a.bank_uid, a.id)),
+       sync_pending_uids = (
+         SELECT COALESCE(jsonb_agg(uid), '[]'::jsonb)::text
+         FROM jsonb_array_elements_text(COALESCE(c.sync_pending_uids, '[]')::jsonb) AS u(uid)
+         WHERE uid <> COALESCE(a.bank_uid, a.id))
+     FROM accounts a WHERE a.id = $1 AND c.id = a.connection_id`, [id],
+  );
   // Les paires de rapprochement écartées désignent des transactions par leur
   // identifiant ; elles doivent partir avant que celles-ci disparaissent.
   await db.run(

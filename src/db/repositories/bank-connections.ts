@@ -21,10 +21,12 @@ export type BankConnection = {
   // Les uid rapportés par la banque, en JSON. Servent à la première synchronisation,
   // avant qu'aucun compte n'existe en base.
   accountUids: string | null;
+  syncPendingUids?: string | null;
 };
 
 const COLONNES = `id, user_id AS "userId", aspsp_name AS "aspspName", aspsp_country AS "aspspCountry",
-                  session_id AS "sessionId", valid_until AS "validUntil", account_uids AS "accountUids"`;
+                  session_id AS "sessionId", valid_until AS "validUntil", account_uids AS "accountUids",
+                  sync_pending_uids AS "syncPendingUids"`;
 
 // Une demande d'autorisation. Elle efface d'abord celle qui serait restée en attente
 // sur la MÊME banque : la connexion se crée avant la redirection, donc refermer
@@ -66,7 +68,7 @@ export async function setConnectionSession(
   db: Db, id: number, sessionId: string, validUntil: string, accountUids: string[] = [],
 ): Promise<void> {
   await db.run(
-    `UPDATE bank_connections SET session_id = $1, valid_until = $2, account_uids = $3 WHERE id = $4`,
+    `UPDATE bank_connections SET session_id = $1, valid_until = $2, account_uids = $3, sync_pending_uids = $3 WHERE id = $4`,
     [sessionId, validUntil, JSON.stringify(accountUids), id],
   );
 }

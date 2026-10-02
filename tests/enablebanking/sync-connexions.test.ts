@@ -13,7 +13,7 @@ import { createTestDb } from "../helpers/pg";
 import { dbFrom } from "../../src/db/pg";
 import { syncConnections } from "../../src/enablebanking/sync-connections";
 import { createConnection, setConnectionSession, attachAccountToConnection } from "../../src/db/repositories/bank-connections";
-import { upsertAccount, listAccounts } from "../../src/db/repositories/accounts";
+import { upsertAccount, listAccounts, deleteAccount } from "../../src/db/repositories/accounts";
 import { listTransactions } from "../../src/db/repositories/transactions";
 import { TEST_USER } from "../helpers/test-user";
 
@@ -85,6 +85,9 @@ test("préfère les comptes en base à la liste d'origine", async () => {
   await setConnectionSession(db, cx, "s1", "2026-11-01T00:00:00Z", ["acc-vieux", "acc-garde"]);
   await upsertAccount(db, { id: "acc-garde", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
   await attachAccountToConnection(db, "acc-garde", cx);
+  await upsertAccount(db, { id: "acc-vieux", name: "CIC", iban_masked: null, balance: 0, currency: "EUR", last_synced: null }, TEST_USER);
+  await attachAccountToConnection(db, "acc-vieux", cx);
+  await deleteAccount(db, "acc-vieux");
 
   await syncConnections(db, { ebGet, userId: TEST_USER });
 

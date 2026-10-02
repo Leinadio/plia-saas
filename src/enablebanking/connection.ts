@@ -39,6 +39,13 @@ export async function startAuth(
   return { url: res.url, connectionId };
 }
 
+export async function startReauth(userId: string, connectionId: number): Promise<{ url: string; connectionId: number }> {
+  const connection = await db().pourUtilisateur(userId, t => ownedConnection(t, userId, connectionId));
+  if (!connection) throw new Error("Connexion bancaire introuvable.");
+  // L'ancienne session reste utilisable si l'utilisateur abandonne chez sa banque.
+  return startAuth(userId, connection.aspspName, connection.aspspCountry);
+}
+
 // Le retour de la banque. `state` rapporte l'identifiant de la connexion, et on vérifie
 // qu'elle appartient bien à celui qui revient : un `state` se falsifie, et sans cette
 // vérification une autorisation bancaire pourrait être rattachée au compte d'un autre.
@@ -48,10 +55,10 @@ export async function finishAuth(code: string, state: string, userId: string): P
   const connexion = await db().pourUtilisateur(userId, (t) => ownedConnection(t, userId, connectionId));
   if (!connexion) throw new Error("Cette autorisation ne correspond à aucune connexion en attente");
 
-  const res = await ebPost<{ session_id: string; accounts: { uid: string }[] }>("/sessions", { code });
+  const res = await ebPost<{ session_id: string; accounts: { uid?: string }[]; access?: { valid_until?: string } }>("/sessions", { code });
   if (!res.session_id || !res.accounts) throw new Error("Enable Banking /sessions returned an unexpected response");
-  const uids = res.accounts.map((a) => a.uid);
-  const validUntil = new Date(Date.now() + 89 * 24 * 3600 * 1000).toISOString();
+  const uids = res.accounts.flatMap(a => a.uid ? [a.uid] : []);
+  const validUntil = res.access?.valid_until ?? new Date(Date.now() + 89 * 24 * 3600 * 1000).toISOString();
   await db().pourUtilisateur(userId, (t) => setConnectionSession(t, connectionId, res.session_id, validUntil, uids));
   return connectionId;
 }

@@ -28,7 +28,7 @@ export function SyncButton() {
     setAppel(true);
     try {
       const res = await fetch("/api/sync", { method: "POST" });
-      const data = (await res.json()) as { imported?: number; error?: string };
+      const data = (await res.json()) as { imported?: number; error?: string; expired?: string[] };
       if (!res.ok) {
         // Le seul refus qu'on sait traduire : pas de banque connectée. Le reste vient
         // de la banque et se dit tel quel, plutôt que d'être noyé dans un « erreur ».
@@ -39,7 +39,8 @@ export function SyncButton() {
         );
         return;
       }
-      toast.success(syncMessage(Number(data.imported)));
+      if (data.expired?.length) toast.warning(`${syncMessage(Number(data.imported))}. À reconnecter dans Réglages : ${data.expired.join(", ")}.`);
+      else toast.success(syncMessage(Number(data.imported)));
       redessiner();
     } catch {
       toast.error("Serveur injoignable : la synchronisation n'a pas eu lieu.");

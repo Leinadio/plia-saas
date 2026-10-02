@@ -16,12 +16,12 @@ export async function POST() {
   if (connexions.length === 0) return NextResponse.json({ error: "not_connected" }, { status: 400 });
 
   try {
-    const { imported } = await syncConnections(database, { ebGet, userId });
+    const { imported, expired } = await syncConnections(database, { ebGet, userId });
     // Sans ça, les pages déjà rendues gardent leur ancienne liste de comptes : le
     // nouveau compte n'apparaît que là où l'on a rechargé à la main, ce qui donne
     // l'impression qu'il manque dans certains onglets.
     revalidatePath("/app", "layout");
-    return NextResponse.json({ imported });
+    return NextResponse.json({ imported, ...(expired ? { expired } : {}) });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 502 });
   }

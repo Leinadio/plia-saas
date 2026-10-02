@@ -19,7 +19,8 @@ export function SyncNowButton() {
       const res = await fetch("/api/sync", { method: "POST" });
       const data = await res.json();
       if (res.ok) {
-        toast.success(`${data.imported} transaction(s) importée(s).`);
+        if (data.expired?.length) toast.warning(`${data.imported} transaction(s) importée(s). À reconnecter : ${data.expired.join(", ")}.`);
+        else toast.success(`${data.imported} transaction(s) importée(s).`);
         // Le routeur de Next garde en cache les pages déjà visitées : sans ce
         // rafraîchissement, passer sur Transactions ou Tableau de bord réafficherait
         // la version d'avant la synchro, sans le compte qui vient d'arriver.

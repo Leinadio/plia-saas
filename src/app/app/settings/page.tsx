@@ -3,6 +3,7 @@ import { accountDisplayName } from "../../../lib/account";
 import { renameAccount } from "./actions";
 import { BankPicker } from "@/components/bank-picker";
 import { SyncNowButton } from "@/components/sync-now-button";
+import { ReconnectBankButton } from "@/components/reconnect-bank-button";
 import { listActiveConnections } from "../../../db/repositories/bank-connections";
 import { etatConnexion } from "@/lib/connexion-etat";
 import { DeleteAccountButton, DeleteConnectionButton } from "./DeleteAccountButton";
@@ -82,7 +83,8 @@ export default async function SettingsPage({
                   {etat.etat === "expiree" && <Badge variant="destructive">Autorisation expirée</Badge>}
                   {/* Débrancher la banque emporte ses comptes : le geste appartient donc
                       à la carte de la banque, pas à la liste des comptes plus bas. */}
-                  <div className="ml-auto">
+                  <div className="ml-auto flex flex-wrap items-center gap-2">
+                    <ReconnectBankButton connectionId={cx.id} bankName={cx.aspspName} />
                     <DeleteConnectionButton
                       connectionId={cx.id}
                       banque={cx.aspspName}
@@ -90,6 +92,11 @@ export default async function SettingsPage({
                     />
                   </div>
                 </div>
+                {(etat.etat === "expiree" || etat.etat === "bientot") && (
+                  <p className="text-muted-foreground text-sm">
+                    Reconnectez cette banque pour actualiser vos soldes. Vos enveloppes et le classement de vos opérations sont conservés.
+                  </p>
+                )}
                 {/* Autorisée mais sans aucun compte : la banque a bien donné son accord
                     et n'a rien partagé. Cela arrive quand aucun compte n'est coché
                     pendant le parcours chez elle. Sans ce mot, la carte annonce une
@@ -116,6 +123,11 @@ export default async function SettingsPage({
             <BankPicker />
             <SyncNowButton />
           </div>
+          {connexions.some((cx, i) => connexions.some((other, j) => j < i && other.aspspName === cx.aspspName && other.aspspCountry === cx.aspspCountry)) && (
+            <p className="text-muted-foreground text-sm">
+              Banque connectée plusieurs fois ? Synchroniser retrouve les comptes identiques et conserve leurs budgets.
+            </p>
+          )}
         </CardContent>
       </Card>
 
