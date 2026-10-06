@@ -2,7 +2,8 @@
 import { applyNewTransactions } from "@/lib/automation-service";
 import type { Db } from "../../../db/pg";
 import { pourMoi } from "../../../lib/current-user";
-import { ownsGroup, ownsLine, ownsTransaction, ownsAccount } from "../../../db/repositories/ownership";
+import { ownsGroup, ownsTransaction, ownsAccount } from "../../../db/repositories/ownership";
+import { getTransactionForAssignment, getGroupForAssignment } from "../../../db/repositories/transaction-assignment";
 import {
   setTransactionGroup,
   setTransactionIgnored,
@@ -20,7 +21,7 @@ import { normalizeComment } from "@/lib/txn-comment";
 import { moisBudget, rattachementUtile } from "@/lib/txn-mois";
 import { canAttachToGroup, peutRecevoir, sensDuMontant } from "@/lib/ownership";
 import { isGroupAlive } from "@/lib/forecast";
-import { countGroupLines, getLineGroupId, getGroupLifespan, getGroupDirection } from "../../../db/repositories/groups";
+import { getGroupLifespan } from "../../../db/repositories/groups";
 import { revalidatePath } from "next/cache";
 import { getPendingTransaction, setPendingChoices } from "../../../db/repositories/pending-transactions";
 import { currentMonthKey } from "../../../lib/current-month";
@@ -46,46 +47,25 @@ export async function setGroup(
   groupId: number | null,
   lineId: number | null = null,
 ) {
-  return pourMoi(async (base, moi) => {
-    // Deux choses à vérifier, pas une : la transaction qu'on déplace, et la destination.
-    // Rattacher SA transaction à la dépense d'un autre la ferait compter chez lui.
-    const userId = moi;
-    const pending = await getPendingTransaction(base, userId, txnId);
-    if (!pending && !(await ownsTransaction(base, userId, txnId))) return;
+  return pourMoi(async (database, userId) => {
+    // L'attente conserve le verrou du compte partagé avec la synchronisation.
+    const pending = await getPendingTransaction(database, userId, txnId);
+    const op = pending
+      ? { ...pending, date: pending.date ?? "", budgetMonth: pending.budgetMonth ?? currentMonthKey(new Date()) }
+      : await getTransactionForAssignment(database, userId, txnId);
+    if (!op) return;
     const gid = groupId !== null && Number.isFinite(groupId) ? groupId : null;
-    const lid = lineId !== null && Number.isFinite(lineId) ? lineId : null;
-    const database = base;
+    const lid = gid !== null && lineId !== null && Number.isFinite(lineId) ? lineId : null;
     if (gid !== null) {
-      if (!(await ownsGroup(database, userId, gid))) return;
-      if (pending && !(await database.one("SELECT id FROM groups WHERE id = $1 AND account_id = $2", [gid, pending.accountId]))) return;
-      if (lid !== null && !(await ownsLine(database, userId, lid))) return;
-      const lignes = await countGroupLines(database, gid);
-      if (lignes === null || !canAttachToGroup(lignes > 0, lid)) return;
-      // Une ligne d'un AUTRE groupe écrirait un couple (groupe, ligne) incohérent, que
-      // plus aucun calcul ne relit correctement.
-      if (lid !== null && (await getLineGroupId(database, lid)) !== gid) return;
-      // Un groupe ne vit que certains mois : une enveloppe créée pour juillet ne peut
-      // pas recevoir une dépense d'août. Rattachée quand même, elle ne compterait
-      // nulle part — computeHistory ne reconnaît un propriétaire que s'il est vivant
-      // ce mois-là — et la transaction disparaîtrait dans les non catégorisés sans
-      // qu'on comprenne pourquoi.
-      //
-      // Le mois retenu est celui où la transaction COMPTE, rattachement compris : une
-      // dépense du 31 août rangée en septembre doit trouver un poste vivant en
-      // septembre, pas en août.
-      const op = pending
-        ? { ...pending, date: pending.date ?? "", budgetMonth: pending.budgetMonth ?? currentMonthKey(new Date()) }
-        : await getTransactionFacts(database, txnId);
-      const bornes = await getGroupLifespan(database, gid);
-      if (op === null || bornes === null || !isGroupAlive(bornes, moisBudget(op))) return;
-      // Le SENS, enfin : une dépense n'a rien à faire dans une rémunération, où elle
-      // viendrait diminuer ce qu'on a reçu. Une recette, elle, va dans les deux — un
-      // remboursement allège l'enveloppe qu'il rembourse. Le menu ne le propose plus,
-      // mais le menu n'est pas une serrure.
-      const sensGroupe = await getGroupDirection(database, gid);
-      if (sensGroupe === null || !peutRecevoir(sensDuMontant(op.amount), sensGroupe)) return;
+      const group = await getGroupForAssignment(database, userId, op.accountId, gid, lid);
+      if (!group || !canAttachToGroup(group.hasLines, lid)) return;
+      if (lid !== null && !group.matchesLine) return;
+      // Le mois choisi prime sur la date bancaire. Une dépense ne va que dans une
+      // dépense ; un remboursement peut aussi alléger une enveloppe de dépenses.
+      if (!isGroupAlive(group, moisBudget(op))) return;
+      if (!peutRecevoir(sensDuMontant(op.amount), group.direction)) return;
     }
-    if (pending) await setPendingChoices(database, userId, txnId, { groupId: gid, lineId: gid === null ? null : lid });
+    if (pending) await setPendingChoices(database, userId, txnId, { groupId: gid, lineId: lid });
     else await setTransactionGroup(database, txnId, gid, false, lid);
     revalidateAll();
   });

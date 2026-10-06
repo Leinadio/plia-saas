@@ -146,7 +146,7 @@ export default async function HistoriquePage({
           // Le solde de la banque privé de ce qui est hors calcul : c'est LUI qui
           // ancre tout ce qui suit (prévision, estimé de fin de mois, chaîne de soldes).
           const balance = effectiveBalance(a.balance, ignoredByAccount[a.id], manualByAccount[a.id]);
-          const pendingNet = a.booked_balance == null ? 0 : a.balance - a.booked_balance;
+          const pendingNet = a.booked_balance == null ? undefined : a.balance - a.booked_balance;
           const forecast = computeForecast(a.id, balance, groups, txns, currentMonth, datedBudgets, datedLines);
           const sectionsFull = computeHistory(groups, txns, calcMonths, currentMonth, datedBudgets, datedLines);
           // Estimé de fin du mois courant aligné sur le tableau (Balances vertes +

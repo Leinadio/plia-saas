@@ -78,3 +78,43 @@ it.each(["2026-08", "2026-09"])("ne recompte pas l'attente rangée dans une enve
   expect(result.openings[1]).toBe(month === "2026-08" ? 150 : 500);
   expect(result.closings[1]).toBe(150);
 });
+
+describe("une banque qui fournit seulement le solde disponible", () => {
+  const months = ["2026-09", "2026-10"];
+  const booked = [
+    { id: "credits", accountId: "a", date: "2026-10-01", amount: 242.54, label: "Entrées", groupId: null },
+    { id: "debits", accountId: "a", date: "2026-10-02", amount: -57.86, label: "Sorties", groupId: null },
+  ];
+  const pending = pendingAsTransactions("a", [-4.98, -5.67, -51.54, -0.91, -0.76, -0.73, -27.39]
+    .map((amount, i) => ({ id: `pending:${i}`, amount, date: "2026-10-06", label: "Paiement en attente" })), "2026-10");
+
+  it("reconstitue le départ sans annuler les paiements en attente détaillés", () => {
+    const sections = computeHistory([], [...booked, ...pending], months, "2026-10");
+    const solde = computeSolde(sections, months, "2026-10", 94.79);
+
+    // 2,09 + 242,54 - 57,86 - 91,98 = 94,79. L'absence du second
+    // solde ne signifie pas un écart nul : cela donnait à tort -89,89 au départ.
+    expect(solde.openings[0]).toBeCloseTo(2.09, 2);
+    expect(solde.openings[1]).toBeCloseTo(2.09, 2);
+    expect(solde.closings[1]).toBeCloseTo(94.79, 2);
+    expect(solde.bookedBalance).toBeCloseTo(186.77, 2);
+    expect(solde.pending).toEqual([0, 0]);
+  });
+
+  it("conserve le même départ lorsque les paiements sont ensuite comptabilisés", () => {
+    const before = computeSolde(computeHistory([], [...booked, ...pending], months, "2026-10"), months, "2026-10", 94.79);
+    const after = computeSolde(computeHistory([], [...booked, ...pending.map(t => ({ ...t, pending: false }))], months, "2026-10"), months, "2026-10", 94.79, undefined, 0);
+
+    expect(before.openings[1]).toBeCloseTo(2.09, 2);
+    expect(after.openings[1]).toBeCloseTo(2.09, 2);
+  });
+
+  it("garde prioritaire un écart bancaire explicitement nul, sans masquer un vrai découvert", () => {
+    const sections = computeHistory([], [...booked, ...pending], months, "2026-10");
+    const solde = computeSolde(sections, months, "2026-10", 94.79, undefined, 0);
+
+    expect(solde.bookedBalance).toBe(94.79);
+    expect(solde.openings[1]).toBeCloseTo(-89.89, 2);
+    expect(solde.closings[1]).toBeCloseTo(94.79, 2);
+  });
+});

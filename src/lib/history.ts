@@ -555,7 +555,9 @@ export function computeSolde(
   // Estimé de fin du mois courant : s'il est fourni, les mois futurs partent de
   // cette estimation (au lieu du solde « maintenant ») pour la colonne Solde réel.
   currentEstimate?: number | null,
-  pendingNet = 0,
+  // Absent si la banque ne fournit pas de solde comptabilisé. Un écart inconnu
+  // est différent d'un écart explicitement nul entre deux soldes connus.
+  pendingNet?: number,
   detailedPendingNet?: number,
 ): SoldeColumn {
   const n = months.length;
@@ -568,7 +570,11 @@ export function computeSolde(
   ])
     .filter(transaction => transaction.pending)
     .reduce((sum, transaction) => sum + transaction.amount, 0);
-  const remainingPending = Math.round((pendingNet - detailedPending) * 100) / 100 || 0;
+  // Avec le seul solde disponible (Revolut, par exemple), l'attente détaillée
+  // reste comprise dans ce solde. La remplacer par zéro annulerait les paiements
+  // connus et reporterait leur montant à tort dans l'argent de départ.
+  const totalPending = pendingNet ?? detailedPending;
+  const remainingPending = Math.round((totalPending - detailedPending) * 100) / 100 || 0;
   const pending = months.map(month => month === currentMonth ? remainingPending : 0);
   // Mouvement net affiché par mois = somme des sous-totaux de section
   // (entrées - sorties). Inclut déjà les non catégorisés et les projections.
@@ -629,7 +635,7 @@ export function computeSolde(
     }
   }
 
-  return { openings, closings, rowRunning, uncategorizedRunning, pending, bookedBalance: balance - pendingNet };
+  return { openings, closings, rowRunning, uncategorizedRunning, pending, bookedBalance: balance - totalPending };
 }
 
 // Revenu projeté d'une ligne pour un mois : son budget de ce mois-là, 0 pour une

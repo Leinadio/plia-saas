@@ -10,6 +10,8 @@ import { setGroup, addTransaction } from "../../../src/app/app/transactions/acti
 import { revalidatePath } from "next/cache";
 import { insertGroup, insertLine } from "../../../src/db/repositories/groups";
 import { insertManualTransaction } from "../../../src/db/repositories/transactions";
+import { upsertAccount } from "../../../src/db/repositories/accounts";
+import { TEST_USER } from "../../helpers/test-user";
 import type { Db } from "../../../src/db/pg";
 
 let db: Db;
@@ -181,4 +183,37 @@ test("accepte une recette dans une rémunération", async () => {
   await setGroup(id, gid, null);
 
   expect(await rattachement(id)).toEqual({ groupId: gid, lineId: null });
+});
+
+test.each([TEST_USER, "autre-utilisateur"])("refuse une enveloppe d'un autre compte (%s)", async (owner) => {
+  await upsertAccount(db, {
+    id: "a2", name: "Autre compte", iban_masked: null, balance: 0, currency: "EUR", last_synced: null,
+  }, owner);
+  const gid = await insertGroup(db, "a2", "Courses", "out", 300, "2026-01", null);
+  const id = await nouvelleTxn();
+
+  await setGroup(id, gid);
+
+  expect(await rattachement(id)).toEqual({ groupId: null, lineId: null });
+});
+
+test("valide l'enveloppe selon le mois choisi plutôt que la date bancaire", async () => {
+  const gid = await insertGroup(db, "a1", "Août", "out", 300, "2026-08", "2026-08");
+  const id = await nouvelleTxn();
+  await db.run("UPDATE transactions SET budget_month = '2026-08' WHERE id = $1", [id]);
+
+  await setGroup(id, gid);
+
+  expect(await rattachement(id)).toEqual({ groupId: gid, lineId: null });
+});
+
+test("le retour aux non catégorisés retire aussi tout sous-poste fourni", async () => {
+  const gid = await insertGroup(db, "a1", "Courses", "out", 300, "2026-01", null);
+  const lid = await insertLine(db, gid, "Marché", 100);
+  const id = await nouvelleTxn();
+  await setGroup(id, gid, lid);
+
+  await setGroup(id, null, lid);
+
+  expect(await rattachement(id)).toEqual({ groupId: null, lineId: null });
 });

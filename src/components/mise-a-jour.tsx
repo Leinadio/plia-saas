@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 // --- CE QUI DIT QU'UNE ÉCRITURE EST EN COURS ---------------------------------
-// Toute modification de l'app suit le même chemin : une action serveur écrit en
-// base, puis la page entière se recalcule côté serveur — toutes les chaînes de
-// solde, tous les mois, tous les totaux. Ça prend une seconde, parfois deux.
+// Les actions serveur écrivent en base et revalident les pages concernées. Leur
+// réponse contient déjà le nouvel écran, avec les soldes et les totaux recalculés.
+// Un router.refresh() systématique ferait payer ce rendu une deuxième fois.
 //
 // Ce temps-là n'était signalé nulle part. Le bouton se réactivait aussitôt son
 // action finie, alors que les chiffres à l'écran étaient encore les anciens :
@@ -22,13 +22,10 @@ type MiseAJour = {
   // Redemander la page au serveur. À utiliser quand l'action a déjà été faite
   // ailleurs (une action serveur appelée par un formulaire, par exemple).
   rafraichir: () => void;
-  // Faire le travail ET redemander la page, le tout compté comme une seule
-  // attente. La promesse rendue se dénoue quand le travail est fini, pendant
-  // que le rafraîchissement, lui, continue de courir.
-  pendant: (travail: () => Promise<unknown>) => Promise<void>;
-  // Comme `pendant`, mais sans redemander la page : pour les actions serveur qui
-  // font déjà revalidatePath. Leur réponse RAMÈNE l'écran refait ; un
-  // rafraîchissement par-dessus, c'est un aller-retour complet payé pour rien.
+  // Attendre l'action et son rendu. Le rafraîchissement explicite ne sert qu'aux
+  // écritures par une API externe qui ne renvoie pas de rendu (profil, par exemple).
+  pendant: (travail: () => Promise<unknown>, options?: { rafraichir: boolean }) => Promise<void>;
+  // Attendre une action qui apporte déjà son rendu, sans rafraîchissement ajouté.
   attendre: (travail: () => Promise<unknown>) => Promise<void>;
   // Vrai tant que quelque chose est en vol.
   enCours: boolean;
@@ -43,13 +40,13 @@ function useMoteur(): MiseAJour {
     () => ({
       enCours,
       rafraichir: () => demarrer(() => router.refresh()),
-      pendant: (travail) =>
+      pendant: (travail, options) =>
         new Promise<void>((fini) => {
           demarrer(async () => {
             try {
               await travail();
             } finally {
-              router.refresh();
+              if (options?.rafraichir) router.refresh();
               fini();
             }
           });

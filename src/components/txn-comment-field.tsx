@@ -7,9 +7,9 @@ import { cn } from "@/lib/utils";
 import { hasComment } from "@/lib/txn-comment";
 import { useMiseAJour } from "@/components/mise-a-jour";
 
-// Le commentaire d'une transaction, posé sous son libellé. Même schéma que
-// GroupSelectField et IgnoreTxnToggle : action serveur puis mise à jour partagée
-// (revalidatePath seul ne rafraîchit pas la vue courante).
+// Le commentaire d'une transaction, posé sous son libellé. L'action serveur
+// revalide la page et renvoie le commentaire enregistré ; la mise à jour partagée
+// attend ce rendu sans demander un deuxième chargement.
 //
 // Sans commentaire, la ligne se réduit à un bouton discret qui n'apparaît qu'au
 // survol : une transaction commentée doit se voir, une transaction ordinaire ne

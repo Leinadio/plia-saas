@@ -10,7 +10,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 const effects = vi.hoisted(() => ({
   setGroup: vi.fn(async () => {}),
-  pendant: vi.fn((work: () => Promise<unknown>) => work()),
+  attendre: vi.fn((work: () => Promise<unknown>) => work()),
   setValue: vi.fn(),
 }));
 
@@ -26,7 +26,7 @@ vi.mock("react", async (importOriginal) => {
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => {} }) }));
 vi.mock("@/app/app/transactions/actions", () => ({ setGroup: effects.setGroup }));
 vi.mock("@/components/mise-a-jour", () => ({
-  useMiseAJour: () => ({ pendant: effects.pendant, enCours: false }),
+  useMiseAJour: () => ({ attendre: effects.attendre, enCours: false }),
 }));
 
 const { GroupSelectField, applyGroupSelection } = await import("../../src/components/group-select-field");
@@ -66,7 +66,7 @@ describe("GroupSelectField", () => {
   it("déclenche la branche locale depuis le select réel", () => {
     const changes: { groupId: number | null; lineId: number | null }[] = [];
     effects.setGroup.mockClear();
-    effects.pendant.mockClear();
+    effects.attendre.mockClear();
     effects.setValue.mockClear();
 
     selectInteractif({ groups: [sosh], onLocalChange: (selection) => changes.push(selection) })
@@ -74,19 +74,19 @@ describe("GroupSelectField", () => {
 
     expect(changes).toEqual([{ groupId: 2, lineId: 10 }]);
     expect(effects.setValue).toHaveBeenCalledWith("l:10");
-    expect(effects.pendant).not.toHaveBeenCalled();
+    expect(effects.attendre).not.toHaveBeenCalled();
     expect(effects.setGroup).not.toHaveBeenCalled();
   });
 
   it("déclenche la branche serveur depuis le select réel", () => {
     effects.setGroup.mockClear();
-    effects.pendant.mockClear();
+    effects.attendre.mockClear();
     effects.setValue.mockClear();
 
     selectInteractif({ groups: [courses] }).onChange({ currentTarget: { value: "g:1" } });
 
     expect(effects.setValue).toHaveBeenCalledWith("g:1");
-    expect(effects.pendant).toHaveBeenCalledTimes(1);
+    expect(effects.attendre).toHaveBeenCalledTimes(1);
     expect(effects.setGroup).toHaveBeenCalledWith("t1", 1, null);
   });
 

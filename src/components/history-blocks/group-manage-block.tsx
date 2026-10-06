@@ -36,7 +36,7 @@ import { useMiseAJour } from "@/components/mise-a-jour";
 // montant vrai pour un seul mois parmi d'autres, ce qui se lisait comme « le » montant
 // du groupe et contredisait ce que montrait le tableau. Les montants se fixent depuis
 // leur case « Budget dép. », au mois de la colonne (voir BudgetEditBlock).
-// Chaque action revalide côté serveur ; on rafraîchit ensuite la vue.
+// Chaque action revalide côté serveur et renvoie la vue mise à jour.
 //
 // `inline` : rendu sur place, dans le dépliage d'un poste, au lieu
 // du panneau de droite. L'en-tête tombe alors — le nom du poste et sa durée sont

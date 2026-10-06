@@ -27,7 +27,7 @@ export function AccountNameForm({ nom }: { nom: string }) {
         return;
       }
       toast.success("Nom enregistré");
-    });
+    }, { rafraichir: true });
   }
 
   return (

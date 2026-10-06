@@ -65,7 +65,7 @@ export function GroupSelectField({
   onLocalChange?: (selection: GroupSelection) => void;
   onboardingTarget?: string;
 }) {
-  const { pendant, enCours: isPending } = useMiseAJour();
+  const { attendre, enCours: isPending } = useMiseAJour();
   // ligne -> groupe parent, pour retrouver le group_id quand on choisit une ligne.
   const parentOf = useMemo(() => {
     const m = new Map<number, number>();
@@ -78,7 +78,7 @@ export function GroupSelectField({
   );
 
   // Affiche tout de suite le choix (valeur optimiste), puis suit la vérité
-  // serveur : quand l'état serveur change après le refresh, on se resynchronise.
+  // serveur : quand l’action renvoie le nouveau classement, on se resynchronise.
   const server = stateOf(defaultGroupId, defaultLineId);
   const [value, setValue] = useState(server);
   const [prevServer, setPrevServer] = useState(server);
@@ -107,10 +107,9 @@ export function GroupSelectField({
         applyGroupSelection({
           selection: { groupId, lineId },
           onLocalChange,
-          // revalidatePath seul ne rafraîchit pas la vue courante après l'action ;
-          // la mise à jour partagée re-télécharge le rendu serveur, et allume le fil
-          // de tension sous la poutre pendant ce temps.
-          onServerChange: ({ groupId, lineId }) => pendant(() => setGroup(txnId, groupId, lineId)),
+          // L’action revalide la page et renvoie déjà les nouveaux montants.
+          // Garder le fil d’attente sans demander un second rendu complet.
+          onServerChange: ({ groupId, lineId }) => attendre(() => setGroup(txnId, groupId, lineId)),
         });
       }}
     >
